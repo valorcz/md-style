@@ -1,0 +1,1035 @@
+/* ==========================================================================
+   FORENSIC & INVESTIGATIVE REPORT THEME FOR PANDOC
+   Specially crafted for Digital Forensics, Incident Response, Audits & Legal Reports
+   Fonts: Roboto Slab, Merriweather, JetBrains Mono
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Google Fonts Import (Curated Essential Weights for Speed & Portability)
+   -------------------------------------------------------------------------- */
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&family=Roboto+Slab:wght@400;500;600;700;800&display=swap");
+
+/* --------------------------------------------------------------------------
+   2. Design Tokens & CSS Custom Properties
+   -------------------------------------------------------------------------- */
+:root {
+  /* Typography Stacks with Resilient Fallbacks */
+  --font-heading: "Roboto Slab", "Merriweather", "Georgia", "DejaVu Serif", serif;
+  --font-body: "Merriweather", "Georgia", "DejaVu Serif", serif;
+  --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", "Liberation Mono", Menlo, Monaco, Consolas, monospace;
+
+  /* Palette: Forensic Navy, Slate & Sky Blue */
+  --color-primary: #0f172a;        /* Deep slate navy */
+  --color-primary-light: #1e293b;  /* Slate 800 */
+  --color-accent: #0284c7;         /* Sky 600 - Forensic cyan */
+  --color-accent-dark: #0369a1;    /* Sky 700 */
+  --color-accent-light: #e0f2fe;   /* Sky 100 */
+  --color-secondary: #0f766e;      /* Deep Teal */
+
+  /* Surfaces & Neutrals */
+  --color-bg: #f8fafc;            /* Page canvas background (screen) */
+  --color-paper: #ffffff;         /* Document card surface */
+  --color-text: #1e293b;          /* High-legibility dark slate body */
+  --color-text-muted: #64748b;    /* Secondary metadata text */
+  --color-border: #e2e8f0;        /* Subtle divider */
+  --color-border-dark: #cbd5e1;   /* Defined line border */
+
+  /* Forensic Findings & Severity Statuses */
+  --color-critical: #dc2626;
+  --color-critical-bg: #fef2f2;
+  --color-critical-border: #fca5a5;
+
+  --color-warning: #d97706;
+  --color-warning-bg: #fffbeb;
+  --color-warning-border: #fcd34d;
+
+  --color-info: #0284c7;
+  --color-info-bg: #f0f9ff;
+  --color-info-border: #bae6fd;
+
+  --color-success: #059669;
+  --color-success-bg: #ecfdf5;
+  --color-success-border: #a7f3d0;
+
+  /* Monospace & Code Block Highlighting Tokens */
+  --code-font: var(--font-mono);
+  --code-bg: #0d1117;              /* Modern dark terminal background */
+  --code-header-bg: #161b22;       /* Terminal title bar */
+  --code-text: #e6edf3;            /* High-contrast code text */
+  --code-border: #30363d;
+  --code-inline-bg: #f1f5f9;       /* Light inline pill background */
+  --code-inline-text: #0f172a;
+  --code-inline-border: #cbd5e1;
+
+  /* Layout dimensions */
+  --doc-max-width: 54rem;          /* ~864px: optimal 75-character measure */
+}
+
+/* --------------------------------------------------------------------------
+   3. Document Base & Reset
+   -------------------------------------------------------------------------- */
+html {
+  font-size: 100%;
+  box-sizing: border-box;
+  background-color: var(--color-bg);
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.74;
+  color: var(--color-text);
+  background-color: var(--color-paper);
+  max-width: var(--doc-max-width);
+  margin: 2.5rem auto;
+  padding: 3.5rem 4rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05),
+              0 10px 15px -3px rgba(15, 23, 42, 0.05);
+  font-size-adjust: from-font;
+}
+
+/* Text Elements */
+p {
+  margin-top: 0;
+  margin-bottom: 1.25em;
+}
+
+strong, b {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+em, i {
+  font-style: italic;
+}
+
+small {
+  font-size: 0.85em;
+  color: var(--color-text-muted);
+}
+
+hr {
+  height: 0;
+  border: 0;
+  border-top: 2px solid var(--color-border);
+  margin: 2.5rem 0;
+}
+
+/* --------------------------------------------------------------------------
+   4. Headings & Typography Hierarchy
+   -------------------------------------------------------------------------- */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--color-primary);
+  line-height: 1.3;
+  margin-top: 2.2em;
+  margin-bottom: 0.8em;
+  font-weight: 600;
+  break-after: avoid;
+  page-break-after: avoid;
+}
+
+h1 {
+  font-size: 1.85rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  padding-bottom: 0.45em;
+  border-bottom: 2px solid var(--color-border);
+  position: relative;
+}
+
+h1::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 3.5rem;
+  height: 2px;
+  background-color: var(--color-accent);
+}
+
+h2 {
+  font-size: 1.38rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  padding-left: 0.65rem;
+  border-left: 4px solid var(--color-accent);
+}
+
+h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--color-primary-light);
+}
+
+h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-primary-light);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+h5, h6 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+/* Pandoc Numbered Sections */
+.header-section-number {
+  color: var(--color-accent-dark);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  margin-right: 0.45em;
+}
+
+/* --------------------------------------------------------------------------
+   5. Forensic Title Header / Investigation Dossier
+   -------------------------------------------------------------------------- */
+#title-block-header {
+  margin-bottom: 2.75rem;
+  padding-bottom: 2rem;
+  border-bottom: 3px double var(--color-border-dark);
+  position: relative;
+  text-align: left;
+}
+
+#title-block-header::before {
+  content: "OFFICIAL FORENSIC REPORT";
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--color-accent-dark);
+  background-color: var(--color-accent-light);
+  padding: 0.3em 0.8em;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+}
+
+#title-block-header h1.title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  margin-top: 0.25em;
+  margin-bottom: 0.4em;
+  border-bottom: none;
+  padding-bottom: 0;
+  line-height: 1.2;
+}
+
+#title-block-header h1.title::after {
+  display: none;
+}
+
+#title-block-header .subtitle {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  color: var(--color-text-muted);
+  margin-top: 0;
+  margin-bottom: 1.25rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+/* Metadata Items (Author, Date, Case ID) */
+#title-block-header p.author,
+#title-block-header p.date {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--color-primary-light);
+  margin: 0.35em 0;
+  display: flex;
+  align-items: center;
+}
+
+#title-block-header p.author::before {
+  content: "EXAMINER:";
+  font-weight: 700;
+  color: var(--color-text-muted);
+  width: 7.5rem;
+  display: inline-block;
+}
+
+#title-block-header p.date::before {
+  content: "DATE:";
+  font-weight: 700;
+  color: var(--color-text-muted);
+  width: 7.5rem;
+  display: inline-block;
+}
+
+/* Executive Abstract / Case Summary */
+#title-block-header .abstract {
+  margin-top: 1.5rem;
+  padding: 1.15rem 1.4rem;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-accent-dark);
+  border-radius: 4px;
+}
+
+#title-block-header .abstract-title {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-primary);
+  margin-bottom: 0.5em;
+}
+
+#title-block-header .abstract p:last-child {
+  margin-bottom: 0;
+}
+
+/* --------------------------------------------------------------------------
+   6. Table of Contents (TOC)
+   -------------------------------------------------------------------------- */
+nav#TOC {
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 1.25rem 1.75rem;
+  margin: 2rem 0 2.5rem;
+}
+
+nav#TOC h2,
+nav#TOC #toc-title {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-primary);
+  margin-top: 0;
+  margin-bottom: 0.85rem;
+  padding-left: 0;
+  border-left: none;
+}
+
+nav#TOC ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+nav#TOC ul ul {
+  padding-left: 1.35rem;
+  margin: 0.25rem 0;
+  border-left: 1px dashed var(--color-border-dark);
+}
+
+nav#TOC li {
+  margin: 0.35rem 0;
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+nav#TOC a {
+  color: var(--color-primary-light);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+nav#TOC a:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+/* --------------------------------------------------------------------------
+   7. Monospace & Inline Code Highlighting
+   -------------------------------------------------------------------------- */
+/* Inline Code Badge - Engineered for Hashes, IPs, Registry Keys, Paths */
+code, kbd, samp {
+  font-family: var(--code-font);
+  font-size: 0.86em;
+  font-weight: 500;
+  font-feature-settings: "liga" on, "calt" on;
+  padding: 0.18em 0.45em;
+  margin: 0 0.15em;
+  background-color: var(--code-inline-bg);
+  color: var(--code-inline-text);
+  border: 1px solid var(--code-inline-border);
+  border-radius: 4px;
+  /* Forensic resilience: wrap long hashes cleanly */
+  word-break: break-all;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+code:hover {
+  background-color: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+/* Interactive Keys / Shortcuts */
+kbd {
+  font-weight: 600;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), inset 0 0 0 1px #fff;
+  background-color: #f8fafc;
+}
+
+/* Code inside links */
+a > code {
+  color: var(--color-accent-dark);
+  border-color: var(--color-border-dark);
+}
+
+/* --------------------------------------------------------------------------
+   8. Fenced Code Blocks & Terminal Dossier
+   -------------------------------------------------------------------------- */
+pre {
+  font-family: var(--code-font);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  tab-size: 4;
+  margin: 1.6em 0;
+  overflow-x: auto;
+  border-radius: 6px;
+}
+
+/* Unified container for Pandoc sourceCode & plain pre */
+div.sourceCode,
+pre:not(.sourceCode) {
+  position: relative;
+  background-color: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+  margin: 1.75em 0;
+  overflow: hidden;
+}
+
+/* Console Title Bar with Terminal Indicator Dots */
+div.sourceCode::before,
+pre:not(.sourceCode)::before {
+  content: "";
+  display: block;
+  height: 28px;
+  background-color: var(--code-header-bg);
+  border-bottom: 1px solid var(--code-border);
+  /* 3 console dots: Red, Amber, Green */
+  background-image: radial-gradient(circle at 14px 14px, #ef4444 4.5px, transparent 5px),
+                    radial-gradient(circle at 28px 14px, #f59e0b 4.5px, transparent 5px),
+                    radial-gradient(circle at 42px 14px, #10b981 4.5px, transparent 5px);
+  background-repeat: no-repeat;
+}
+
+/* Code content within container */
+div.sourceCode pre {
+  margin: 0;
+  padding: 1rem 1.25rem;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+pre:not(.sourceCode) {
+  padding: 0;
+}
+
+pre:not(.sourceCode) > code {
+  display: block;
+  padding: 1rem 1.25rem;
+  background-color: transparent;
+  color: var(--code-text);
+  border: none;
+  border-radius: 0;
+  overflow-x: auto;
+  white-space: pre;
+  word-break: normal;
+}
+
+/* Language Badges on Code Blocks */
+div.sourceCode:has(pre.bash)::after, pre.bash::after,
+div.sourceCode:has(code.bash)::after { content: "BASH"; }
+
+div.sourceCode:has(pre.sh)::after, pre.sh::after,
+div.sourceCode:has(code.sh)::after { content: "SHELL"; }
+
+div.sourceCode:has(pre.python)::after, pre.python::after,
+div.sourceCode:has(code.python)::after { content: "PYTHON"; }
+
+div.sourceCode:has(pre.powershell)::after, pre.powershell::after,
+div.sourceCode:has(code.powershell)::after { content: "POWERSHELL"; }
+
+div.sourceCode:has(pre.json)::after, pre.json::after,
+div.sourceCode:has(code.json)::after { content: "JSON"; }
+
+div.sourceCode:has(pre.yaml)::after, pre.yaml::after,
+div.sourceCode:has(code.yaml)::after { content: "YAML"; }
+
+div.sourceCode:has(pre.yara)::after, pre.yara::after,
+div.sourceCode:has(code.yara)::after { content: "YARA"; }
+
+div.sourceCode:has(pre.hex)::after, pre.hex::after,
+div.sourceCode:has(code.hex)::after { content: "HEX DUMP"; }
+
+div.sourceCode:has(pre.sql)::after, pre.sql::after,
+div.sourceCode:has(code.sql)::after { content: "SQL"; }
+
+div.sourceCode:has(pre.c)::after, pre.c::after,
+div.sourceCode:has(code.c)::after { content: "C/C++"; }
+
+div.sourceCode:has(pre.log)::after, pre.log::after,
+div.sourceCode:has(code.log)::after { content: "SYSTEM LOG"; }
+
+div.sourceCode::after,
+pre[class*="language-"]::after {
+  position: absolute;
+  top: 5px;
+  right: 12px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  background-color: rgba(255, 255, 255, 0.08);
+  padding: 0.2em 0.55em;
+  border-radius: 3px;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   9. High-Contrast Syntax Highlighting
+   -------------------------------------------------------------------------- */
+div.sourceCode code {
+  color: var(--code-text);
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+/* Syntax Color Tokens */
+span.kw { color: #38bdf8; font-weight: 600; } /* Keyword */
+span.dt { color: #c084fc; }                   /* DataType */
+span.df { color: #f472b6; font-weight: 600; } /* Function Definition */
+span.fu { color: #60a5fa; }                   /* Function Call */
+span.st { color: #34d399; }                   /* String */
+span.ch { color: #34d399; }                   /* Char */
+span.co { color: #94a3b8; font-style: italic; } /* Comment */
+span.ot { color: #fb923c; }                   /* Other */
+span.al { color: #f87171; font-weight: 700; } /* Alert */
+span.va { color: #fbbf24; }                   /* Variable */
+span.cf { color: #38bdf8; font-weight: 600; } /* Control Flow */
+span.op { color: #f43f5e; }                   /* Operator */
+span.bu { color: #4ade80; }                   /* Built-in */
+span.ex { color: #4ade80; }                   /* Extension */
+span.pp { color: #fb923c; }                   /* Preprocessor */
+span.at { color: #38bdf8; }                   /* Attribute */
+span.do { color: #94a3b8; font-style: italic; } /* Documentation */
+span.an { color: #facc15; }                   /* Annotation */
+span.cv { color: #94a3b8; font-style: italic; } /* Comment Var */
+span.in { color: #e2e8f0; }                   /* Information */
+span.cn { color: #f472b6; }                   /* Constant */
+span.sc { color: #38bdf8; }                   /* Special Char */
+span.bn { color: #f472b6; }                   /* Number / Hex */
+span.fl { color: #f472b6; }                   /* Float */
+
+/* Pandoc Numbered Lines Styling */
+pre.numberSource {
+  margin-left: 0;
+}
+
+pre.numberSource code {
+  counter-reset: source-line;
+}
+
+pre.numberSource code > span {
+  position: relative;
+  left: -1.8em;
+  counter-increment: source-line;
+}
+
+pre.numberSource code > span > a:first-child::before {
+  content: counter(source-line);
+  position: relative;
+  left: -1em;
+  text-align: right;
+  vertical-align: baseline;
+  border: none;
+  display: inline-block;
+  user-select: none;
+  -webkit-user-select: none;
+  color: #64748b;
+  width: 2.2em;
+  padding: 0 0.6em 0 0;
+  margin-right: 0.6em;
+  border-right: 1px solid #334155;
+}
+
+/* --------------------------------------------------------------------------
+   10. Tables (Forensic Timelines, Hashes, Evidence Registries)
+   -------------------------------------------------------------------------- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.8em 0 2.2em;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  border: 1px solid var(--color-border-dark);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+table caption {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: left;
+  margin-bottom: 0.5em;
+  color: var(--color-primary);
+}
+
+thead {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+th {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid var(--color-accent);
+}
+
+td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: top;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+tbody tr:hover {
+  background-color: #f1f5f9;
+}
+
+td code {
+  font-size: 0.82em;
+  padding: 0.15em 0.35em;
+}
+
+/* --------------------------------------------------------------------------
+   11. Forensic Callouts, Evidence Blocks, & Admonitions
+   -------------------------------------------------------------------------- */
+/* Standard Blockquote */
+blockquote {
+  margin: 1.6em 0;
+  padding: 1.1rem 1.4rem;
+  background-color: #f8fafc;
+  border-left: 4px solid var(--color-accent);
+  border-radius: 0 6px 6px 0;
+  color: var(--color-primary-light);
+  font-size: 0.96rem;
+  line-height: 1.65;
+}
+
+blockquote p:first-child {
+  margin-top: 0;
+}
+
+blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* Lead token badge inside blockquote */
+blockquote strong:first-child {
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.15em 0.5em;
+  border-radius: 3px;
+  margin-right: 0.4em;
+  background: var(--color-accent-light);
+  color: var(--color-accent-dark);
+}
+
+/* GitHub Alert Divs & Custom Callout Divs */
+div.warning, div.note, div.tip, div.important, div.caution,
+div.critical, div.evidence, div.finding, div.callout {
+  margin: 1.6em 0;
+  padding: 1.1rem 1.4rem;
+  border-radius: 6px;
+  border-left: 5px solid;
+}
+
+div.warning .title, div.note .title, div.tip .title,
+div.important .title, div.caution .title {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.5em;
+}
+
+div.warning .title p, div.note .title p, div.tip .title p,
+div.important .title p, div.caution .title p {
+  margin: 0;
+}
+
+/* Warning & Anomaly Callouts */
+div.warning, div.caution, div.anomaly {
+  background-color: var(--color-warning-bg);
+  border-left-color: var(--color-warning);
+  color: #92400e;
+}
+
+/* Critical Threat Callouts */
+div.critical, div.danger, div.threat {
+  background-color: var(--color-critical-bg);
+  border-left-color: var(--color-critical);
+  color: #991b1b;
+}
+
+/* Evidence & Information Callouts */
+div.note, div.info, div.evidence {
+  background-color: var(--color-info-bg);
+  border-left-color: var(--color-accent-dark);
+  color: #075985;
+}
+
+/* Verified & Key Finding Callouts */
+div.tip, div.success, div.finding {
+  background-color: var(--color-success-bg);
+  border-left-color: var(--color-success);
+  color: #065f46;
+}
+
+/* --------------------------------------------------------------------------
+   12. Forensic Badges, Tags & Classifications
+   -------------------------------------------------------------------------- */
+.badge,
+.tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.22em 0.6em;
+  border-radius: 4px;
+  margin: 0 0.25em 0.25em 0;
+  vertical-align: baseline;
+}
+
+.badge-critical, .status-critical {
+  background-color: var(--color-critical-bg);
+  color: var(--color-critical);
+  border: 1px solid var(--color-critical-border);
+}
+
+.badge-warning, .status-warning {
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning);
+  border: 1px solid var(--color-warning-border);
+}
+
+.badge-info, .status-info {
+  background-color: var(--color-info-bg);
+  color: var(--color-info);
+  border: 1px solid var(--color-info-border);
+}
+
+.badge-success, .status-success {
+  background-color: var(--color-success-bg);
+  color: var(--color-success);
+  border: 1px solid var(--color-success-border);
+}
+
+/* Traffic Light Protocol (TLP) Forensic Badges */
+.tlp-red   { background-color: #fef2f2; color: #dc2626; border: 1px solid #f87171; }
+.tlp-amber { background-color: #fffbeb; color: #d97706; border: 1px solid #fbbf24; }
+.tlp-green { background-color: #ecfdf5; color: #059669; border: 1px solid #34d399; }
+.tlp-clear { background-color: #f8fafc; color: #475569; border: 1px solid #94a3b8; }
+
+/* --------------------------------------------------------------------------
+   13. Links & Interactive Elements
+   -------------------------------------------------------------------------- */
+a {
+  color: var(--color-accent-dark);
+  text-decoration: none;
+  font-weight: 500;
+  border-bottom: 1px dotted var(--color-accent);
+  transition: all 0.15s ease;
+}
+
+a:hover {
+  color: var(--color-accent);
+  border-bottom-style: solid;
+}
+
+/* --------------------------------------------------------------------------
+   14. Figures, Images, Lists
+   -------------------------------------------------------------------------- */
+figure {
+  margin: 2rem 0;
+  text-align: center;
+}
+
+figure img, img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.05);
+}
+
+figcaption {
+  font-family: var(--font-heading);
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  margin-top: 0.6em;
+  font-style: italic;
+}
+
+ul, ol {
+  padding-left: 1.6rem;
+  margin: 1em 0 1.3em;
+}
+
+li {
+  margin-bottom: 0.4em;
+}
+
+li > p {
+  margin-bottom: 0.4em;
+}
+
+ul.task-list {
+  list-style: none;
+  padding-left: 0.5rem;
+}
+
+ul.task-list li input[type="checkbox"] {
+  margin-right: 0.6em;
+  vertical-align: middle;
+}
+
+/* --------------------------------------------------------------------------
+   15. Responsive Viewport Adaptations
+   -------------------------------------------------------------------------- */
+@media screen and (max-width: 768px) {
+  body {
+    margin: 0 auto;
+    padding: 1.75rem 1.25rem;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+  }
+
+  #title-block-header h1.title {
+    font-size: 1.75rem;
+  }
+
+  table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   16. Print Media Stylesheet (@media print)
+   Engineered for physical prints, court submissions & PDF generation
+   -------------------------------------------------------------------------- */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 18mm 14mm 18mm 14mm;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  html {
+    background-color: #ffffff;
+    font-size: 10pt;
+  }
+
+  body {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    font-size: 9.5pt;
+    line-height: 1.55;
+    color: #111827;
+    background-color: #ffffff;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  /* Headings in Print */
+  h1, h2, h3, h4, h5, h6 {
+    color: #0f172a !important;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+    border-bottom: 2px solid #0f172a;
+    margin-top: 1.5em;
+  }
+
+  h1::after {
+    display: none;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    border-left: 3px solid #0f172a;
+    margin-top: 1.4em;
+  }
+
+  h3 {
+    font-size: 1.05rem;
+  }
+
+  /* Orphan & Widow Protection */
+  p, h2, h3, blockquote, ul, ol {
+    orphans: 3;
+    widows: 3;
+  }
+
+  /* Avoid Breaking Inside Vital Forensic Units */
+  tr, img, figure, table, blockquote,
+  pre, div.sourceCode, .badge, #title-block-header,
+  div.warning, div.note, div.tip, div.important, div.critical {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Title Header in Print */
+  #title-block-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 2px solid #0f172a;
+  }
+
+  #title-block-header::before {
+    border: 1px solid #cbd5e1;
+  }
+
+  #title-block-header h1.title {
+    font-size: 1.85rem;
+  }
+
+  /* Ink-Friendly Code Blocks in Print */
+  div.sourceCode,
+  pre:not(.sourceCode) {
+    background-color: #f8fafc !important;
+    border: 1px solid #94a3b8 !important;
+    box-shadow: none !important;
+    border-radius: 4px;
+    margin: 1.2em 0;
+  }
+
+  div.sourceCode::before,
+  pre:not(.sourceCode)::before {
+    display: none !important; /* Hide cosmetic buttons on paper */
+  }
+
+  div.sourceCode code,
+  pre:not(.sourceCode) > code {
+    color: #0f172a !important;
+  }
+
+  /* High-Contrast Print Syntax Highlighting */
+  span.kw { color: #0284c7 !important; font-weight: 700; }
+  span.dt { color: #7c3aed !important; }
+  span.df, span.fu { color: #1d4ed8 !important; }
+  span.st, span.ch { color: #047857 !important; }
+  span.co, span.do { color: #475569 !important; font-style: italic; }
+  span.va, span.at { color: #b45309 !important; }
+  span.op, span.cf { color: #be123c !important; }
+  span.bn, span.fl { color: #9333ea !important; }
+  span.al { color: #b91c1c !important; font-weight: 700; }
+
+  pre.numberSource code > span > a:first-child::before {
+    color: #64748b !important;
+    border-right-color: #cbd5e1 !important;
+  }
+
+  /* Inline Code */
+  code {
+    background-color: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
+  }
+
+  /* Tables in Print */
+  table {
+    font-size: 8.5pt;
+    border: 1px solid #0f172a !important;
+  }
+
+  thead {
+    background-color: #0f172a !important;
+    color: #ffffff !important;
+  }
+
+  th {
+    border-bottom: 2px solid #0f172a !important;
+    padding: 0.5rem 0.75rem;
+  }
+
+  td {
+    padding: 0.45rem 0.75rem;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  tbody tr:nth-child(even) {
+    background-color: #f8fafc !important;
+  }
+
+  /* Blockquotes & Callouts in Print */
+  blockquote, div.warning, div.note, div.tip, div.critical {
+    border-left: 3px solid #0f172a !important;
+    background-color: #f8fafc !important;
+    padding: 0.8rem 1.1rem;
+    font-size: 9pt;
+  }
+
+  /* Links in Print */
+  a {
+    color: #0f172a !important;
+    text-decoration: underline;
+    border-bottom: none;
+  }
+
+  a[href^="http"]:not([href*="localhost"])::after {
+    content: " (" attr(href) ")";
+    font-size: 80%;
+    font-family: var(--font-mono);
+    color: #64748b;
+  }
+
+  a[href^="#"]::after {
+    content: "" !important;
+  }
+}
