@@ -713,6 +713,33 @@ font-size: 0.82em;
 padding: 0.15em 0.35em;
 }
 
+.nowrap,
+.nowrap *,
+th.nowrap,
+td.nowrap,
+th.nowrap code,
+td.nowrap code {
+white-space: nowrap !important;
+word-break: normal !important;
+overflow-wrap: normal !important;
+}
+
+.table-timeline th:first-child,
+.table-timeline td:first-child,
+table.timeline th:first-child,
+table.timeline td:first-child {
+white-space: nowrap !important;
+width: 1%;
+}
+.table-wrapper {
+width: 100%;
+overflow-x: auto;
+margin: 1.8em 0 2.2em;
+}
+.table-wrapper table {
+margin: 0;
+}
+
 
 blockquote {
 margin: 1.6em 0;
@@ -946,7 +973,7 @@ orphans: 3;
 widows: 3;
 }
 
-tr, img, figure, table, blockquote,
+tr, img, figure, blockquote,
 pre, div.sourceCode, .badge, #title-block-header,
 div.warning, div.note, div.tip, div.important, div.critical {
 page-break-inside: avoid;
@@ -1005,21 +1032,69 @@ color: #0f172a !important;
 table {
 font-size: 8.5pt;
 border: 1px solid #0f172a !important;
+border-collapse: collapse !important;
+border-radius: 0 !important;
+box-shadow: none !important;
+overflow: visible !important;
+page-break-inside: auto !important;
+break-inside: auto !important;
+margin: 1.2em 0 1.5em !important;
+}
+.table-wrapper {
+overflow: visible !important;
+margin: 1.2em 0 1.5em !important;
+display: block !important;
 }
 thead {
+display: table-header-group !important;
 background-color: #0f172a !important;
 color: #ffffff !important;
+page-break-inside: avoid !important;
+break-inside: avoid !important;
+page-break-after: avoid !important;
+break-after: avoid !important;
+}
+tbody {
+display: table-row-group !important;
+}
+tfoot {
+display: table-footer-group !important;
+page-break-inside: avoid !important;
+break-inside: avoid !important;
+}
+tr {
+page-break-inside: avoid !important;
+break-inside: avoid !important;
 }
 th {
+background-color: #0f172a !important;
+color: #ffffff !important;
 border-bottom: 2px solid #0f172a !important;
-padding: 0.5rem 0.75rem;
+padding: 0.45rem 0.65rem;
+page-break-inside: avoid !important;
+break-inside: avoid !important;
 }
 td {
-padding: 0.45rem 0.75rem;
+padding: 0.4rem 0.65rem;
 border-bottom: 1px solid #e2e8f0;
+}
+table code,
+td code {
+font-size: 0.85em;
+font-variant-numeric: tabular-nums;
 }
 tbody tr:nth-child(even) {
 background-color: #f8fafc !important;
+}
+.nowrap,
+.nowrap *,
+th.nowrap,
+td.nowrap,
+th.nowrap code,
+td.nowrap code {
+white-space: nowrap !important;
+word-break: normal !important;
+overflow-wrap: normal !important;
 }
 
 blockquote, div.warning, div.note, div.tip, div.critical {
@@ -1076,7 +1151,11 @@ Evidence Registry</a>
 <li><a href="#cryptographic-hash-ledger" id="toc-cryptographic-hash-ledger">Cryptographic Hash Ledger</a></li>
 </ul></li>
 <li><a href="#3-incident-timeline--forensic-reconstruction" id="toc-3-incident-timeline--forensic-reconstruction">3. Incident
-Timeline &amp; Forensic Reconstruction</a></li>
+Timeline &amp; Forensic Reconstruction</a>
+<ul>
+<li><a href="#31-localized-forensic-log-correlation-multilingual-showcase" id="toc-31-localized-forensic-log-correlation-multilingual-showcase">3.1
+Localized Forensic Log Correlation (Multilingual Showcase)</a></li>
+</ul></li>
 <li><a href="#4-technical-artifact-analysis--extracted-code" id="toc-4-technical-artifact-analysis--extracted-code">4. Technical
 Artifact Analysis &amp; Extracted Code</a>
 <ul>
@@ -1133,7 +1212,7 @@ upon acquisition and re-verified post-imaging.</p>
 <th>Item ID</th>
 <th>Evidence Description</th>
 <th>Source Host</th>
-<th>Acquisition Time (UTC)</th>
+<th class="nowrap">Acquisition Time (UTC)</th>
 <th>Forensic Tool</th>
 </tr>
 </thead>
@@ -1142,21 +1221,21 @@ upon acquisition and re-verified post-imaging.</p>
 <td><code>EVID-01</code></td>
 <td>Raw Bitstream Disk Image (<code>.raw</code>)</td>
 <td><code>DC-CORP-01</code></td>
-<td>2026-09-11 02:35:10</td>
+<td class="nowrap">2026-09-11 02:35:10</td>
 <td><code>dc3dd v7.2</code></td>
 </tr>
 <tr>
 <td><code>EVID-02</code></td>
 <td>Physical RAM Dump (<code>.raw</code>)</td>
 <td><code>DC-CORP-01</code></td>
-<td>2026-09-11 02:40:00</td>
+<td class="nowrap">2026-09-11 02:40:00</td>
 <td><code>LiME / WinPmem 4.0</code></td>
 </tr>
 <tr>
 <td><code>EVID-03</code></td>
 <td>Network PCAP Dump (<code>.pcapng</code>)</td>
 <td>Core Switch <code>SW-CORE-02</code></td>
-<td>2026-09-11 02:10 - 02:50</td>
+<td class="nowrap">2026-09-11 02:10 - 02:50</td>
 <td><code>tcpdump 4.99</code></td>
 </tr>
 </tbody>
@@ -1220,7 +1299,7 @@ Timeline &amp; Forensic Reconstruction</h2>
 </colgroup>
 <thead>
 <tr>
-<th>Timestamp (UTC)</th>
+<th class="nowrap">Timestamp (UTC)</th>
 <th>Event Classification</th>
 <th>Host / Source</th>
 <th>Observation &amp; Analysis</th>
@@ -1228,43 +1307,85 @@ Timeline &amp; Forensic Reconstruction</h2>
 </thead>
 <tbody>
 <tr>
-<td><code>2026-09-11 02:14:22</code></td>
+<td class="nowrap"><code>2026-09-11 02:14:22</code></td>
 <td>Network Intrusion</td>
 <td><code>198.51.100.44</code></td>
 <td>Inbound exploit payload delivered to port <code>445/TCP</code>.</td>
 </tr>
 <tr>
-<td><code>2026-09-11 02:14:58</code></td>
+<td class="nowrap"><code>2026-09-11 02:14:58</code></td>
 <td>Privilege Escalation</td>
 <td><code>DC-CORP-01</code></td>
 <td>Process <code>spoolsv.exe</code> spawned rogue
 <code>powershell.exe</code> child process.</td>
 </tr>
 <tr>
-<td><code>2026-09-11 02:16:30</code></td>
+<td class="nowrap"><code>2026-09-11 02:16:30</code></td>
 <td>Credential Dumping</td>
 <td><code>DC-CORP-01</code></td>
 <td>LSASS memory injection detected matching <code>Mimikatz</code>
 sekurlsa module.</td>
 </tr>
 <tr>
-<td><code>2026-09-11 02:18:10</code></td>
+<td class="nowrap"><code>2026-09-11 02:18:10</code></td>
 <td>Persistence Created</td>
 <td>Registry</td>
 <td>Scheduled task <code>\Microsoft\Windows\Maint\WinUpdateSync</code>
 registered.</td>
 </tr>
 <tr>
-<td><code>2026-09-11 02:22:45</code></td>
+<td class="nowrap"><code>2026-09-11 02:22:45</code></td>
 <td>Staging &amp; Archive</td>
 <td><code>C:\ProgramData\</code></td>
 <td>Encrypted 7z archive <code>fin_export_2026.enc</code> created.</td>
 </tr>
 <tr>
-<td><code>2026-09-11 02:30:12</code></td>
+<td class="nowrap"><code>2026-09-11 02:30:12</code></td>
 <td>Network Isolation</td>
 <td>SOC Team</td>
 <td>Port shut down on core switch; network access severed.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="31-localized-forensic-log-correlation-multilingual-showcase">3.1
+Localized Forensic Log Correlation (Multilingual Showcase)</h3>
+<p>The styler automatically detects localized timestamp headers (such as
+Czech/Slovak <code>Časová značka (UTC)</code>) and European date
+formats, guaranteeing clean unwrapped column alignment:</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>ID záznamu</th>
+<th class="nowrap">Časová značka (UTC)</th>
+<th>Zdrojový uzel</th>
+<th>Detekovaná událost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LOG-01</code></td>
+<td class="nowrap"><code>2026-09-11 02:14:22</code></td>
+<td><code>198.51.100.44</code></td>
+<td>Iniciační pokus o prolomení perimetru přes port
+<code>445/TCP</code></td>
+</tr>
+<tr>
+<td><code>LOG-02</code></td>
+<td class="nowrap"><code>2026-09-11 02:14:58</code></td>
+<td><code>DC-CORP-01</code></td>
+<td>Spuštění podvrženého procesu <code>powershell.exe</code></td>
+</tr>
+<tr>
+<td><code>LOG-03</code></td>
+<td class="nowrap">11.09.2026 02:16:30</td>
+<td><code>DC-CORP-01</code></td>
+<td>Injekce do paměťového prostoru procesu <code>lsass.exe</code></td>
 </tr>
 </tbody>
 </table>

@@ -35,6 +35,8 @@
 md-style/
 ├── md-to-report.sh                 # Primary CLI report generator (robust, error-handled)
 ├── md-to-html.sh                   # Compatibility wrapper forwarding to md-to-report.sh
+├── filters/
+│   └── table-nowrap.lua            # Lua filter for unwrapped timestamps & localized headers
 ├── styles/
 │   └── forensic.css                # Forensic report stylesheet with custom fonts & print rules
 ├── examples/
@@ -107,6 +109,7 @@ md-to-report.sh [OPTIONS] <input.md> [output.html]
 | `--highlight-style <name>` | Pandoc syntax highlighting style | `kate` |
 | `--embed-resources` | Inlines styles/fonts into a standalone file | Enabled |
 | `--no-embed-resources` | Generates lightweight HTML with linked CSS | Disabled |
+| `--no-auto-nowrap` | Disables automatic table timestamp unwrapping | Disabled |
 | `-p, --pdf` | Compile directly to PDF via available engines | Disabled |
 | `--open` | Open report in default browser after build | Disabled |
 | `-v, --verbose` | Show verbose debug output | Disabled |
@@ -171,6 +174,32 @@ Use standard blockquotes with strong prefixes or GitHub Alert syntax:
 > [!WARNING]
 > Registry persistence key discovered at `HKLM\Software\Microsoft\Windows\CurrentVersion\Run`.
 ```
+
+### 5. Unwrapped Timelines & Localized Tables
+
+Forensic timelines and evidence registers require readable, unwrapped timestamps across both screen and print views.
+
+#### Automatic Detection (Default)
+`md-to-report.sh` automatically routes markdown through a built-in Pandoc Lua filter (`filters/table-nowrap.lua`) that:
+- Detects timestamp column headers in English (`Timestamp`, `Time`, `Date`, `Acquisition Time`, `UTC`) as well as **localized headers** (Czech/Slovak `Časová značka`, `Casova znacka`, `Datum`, German `Zeitstempel`, etc.).
+- Inspects table cells for standard date/time patterns (ISO-8601 `YYYY-MM-DD HH:MM:SS`, European dot notation `DD.MM.YYYY HH:MM:SS`, Unix timestamps).
+- Prevents line breaks by applying `white-space: nowrap` to header and data cells.
+
+```markdown
+| Položka | Časová značka (UTC) | Zdrojový hostitel | Zjištěná aktivita |
+|---|---|---|---|
+| `LOG-01` | `2026-09-11 02:14:22` | `198.51.100.44` | Iniciační pokus o prolomení perimetru |
+| `LOG-02` | `2026-09-11 02:14:58` | `DC-CORP-01` | Spuštění podvrženého procesu PowerShell |
+```
+
+#### Manual Authoring Methods
+If you prefer explicit control in base Markdown:
+1. **Non-breaking space**: Use `&nbsp;` between date and time:
+   `2026-09-11&nbsp;02:14:22`
+2. **Pandoc Bracketed Spans**:
+   `[`2026-09-11 02:14:22`]{.nowrap}`
+3. **Timeline Div Containers**:
+   Wrap any table in `::: {.table-timeline}` to keep the first column unwrapped and fitted.
 
 ---
 

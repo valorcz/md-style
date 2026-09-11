@@ -30,6 +30,8 @@ PDF_ENGINE=""
 OPEN_AFTER=false
 VERBOSE=false
 QUIET=false
+AUTO_NOWRAP=true
+LUA_NOWRAP_FILTER="${SCRIPT_DIR}/filters/table-nowrap.lua"
 
 # Temp files tracking for cleanup
 TEMP_FILES=()
@@ -131,6 +133,7 @@ ${COLOR_BOLD}OPTIONS:${COLOR_RESET}
     --embed-resources         Embed all CSS styles and web assets into a single,
                               fully portable, self-contained file (default).
     --no-embed-resources      Link external stylesheets instead of inlining.
+    --no-auto-nowrap          Disable automatic unwrapped table timestamp detection.
     
     -p, --pdf                 Attempt direct PDF compilation using available PDF engines
                               (weasyprint, typst, wkhtmltopdf, pdflatex, or browser).
@@ -231,6 +234,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --no-embed-resources)
             EMBED_RESOURCES=false
+            shift
+            ;;
+        --no-auto-nowrap)
+            AUTO_NOWRAP=false
             shift
             ;;
         -p|--pdf)
@@ -394,6 +401,12 @@ if [[ -n "${DOC_TITLE}" ]]; then
     PANDOC_ARGS+=("--metadata" "title=${DOC_TITLE}")
 fi
 
+# Automatic table nowrap filter for timestamps & localized date columns
+if [[ "${AUTO_NOWRAP}" = true ]] && [[ -f "${LUA_NOWRAP_FILTER}" ]]; then
+    PANDOC_ARGS+=("--lua-filter=${LUA_NOWRAP_FILTER}")
+    log_verbose "Using Lua filter for unwrapped timestamps: ${LUA_NOWRAP_FILTER}"
+fi
+
 # ------------------------------------------------------------------------------
 # Compilation Execution
 # ------------------------------------------------------------------------------
@@ -441,6 +454,9 @@ if [[ "${GENERATE_PDF}" = true ]]; then
         if command -v chromium &>/dev/null; then
             log_info "Converting HTML to PDF via Chromium headless..."
             chromium --headless --disable-gpu --print-to-pdf="${OUTPUT_FILE}" "file://${PWD}/${TEMP_HTML}" &>/dev/null && CONVERTED_PDF=true
+        elif command -v chromium-browser &>/dev/null; then
+            log_info "Converting HTML to PDF via Chromium headless..."
+            chromium-browser --headless --disable-gpu --print-to-pdf="${OUTPUT_FILE}" "file://${PWD}/${TEMP_HTML}" &>/dev/null && CONVERTED_PDF=true
         elif command -v google-chrome &>/dev/null; then
             log_info "Converting HTML to PDF via Google Chrome headless..."
             google-chrome --headless --disable-gpu --print-to-pdf="${OUTPUT_FILE}" "file://${PWD}/${TEMP_HTML}" &>/dev/null && CONVERTED_PDF=true

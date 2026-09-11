@@ -630,6 +630,37 @@ td code {
   padding: 0.15em 0.35em;
 }
 
+/* Unwrapped columns & timestamp utilities */
+.nowrap,
+.nowrap *,
+th.nowrap,
+td.nowrap,
+th.nowrap code,
+td.nowrap code {
+  white-space: nowrap !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+}
+
+/* Timeline & Event Tables */
+.table-timeline th:first-child,
+.table-timeline td:first-child,
+table.timeline th:first-child,
+table.timeline td:first-child {
+  white-space: nowrap !important;
+  width: 1%;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  margin: 1.8em 0 2.2em;
+}
+
+.table-wrapper table {
+  margin: 0;
+}
+
 /* --------------------------------------------------------------------------
    11. Forensic Callouts, Evidence Blocks, & Admonitions
    -------------------------------------------------------------------------- */
@@ -917,7 +948,7 @@ ul.task-list li input[type="checkbox"] {
   }
 
   /* Avoid Breaking Inside Vital Forensic Units */
-  tr, img, figure, table, blockquote,
+  tr, img, figure, blockquote,
   pre, div.sourceCode, .badge, #title-block-header,
   div.warning, div.note, div.tip, div.important, div.critical {
     page-break-inside: avoid;
@@ -986,25 +1017,79 @@ ul.task-list li input[type="checkbox"] {
   table {
     font-size: 8.5pt;
     border: 1px solid #0f172a !important;
+    border-collapse: collapse !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+    margin: 1.2em 0 1.5em !important;
+  }
+
+  .table-wrapper {
+    overflow: visible !important;
+    margin: 1.2em 0 1.5em !important;
+    display: block !important;
   }
 
   thead {
+    display: table-header-group !important;
     background-color: #0f172a !important;
     color: #ffffff !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  tbody {
+    display: table-row-group !important;
+  }
+
+  tfoot {
+    display: table-footer-group !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 
   th {
+    background-color: #0f172a !important;
+    color: #ffffff !important;
     border-bottom: 2px solid #0f172a !important;
-    padding: 0.5rem 0.75rem;
+    padding: 0.45rem 0.65rem;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 
   td {
-    padding: 0.45rem 0.75rem;
+    padding: 0.4rem 0.65rem;
     border-bottom: 1px solid #e2e8f0;
+  }
+
+  table code,
+  td code {
+    font-size: 0.85em;
+    font-variant-numeric: tabular-nums;
   }
 
   tbody tr:nth-child(even) {
     background-color: #f8fafc !important;
+  }
+
+  .nowrap,
+  .nowrap *,
+  th.nowrap,
+  td.nowrap,
+  th.nowrap code,
+  td.nowrap code {
+    white-space: nowrap !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
   }
 
   /* Blockquotes & Callouts in Print */

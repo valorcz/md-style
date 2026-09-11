@@ -61,6 +61,16 @@ The timeline was constructed through correlated analysis of the `$MFT`, Windows 
 | `2026-09-11 02:22:45` | Staging & Archive | `C:\ProgramData\` | Encrypted 7z archive `fin_export_2026.enc` created. |
 | `2026-09-11 02:30:12` | Network Isolation | SOC Team | Port shut down on core switch; network access severed. |
 
+### 3.1 Localized Forensic Log Correlation (Multilingual Showcase)
+
+The styler automatically detects localized timestamp headers (such as Czech/Slovak `Časová značka (UTC)`) and European date formats, guaranteeing clean unwrapped column alignment:
+
+| ID záznamu | Časová značka (UTC) | Zdrojový uzel | Detekovaná událost |
+|---|---|---|---|
+| `LOG-01` | `2026-09-11 02:14:22` | `198.51.100.44` | Iniciační pokus o prolomení perimetru přes port `445/TCP` |
+| `LOG-02` | `2026-09-11 02:14:58` | `DC-CORP-01` | Spuštění podvrženého procesu `powershell.exe` |
+| `LOG-03` | 11.09.2026 02:16:30 | `DC-CORP-01` | Injekce do paměťového prostoru procesu `lsass.exe` |
+
 ---
 
 ## 4. Technical Artifact Analysis & Extracted Code
