@@ -38,17 +38,19 @@ md-style/
 ├── filters/
 │   └── table-nowrap.lua            # Lua filter for unwrapped timestamps & localized headers
 ├── styles/
-│   └── forensic.css                # Forensic report stylesheet with custom fonts & print rules
+│   ├── forensic.css                # Forensic report stylesheet with custom typography & print rules
+│   ├── fonts.css                   # Curated Google Fonts stylesheet
+│   └── paged.css                   # W3C CSS Paged Media rules & screen preview styling
+├── templates/
+│   └── paged-header.html           # Polyfill loader & Paged.js initialization header
+├── vendor/
+│   └── paged.polyfill.js           # Offline-ready vendored Paged.js library
 ├── examples/
 │   ├── sample-forensic-report.md   # Comprehensive reference report demonstrating all features
-│   └── sample-forensic-report.html # Pre-compiled standalone output showcase
+│   ├── sample-forensic-report.html # Pre-compiled standalone output showcase
+│   ├── sample-paged-report.html    # Pre-compiled Paged.js visual sheet showcase
+│   └── sample-paged-report.pdf     # Direct PDF output generated with running headers & footers
 ├── deprecated/                     # Archived legacy prototype files
-│   ├── branding.css
-│   ├── confluence-branding.css
-│   ├── markdown-pdf.css
-│   ├── md-to-html.sh.prototype
-│   ├── md-to-ipynb.sh
-│   └── pandoc.css
 └── README.md                       # Documentation
 ```
 
@@ -102,6 +104,7 @@ md-to-report.sh [OPTIONS] <input.md> [output.html]
 |---|---|---|
 | `-o, --output <file>` | Custom destination path (`.html` or `.pdf`) | `<input>.html` |
 | `-t, --title <string>` | Override report title metadata | Extracted from Markdown |
+| `-l, --lang <code>` | Set report language (`cs`, `en`) | `en` (or frontmatter) |
 | `-s, --style <file>` | Path to custom CSS stylesheet | `styles/forensic.css` |
 | `--toc` / `--no-toc` | Toggle executive Table of Contents | Enabled (`--toc`) |
 | `--toc-depth <1-6>` | Maximum heading depth shown in TOC | `3` |
@@ -109,8 +112,10 @@ md-to-report.sh [OPTIONS] <input.md> [output.html]
 | `--highlight-style <name>` | Pandoc syntax highlighting style | `kate` |
 | `--embed-resources` | Inlines styles/fonts into a standalone file | Enabled |
 | `--no-embed-resources` | Generates lightweight HTML with linked CSS | Disabled |
+| `--paged` | Enable Paged.js W3C CSS Paged Media pagination | Disabled |
 | `--no-auto-nowrap` | Disables automatic table timestamp unwrapping | Disabled |
-| `-p, --pdf` | Compile directly to PDF via available engines | Disabled |
+| `-p, --pdf` | Compile directly to PDF via Chromium / WeasyPrint | Disabled |
+| `--pdf-engine <name>` | Specify explicit PDF engine for Pandoc | Auto-detect |
 | `--open` | Open report in default browser after build | Disabled |
 | `-v, --verbose` | Show verbose debug output | Disabled |
 | `-q, --quiet` | Silence non-error messages | Disabled |
@@ -128,15 +133,38 @@ Place this block at the top of your markdown file:
 ---
 title: "Digital Forensics Incident Report"
 subtitle: "Incident IR-2026-0911A: Host Intrusion Analysis"
-author: "Examiner: Jane Doe, GCFA | Forensic Analysis Unit"
+author: "Jane Doe"
 date: "September 11, 2026"
+language: en # or 'cs' for Czech
+classification: "CONFIDENTIAL // LAW ENFORCEMENT" # optional override
 abstract: |
   Executive summary of the investigation, scope of evidence analyzed,
   and primary conclusions.
 ---
 ```
 
-### 2. Forensic Status Badges
+### 2. Localization & Language Support (i18n)
+
+Reports support both **English (`en`)** and **Czech (`cs`)** out of the box. Set the language in frontmatter (`language: cs` or `lang: cs`) or via CLI (`-l cs`).
+
+Localization adapts:
+- **Title header badge:** `OFFICIAL FORENSIC REPORT` ↔ `OFICIÁLNÍ FORENZNÍ ZPRÁVA`
+- **Examiner label:** `EXAMINER:` ↔ `ZPRACOVAL:`
+- **Date label:** `DATE:` ↔ `DATUM:`
+- **Running header & footer (Paged.js):** `CONFIDENTIAL...` ↔ `DŮVĚRNÉ`, `Page X` ↔ `Strana X`
+- **TOC & Abstract headings:** Automatically localized to `Obsah` and `Abstrakt`
+- **Code badges:** `HEX DUMP` ↔ `HEX VÝPIS`, `SYSTEM LOG` ↔ `SYSTÉMOVÝ PROTOKOL`
+
+#### Frontmatter Label Overrides
+You can override specific labels per document in the frontmatter:
+```yaml
+classification: "DUVERNE"       # Overrides footer confidentiality text
+report-type: "AUDITNÍ ZPRÁVA"  # Overrides header badge
+examiner-label: "Analytik:"    # Overrides author prefix
+date-label: "Vystaveno:"       # Overrides date prefix
+```
+
+### 3. Forensic Status Badges
 ```html
 <span class="badge tlp-amber">TLP:AMBER</span>
 <span class="badge badge-critical">SEVERITY: CRITICAL</span>

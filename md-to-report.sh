@@ -17,9 +17,15 @@ readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 # Default configurations
 DEFAULT_CSS="${SCRIPT_DIR}/styles/forensic.css"
 CSS_FILE="${DEFAULT_CSS}"
+DEFAULT_FONTS_CSS="${SCRIPT_DIR}/styles/fonts.css"
+FONTS_CSS="${DEFAULT_FONTS_CSS}"
+PAGED_CSS="${SCRIPT_DIR}/styles/paged.css"
+PAGED_HEADER="${SCRIPT_DIR}/templates/paged-header.html"
+PAGED=false
 INPUT_FILE=""
 OUTPUT_FILE=""
 DOC_TITLE=""
+DOC_LANG=""
 TOC=true
 TOC_DEPTH=3
 NUMBER_SECTIONS=false
@@ -32,6 +38,7 @@ VERBOSE=false
 QUIET=false
 AUTO_NOWRAP=true
 LUA_NOWRAP_FILTER="${SCRIPT_DIR}/filters/table-nowrap.lua"
+LUA_I18N_FILTER="${SCRIPT_DIR}/filters/i18n.lua"
 
 # Temp files tracking for cleanup
 TEMP_FILES=()
@@ -119,6 +126,7 @@ ${COLOR_BOLD}ARGUMENTS:${COLOR_RESET}
 ${COLOR_BOLD}OPTIONS:${COLOR_RESET}
     -o, --output <file>       Specify target output file path (.html or .pdf).
     -t, --title <string>      Set or override the document title metadata.
+    -l, --lang <code>         Set document language (e.g. cs, en). Overrides frontmatter.
     -s, --style <file>        Custom stylesheet to use.
                               Default: ${DEFAULT_CSS}
     
@@ -133,10 +141,13 @@ ${COLOR_BOLD}OPTIONS:${COLOR_RESET}
     --embed-resources         Embed all CSS styles and web assets into a single,
                               fully portable, self-contained file (default).
     --no-embed-resources      Link external stylesheets instead of inlining.
+    --paged                   Enable Paged.js W3C CSS Paged Media pagination.
+                              Simulates physical A4 sheets on screen with drop shadows,
+                              running headers, footers, and page numbers.
     --no-auto-nowrap          Disable automatic unwrapped table timestamp detection.
     
-    -p, --pdf                 Attempt direct PDF compilation using available PDF engines
-                              (weasyprint, typst, wkhtmltopdf, pdflatex, or browser).
+    -p, --pdf                 Compile directly to PDF using an HTML+CSS engine
+                              (Chromium, WeasyPrint, or wkhtmltopdf).
     --pdf-engine <program>    Specify explicit PDF engine for pandoc.
     
     --open                    Open the generated report in your default browser/viewer.
@@ -201,6 +212,11 @@ while [[ $# -gt 0 ]]; do
             DOC_TITLE="$2"
             shift 2
             ;;
+        -l|--lang|--language)
+            [[ -n "${2:-}" ]] || die "Option '$1' requires an argument (e.g. en, cs)."
+            DOC_LANG="$2"
+            shift 2
+            ;;
         -s|--style)
             [[ -n "${2:-}" ]] || die "Option '$1' requires an argument."
             CSS_FILE="$2"
@@ -237,6 +253,11 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         --no-auto-nowrap)
+            AUTO_NOWRAP=false
+            shift
+            ;;
+        --paged)
+            PAGED=true
             AUTO_NOWRAP=false
             shift
             ;;
@@ -379,7 +400,21 @@ if [[ "${EMBED_RESOURCES}" = true ]] && [[ "${GENERATE_PDF}" = false ]]; then
 fi
 
 # Stylesheet attachment
+if [[ -f "${FONTS_CSS}" ]] && [[ "${PAGED}" = false ]]; then
+    PANDOC_ARGS+=("--css" "${FONTS_CSS}")
+fi
 PANDOC_ARGS+=("--css" "${CSS_FILE}")
+
+# Paged.js extension
+if [[ "${PAGED}" = true ]]; then
+    if [[ -f "${PAGED_CSS}" ]]; then
+        PANDOC_ARGS+=("--css" "${PAGED_CSS}")
+    fi
+    if [[ -f "${PAGED_HEADER}" ]]; then
+        PANDOC_ARGS+=("--include-in-header=${PAGED_HEADER}")
+    fi
+    log_verbose "Enabled Paged.js pagination, screen preview and margin rules."
+fi
 
 # Table of Contents
 if [[ "${TOC}" = true ]]; then
@@ -401,6 +436,17 @@ if [[ -n "${DOC_TITLE}" ]]; then
     PANDOC_ARGS+=("--metadata" "title=${DOC_TITLE}")
 fi
 
+# Metadata: Language override
+if [[ -n "${DOC_LANG}" ]]; then
+    PANDOC_ARGS+=("--metadata" "language=${DOC_LANG}")
+fi
+
+# Document internationalization (i18n) filter
+if [[ -f "${LUA_I18N_FILTER}" ]]; then
+    PANDOC_ARGS+=("--lua-filter=${LUA_I18N_FILTER}")
+    log_verbose "Using Lua filter for internationalization: ${LUA_I18N_FILTER}"
+fi
+
 # Automatic table nowrap filter for timestamps & localized date columns
 if [[ "${AUTO_NOWRAP}" = true ]] && [[ -f "${LUA_NOWRAP_FILTER}" ]]; then
     PANDOC_ARGS+=("--lua-filter=${LUA_NOWRAP_FILTER}")
@@ -416,32 +462,73 @@ if [[ "${GENERATE_PDF}" = true ]]; then
 
     # Check for requested or available PDF engines
     CHOSEN_ENGINE=""
+    CHOSEN_BROWSER=""
+
     if [[ -n "${PDF_ENGINE}" ]]; then
         if command -v "${PDF_ENGINE}" &>/dev/null; then
             CHOSEN_ENGINE="${PDF_ENGINE}"
+            if [[ "${CHOSEN_ENGINE}" = "typst" ]] || [[ "${CHOSEN_ENGINE}" =~ latex ]]; then
+                log_warn "PDF engine '${CHOSEN_ENGINE}' does not support CSS stylesheets (${CSS_FILE})."
+                log_warn "Pandoc will render using its default ${CHOSEN_ENGINE} template without custom CSS."
+            fi
         else
             die "Requested PDF engine '${PDF_ENGINE}' is not installed or not in PATH."
         fi
     else
-        # Auto-detect engine
-        for eng in weasyprint typst wkhtmltopdf xelatex pdflatex; do
-            if command -v "$eng" &>/dev/null; then
-                CHOSEN_ENGINE="$eng"
+        # Auto-detect engine: ONLY choose HTML+CSS capable engines
+        # First priority: Headless Chromium/Chrome browser (full modern CSS, Paged.js & print-color-adjust)
+        for b in chromium-browser chromium google-chrome brave-browser microsoft-edge edge; do
+            if command -v "$b" &>/dev/null; then
+                CHOSEN_BROWSER="$b"
                 break
             fi
         done
+
+        # Second priority: WeasyPrint or wkhtmltopdf (if no browser)
+        if [[ -z "${CHOSEN_BROWSER}" ]]; then
+            for eng in weasyprint wkhtmltopdf; do
+                if command -v "$eng" &>/dev/null; then
+                    CHOSEN_ENGINE="$eng"
+                    break
+                fi
+            done
+        fi
     fi
 
     if [[ -n "${CHOSEN_ENGINE}" ]]; then
-        log_info "Using PDF engine: ${CHOSEN_ENGINE}"
+        log_info "Using Pandoc PDF engine: ${CHOSEN_ENGINE}"
         PANDOC_ARGS+=("--pdf-engine=${CHOSEN_ENGINE}")
         PANDOC_ARGS+=("-o" "${OUTPUT_FILE}" "${INPUT_FILE}")
 
         log_verbose "Running: pandoc ${PANDOC_ARGS[*]}"
         pandoc "${PANDOC_ARGS[@]}"
+    elif [[ -n "${CHOSEN_BROWSER}" ]]; then
+        # Use headless browser for perfect HTML+CSS rendering
+        log_info "Using headless browser for PDF generation: ${CHOSEN_BROWSER}"
+        TEMP_HTML="$(mktemp "${OUTPUT_DIR}/.tmp_report_XXXXXX.html")"
+        TEMP_FILES+=("${TEMP_HTML}")
+        log_verbose "Compiling intermediate HTML to: ${TEMP_HTML}"
+
+        HTML_ARGS=("${PANDOC_ARGS[@]}" "-t" "html5" "-o" "${TEMP_HTML}" "${INPUT_FILE}")
+        log_verbose "Running: pandoc ${HTML_ARGS[*]}"
+        pandoc "${HTML_ARGS[@]}"
+
+        log_info "Printing HTML to PDF via ${CHOSEN_BROWSER} headless..."
+        BROWSER_ARGS=(
+            "--headless=new"
+            "--disable-gpu"
+            "--no-pdf-header-footer"
+        )
+        if [[ "${PAGED}" = true ]]; then
+            BROWSER_ARGS+=("--virtual-time-budget=10000")
+        fi
+        BROWSER_ARGS+=("--print-to-pdf=${OUTPUT_FILE}" "${TEMP_HTML}")
+
+        log_verbose "Running: ${CHOSEN_BROWSER} ${BROWSER_ARGS[*]}"
+        "${CHOSEN_BROWSER}" "${BROWSER_ARGS[@]}" &>/dev/null || die "Headless browser failed to render PDF."
     else
         # No native PDF engine found; compile standalone HTML first
-        log_warn "No native PDF engine found (weasyprint, typst, wkhtmltopdf, pdflatex)."
+        log_warn "No native HTML/CSS PDF engine found (chromium, weasyprint, wkhtmltopdf)."
         TEMP_HTML="${OUTPUT_FILE%.pdf}.html"
         log_info "Compiling high-fidelity print-ready HTML to: ${TEMP_HTML}"
 
@@ -449,25 +536,10 @@ if [[ "${GENERATE_PDF}" = true ]]; then
         log_verbose "Running: pandoc ${HTML_ARGS[*]}"
         pandoc "${HTML_ARGS[@]}"
 
-        # Check if headless browser can convert HTML to PDF
-        CONVERTED_PDF=false
-        if command -v chromium &>/dev/null; then
-            log_info "Converting HTML to PDF via Chromium headless..."
-            chromium --headless --disable-gpu --print-to-pdf="${OUTPUT_FILE}" "file://${PWD}/${TEMP_HTML}" &>/dev/null && CONVERTED_PDF=true
-        elif command -v chromium-browser &>/dev/null; then
-            log_info "Converting HTML to PDF via Chromium headless..."
-            chromium-browser --headless --disable-gpu --print-to-pdf="${OUTPUT_FILE}" "file://${PWD}/${TEMP_HTML}" &>/dev/null && CONVERTED_PDF=true
-        elif command -v google-chrome &>/dev/null; then
-            log_info "Converting HTML to PDF via Google Chrome headless..."
-            google-chrome --headless --disable-gpu --print-to-pdf="${OUTPUT_FILE}" "file://${PWD}/${TEMP_HTML}" &>/dev/null && CONVERTED_PDF=true
-        fi
-
-        if [[ "${CONVERTED_PDF}" = false ]]; then
-            log_warn "Could not automatically render direct PDF file."
-            log_info "Standalone print-ready HTML created at: ${TEMP_HTML}"
-            log_info "Tip: Open the HTML in any browser and select 'Print' -> 'Save as PDF' (Ctrl+P)."
-            OUTPUT_FILE="${TEMP_HTML}"
-        fi
+        log_warn "Could not automatically render direct PDF file."
+        log_info "Standalone print-ready HTML created at: ${TEMP_HTML}"
+        log_info "Tip: Open the HTML in any browser and select 'Print' -> 'Save as PDF' (Ctrl+P)."
+        OUTPUT_FILE="${TEMP_HTML}"
     fi
 else
     # HTML5 Compilation

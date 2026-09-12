@@ -1,0 +1,212 @@
+/* ==========================================================================
+   PAGED.JS EXTENSION FOR FORENSIC REPORT THEME
+   Implements W3C CSS Paged Media specifications:
+   - Real page margins and page breaks
+   - Running headers with dynamic section titles (string-set)
+   - Running footers with "Page X of Y" counters
+   - Screen preview simulation (A4 sheets with realistic drop shadows)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   0. Localization (i18n) Tokens
+   -------------------------------------------------------------------------- */
+:root {
+  --i18n-confidential: "CONFIDENTIAL // LAW ENFORCEMENT & LEGAL PRIVILEGED";
+  --i18n-page-prefix: "Page ";
+}
+
+:root:lang(cs),
+:root:lang(cz),
+html[lang^="cs"],
+html[lang^="cz"] {
+  --i18n-confidential: "DŮVĚRNÉ";
+  --i18n-page-prefix: "Strana ";
+}
+
+/* --------------------------------------------------------------------------
+   1. Dynamic Heading Strings for Running Headers
+   -------------------------------------------------------------------------- */
+h1 {
+  string-set: section-title content();
+}
+
+h2 {
+  string-set: section-title content();
+}
+
+/* --------------------------------------------------------------------------
+   2. W3C CSS Paged Media Rules
+   -------------------------------------------------------------------------- */
+@page {
+  size: A4 portrait;
+  margin: 22mm 16mm 22mm 16mm;
+
+  /* Running Header */
+  @top-left {
+    content: var(--i18n-report-title);
+    font-family: var(--font-mono, monospace);
+    font-size: 7.5pt;
+    font-weight: 700;
+    color: #64748b;
+    border-bottom: 1px solid #cbd5e1;
+    padding-bottom: 4px;
+    vertical-align: bottom;
+  }
+
+  @top-right {
+    content: string(section-title);
+    font-family: var(--font-heading, serif);
+    font-size: 7.5pt;
+    font-weight: 600;
+    color: #0f172a;
+    border-bottom: 1px solid #cbd5e1;
+    padding-bottom: 4px;
+    vertical-align: bottom;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  /* Running Footer */
+  @bottom-left {
+    content: var(--i18n-confidential);
+    font-family: var(--font-mono, monospace);
+    font-size: 7pt;
+    font-weight: 600;
+    color: #94a3b8;
+    border-top: 1px solid #cbd5e1;
+    padding-top: 4px;
+    vertical-align: top;
+  }
+
+  @bottom-right {
+    content: var(--i18n-page-prefix) counter(page);
+    font-family: var(--font-mono, monospace);
+    font-size: 7.5pt;
+    font-weight: 600;
+    color: #475569;
+    border-top: 1px solid #cbd5e1;
+    padding-top: 4px;
+    vertical-align: top;
+  }
+}
+
+/* Cover / First Page Rules: Suppress running top headers only */
+@page:first {
+  margin-top: 18mm;
+  @top-left { content: none; border-bottom: none; }
+  @top-right { content: none; border-bottom: none; }
+  @bottom-left {
+    content: var(--i18n-confidential);
+    font-family: var(--font-mono, monospace);
+    font-size: 7pt;
+    font-weight: 600;
+    color: #94a3b8;
+    border-top: 1px solid #cbd5e1;
+    padding-top: 4px;
+    vertical-align: top;
+  }
+  @bottom-right {
+    content: var(--i18n-page-prefix) counter(page);
+    font-family: var(--font-mono, monospace);
+    font-size: 7.5pt;
+    font-weight: 600;
+    color: #475569;
+    border-top: 1px solid #cbd5e1;
+    padding-top: 4px;
+    vertical-align: top;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. Table Headers repeating across page splits
+   -------------------------------------------------------------------------- */
+thead {
+  display: table-header-group !important;
+}
+
+tr {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* --------------------------------------------------------------------------
+   4. DOM & Body Overrides for Paged.js Layout
+   -------------------------------------------------------------------------- */
+.pagedjs_pages {
+  max-width: none !important;
+}
+
+body {
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background-color: #0f172a15 !important;
+}
+
+/* --------------------------------------------------------------------------
+   5. Screen Preview Mode: Realistic Paper Sheets with Drop Shadows
+   -------------------------------------------------------------------------- */
+@media screen {
+  body {
+    background-color: #0f172a0f !important;
+    padding: 30px 0 !important;
+    min-height: 100vh;
+  }
+
+  .pagedjs_pages {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 32px;
+    margin: 0 auto;
+  }
+
+  .pagedjs_page {
+    background: #ffffff !important;
+    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15),
+                0 8px 10px -6px rgba(15, 23, 42, 0.1);
+    border-radius: 2px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .pagedjs_page:hover {
+    box-shadow: 0 20px 30px -10px rgba(15, 23, 42, 0.2);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. Print Adjustments for Paged.js
+   -------------------------------------------------------------------------- */
+@media print {
+  body {
+    background-color: #ffffff !important;
+  }
+  .pagedjs_pages {
+    gap: 0 !important;
+  }
+  .pagedjs_page {
+    box-shadow: none !important;
+    border: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. Table layout protection against Paged.js overset loops
+   -------------------------------------------------------------------------- */
+table {
+  width: 100% !important;
+  max-width: 100% !important;
+  table-layout: auto !important;
+}
+
+td, th {
+  overflow-wrap: break-word !important;
+}
+
+td.nowrap, th.nowrap {
+  white-space: nowrap;
+}

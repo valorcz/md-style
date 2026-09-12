@@ -7,7 +7,7 @@
 /* --------------------------------------------------------------------------
    1. Google Fonts Import (Curated Essential Weights for Speed & Portability)
    -------------------------------------------------------------------------- */
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&family=Roboto+Slab:wght@400;500;600;700;800&display=swap");
+/* Fonts imported via styles/fonts.css */
 
 /* --------------------------------------------------------------------------
    2. Design Tokens & CSS Custom Properties
@@ -63,6 +63,25 @@
 
   /* Layout dimensions */
   --doc-max-width: 54rem;          /* ~864px: optimal 75-character measure */
+
+  /* Localization (i18n) Defaults - English */
+  --i18n-report-title: "OFFICIAL FORENSIC REPORT";
+  --i18n-examiner: "EXAMINER:";
+  --i18n-date: "DATE:";
+  --i18n-hex-dump: "HEX DUMP";
+  --i18n-sys-log: "SYSTEM LOG";
+}
+
+/* Localization (i18n) - Czech */
+:root:lang(cs),
+:root:lang(cz),
+html[lang^="cs"],
+html[lang^="cz"] {
+  --i18n-report-title: "OFICIÁLNÍ FORENZNÍ ZPRÁVA";
+  --i18n-examiner: "ZPRACOVAL:";
+  --i18n-date: "DATUM:";
+  --i18n-hex-dump: "HEX VÝPIS";
+  --i18n-sys-log: "SYSTÉMOVÝ PROTOKOL";
 }
 
 /* --------------------------------------------------------------------------
@@ -204,7 +223,7 @@ h5, h6 {
 }
 
 #title-block-header::before {
-  content: "OFFICIAL FORENSIC REPORT";
+  content: var(--i18n-report-title);
   display: inline-block;
   font-family: var(--font-mono);
   font-size: 0.72rem;
@@ -255,7 +274,7 @@ h5, h6 {
 }
 
 #title-block-header p.author::before {
-  content: "EXAMINER:";
+  content: var(--i18n-examiner);
   font-weight: 700;
   color: var(--color-text-muted);
   width: 7.5rem;
@@ -263,7 +282,7 @@ h5, h6 {
 }
 
 #title-block-header p.date::before {
-  content: "DATE:";
+  content: var(--i18n-date);
   font-weight: 700;
   color: var(--color-text-muted);
   width: 7.5rem;
@@ -476,7 +495,7 @@ div.sourceCode:has(pre.yara)::after, pre.yara::after,
 div.sourceCode:has(code.yara)::after { content: "YARA"; }
 
 div.sourceCode:has(pre.hex)::after, pre.hex::after,
-div.sourceCode:has(code.hex)::after { content: "HEX DUMP"; }
+div.sourceCode:has(code.hex)::after { content: var(--i18n-hex-dump); }
 
 div.sourceCode:has(pre.sql)::after, pre.sql::after,
 div.sourceCode:has(code.sql)::after { content: "SQL"; }
@@ -485,7 +504,7 @@ div.sourceCode:has(pre.c)::after, pre.c::after,
 div.sourceCode:has(code.c)::after { content: "C/C++"; }
 
 div.sourceCode:has(pre.log)::after, pre.log::after,
-div.sourceCode:has(code.log)::after { content: "SYSTEM LOG"; }
+div.sourceCode:has(code.log)::after { content: var(--i18n-sys-log); }
 
 div.sourceCode::after,
 pre[class*="language-"]::after {
