@@ -70,6 +70,20 @@
   --i18n-date: "DATE:";
   --i18n-hex-dump: "HEX DUMP";
   --i18n-sys-log: "SYSTEM LOG";
+  --i18n-confidential: "CONFIDENTIAL // LAW ENFORCEMENT & LEGAL PRIVILEGED";
+  --i18n-page-prefix: "Page ";
+
+  /* Running Header & Footer for Paged Media */
+  --page-header-left: var(--i18n-report-title);
+  --page-header-right: string(section-title);
+  --page-header-border: 1px solid #cbd5e1;
+  --page-header-color: #64748b;
+  --page-footer-left: var(--i18n-confidential);
+  --page-footer-right: var(--i18n-page-prefix, "Page ") counter(page);
+  --page-footer-border: 1px solid #cbd5e1;
+  --page-first-footer-left: var(--page-footer-left);
+  --page-first-footer-right: var(--page-footer-right);
+  --page-first-footer-border: var(--page-footer-border);
 }
 
 /* Localization (i18n) - Czech */
@@ -82,6 +96,8 @@ html[lang^="cz"] {
   --i18n-date: "DATUM:";
   --i18n-hex-dump: "HEX VÝPIS";
   --i18n-sys-log: "SYSTÉMOVÝ PROTOKOL";
+  --i18n-confidential: "DŮVĚRNÉ";
+  --i18n-page-prefix: "Strana ";
 }
 
 /* --------------------------------------------------------------------------
