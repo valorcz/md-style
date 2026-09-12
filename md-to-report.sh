@@ -16,17 +16,23 @@ readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 
 # Default configurations
 DEFAULT_CSS="${SCRIPT_DIR}/styles/forensic.css"
-CSS_FILE="${DEFAULT_CSS}"
+BASE_CSS="${SCRIPT_DIR}/styles/base.css"
+CSS_FILE=""
+USER_CUSTOM_STYLE=false
 DEFAULT_FONTS_CSS="${SCRIPT_DIR}/styles/fonts.css"
 FONTS_CSS="${DEFAULT_FONTS_CSS}"
 PAGED_CSS="${SCRIPT_DIR}/styles/paged.css"
 PAGED_HEADER="${SCRIPT_DIR}/templates/paged-header.html"
 PAGED=false
+PRINT_MODE=false
+PRINT_CSS="${SCRIPT_DIR}/styles/print.css"
+PRINT_ACTION="${SCRIPT_DIR}/templates/print-action.html"
 INPUT_FILE=""
 OUTPUT_FILE=""
 DOC_TITLE=""
 DOC_LANG=""
 TOC=true
+USER_CUSTOM_TOC=false
 TOC_DEPTH=3
 NUMBER_SECTIONS=false
 EMBED_RESOURCES=true
@@ -39,6 +45,7 @@ QUIET=false
 AUTO_NOWRAP=true
 LUA_NOWRAP_FILTER="${SCRIPT_DIR}/filters/table-nowrap.lua"
 LUA_I18N_FILTER="${SCRIPT_DIR}/filters/i18n.lua"
+LUA_SVJ_FILTER="${SCRIPT_DIR}/filters/svj-prep.lua"
 
 # Temp files tracking for cleanup
 TEMP_FILES=()
@@ -144,6 +151,8 @@ ${COLOR_BOLD}OPTIONS:${COLOR_RESET}
     --paged                   Enable Paged.js W3C CSS Paged Media pagination.
                               Simulates physical A4 sheets on screen with drop shadows,
                               running headers, footers, and page numbers.
+    --print                   Enable Native Print mode (zero-JS, fast & deterministic).
+                              Optimized for pure CSS printing without Paged.js polyfill.
     --no-auto-nowrap          Disable automatic unwrapped table timestamp detection.
     
     -p, --pdf                 Compile directly to PDF using an HTML+CSS engine
@@ -220,14 +229,17 @@ while [[ $# -gt 0 ]]; do
         -s|--style)
             [[ -n "${2:-}" ]] || die "Option '$1' requires an argument."
             CSS_FILE="$2"
+            USER_CUSTOM_STYLE=true
             shift 2
             ;;
         --toc)
             TOC=true
+            USER_CUSTOM_TOC=true
             shift
             ;;
         --no-toc)
             TOC=false
+            USER_CUSTOM_TOC=true
             shift
             ;;
         --toc-depth)
@@ -258,7 +270,12 @@ while [[ $# -gt 0 ]]; do
             ;;
         --paged)
             PAGED=true
-            AUTO_NOWRAP=false
+            PRINT_MODE=false
+            shift
+            ;;
+        --print)
+            PRINT_MODE=true
+            PAGED=false
             shift
             ;;
         -p|--pdf)
@@ -347,9 +364,35 @@ if [[ ! -s "${INPUT_FILE}" ]]; then
     die "Input file is empty (0 bytes): '${INPUT_FILE}'"
 fi
 
-# 4. Verify CSS stylesheet exists
+# 4. Resolve CSS stylesheet (CLI flag > Frontmatter style/theme/layout > Default forensic)
+if [[ "${USER_CUSTOM_STYLE}" = false ]]; then
+    FRONTMATTER_STYLE="$(sed -n '1{/^---/!q}; 1d; /^---/q; p' "${INPUT_FILE}" | { grep -E '^(style|theme|layout):' || true; } | head -n 1 | sed -E 's/^(style|theme|layout):[[:space:]]*//; s/["'\''\r]//g; s/[[:space:]]+#.*$//' | tr -d '[:space:]')"
+
+    if [[ -n "${FRONTMATTER_STYLE}" ]]; then
+        CSS_FILE="${FRONTMATTER_STYLE}"
+        log_verbose "Detected theme '${FRONTMATTER_STYLE}' from frontmatter."
+    else
+        CSS_FILE="${DEFAULT_CSS}"
+    fi
+fi
+
+if [[ ! -f "${CSS_FILE}" ]] && [[ -f "${SCRIPT_DIR}/styles/${CSS_FILE}.css" ]]; then
+    CSS_FILE="${SCRIPT_DIR}/styles/${CSS_FILE}.css"
+elif [[ ! -f "${CSS_FILE}" ]] && [[ -f "${SCRIPT_DIR}/styles/${CSS_FILE}" ]]; then
+    CSS_FILE="${SCRIPT_DIR}/styles/${CSS_FILE}"
+fi
+
 if [[ ! -f "${CSS_FILE}" ]]; then
-    die "Stylesheet not found at: '${CSS_FILE}'"
+    die "Stylesheet not found at: '${CSS_FILE}' (checked relative to current dir and '${SCRIPT_DIR}/styles/')"
+fi
+
+# Resolve Table of Contents (CLI flag > Frontmatter toc > Default true)
+if [[ "${USER_CUSTOM_TOC}" = false ]]; then
+    FRONTMATTER_TOC="$(sed -n '1{/^---/!q}; 1d; /^---/q; p' "${INPUT_FILE}" | { grep -E '^toc:' || true; } | head -n 1 | sed -E 's/^toc:[[:space:]]*//; s/["'\''\r]//g; s/[[:space:]]+#.*$//' | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')"
+    if [[ "${FRONTMATTER_TOC}" = "false" ]] || [[ "${FRONTMATTER_TOC}" = "no" ]] || [[ "${FRONTMATTER_TOC}" = "0" ]]; then
+        TOC=false
+        log_verbose "Disabled Table of Contents based on frontmatter 'toc: false'."
+    fi
 fi
 
 # 5. Determine default output file if not set
@@ -400,12 +443,15 @@ if [[ "${EMBED_RESOURCES}" = true ]] && [[ "${GENERATE_PDF}" = false ]]; then
 fi
 
 # Stylesheet attachment
-if [[ -f "${FONTS_CSS}" ]] && [[ "${PAGED}" = false ]]; then
+if [[ -f "${FONTS_CSS}" ]]; then
     PANDOC_ARGS+=("--css" "${FONTS_CSS}")
+fi
+if [[ -f "${BASE_CSS}" ]]; then
+    PANDOC_ARGS+=("--css" "${BASE_CSS}")
 fi
 PANDOC_ARGS+=("--css" "${CSS_FILE}")
 
-# Paged.js extension
+# Paged.js extension vs Native Print mode
 if [[ "${PAGED}" = true ]]; then
     if [[ -f "${PAGED_CSS}" ]]; then
         PANDOC_ARGS+=("--css" "${PAGED_CSS}")
@@ -414,6 +460,14 @@ if [[ "${PAGED}" = true ]]; then
         PANDOC_ARGS+=("--include-in-header=${PAGED_HEADER}")
     fi
     log_verbose "Enabled Paged.js pagination, screen preview and margin rules."
+elif [[ "${PRINT_MODE}" = true ]]; then
+    if [[ -f "${PRINT_CSS}" ]]; then
+        PANDOC_ARGS+=("--css" "${PRINT_CSS}")
+    fi
+    if [[ -f "${PRINT_ACTION}" ]]; then
+        PANDOC_ARGS+=("--include-after-body=${PRINT_ACTION}")
+    fi
+    log_verbose "Enabled Native Print mode (zero-JS, pure W3C print styles)."
 fi
 
 # Table of Contents
@@ -451,6 +505,14 @@ fi
 if [[ "${AUTO_NOWRAP}" = true ]] && [[ -f "${LUA_NOWRAP_FILTER}" ]]; then
     PANDOC_ARGS+=("--lua-filter=${LUA_NOWRAP_FILTER}")
     log_verbose "Using Lua filter for unwrapped timestamps: ${LUA_NOWRAP_FILTER}"
+fi
+
+# SVJ invitation & agenda pre-processing filter
+if [[ "${CSS_FILE}" == *"svj-"* ]] || grep -q '\[\[TOC\]\]' "${INPUT_FILE}" 2>/dev/null; then
+    if [[ -f "${LUA_SVJ_FILTER}" ]]; then
+        PANDOC_ARGS+=("--lua-filter=${LUA_SVJ_FILTER}")
+        log_verbose "Using Lua filter for SVJ agenda normalization & proposal callouts: ${LUA_SVJ_FILTER}"
+    fi
 fi
 
 # ------------------------------------------------------------------------------

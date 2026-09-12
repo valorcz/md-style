@@ -36,9 +36,15 @@ md-style/
 ├── md-to-report.sh                 # Primary CLI report generator (robust, error-handled)
 ├── md-to-html.sh                   # Compatibility wrapper forwarding to md-to-report.sh
 ├── filters/
-│   └── table-nowrap.lua            # Lua filter for unwrapped timestamps & localized headers
+│   ├── table-nowrap.lua            # Lua filter for unwrapped timestamps & localized headers
+│   └── i18n.lua                    # Pandoc filter for document-level internationalization
 ├── styles/
-│   ├── forensic.css                # Forensic report stylesheet with custom typography & print rules
+│   ├── base.css                    # Shared reset, baseline typography, table fragmentation & print core
+│   ├── forensic.css                # Forensic & DFIR report theme (default)
+│   ├── svj-invitation.css          # SVJ assembly invitation theme (Czech building associations)
+│   ├── school.css                  # School & academic progress report theme (booktabs tables)
+│   ├── announcement.css            # Corporate memo & office announcement theme
+│   ├── family-invite.css           # Family celebration & event invitation theme
 │   ├── fonts.css                   # Curated Google Fonts stylesheet
 │   └── paged.css                   # W3C CSS Paged Media rules & screen preview styling
 ├── templates/
@@ -46,13 +52,52 @@ md-style/
 ├── vendor/
 │   └── paged.polyfill.js           # Offline-ready vendored Paged.js library
 ├── examples/
-│   ├── sample-forensic-report.md   # Comprehensive reference report demonstrating all features
+│   ├── sample-forensic-report.md   # Reference forensic report demonstrating DFIR features
+│   ├── school-report-sample.md     # Academic report fixture with student dossier & grades
+│   ├── announcement-sample.md      # Corporate memo fixture with action checklists
+│   ├── family-invite-sample.md     # Celebratory family gathering invitation fixture
 │   ├── sample-forensic-report.html # Pre-compiled standalone output showcase
 │   ├── sample-paged-report.html    # Pre-compiled Paged.js visual sheet showcase
 │   └── sample-paged-report.pdf     # Direct PDF output generated with running headers & footers
+├── design-samples/                 # Real-world reference source documents & comparison PDFs
+├── docs/
+│   └── style_development_notes.md  # Comprehensive guide for developing & testing new styles
 ├── deprecated/                     # Archived legacy prototype files
 └── README.md                       # Documentation
 ```
+
+---
+
+## Available Themes & Styles
+
+`md-style` includes pre-built, production-ready themes designed for distinct document types:
+
+| Theme Name | Frontmatter | Purpose & Visual Identity |
+|---|---|---|
+| **Forensic** (default) | `style: forensic` | High-contrast DFIR investigation reports, TLP status badges, code terminal blocks, cryptographic hash registers. |
+| **SVJ Modern** | `style: svj-modern` | Contemporary architectural theme for building assemblies: sans-serif typography, meeting key info card grid (Date, Time, Place), timeline agenda, and clean committee recommendation callouts. |
+| **SVJ Community** | `style: svj-community` | Intergenerational & accessible design (young families & seniors 75+): WCAG AAA contrast, generous 11.5pt type scale, relaxed line height (1.72), large scannable meeting cards, and high-visibility proposal callouts. |
+| **SVJ Ballot** | `style: svj-ballot` | Extends `svj-modern` with interactive & printable voting resolution cards featuring ballot checkboxes (`☐ PRO`, `☐ PROTI`, `☐ ZDRŽEL SE`). |
+| **SVJ Typewriter** | `style: svj-typewriter` | Retro pre-1989 Czechoslovak municipal typewriter aesthetic (Consul mechanical font, original palette, red-ribbon motion callouts, typed table grids). |
+| **SVJ Classic** | `style: svj-invitation` | Traditional serif assembly notices (*Pozvánka na shromáždění SVJ*), deep navy/teal/amber palette, proposal callouts. |
+| **School Report** | `style: school` | Academic progress assessments, course rubrics, student dossier grids, booktabs tables, faculty signatures. |
+| **Office Announcement** | `style: announcement` | Corporate executive memorandums, `TO/FROM/DATE/SUBJECT` header block, urgency banners, action task checklists. |
+| **Family Invite** | `style: family-invite` | Celebratory gatherings, birthdays, anniversaries, golden champagne/terracotta tones, RSVP blocks, schedule itinerary. |
+
+### Selecting a Theme
+1. **Via Markdown Frontmatter (Recommended):**
+   ```yaml
+   ---
+   title: "Oslava 50. narozenin"
+   style: family-invite
+   language: cs
+   toc: false
+   ---
+   ```
+2. **Via CLI Argument:**
+   ```bash
+   ./md-to-report.sh -s school examples/school-report-sample.md
+   ```
 
 ---
 
