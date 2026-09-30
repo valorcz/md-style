@@ -398,11 +398,20 @@ code, kbd, samp {
   color: var(--code-inline-text);
   border: 1px solid var(--code-inline-border);
   border-radius: 4px;
-  /* Forensic resilience: wrap long hashes cleanly */
-  word-break: break-all;
-  overflow-wrap: anywhere;
+  /* Wrap long words cleanly without splitting standard terms mid-character */
+  word-break: normal;
+  overflow-wrap: break-word;
   white-space: pre-wrap;
   transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+/* Dedicated class for long hashes, keys, tokens & hex strings */
+code.hash,
+code.break-all,
+.hash,
+.break-all {
+  word-break: break-all;
+  overflow-wrap: anywhere;
 }
 
 code:hover {
@@ -644,12 +653,14 @@ th {
   text-align: left;
   padding: 0.75rem 1rem;
   border-bottom: 2px solid var(--color-accent);
+  word-break: normal;
 }
 
 td {
   padding: 0.7rem 1rem;
   border-bottom: 1px solid var(--color-border);
   vertical-align: top;
+  word-break: normal;
 }
 
 tbody tr:nth-child(even) {
@@ -736,52 +747,111 @@ blockquote strong:first-child {
 div.warning, div.note, div.tip, div.important, div.caution,
 div.critical, div.evidence, div.finding, div.callout {
   margin: 1.6em 0;
-  padding: 1.1rem 1.4rem;
+  padding: 1.15rem 1.4rem;
   border-radius: 6px;
-  border-left: 5px solid;
+  border: 1px solid var(--color-border);
+  border-left-width: 5px;
+  background-color: var(--color-bg);
+  color: var(--color-text); /* Always crisp dark slate body text! */
 }
 
 div.warning .title, div.note .title, div.tip .title,
-div.important .title, div.caution .title {
+div.important .title, div.caution .title, div.critical .title,
+div.evidence .title, div.finding .title, div.callout .title {
   font-family: var(--font-mono);
   font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  margin-bottom: 0.5em;
+  margin-bottom: 0.6em;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
 }
 
 div.warning .title p, div.note .title p, div.tip .title p,
-div.important .title p, div.caution .title p {
+div.important .title p, div.caution .title p, div.critical .title p,
+div.evidence .title p, div.finding .title p, div.callout .title p {
   margin: 0;
+  color: inherit;
+}
+
+.callout-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.15em;
+  height: 1.15em;
+  flex-shrink: 0;
+}
+
+.callout-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+div.callout p {
+  color: var(--color-text);
+  line-height: 1.65;
+}
+
+div.callout p:last-child {
+  margin-bottom: 0;
+}
+
+div.callout strong {
+  color: var(--color-primary);
 }
 
 /* Warning & Anomaly Callouts */
 div.warning, div.caution, div.anomaly {
-  background-color: var(--color-warning-bg);
+  background-color: #fffdf5;
+  border-color: #fef08a;
   border-left-color: var(--color-warning);
-  color: #92400e;
+}
+div.warning .title, div.caution .title, div.anomaly .title {
+  color: #b45309;
 }
 
 /* Critical Threat Callouts */
 div.critical, div.danger, div.threat {
-  background-color: var(--color-critical-bg);
+  background-color: #fef8f8;
+  border-color: #fecdd3;
   border-left-color: var(--color-critical);
-  color: #991b1b;
+}
+div.critical .title, div.danger .title, div.threat .title {
+  color: #b91c1c;
 }
 
 /* Evidence & Information Callouts */
 div.note, div.info, div.evidence {
-  background-color: var(--color-info-bg);
-  border-left-color: var(--color-accent-dark);
-  color: #075985;
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+  border-left-color: var(--color-accent);
+}
+div.note .title, div.info .title, div.evidence .title {
+  color: var(--color-accent-dark);
+}
+
+/* Important & Advisory Callouts */
+div.important {
+  background-color: #faf8ff;
+  border-color: #e9d5ff;
+  border-left-color: #7c3aed;
+}
+div.important .title {
+  color: #6d28d9;
 }
 
 /* Verified & Key Finding Callouts */
 div.tip, div.success, div.finding {
-  background-color: var(--color-success-bg);
+  background-color: #f6fcf8;
+  border-color: #bbf7d0;
   border-left-color: var(--color-success);
-  color: #065f46;
+}
+div.tip .title, div.success .title, div.finding .title {
+  color: #047857;
 }
 
 /* --------------------------------------------------------------------------

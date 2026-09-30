@@ -149,5 +149,55 @@ function Table(tbl)
     end
   end
 
+  -- 5. Normalize crushed column widths:
+  -- If Pandoc generated colwidth percentages where any column is crushed (< 12%),
+  -- reset colspecs to ColWidthDefault so the browser's dynamic table layout can fit content.
+  if tbl.colspecs then
+    local has_crushed_col = false
+    for _, colspec in ipairs(tbl.colspecs) do
+      local w = colspec[2]
+      if type(w) == "number" and w > 0 and w < 0.12 then
+        has_crushed_col = true
+        break
+      end
+    end
+    if has_crushed_col then
+      for i, colspec in ipairs(tbl.colspecs) do
+        tbl.colspecs[i] = {colspec[1], pandoc.ColWidthDefault}
+      end
+    end
+  end
+
   return tbl
 end
+
+-- Check if a string looks like a cryptographic hash or long hex token (e.g. SHA-256, SHA-1, MD5)
+local function is_hash_or_token_str(s)
+  if not s or #s < 24 then return false end
+  -- Trim whitespace
+  s = s:gsub("^%s+", ""):gsub("%s+$", "")
+  -- Hexadecimal hash (e.g. MD5=32, SHA-1=40, SHA-256=64, SHA-512=128)
+  if s:match("^%x+$") and #s >= 24 then
+    return true
+  end
+  -- Prefixed hex hash (e.g. 0x...)
+  if s:match("^0[xX]%x+$") and #s >= 26 then
+    return true
+  end
+  -- Long unbroken token/identifier (>= 32 chars without whitespace)
+  if #s >= 32 and not s:find("%s") then
+    return true
+  end
+  return false
+end
+
+-- Pandoc Code element hook: automatically add 'hash' class to long hashes/tokens
+function Code(el)
+  if is_hash_or_token_str(el.text) then
+    if not el.classes:includes("hash") then
+      el.classes:insert("hash")
+    end
+  end
+  return el
+end
+

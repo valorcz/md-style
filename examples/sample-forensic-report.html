@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
@@ -190,6 +190,377 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRr8SwdsAAAIkAAACPkdQT1O9RKmuAA
 </style>
   <style type="text/css">
 
+:root {
+
+--font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+--font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+--font-mono: "JetBrains Mono", "Cascadia Code", "Fira Code", Menlo, Monaco, Consolas, monospace;
+
+--color-primary: #0f172a;
+--color-secondary: #475569;
+--color-accent: #2563eb;
+--color-bg: #f8fafc;
+--color-paper: #ffffff;
+--color-text: #1e293b;
+--color-text-muted: #64748b;
+--color-border: #e2e8f0;
+--color-border-dark: #cbd5e1;
+
+--doc-max-width: 52rem; 
+--line-height-body: 1.65;
+--line-height-heading: 1.25;
+
+--i18n-page-prefix: "Page ";
+--i18n-page-of: " of ";
+}
+:root:lang(cs),
+html[lang^="cs"] {
+--i18n-page-prefix: "Strana ";
+--i18n-page-of: " z ";
+}
+
+html {
+font-size: 100%;
+box-sizing: border-box;
+background-color: var(--color-bg);
+-webkit-text-size-adjust: 100%;
+text-rendering: optimizeLegibility;
+}
+*, *::before, *::after {
+box-sizing: inherit;
+}
+body {
+font-family: var(--font-body);
+font-size: 15px;
+line-height: var(--line-height-body);
+color: var(--color-text);
+background-color: var(--color-paper);
+max-width: var(--doc-max-width);
+margin: 2.5rem auto;
+padding: 3rem 3.5rem;
+border: 1px solid var(--color-border);
+border-radius: 8px;
+box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05),
+0 10px 15px -3px rgba(15, 23, 42, 0.05);
+}
+
+p {
+margin-top: 0;
+margin-bottom: 1.2em;
+}
+strong, b {
+font-weight: 700;
+color: var(--color-primary);
+}
+em, i {
+font-style: italic;
+}
+small {
+font-size: 0.85em;
+color: var(--color-text-muted);
+}
+hr {
+height: 0;
+border: 0;
+border-top: 1px solid var(--color-border);
+margin: 2rem 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+font-family: var(--font-heading);
+color: var(--color-primary);
+line-height: var(--line-height-heading);
+margin-top: 1.8em;
+margin-bottom: 0.6em;
+font-weight: 700;
+break-after: avoid !important;
+page-break-after: avoid !important;
+}
+h1 {
+font-size: 1.85rem;
+margin-top: 0.5em;
+margin-bottom: 0.6em;
+}
+h2 {
+font-size: 1.35rem;
+margin-top: 1.6em;
+margin-bottom: 0.5em;
+}
+h3 {
+font-size: 1.15rem;
+margin-top: 1.4em;
+margin-bottom: 0.4em;
+}
+h4 { font-size: 1.05rem; }
+h5, h6 { font-size: 0.95rem; }
+
+ul, ol {
+margin-top: 0;
+margin-bottom: 1.25em;
+padding-left: 1.6em;
+}
+li {
+margin-bottom: 0.35em;
+line-height: var(--line-height-body);
+}
+li > p {
+margin-bottom: 0.4em;
+}
+
+blockquote {
+margin: 1.5em 0;
+padding: 0.8em 1.2em;
+background-color: var(--color-bg);
+border-left: 4px solid var(--color-accent);
+color: var(--color-secondary);
+font-style: italic;
+}
+blockquote > :last-child {
+margin-bottom: 0;
+}
+
+a {
+color: var(--color-accent);
+text-decoration: underline;
+text-decoration-thickness: 1px;
+text-underline-offset: 2px;
+}
+a:hover {
+text-decoration-thickness: 2px;
+}
+
+code {
+font-family: var(--font-mono);
+font-size: 0.88em;
+background-color: #f1f5f9;
+padding: 0.15em 0.35em;
+border-radius: 4px;
+border: 1px solid var(--color-border);
+word-break: normal;
+overflow-wrap: break-word;
+}
+
+code.hash,
+code.break-all,
+.hash,
+.break-all {
+word-break: break-all;
+overflow-wrap: anywhere;
+}
+pre {
+font-family: var(--font-mono);
+font-size: 0.85em;
+background-color: #0f172a;
+color: #f8fafc;
+padding: 1rem 1.25rem;
+border-radius: 6px;
+overflow-x: auto;
+line-height: 1.5;
+margin: 1.5em 0;
+}
+pre code {
+background: none;
+border: none;
+padding: 0;
+color: inherit;
+font-size: inherit;
+}
+
+table {
+width: 100%;
+max-width: 100%;
+border-collapse: collapse;
+margin: 1.5em 0 1.8em;
+font-size: 0.9em;
+line-height: 1.5;
+overflow: visible !important;
+page-break-inside: auto !important;
+break-inside: auto !important;
+}
+thead {
+display: table-header-group !important;
+background-color: var(--color-primary);
+color: #ffffff;
+break-inside: avoid !important;
+page-break-inside: avoid !important;
+break-after: avoid !important;
+page-break-after: avoid !important;
+}
+tbody {
+page-break-inside: auto !important;
+break-inside: auto !important;
+}
+tr {
+break-inside: avoid !important;
+page-break-inside: avoid !important;
+}
+th {
+font-weight: 600;
+text-align: left;
+padding: 0.55rem 0.75rem;
+border: 1px solid var(--color-border-dark);
+word-break: normal;
+overflow-wrap: break-word;
+}
+td {
+padding: 0.5rem 0.75rem;
+border: 1px solid var(--color-border);
+vertical-align: top;
+word-break: normal;
+overflow-wrap: break-word;
+}
+.nowrap,
+.nowrap *,
+th.nowrap,
+td.nowrap,
+th.nowrap code,
+td.nowrap code {
+white-space: nowrap !important;
+word-break: normal !important;
+overflow-wrap: normal !important;
+font-variant-numeric: tabular-nums;
+}
+
+div.callout,
+div.warning, div.note, div.tip, div.important, div.caution,
+div.critical, div.evidence, div.finding {
+margin: 1.5em 0;
+padding: 1rem 1.25rem;
+border-radius: 6px;
+border: 1px solid var(--color-border, #e2e8f0);
+border-left-width: 4px;
+background-color: #f8fafc;
+color: var(--color-text, #1e293b);
+break-inside: avoid;
+page-break-inside: avoid;
+}
+div.callout p {
+color: var(--color-text, #1e293b);
+line-height: 1.6;
+}
+div.callout p:last-child {
+margin-bottom: 0;
+}
+div.callout strong {
+color: var(--color-primary, #0f172a);
+}
+div.callout .title,
+div.warning .title, div.note .title, div.tip .title,
+div.important .title, div.caution .title, div.critical .title {
+font-family: var(--font-mono, monospace);
+font-size: 0.8rem;
+font-weight: 700;
+text-transform: uppercase;
+letter-spacing: 0.06em;
+margin-bottom: 0.5em;
+display: flex;
+align-items: center;
+gap: 0.45rem;
+}
+div.callout .title p,
+div.warning .title p, div.note .title p, div.tip .title p,
+div.important .title p, div.caution .title p, div.critical .title p {
+margin: 0;
+color: inherit;
+}
+.callout-icon {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+width: 1.15em;
+height: 1.15em;
+flex-shrink: 0;
+}
+.callout-icon svg {
+width: 100%;
+height: 100%;
+fill: currentColor;
+}
+
+.octicon {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+vertical-align: -0.15em;
+line-height: 1;
+}
+.octicon svg {
+width: 1em;
+height: 1em;
+fill: currentColor;
+}
+
+div.note, div.info, div.evidence {
+background-color: #f8fafc;
+border-color: #e2e8f0;
+border-left-color: #0284c7;
+}
+div.note .title, div.info .title, div.evidence .title {
+color: #0369a1;
+}
+div.warning, div.caution, div.anomaly {
+background-color: #fffdf5;
+border-color: #fef08a;
+border-left-color: #d97706;
+}
+div.warning .title, div.caution .title, div.anomaly .title {
+color: #b45309;
+}
+div.critical, div.danger, div.threat {
+background-color: #fef8f8;
+border-color: #fecdd3;
+border-left-color: #dc2626;
+}
+div.critical .title, div.danger .title, div.threat .title {
+color: #b91c1c;
+}
+div.important {
+background-color: #faf8ff;
+border-color: #e9d5ff;
+border-left-color: #7c3aed;
+}
+div.important .title {
+color: #6d28d9;
+}
+div.tip, div.success, div.finding {
+background-color: #f6fcf8;
+border-color: #bbf7d0;
+border-left-color: #059669;
+}
+div.tip .title, div.success .title, div.finding .title {
+color: #047857;
+}
+
+@media print {
+html, body {
+background: transparent !important;
+max-width: none !important;
+width: 100% !important;
+margin: 0 !important;
+padding: 0 !important;
+border: none !important;
+box-shadow: none !important;
+font-size: 9.5pt !important;
+color: #000000 !important;
+}
+a {
+color: inherit !important;
+text-decoration: underline !important;
+}
+table {
+border: 1px solid #0f172a !important;
+font-size: 8.5pt !important;
+}
+th {
+background-color: #0f172a !important;
+color: #ffffff !important;
+-webkit-print-color-adjust: exact !important;
+print-color-adjust: exact !important;
+}
+}
+</style>
+  <style type="text/css">
+
 
 
 :root {
@@ -235,6 +606,38 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRr8SwdsAAAIkAAACPkdQT1O9RKmuAA
 --code-inline-border: #cbd5e1;
 
 --doc-max-width: 54rem; 
+
+--i18n-report-title: "OFFICIAL FORENSIC REPORT";
+--i18n-examiner: "EXAMINER:";
+--i18n-date: "DATE:";
+--i18n-hex-dump: "HEX DUMP";
+--i18n-sys-log: "SYSTEM LOG";
+--i18n-confidential: "CONFIDENTIAL // LAW ENFORCEMENT & LEGAL PRIVILEGED";
+--i18n-page-prefix: "Page ";
+
+--page-header-left: var(--i18n-report-title);
+--page-header-right: string(section-title);
+--page-header-border: 1px solid #cbd5e1;
+--page-header-color: #64748b;
+--page-footer-left: var(--i18n-confidential);
+--page-footer-right: var(--i18n-page-prefix, "Page ") counter(page);
+--page-footer-border: 1px solid #cbd5e1;
+--page-first-footer-left: var(--page-footer-left);
+--page-first-footer-right: var(--page-footer-right);
+--page-first-footer-border: var(--page-footer-border);
+}
+
+:root:lang(cs),
+:root:lang(cz),
+html[lang^="cs"],
+html[lang^="cz"] {
+--i18n-report-title: "OFICIÁLNÍ FORENZNÍ ZPRÁVA";
+--i18n-examiner: "ZPRACOVAL:";
+--i18n-date: "DATUM:";
+--i18n-hex-dump: "HEX VÝPIS";
+--i18n-sys-log: "SYSTÉMOVÝ PROTOKOL";
+--i18n-confidential: "DŮVĚRNÉ";
+--i18n-page-prefix: "Strana ";
 }
 
 html {
@@ -352,7 +755,7 @@ position: relative;
 text-align: left;
 }
 #title-block-header::before {
-content: "OFFICIAL FORENSIC REPORT";
+content: var(--i18n-report-title);
 display: inline-block;
 font-family: var(--font-mono);
 font-size: 0.72rem;
@@ -398,14 +801,14 @@ display: flex;
 align-items: center;
 }
 #title-block-header p.author::before {
-content: "EXAMINER:";
+content: var(--i18n-examiner);
 font-weight: 700;
 color: var(--color-text-muted);
 width: 7.5rem;
 display: inline-block;
 }
 #title-block-header p.date::before {
-content: "DATE:";
+content: var(--i18n-date);
 font-weight: 700;
 color: var(--color-text-muted);
 width: 7.5rem;
@@ -491,10 +894,18 @@ color: var(--code-inline-text);
 border: 1px solid var(--code-inline-border);
 border-radius: 4px;
 
-word-break: break-all;
-overflow-wrap: anywhere;
+word-break: normal;
+overflow-wrap: break-word;
 white-space: pre-wrap;
 transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+code.hash,
+code.break-all,
+.hash,
+.break-all {
+word-break: break-all;
+overflow-wrap: anywhere;
 }
 code:hover {
 background-color: #e2e8f0;
@@ -584,13 +995,13 @@ div.sourceCode:has(code.yaml)::after { content: "YAML"; }
 div.sourceCode:has(pre.yara)::after, pre.yara::after,
 div.sourceCode:has(code.yara)::after { content: "YARA"; }
 div.sourceCode:has(pre.hex)::after, pre.hex::after,
-div.sourceCode:has(code.hex)::after { content: "HEX DUMP"; }
+div.sourceCode:has(code.hex)::after { content: var(--i18n-hex-dump); }
 div.sourceCode:has(pre.sql)::after, pre.sql::after,
 div.sourceCode:has(code.sql)::after { content: "SQL"; }
 div.sourceCode:has(pre.c)::after, pre.c::after,
 div.sourceCode:has(code.c)::after { content: "C/C++"; }
 div.sourceCode:has(pre.log)::after, pre.log::after,
-div.sourceCode:has(code.log)::after { content: "SYSTEM LOG"; }
+div.sourceCode:has(code.log)::after { content: var(--i18n-sys-log); }
 div.sourceCode::after,
 pre[class*="language-"]::after {
 position: absolute;
@@ -699,11 +1110,13 @@ letter-spacing: 0.05em;
 text-align: left;
 padding: 0.75rem 1rem;
 border-bottom: 2px solid var(--color-accent);
+word-break: normal;
 }
 td {
 padding: 0.7rem 1rem;
 border-bottom: 1px solid var(--color-border);
 vertical-align: top;
+word-break: normal;
 }
 tbody tr:nth-child(even) {
 background-color: #f8fafc;
@@ -776,46 +1189,99 @@ color: var(--color-accent-dark);
 div.warning, div.note, div.tip, div.important, div.caution,
 div.critical, div.evidence, div.finding, div.callout {
 margin: 1.6em 0;
-padding: 1.1rem 1.4rem;
+padding: 1.15rem 1.4rem;
 border-radius: 6px;
-border-left: 5px solid;
+border: 1px solid var(--color-border);
+border-left-width: 5px;
+background-color: var(--color-bg);
+color: var(--color-text); 
 }
 div.warning .title, div.note .title, div.tip .title,
-div.important .title, div.caution .title {
+div.important .title, div.caution .title, div.critical .title,
+div.evidence .title, div.finding .title, div.callout .title {
 font-family: var(--font-mono);
 font-size: 0.8rem;
 font-weight: 700;
 text-transform: uppercase;
 letter-spacing: 0.08em;
-margin-bottom: 0.5em;
+margin-bottom: 0.6em;
+display: flex;
+align-items: center;
+gap: 0.45rem;
 }
 div.warning .title p, div.note .title p, div.tip .title p,
-div.important .title p, div.caution .title p {
+div.important .title p, div.caution .title p, div.critical .title p,
+div.evidence .title p, div.finding .title p, div.callout .title p {
 margin: 0;
+color: inherit;
+}
+.callout-icon {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+width: 1.15em;
+height: 1.15em;
+flex-shrink: 0;
+}
+.callout-icon svg {
+width: 100%;
+height: 100%;
+fill: currentColor;
+}
+div.callout p {
+color: var(--color-text);
+line-height: 1.65;
+}
+div.callout p:last-child {
+margin-bottom: 0;
+}
+div.callout strong {
+color: var(--color-primary);
 }
 
 div.warning, div.caution, div.anomaly {
-background-color: var(--color-warning-bg);
+background-color: #fffdf5;
+border-color: #fef08a;
 border-left-color: var(--color-warning);
-color: #92400e;
+}
+div.warning .title, div.caution .title, div.anomaly .title {
+color: #b45309;
 }
 
 div.critical, div.danger, div.threat {
-background-color: var(--color-critical-bg);
+background-color: #fef8f8;
+border-color: #fecdd3;
 border-left-color: var(--color-critical);
-color: #991b1b;
+}
+div.critical .title, div.danger .title, div.threat .title {
+color: #b91c1c;
 }
 
 div.note, div.info, div.evidence {
-background-color: var(--color-info-bg);
-border-left-color: var(--color-accent-dark);
-color: #075985;
+background-color: #f8fafc;
+border-color: #e2e8f0;
+border-left-color: var(--color-accent);
+}
+div.note .title, div.info .title, div.evidence .title {
+color: var(--color-accent-dark);
+}
+
+div.important {
+background-color: #faf8ff;
+border-color: #e9d5ff;
+border-left-color: #7c3aed;
+}
+div.important .title {
+color: #6d28d9;
 }
 
 div.tip, div.success, div.finding {
-background-color: var(--color-success-bg);
+background-color: #f6fcf8;
+border-color: #bbf7d0;
 border-left-color: var(--color-success);
-color: #065f46;
+}
+div.tip .title, div.success .title, div.finding .title {
+color: #047857;
 }
 
 .badge,
@@ -1145,6 +1611,7 @@ chain-of-custody protocols.</p>
 </div>
 </header>
 <nav id="TOC" role="doc-toc">
+<h2 id="toc-title">Table of contents</h2>
 <ul>
 <li><a href="#1-incident-overview" id="toc-1-incident-overview">1.
 Incident Overview</a></li>
@@ -1269,20 +1736,20 @@ Verification Target: Forensic Disk Image EVID-01 (evidence_dc_corp_01.dd)</code>
 <tbody>
 <tr>
 <td><code>evidence_dc_corp_01.dd</code></td>
-<td><code>a3c5f891b24d78e3105cf4e819b7d206f4a38751e1293a5b67cd10f92b84e031</code></td>
-<td><code>d41d8cd98f00b204e9800998ecf8427e</code></td>
+<td><code class="hash">a3c5f891b24d78e3105cf4e819b7d206f4a38751e1293a5b67cd10f92b84e031</code></td>
+<td><code class="hash">d41d8cd98f00b204e9800998ecf8427e</code></td>
 <td><span class="badge badge-success">VERIFIED</span></td>
 </tr>
 <tr>
 <td><code>mem_dump_01.raw</code></td>
-<td><code>7d8e9a2b4c1f0e3d5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f</code></td>
-<td><code>445a6c12b9d834a9812f00a5d29e71ab</code></td>
+<td><code class="hash">7d8e9a2b4c1f0e3d5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f</code></td>
+<td><code class="hash">445a6c12b9d834a9812f00a5d29e71ab</code></td>
 <td><span class="badge badge-success">VERIFIED</span></td>
 </tr>
 <tr>
 <td><code>payload_drop.bin</code></td>
-<td><code>5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8</code></td>
-<td><code>8f14e45fceea167a5a36dedd4bea2543</code></td>
+<td><code class="hash">5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8</code></td>
+<td><code class="hash">8f14e45fceea167a5a36dedd4bea2543</code></td>
 <td><span class="badge badge-critical">MALICIOUS</span></td>
 </tr>
 </tbody>
@@ -1333,7 +1800,7 @@ sekurlsa module.</td>
 <td class="nowrap"><code>2026-09-11 02:18:10</code></td>
 <td>Persistence Created</td>
 <td>Registry</td>
-<td>Scheduled task <code>\Microsoft\Windows\Maint\WinUpdateSync</code>
+<td>Scheduled task <code class="hash">\Microsoft\Windows\Maint\WinUpdateSync</code>
 registered.</td>
 </tr>
 <tr>

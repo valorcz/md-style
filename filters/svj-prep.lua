@@ -11,6 +11,44 @@ local function stringify(inlines)
   return pandoc.utils.stringify(inlines)
 end
 
+-- Universal Table of Contents placeholder detection
+-- Supports:
+-- 1. Pandoc Native Fenced Div: ::: {#toc} or ::: {.toc}
+-- 2. Markdown Extra / Typora / Obsidian: [TOC]
+-- 3. GitLab / GitHub Wiki: [[_TOC_]]
+-- 4. HTML Comment Directive: <!-- TOC -->
+local function is_toc_placeholder(block)
+  -- Case 1: Pandoc Native Fenced Div (::: {#toc} or ::: {.toc})
+  if block.t == "Div" then
+    if block.identifier == "toc" or block.identifier == "table-of-contents" then
+      return true
+    end
+    if block.classes:includes("toc") or block.classes:includes("table-of-contents") then
+      return true
+    end
+  end
+
+  -- Case 2: Raw HTML Comment (<!-- TOC -->)
+  if block.t == "RawBlock" and block.format == "html" then
+    if block.text:match("^%s*<!%-%-%s*TOC%s*%-%->%s*$") then
+      return true
+    end
+  end
+
+  -- Case 3: Inline markers ([TOC], [[_TOC_]], <!-- TOC -->)
+  if block.t == "Para" or block.t == "Plain" then
+    local str = stringify(block.content):gsub("%s+", " "):match("^%s*(.-)%s*$")
+    if str == "[TOC]" or str == "[[_TOC_]]" or str == "<!-- TOC -->" then
+      return true
+    end
+    if str:match("^<!%-%-%s*TOC%s*%-%->$") then
+      return true
+    end
+  end
+
+  return false
+end
+
 -- Document-level transformation
 function Pandoc(doc)
   local agenda_items = {}
@@ -21,8 +59,8 @@ function Pandoc(doc)
   local new_blocks = {}
 
   for idx, block in ipairs(doc.blocks) do
-    -- Detect [[TOC]] placeholder
-    if block.t == "Para" and stringify(block.content):match("^%s*%[%[TOC%]%]%s*$") then
+    -- Detect TOC placeholder (::: {#toc}, [TOC], [[_TOC_]], <!-- TOC -->)
+    if is_toc_placeholder(block) then
       toc_placeholder_idx = #new_blocks + 1
       table.insert(new_blocks, block) -- will be replaced in pass 2
 
@@ -135,20 +173,12 @@ function Pandoc(doc)
           end
         end
 
-        local ballot_div = pandoc.Div({
-          pandoc.Span({ pandoc.Str("HLASOVÁNÍ:") }, pandoc.Attr("", { "ballot-prompt" })),
-          pandoc.Span({ pandoc.Span({ pandoc.Str("☐") }, pandoc.Attr("", { "ballot-box-icon" })), pandoc.Str(" PRO") }, pandoc.Attr("", { "ballot-option", "ballot-pro" })),
-          pandoc.Span({ pandoc.Span({ pandoc.Str("☐") }, pandoc.Attr("", { "ballot-box-icon" })), pandoc.Str(" PROTI") }, pandoc.Attr("", { "ballot-option", "ballot-con" })),
-          pandoc.Span({ pandoc.Span({ pandoc.Str("☐") }, pandoc.Attr("", { "ballot-box-icon" })), pandoc.Str(" ZDRŽEL SE") }, pandoc.Attr("", { "ballot-option", "ballot-abs" }))
-        }, pandoc.Attr("", { "proposal-ballot" }))
-
         local callout = pandoc.Div({
           pandoc.Para({
             pandoc.Span({ pandoc.Str("NÁVRH VÝBORU") }, pandoc.Attr("", { "proposal-label" })),
             pandoc.LineBreak(),
             pandoc.Span(rest, pandoc.Attr("", { "proposal-content" }))
-          }),
-          ballot_div
+          })
         }, pandoc.Attr("", { "proposal-callout" }))
 
         table.insert(new_blocks, callout)

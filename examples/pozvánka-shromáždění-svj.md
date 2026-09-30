@@ -19,7 +19,8 @@ Výbor Společenství vlastníků jednotek domu Jabloňová 24 svolává v soul
 
 ## Program shromáždění
 
-[[TOC]]
+::: {#toc}
+:::
 
 **Za výbor SVJ Jabloňová 24, Praha**  
 *(Jan Dvořák – předseda výboru, Ing. Marie Černá – místopředsedkyně, Tomáš Procházka – člen výboru)*

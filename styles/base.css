@@ -182,6 +182,17 @@ code {
   padding: 0.15em 0.35em;
   border-radius: 4px;
   border: 1px solid var(--color-border);
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+/* Dedicated class for long hashes, keys, tokens & hex strings */
+code.hash,
+code.break-all,
+.hash,
+.break-all {
+  word-break: break-all;
+  overflow-wrap: anywhere;
 }
 
 pre {
@@ -244,6 +255,7 @@ th {
   text-align: left;
   padding: 0.55rem 0.75rem;
   border: 1px solid var(--color-border-dark);
+  word-break: normal;
   overflow-wrap: break-word;
 }
 
@@ -251,6 +263,7 @@ td {
   padding: 0.5rem 0.75rem;
   border: 1px solid var(--color-border);
   vertical-align: top;
+  word-break: normal;
   overflow-wrap: break-word;
 }
 
@@ -267,7 +280,134 @@ td.nowrap code {
 }
 
 /* --------------------------------------------------------------------------
-   5. General Print Media Rules (@media print)
+   5. GitHub Alert Divs & Admonition Callout Boxes
+   -------------------------------------------------------------------------- */
+div.callout,
+div.warning, div.note, div.tip, div.important, div.caution,
+div.critical, div.evidence, div.finding {
+  margin: 1.5em 0;
+  padding: 1rem 1.25rem;
+  border-radius: 6px;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-left-width: 4px;
+  background-color: #f8fafc;
+  color: var(--color-text, #1e293b);
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+div.callout p {
+  color: var(--color-text, #1e293b);
+  line-height: 1.6;
+}
+
+div.callout p:last-child {
+  margin-bottom: 0;
+}
+
+div.callout strong {
+  color: var(--color-primary, #0f172a);
+}
+
+div.callout .title,
+div.warning .title, div.note .title, div.tip .title,
+div.important .title, div.caution .title, div.critical .title {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.5em;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+div.callout .title p,
+div.warning .title p, div.note .title p, div.tip .title p,
+div.important .title p, div.caution .title p, div.critical .title p {
+  margin: 0;
+  color: inherit;
+}
+
+.callout-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.15em;
+  height: 1.15em;
+  flex-shrink: 0;
+}
+
+.callout-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+/* Inline Primer Octicons */
+.octicon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: -0.15em;
+  line-height: 1;
+}
+
+.octicon svg {
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+}
+
+/* Callout Variants */
+div.note, div.info, div.evidence {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+  border-left-color: #0284c7;
+}
+div.note .title, div.info .title, div.evidence .title {
+  color: #0369a1;
+}
+
+div.warning, div.caution, div.anomaly {
+  background-color: #fffdf5;
+  border-color: #fef08a;
+  border-left-color: #d97706;
+}
+div.warning .title, div.caution .title, div.anomaly .title {
+  color: #b45309;
+}
+
+div.critical, div.danger, div.threat {
+  background-color: #fef8f8;
+  border-color: #fecdd3;
+  border-left-color: #dc2626;
+}
+div.critical .title, div.danger .title, div.threat .title {
+  color: #b91c1c;
+}
+
+div.important {
+  background-color: #faf8ff;
+  border-color: #e9d5ff;
+  border-left-color: #7c3aed;
+}
+div.important .title {
+  color: #6d28d9;
+}
+
+div.tip, div.success, div.finding {
+  background-color: #f6fcf8;
+  border-color: #bbf7d0;
+  border-left-color: #059669;
+}
+div.tip .title, div.success .title, div.finding .title {
+  color: #047857;
+}
+
+/* --------------------------------------------------------------------------
+   6. General Print Media Rules (@media print)
    -------------------------------------------------------------------------- */
 @media print {
   html, body {

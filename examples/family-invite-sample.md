@@ -25,7 +25,7 @@ Milá rodino a přátelé,
 2. **15:30 – 17:00** // Slavnostní přípitek, rodinný kvíz & společné focení ve vinohradu
 3. **17:00 – 19:30** // Teplý raut, grilované speciality a degustace místních přívlastkových vín
 4. **19:30 – 20:30** // Krájení slavnostního narozeninového dortu a káva
-5. **20:30 – ??** // Živá cimbálová muzika, večerní tanec a volná zábava
+5. **20:30 – ??** // Večerní hudba & tanec (Daft Punk, Pet Shop Boys & 80s/90s pop classics)
 
 ---
 
@@ -38,7 +38,7 @@ Milá rodino a přátelé,
 | **Dětský koutek** | Venkovní hřiště i vnitřní herna | Hračky a animátor zajištěni od 15:00 do 19:00 |
 
 > **PROSÍME O POTVRZENÍ ÚČASTI (RSVP)**  
-> Dejte nám prosím vědět nejpozději do **20. září 2026** přes telefon nebo WhatsApp na číslo `+420 777 123 456`.  
+> Dejte nám prosím vědět nejpozději do **20. září 2026** přes telefon nebo WhatsApp na číslo `+420 777 123 456`.  
 > Pokud máte vy nebo vaše děti specifická dietní omezení (bezlepek, vegetariánství apod.), připište je prosím k odpovědi.
 
 ::: {.invite-closing}

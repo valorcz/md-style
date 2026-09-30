@@ -1,246 +1,360 @@
 /* ==========================================================================
-   FAMILY & CELEBRATION INVITATION THEME (md-style)
-   Designed for family celebrations, birthdays, weddings, anniversaries,
-   and personal festive gatherings.
-   Colors: Warm Terracotta, Golden Amber, Deep Forest & Cream Parchment.
+   FAMILY & CELEBRATION INVITATION THEME (Modern Editorial)
+   Inspired by contemporary editorial publications (Kinfolk, Cereal, Monocle).
+   Typography: High-contrast editorial serif (Playfair Display) paired with
+               clean, tracked-out sans-serif (Plus Jakarta Sans).
+   Palette: Warm Espresso, Alabaster Linen, Soft Sienna & Warm Stone.
    ========================================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap");
 
 :root {
   /* Typography */
-  --font-heading: "Roboto Slab", "Merriweather", Georgia, serif;
-  --font-body: "Merriweather", Georgia, "DejaVu Serif", serif;
+  --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-heading: "Playfair Display", Georgia, serif;
+  --font-body: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: "JetBrains Mono", Menlo, Consolas, monospace;
 
-  /* Palette: Warm festive tones */
-  --color-primary: #881337;        /* Deep Rose / Wine */
-  --color-secondary: #92400e;      /* Warm Amber / Cinnamon */
-  --color-accent: #b45309;         /* Golden Ochre */
-  --color-gold: #d97706;
+  /* Editorial Warm Palette */
+  --color-primary: #1c1917;          /* Warm Espresso Obsidian */
+  --color-secondary: #78716c;        /* Warm Stone */
+  --color-accent: #9a3412;           /* Warm Sienna / Terracotta */
+  --color-accent-subtle: #fff7ed;    /* Subtle terracotta wash */
+  --color-text: #292524;             /* Charcoal body text */
+  --color-text-muted: #57534e;       /* Readable secondary text */
+  --color-border: #e7e5e4;           /* Delicate hairline stone */
+  --color-border-subtle: #f5f5f4;
+  --color-canvas: #faf8f5;           /* Warm alabaster linen paper */
+  --color-card-bg: #ffffff;
 
-  --color-bg: #fdfbf7;             /* Soft cream */
-  --color-paper: #ffffff;
-  --color-text: #292524;           /* Warm Charcoal */
-  --color-text-muted: #78716c;
-  --color-border: #fde68a;         /* Soft Gold */
-  --color-border-subtle: #fef3c7;
-
-  /* Layout dimensions */
+  /* Dimensions */
   --doc-max-width: 44rem;
   --line-height-body: 1.7;
 
   /* Running Header/Footer Overrides for Paged Media */
+  --page-margin: 20mm 16mm 20mm 16mm;
   --page-header-left: none;
   --page-header-right: none;
   --page-footer-left: none;
   --page-footer-right: counter(page);
+  --page-footer-color: #a8a29e;
+  --page-footer-font: var(--font-body);
+  --page-footer-size: 8pt;
 }
 
 /* --------------------------------------------------------------------------
-   Container & Decorative Frame
+   Global Document Setup: Editorial Warm Canvas
    -------------------------------------------------------------------------- */
 body {
-  border: 2px solid var(--color-border);
-  outline: 6px solid #fef9c3;
-  outline-offset: -10px;
-  background-color: var(--color-paper);
-  padding: 3.5rem 3.5rem;
-  border-radius: 12px;
+  font-family: var(--font-body);
+  color: var(--color-text);
+  line-height: var(--line-height-body);
+  letter-spacing: -0.005em;
+  font-size: 10.5pt;
+  background-color: var(--color-canvas);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media screen {
+  body {
+    padding: 3.5rem 3.5rem !important;
+    border: 1px solid var(--color-border) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04) !important;
+    margin: 2.5rem auto !important;
+  }
+}
+
+@media print {
+  body {
+    background-color: #ffffff !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
 }
 
 /* --------------------------------------------------------------------------
-   Invitation Hero / Title Block
+   Hero Header Block: Literary Dignity & Delicate Spacing
    -------------------------------------------------------------------------- */
 header#title-block-header {
   text-align: center;
-  border-bottom: 1px dashed var(--color-border);
-  padding-bottom: 2rem;
-  margin-bottom: 2.2rem;
+  padding-bottom: 2.5rem;
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid var(--color-border);
+  position: relative;
 }
 
-header#title-block-header h1.title {
-  color: var(--color-primary);
-  font-family: var(--font-heading);
-  font-size: 2.2rem;
-  font-weight: 700;
-  line-height: 1.25;
-  margin: 0.5rem 0;
-  letter-spacing: -0.01em;
-}
-
-header#title-block-header p.subtitle {
-  color: var(--color-secondary);
+/* Editorial Category Kicker / Ornamental Topmark */
+header#title-block-header::before {
+  content: "✦";
+  display: block;
   font-family: var(--font-body);
-  font-size: 1.15rem;
-  font-style: italic;
-  margin: 0.6rem 0 1.2rem;
-}
-
-header#title-block-header p.author {
-  color: var(--color-text-muted);
-  font-size: 0.95rem;
-}
-
-/* --------------------------------------------------------------------------
-   Headings & Sections
-   -------------------------------------------------------------------------- */
-h1 {
-  color: var(--color-primary);
-  font-size: 1.6rem;
-  font-weight: 700;
-  text-align: center;
-  margin-top: 2rem;
+  font-size: 1rem;
+  letter-spacing: 0.25em;
+  color: var(--color-accent);
   margin-bottom: 1rem;
 }
 
-h2 {
-  color: var(--color-secondary);
-  font-size: 1.25rem;
+header#title-block-header h1.title {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
   font-weight: 600;
-  margin-top: 1.8rem;
-  margin-bottom: 0.6rem;
-  border-bottom: none;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  color: var(--color-primary);
+  margin: 0.5rem 0 1rem;
 }
 
-h3 {
-  color: var(--color-primary);
-  font-size: 1.05rem;
+header#title-block-header p.subtitle {
+  font-family: var(--font-display);
+  font-size: 1.18rem;
+  font-style: italic;
+  color: var(--color-text-muted);
+  line-height: 1.55;
+  max-width: 34rem;
+  margin: 0.5rem auto 1.25rem;
+}
+
+header#title-block-header p.author {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
   font-weight: 600;
-  margin-top: 1.4rem;
-  margin-bottom: 0.4rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-secondary);
+  margin-top: 0.75rem;
+}
+
+header#title-block-header p.date {
+  display: none;
 }
 
 /* --------------------------------------------------------------------------
-   Event Highlight Card (Date, Time, Venue)
+   Introduction Narrative
    -------------------------------------------------------------------------- */
-.event-card,
-ul:has(> li > strong:first-child) {
-  background-color: #fffbeb;
-  border: 1px solid #fde68a;
-  border-radius: 8px;
-  padding: 1.2rem 1.6rem;
-  margin: 1.8rem 0;
-  list-style-type: none;
+p:first-of-type {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--color-text);
+  margin-bottom: 2rem;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
-ul:has(> li > strong:first-child) li {
-  margin: 0.5rem 0;
-  font-size: 1rem;
+/* --------------------------------------------------------------------------
+   Key Event Details: Editorial Marginal Rail / Pullout (Option 3)
+   -------------------------------------------------------------------------- */
+ul:first-of-type {
+  list-style: none;
+  padding: 0.75rem 0 0.75rem 1.75rem;
+  margin: 2.25rem 0 2.5rem 0.25rem;
+  border-left: 2.5px solid var(--color-accent);
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+ul:first-of-type > li {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  font-size: 0.98rem;
+  line-height: 1.55;
+  box-shadow: none;
   display: flex;
   align-items: baseline;
-  gap: 0.5rem;
+  gap: 1.25rem;
 }
 
-ul:has(> li > strong:first-child) li strong {
-  color: var(--color-secondary);
-  min-width: 6rem;
+ul:first-of-type > li strong:first-child {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--color-accent);
+  min-width: 6.5rem;
+  flex-shrink: 0;
+  margin-bottom: 0;
 }
 
 /* --------------------------------------------------------------------------
-   RSVP & Important Notes Box
+   Section Headings & Dividers
    -------------------------------------------------------------------------- */
-blockquote {
-  background-color: #fdf2f8;
-  border-left: 4px solid var(--color-primary);
-  border-radius: 0 8px 8px 0;
-  margin: 1.8rem 0;
-  padding: 1.2rem 1.4rem;
-  font-style: normal;
-  color: var(--color-text);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+h2 {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-primary);
+  margin-top: 2.75rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-border);
 }
 
-blockquote strong:first-child {
-  color: var(--color-primary);
-  font-size: 1.05em;
-  display: block;
-  margin-bottom: 0.4rem;
+hr {
+  border: none;
+  height: 1px;
+  background: var(--color-border);
+  margin: 2.75rem 0;
 }
 
 /* --------------------------------------------------------------------------
-   Timeline / Program Schedule
+   Salon Itinerary / Program Timeline
    -------------------------------------------------------------------------- */
 ol {
-  padding-left: 1.4rem;
-  margin: 1.2rem 0;
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
 }
 
-ol li {
-  margin: 0.6rem 0;
+ol > li {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-accent);
+  border-radius: 4px;
+  padding: 0.95rem 1.25rem;
+  font-size: 0.95rem;
   line-height: 1.5;
+  display: flex;
+  align-items: baseline;
+  gap: 0.85rem;
 }
 
-ol li::marker {
-  color: var(--color-accent);
-  font-weight: 700;
+ol > li strong:first-child {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: #f5f5f4;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
 }
 
 /* --------------------------------------------------------------------------
-   Tables (Gift registry, accommodation, itinerary)
+   Editorial Accommodation Table
    -------------------------------------------------------------------------- */
 table {
   width: 100% !important;
-  margin: 1.5rem 0;
   border-collapse: collapse;
+  margin: 1.75rem 0 2.5rem;
   font-size: 0.92rem;
+  background: var(--color-card-bg);
   border: 1px solid var(--color-border);
+  border-radius: 6px;
+  overflow: hidden;
 }
 
 thead {
-  background-color: #fef3c7 !important;
+  background: #f5f5f4;
+  border-bottom: 1px solid var(--color-border);
 }
 
 th {
-  background-color: #fef3c7 !important;
-  color: var(--color-secondary) !important;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-primary);
+  padding: 0.85rem 1.15rem;
   text-align: left;
-  padding: 0.65rem 0.85rem !important;
-  border: 1px solid var(--color-border) !important;
 }
 
 td {
-  padding: 0.6rem 0.85rem !important;
-  border: 1px solid var(--color-border) !important;
+  padding: 0.85rem 1.15rem;
+  border-top: 1px solid var(--color-border-subtle);
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+td strong {
+  color: var(--color-primary);
 }
 
 tbody tr:nth-child(even) {
-  background-color: #fffdfa;
+  background-color: #fafaf9;
 }
 
 /* --------------------------------------------------------------------------
-   Sign-off / Warm Closing
+   RSVP Callout Block: Elegant Invitation Card
+   -------------------------------------------------------------------------- */
+blockquote {
+  margin: 2.5rem 0;
+  padding: 1.5rem 1.75rem;
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-primary);
+  border-radius: 6px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+
+blockquote > p:first-child > strong:first-child {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 0.65rem;
+}
+
+blockquote p {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+/* Ensure phone numbers in code tags or spans NEVER wrap */
+blockquote code,
+.nowrap,
+code {
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: #f5f5f4;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid #e7e5e4;
+  border-radius: 4px;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+}
+
+/* --------------------------------------------------------------------------
+   Closing Block
    -------------------------------------------------------------------------- */
 .invite-closing {
   text-align: center;
-  margin-top: 2.5rem;
+  margin-top: 2.75rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--color-border-subtle);
+  font-family: var(--font-display);
+  font-size: 1.15rem;
   font-style: italic;
-  font-size: 1.05rem;
-  color: var(--color-secondary);
+  color: var(--color-text-muted);
 }
 
-/* --------------------------------------------------------------------------
-   Paged Media & Print Optimizations
-   -------------------------------------------------------------------------- */
-@media print {
-  body {
-    outline: none;
-    border: 1.5pt solid #fde68a;
-    padding: 15mm 15mm;
-  }
-
-  @page {
-    margin: 15mm 12mm 15mm 12mm;
-    @bottom-center {
-      content: "❦";
-      font-size: 10pt;
-      color: #b45309;
-    }
-  }
-
-  th {
-    background-color: #fef3c7 !important;
-    color: #92400e !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
+.invite-closing strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 600;
+  font-style: normal;
+  color: var(--color-primary);
+  margin-top: 0.5rem;
+  letter-spacing: -0.01em;
 }
+

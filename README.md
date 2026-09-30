@@ -1,70 +1,28 @@
-# Markdown Forensic Report Styler (`md-style`)
+# Markdown Report Styler (`md-style`)
 
-> A robust, modern document generation toolchain for transforming Markdown into publication-ready **Digital Forensics, Incident Response (DFIR), and Technical Audit Reports** using Pandoc.
+> A robust, modern document generation toolchain for transforming Markdown into publication-ready **Forensic & DFIR Reports, Civic & Building Association (SVJ) Notices, Academic Reports, and Corporate Memos** using Pandoc.
 
 ---
 
 ## Highlights
 
-- **Authoritative Typography**:
-  - Headings: **Roboto Slab** (weights 400, 600, 700) for structured legal/technical authority.
-  - Body Text: **Merriweather** (weights 300, 400, 700) for high legibility across long investigative narratives.
-  - Code & Monospace: **JetBrains Mono** with ligatures enabled for clear distinction between zero `0` and capital `O`, lowercase `l` and number `1`.
-- **Specialized Code Block & Monospace Highlighting**:
-  - Dark terminal aesthetic with macOS window indicator controls.
-  - Automatic language badge indicator (e.g. `BASH`, `PYTHON`, `POWERSHELL`, `JSON`, `YARA`, `HEX DUMP`).
-  - Resilient inline code tokens with auto-wrap support for cryptographic hashes (`SHA-256`, `MD5`), IP addresses, registry paths, and memory offsets without breaking table boundaries.
-  - High-contrast syntax highlighting palette with line-numbering support.
-- **Forensic Case Artifacts & Callouts**:
-  - Executive case dossier header with examiner metadata, case numbers, and abstracts.
-  - Traffic Light Protocol (`TLP:AMBER`, `TLP:RED`, etc.) and severity status badges.
-  - Callout containers for `CRITICAL FINDINGS`, `WARNINGS`, `EVIDENCE ACQUISITION`, and `CHAIN OF CUSTODY`.
-  - Professional tables tailored for event timelines, evidence registries, and hash ledgers.
-- **Print & PDF Optimization (`@media print`)**:
-  - Tuned `@page` setup (A4 / Letter margins, orphan/widow protection).
-  - Page-break controls preventing split tables, code blocks, or severed headings.
-  - **Ink-friendly print mode**: automatically converts code containers to a clean light background for paper clarity and toner conservation.
-- **Robust Tooling**:
-  - Modernized CLI script with comprehensive error handling, input validation, help screens, and flags.
-
----
-
-## Directory Structure
-
-```text
-md-style/
-├── md-to-report.sh                 # Primary CLI report generator (robust, error-handled)
-├── md-to-html.sh                   # Compatibility wrapper forwarding to md-to-report.sh
-├── filters/
-│   ├── table-nowrap.lua            # Lua filter for unwrapped timestamps & localized headers
-│   └── i18n.lua                    # Pandoc filter for document-level internationalization
-├── styles/
-│   ├── base.css                    # Shared reset, baseline typography, table fragmentation & print core
-│   ├── forensic.css                # Forensic & DFIR report theme (default)
-│   ├── svj-invitation.css          # SVJ assembly invitation theme (Czech building associations)
-│   ├── school.css                  # School & academic progress report theme (booktabs tables)
-│   ├── announcement.css            # Corporate memo & office announcement theme
-│   ├── family-invite.css           # Family celebration & event invitation theme
-│   ├── fonts.css                   # Curated Google Fonts stylesheet
-│   └── paged.css                   # W3C CSS Paged Media rules & screen preview styling
-├── templates/
-│   └── paged-header.html           # Polyfill loader & Paged.js initialization header
-├── vendor/
-│   └── paged.polyfill.js           # Offline-ready vendored Paged.js library
-├── examples/
-│   ├── sample-forensic-report.md   # Reference forensic report demonstrating DFIR features
-│   ├── school-report-sample.md     # Academic report fixture with student dossier & grades
-│   ├── announcement-sample.md      # Corporate memo fixture with action checklists
-│   ├── family-invite-sample.md     # Celebratory family gathering invitation fixture
-│   ├── sample-forensic-report.html # Pre-compiled standalone output showcase
-│   ├── sample-paged-report.html    # Pre-compiled Paged.js visual sheet showcase
-│   └── sample-paged-report.pdf     # Direct PDF output generated with running headers & footers
-├── design-samples/                 # Real-world reference source documents & comparison PDFs
-├── docs/
-│   └── style_development_notes.md  # Comprehensive guide for developing & testing new styles
-├── deprecated/                     # Archived legacy prototype files
-└── README.md                       # Documentation
-```
+- **Authoritative Typography & Themes**:
+  - Curated font pairings (Roboto Slab / Merriweather, Plus Jakarta Sans / Inter, Courier Prime).
+  - Pre-built themes tailored for specific document genres (forensic, SVJ notices, academic, memos).
+- **Dual Layout Engines**:
+  - **Native Print (`--print`)**: Zero-JS W3C `@media print` engine. Fast (<3s), compact (~400KB), pixel-perfect for physical paper and PDF export.
+  - **Paged.js Polyfill (`--paged`)**: Browser preview engine simulating real A4 paper sheets with drop shadows and running headers/footers on screen.
+- **Specialized Forensic & Technical Features**:
+  - Monospace terminal blocks with macOS-style window controls and automatic language badges.
+  - Unwrapped timestamp tables (`filters/table-nowrap.lua`) ensuring dates and hashes never wrap awkwardly across lines.
+  - Severity status badges (`TLP:AMBER`, `CRITICAL FINDING`, etc.).
+- **Civic & SVJ Assembly Automation**:
+  - Dynamic inlined Table of Contents (`[[TOC]]`).
+  - Strict first-page notice board isolation (suppressing headers and footers on page 1).
+  - Guaranteed page break before agenda details.
+  - Proposal callouts (`***Návrh výboru:***`) and optional voting resolution cards.
+- **Fully Self-Contained Output**:
+  - By default, inlines all stylesheets, web fonts, and assets into a single portable `.html` file.
 
 ---
 
@@ -82,21 +40,21 @@ md-style/
 | **SVJ Classic** | `style: svj-invitation` | Traditional serif assembly notices (*Pozvánka na shromáždění SVJ*), deep navy/teal/amber palette, proposal callouts. |
 | **School Report** | `style: school` | Academic progress assessments, course rubrics, student dossier grids, booktabs tables, faculty signatures. |
 | **Office Announcement** | `style: announcement` | Corporate executive memorandums, `TO/FROM/DATE/SUBJECT` header block, urgency banners, action task checklists. |
-| **Family Invite** | `style: family-invite` | Celebratory gatherings, birthdays, anniversaries, golden champagne/terracotta tones, RSVP blocks, schedule itinerary. |
+| **Family & Party Invite** | `style: family-invite` | Electro-chic celebration invite (Daft Punk / Pet Shop Boys aesthetic): neon gradients, glassmorphism cards, festival timeline setlist, VIP guestlist pass. |
 
 ### Selecting a Theme
 1. **Via Markdown Frontmatter (Recommended):**
    ```yaml
    ---
-   title: "Oslava 50. narozenin"
-   style: family-invite
+   title: "Pozvánka na shromáždění vlastníků jednotek"
+   style: svj-modern
    language: cs
    toc: false
    ---
    ```
 2. **Via CLI Argument:**
    ```bash
-   ./md-to-report.sh -s school examples/school-report-sample.md
+   ./md-to-report.sh -s svj-community examples/pozvánka-shromáždění-svj.md
    ```
 
 ---
@@ -105,6 +63,7 @@ md-style/
 
 - **[Pandoc](https://pandoc.org/)** (v2.x or v3.x)
 - Modern web browser (Firefox, Chrome, Edge, Safari) for viewing and printing.
+- Optional: `chromium-browser`, `google-chrome`, or `weasyprint` for direct command-line PDF export (`-p` / `--pdf`).
 
 ---
 
@@ -115,10 +74,15 @@ md-style/
 Generate a self-contained, standalone HTML report from any Markdown file:
 
 ```bash
+# Compile using default forensic styling:
 ./md-to-report.sh examples/sample-forensic-report.md
-```
 
-This compiles `examples/sample-forensic-report.html` with all styles and fonts embedded.
+# Compile in native print mode with floating print action button:
+./md-to-report.sh --print examples/pozvánka-shromáždění-svj.md
+
+# Compile directly to a PDF:
+./md-to-report.sh --print -p examples/pozvánka-shromáždění-svj.md -o pozvánka.pdf
+```
 
 ### 2. View in Browser & Print to PDF
 
@@ -126,16 +90,16 @@ Open the generated HTML in any web browser:
 
 ```bash
 # Linux
-xdg-open examples/sample-forensic-report.html
+xdg-open report.html
 
 # macOS
-open examples/sample-forensic-report.html
+open report.html
 ```
 
-Press **`Ctrl + P`** (or **`Cmd + P`** on macOS):
+Press **`Ctrl + P`** (or click the floating print button):
 - Destination: **Save as PDF**
-- Options: Check **"Background graphics"** for colored headers, badges, and table highlights.
-- Paper Size: **A4** or **Letter**
+- Options: Check **"Background graphics"** for colored headers, badges, and cards.
+- Paper Size: **A4** (or **Letter**)
 
 ---
 
@@ -150,14 +114,15 @@ md-to-report.sh [OPTIONS] <input.md> [output.html]
 | `-o, --output <file>` | Custom destination path (`.html` or `.pdf`) | `<input>.html` |
 | `-t, --title <string>` | Override report title metadata | Extracted from Markdown |
 | `-l, --lang <code>` | Set report language (`cs`, `en`) | `en` (or frontmatter) |
-| `-s, --style <file>` | Path to custom CSS stylesheet | `styles/forensic.css` |
+| `-s, --style <name/path>`| Theme name (`svj-modern`, `forensic`, etc.) or custom CSS path | `styles/forensic.css` |
+| `--print` | Native Print mode (zero-JS, fast & deterministic W3C `@media print`) | Disabled |
+| `--paged` | Enable Paged.js W3C CSS Paged Media pagination (simulated A4 sheets on screen) | Disabled |
 | `--toc` / `--no-toc` | Toggle executive Table of Contents | Enabled (`--toc`) |
 | `--toc-depth <1-6>` | Maximum heading depth shown in TOC | `3` |
 | `-N, --number-sections` | Auto-number headings (`1.`, `1.1`, `1.2`) | Off |
 | `--highlight-style <name>` | Pandoc syntax highlighting style | `kate` |
 | `--embed-resources` | Inlines styles/fonts into a standalone file | Enabled |
 | `--no-embed-resources` | Generates lightweight HTML with linked CSS | Disabled |
-| `--paged` | Enable Paged.js W3C CSS Paged Media pagination | Disabled |
 | `--no-auto-nowrap` | Disables automatic table timestamp unwrapping | Disabled |
 | `-p, --pdf` | Compile directly to PDF via Chromium / WeasyPrint | Disabled |
 | `--pdf-engine <name>` | Specify explicit PDF engine for Pandoc | Auto-detect |
@@ -201,7 +166,6 @@ Localization adapts:
 - **Code badges:** `HEX DUMP` ↔ `HEX VÝPIS`, `SYSTEM LOG` ↔ `SYSTÉMOVÝ PROTOKOL`
 
 #### Frontmatter Label Overrides
-You can override specific labels per document in the frontmatter:
 ```yaml
 classification: "DUVERNE"       # Overrides footer confidentiality text
 report-type: "AUDITNÍ ZPRÁVA"  # Overrides header badge
@@ -209,7 +173,7 @@ examiner-label: "Analytik:"    # Overrides author prefix
 date-label: "Vystaveno:"       # Overrides date prefix
 ```
 
-### 3. Forensic Status Badges
+### 3. Forensic Status Badges & Fenced Code Blocks
 ```html
 <span class="badge tlp-amber">TLP:AMBER</span>
 <span class="badge badge-critical">SEVERITY: CRITICAL</span>
@@ -217,8 +181,7 @@ date-label: "Vystaveno:"       # Overrides date prefix
 <span class="badge badge-success">CLEAN / VERIFIED</span>
 ```
 
-### 3. Fenced Code Blocks with Language Badges
-Syntax highlighting and terminal styling are applied automatically:
+Syntax highlighting and dark terminal styling are applied automatically:
 
 ````markdown
 ```bash
@@ -228,11 +191,6 @@ sha256sum /opt/forensics/evidence.raw
 
 ```powershell
 Get-WinEvent -FilterHashtable @{LogName='Security';ID=4624}
-```
-
-```python
-def parse_artifact(stream):
-    return hashlib.sha256(stream.read()).hexdigest()
 ```
 ````
 
@@ -252,10 +210,9 @@ Use standard blockquotes with strong prefixes or GitHub Alert syntax:
 
 Forensic timelines and evidence registers require readable, unwrapped timestamps across both screen and print views.
 
-#### Automatic Detection (Default)
 `md-to-report.sh` automatically routes markdown through a built-in Pandoc Lua filter (`filters/table-nowrap.lua`) that:
-- Detects timestamp column headers in English (`Timestamp`, `Time`, `Date`, `Acquisition Time`, `UTC`) as well as **localized headers** (Czech/Slovak `Časová značka`, `Casova znacka`, `Datum`, German `Zeitstempel`, etc.).
-- Inspects table cells for standard date/time patterns (ISO-8601 `YYYY-MM-DD HH:MM:SS`, European dot notation `DD.MM.YYYY HH:MM:SS`, Unix timestamps).
+- Detects timestamp column headers in English (`Timestamp`, `Time`, `Date`, `UTC`) as well as localized headers (`Časová značka`, `Casova znacka`, `Datum`, `Zeitstempel`).
+- Inspects table cells for standard date/time patterns (ISO-8601, European dot notation `DD.MM.YYYY HH:MM:SS`, Unix timestamps).
 - Prevents line breaks by applying `white-space: nowrap` to header and data cells.
 
 ```markdown
@@ -265,23 +222,48 @@ Forensic timelines and evidence registers require readable, unwrapped timestamps
 | `LOG-02` | `2026-09-11 02:14:58` | `DC-CORP-01` | Spuštění podvrženého procesu PowerShell |
 ```
 
-#### Manual Authoring Methods
-If you prefer explicit control in base Markdown:
-1. **Non-breaking space**: Use `&nbsp;` between date and time:
-   `2026-09-11&nbsp;02:14:22`
-2. **Pandoc Bracketed Spans**:
-   `[`2026-09-11 02:14:22`]{.nowrap}`
-3. **Timeline Div Containers**:
-   Wrap any table in `::: {.table-timeline}` to keep the first column unwrapped and fitted.
+---
+
+### 6. Inlined Table of Contents (TOC)
+
+To render a dynamic Table of Contents at an exact location inside the document body (such as under `## Program shromáždění`), use the standard Pandoc Fenced Div or common Markdown directives:
+
+#### Recommended Pandoc Fenced Div:
+```markdown
+## Program shromáždění
+
+::: {#toc}
+:::
+```
+
+#### Also Supported:
+- `[TOC]` *(Markdown Extra, Typora, Obsidian)*
+- `[[_TOC_]]` *(GitLab & GitHub Wiki)*
+- `<!-- TOC -->` *(HTML Comment Directive)*
+
+The pre-processing filter automatically populates this placeholder with a clean, anchor-linked `<ol class="agenda-toc">` pointing to all subsequent agenda sections.
 
 ---
 
-## Deprecated Prototype Archive
+### 7. Google Docs Numbered Headings Compatibility
 
-All original prototype files have been organized into the [`deprecated/`](file:///home/valor/Devel/personal/md-style/deprecated) directory for historical reference:
-- `deprecated/branding.css`
-- `deprecated/confluence-branding.css`
-- `deprecated/markdown-pdf.css`
-- `deprecated/pandoc.css`
-- `deprecated/md-to-ipynb.sh`
-- `deprecated/md-to-html.sh.prototype`
+When documents are exported from **Google Docs** to Markdown, numbered headings are typically formatted as an ordered list item wrapping a level-3 header:
+
+```markdown
+## Detaily jednání
+
+1. ### Zahájení
+2. ### Schválení účetní závěrky za rok 2025
+3. ### Zhodnocení aktivit v roce 2026
+```
+
+#### How `md-style` Handles This:
+- The pre-processing filter automatically detects this pattern under `## Detaily jednání` and unrolls the list into clean semantic headings:
+  ```html
+  <h3 class="agenda-heading" id="zahájení"><span class="agenda-num">1.</span> Zahájení</h3>
+  ```
+- Any inlined TOC placeholder (`::: {#toc}`, `[TOC]`, etc.) will extract and link these items in sequential order.
+- Standard Markdown headings (`### 1. Zahájení` or plain `### Zahájení`) are also supported.
+
+> [!NOTE]
+> **Backlog Roadmap:** A planned update will standardize section numbering entirely via CSS counters and native Pandoc AST filters, allowing authors to write pure, standard `### Heading` Markdown without any manual numbers.

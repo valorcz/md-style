@@ -44,6 +44,8 @@ VERBOSE=false
 QUIET=false
 AUTO_NOWRAP=true
 LUA_NOWRAP_FILTER="${SCRIPT_DIR}/filters/table-nowrap.lua"
+LUA_CALLOUTS_FILTER="${SCRIPT_DIR}/filters/callouts.lua"
+LUA_OCTICONS_FILTER="${SCRIPT_DIR}/filters/octicons.lua"
 LUA_I18N_FILTER="${SCRIPT_DIR}/filters/i18n.lua"
 LUA_SVJ_FILTER="${SCRIPT_DIR}/filters/svj-prep.lua"
 
@@ -365,20 +367,38 @@ if [[ ! -s "${INPUT_FILE}" ]]; then
 fi
 
 # 4. Resolve CSS stylesheet (CLI flag > Frontmatter style/theme/layout > Default forensic)
+STYLE_DIR=""
+STYLE_NAME=""
 if [[ "${USER_CUSTOM_STYLE}" = false ]]; then
     FRONTMATTER_STYLE="$(sed -n '1{/^---/!q}; 1d; /^---/q; p' "${INPUT_FILE}" | { grep -E '^(style|theme|layout):' || true; } | head -n 1 | sed -E 's/^(style|theme|layout):[[:space:]]*//; s/["'\''\r]//g; s/[[:space:]]+#.*$//' | tr -d '[:space:]')"
 
     if [[ -n "${FRONTMATTER_STYLE}" ]]; then
-        CSS_FILE="${FRONTMATTER_STYLE}"
+        STYLE_NAME="${FRONTMATTER_STYLE}"
         log_verbose "Detected theme '${FRONTMATTER_STYLE}' from frontmatter."
     else
+        STYLE_NAME="forensic"
         CSS_FILE="${DEFAULT_CSS}"
     fi
+else
+    STYLE_NAME="$(basename "${CSS_FILE}" .css)"
 fi
 
-if [[ ! -f "${CSS_FILE}" ]] && [[ -f "${SCRIPT_DIR}/styles/${CSS_FILE}.css" ]]; then
-    CSS_FILE="${SCRIPT_DIR}/styles/${CSS_FILE}.css"
-elif [[ ! -f "${CSS_FILE}" ]] && [[ -f "${SCRIPT_DIR}/styles/${CSS_FILE}" ]]; then
+# Resolution priority:
+# 1. Directory-based style: styles/<name>/style.css or styles/<name>/<name>.css
+# 2. Flat style: styles/<name>.css
+# 3. Direct path
+if [[ -n "${STYLE_NAME}" ]] && [[ -d "${SCRIPT_DIR}/styles/${STYLE_NAME}" ]]; then
+    STYLE_DIR="${SCRIPT_DIR}/styles/${STYLE_NAME}"
+    if [[ -f "${STYLE_DIR}/style.css" ]]; then
+        CSS_FILE="${STYLE_DIR}/style.css"
+    elif [[ -f "${STYLE_DIR}/${STYLE_NAME}.css" ]]; then
+        CSS_FILE="${STYLE_DIR}/${STYLE_NAME}.css"
+    fi
+elif [[ -n "${STYLE_NAME}" ]] && [[ -f "${SCRIPT_DIR}/styles/${STYLE_NAME}.css" ]]; then
+    CSS_FILE="${SCRIPT_DIR}/styles/${STYLE_NAME}.css"
+elif [[ -f "${CSS_FILE}" ]]; then
+    : # already a valid file
+elif [[ -f "${SCRIPT_DIR}/styles/${CSS_FILE}" ]]; then
     CSS_FILE="${SCRIPT_DIR}/styles/${CSS_FILE}"
 fi
 
@@ -495,23 +515,44 @@ if [[ -n "${DOC_LANG}" ]]; then
     PANDOC_ARGS+=("--metadata" "language=${DOC_LANG}")
 fi
 
-# Document internationalization (i18n) filter
+# 1. Global filters (applicable across all documents and themes)
 if [[ -f "${LUA_I18N_FILTER}" ]]; then
     PANDOC_ARGS+=("--lua-filter=${LUA_I18N_FILTER}")
-    log_verbose "Using Lua filter for internationalization: ${LUA_I18N_FILTER}"
+    log_verbose "Using global Lua filter for internationalization: ${LUA_I18N_FILTER}"
 fi
 
-# Automatic table nowrap filter for timestamps & localized date columns
-if [[ "${AUTO_NOWRAP}" = true ]] && [[ -f "${LUA_NOWRAP_FILTER}" ]]; then
-    PANDOC_ARGS+=("--lua-filter=${LUA_NOWRAP_FILTER}")
-    log_verbose "Using Lua filter for unwrapped timestamps: ${LUA_NOWRAP_FILTER}"
+if [[ -f "${LUA_CALLOUTS_FILTER}" ]]; then
+    PANDOC_ARGS+=("--lua-filter=${LUA_CALLOUTS_FILTER}")
+    log_verbose "Using global Lua filter for callouts & alerts: ${LUA_CALLOUTS_FILTER}"
 fi
 
+if [[ -f "${LUA_OCTICONS_FILTER}" ]]; then
+    PANDOC_ARGS+=("--lua-filter=${LUA_OCTICONS_FILTER}")
+    log_verbose "Using global Lua filter for Primer Octicons: ${LUA_OCTICONS_FILTER}"
+fi
+
+# 2. Style-specific Lua filters (isolated strictly to the active theme)
 # SVJ invitation & agenda pre-processing filter
-if [[ "${CSS_FILE}" == *"svj-"* ]] || grep -q '\[\[TOC\]\]' "${INPUT_FILE}" 2>/dev/null; then
+if [[ "${CSS_FILE}" == *"svj-"* ]] || grep -qE '(\[TOC\]|\[\[_?TOC_?\]\]|<!--[[:space:]]*TOC[[:space:]]*-->|:::[[:space:]]*\{[#.](toc|table-of-contents)\})' "${INPUT_FILE}" 2>/dev/null; then
     if [[ -f "${LUA_SVJ_FILTER}" ]]; then
         PANDOC_ARGS+=("--lua-filter=${LUA_SVJ_FILTER}")
-        log_verbose "Using Lua filter for SVJ agenda normalization & proposal callouts: ${LUA_SVJ_FILTER}"
+        log_verbose "Using style-specific Lua filter for SVJ: ${LUA_SVJ_FILTER}"
+    fi
+fi
+
+# Directory-based style filters: styles/<name>/*.lua
+if [[ -n "${STYLE_DIR}" ]] && [[ -d "${STYLE_DIR}" ]]; then
+    for sf in "${STYLE_DIR}"/*.lua; do
+        if [[ -f "${sf}" ]]; then
+            PANDOC_ARGS+=("--lua-filter=${sf}")
+            log_verbose "Using style-specific Lua filter: ${sf}"
+        fi
+    done
+# Sibling flat style filters: styles/<name>.lua (e.g., styles/forensic.lua)
+elif [[ -n "${STYLE_NAME}" ]] && [[ -f "${SCRIPT_DIR}/styles/${STYLE_NAME}.lua" ]]; then
+    if [[ "${STYLE_NAME}" != "forensic" ]] || [[ "${AUTO_NOWRAP}" = true ]]; then
+        PANDOC_ARGS+=("--lua-filter=${SCRIPT_DIR}/styles/${STYLE_NAME}.lua")
+        log_verbose "Using style-specific Lua filter: ${SCRIPT_DIR}/styles/${STYLE_NAME}.lua"
     fi
 fi
 
