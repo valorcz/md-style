@@ -1,234 +1,293 @@
 # Markdown Report Styler (`md-style`)
 
-> A robust, modern document generation toolchain for transforming Markdown into publication-ready **Forensic & DFIR Reports, Civic & Building Association (SVJ) Notices, Academic Reports, and Corporate Memos** using Pandoc.
+> A modular, publication-grade document generation toolkit for transforming Markdown into professional **Digital Forensics & DFIR Incident Reports, Civic & HOA (SVJ) Assembly Notices, Academic Reports, and Executive Memos** using Pandoc, Python, and modern web standards.
 
 ---
 
-## Highlights
+## Key Highlights
 
-- **Authoritative Typography & Themes**:
-  - Curated font pairings (Roboto Slab / Merriweather, Plus Jakarta Sans / Inter, Courier Prime).
-  - Pre-built themes tailored for specific document genres (forensic, SVJ notices, academic, memos).
+- **4-Stage Modular Pipeline**:
+  - **Stage 1**: Pre-processing & Diagram Rendering (static SVG generation via `beautiful-mermaid`).
+  - **Stage 2**: Security Indicator Discovery & Intelligence Gathering (MITRE, Windows Event Logs, CVE, GHSA, Network IPs, Custom Knowledge).
+  - **Stage 3**: Pure Pandoc AST Compilation with hierarchical Lua filters and semantic HTML.
+  - **Stage 4**: Post-Assembly, standalone HTML packaging (`--embed-resources`), and headless PDF compilation.
+- **Interactive Cyber Intelligence (`forensic/cyber`)**:
+  - **Slide-Over Knowledge Drawer**: Click on any detected indicator to inspect tactical threat intelligence, investigation tips, attacker behavior, and benign causes.
+  - **Automatic Pill Tagging**: Recognizes MITRE ATT&CK techniques, CVEs, GHSAs, Windows Event IDs, EVTX logs, SHA256/MD5 hashes, and IP addresses across code backticks and plain text.
+  - **OPSEC Confidentiality Safeguards**: Automatically suppresses external reputation queries (AbuseIPDB, VirusTotal) for RFC 1918 private intranet endpoints.
+  - **HUD Controls**: Two-tier sticky breadcrumbs, Reading Progress bar, Theme Switcher (Cyber Dark vs. Lab Light), and Section Mode reading view.
+- **Custom Case Knowledge Bases (YAML / JSON)**:
+  - Provide a folder of YAML files (e.g. `./knowledge/` or `-k / --knowledge <dir>`) defining case-specific accounts, domain controllers, staging tools, or incident aliases.
+  - Punctuation-aware prose and code matching transforms custom entities into interactive pills (`.custom-pill`) with custom drawer metadata.
+- **Layered Cascading Localization (i18n)**:
+  - Three-tier catalog hierarchy: `core/i18n/` (base document terms) $\to$ `styles/i18n/` (domain terminology) $\to$ document frontmatter overrides.
+  - Polyglot sharing: Babel CLDR normalization, Pandoc `--metadata` integration, CSS variables (`:root { --i18n-... }`), and embedded browser JSON (`#report-i18n`).
 - **Dual Layout Engines**:
-  - **Native Print (`--print`)**: Zero-JS W3C `@media print` engine. Fast (<3s), compact (~400KB), pixel-perfect for physical paper and PDF export.
-  - **Paged.js Polyfill (`--paged`)**: Browser preview engine simulating real A4 paper sheets with drop shadows and running headers/footers on screen.
-- **Specialized Forensic & Technical Features**:
-  - Monospace terminal blocks with macOS-style window controls and automatic language badges.
-  - Unwrapped timestamp tables (`filters/table-nowrap.lua`) ensuring dates and hashes never wrap awkwardly across lines.
-  - Severity status badges (`TLP:AMBER`, `CRITICAL FINDING`, etc.).
-- **Civic & SVJ Assembly Automation**:
-  - Dynamic inlined Table of Contents (`[[TOC]]`).
-  - Strict first-page notice board isolation (suppressing headers and footers on page 1).
-  - Guaranteed page break before agenda details.
-  - Proposal callouts (`***Návrh výboru:***`) and optional voting resolution cards.
+  - **Native Print (`--print`)**: Zero-JS W3C `@media print` engine. Fast (<3s), compact, pixel-perfect for physical paper and PDF export.
+  - **Paged.js Polyfill (`--paged`)**: Simulates real A4 paper sheets with drop shadows, page numbers, and running headers/footers in the browser.
 - **Fully Self-Contained Output**:
-  - By default, inlines all stylesheets, web fonts, and assets into a single portable `.html` file.
+  - Inlines stylesheets, fonts, SVG diagrams, and intelligence data into a single portable `.html` file with zero external runtime dependencies.
 
 ---
 
-## Available Themes & Styles
+## Available Themes & Hierarchical Styles
 
-`md-style` includes pre-built, production-ready themes designed for distinct document types:
+`md-style` organizes styles into logical families with backwards-compatible aliases:
 
-| Theme Name | Frontmatter | Purpose & Visual Identity |
-|---|---|---|
-| **Forensic** (default) | `style: forensic` | High-contrast DFIR investigation reports, TLP status badges, code terminal blocks, cryptographic hash registers. |
-| **SVJ Modern** | `style: svj-modern` | Contemporary architectural theme for building assemblies: sans-serif typography, meeting key info card grid (Date, Time, Place), timeline agenda, and clean committee recommendation callouts. |
-| **SVJ Community** | `style: svj-community` | Intergenerational & accessible design (young families & seniors 75+): WCAG AAA contrast, generous 11.5pt type scale, relaxed line height (1.72), large scannable meeting cards, and high-visibility proposal callouts. |
-| **SVJ Ballot** | `style: svj-ballot` | Extends `svj-modern` with interactive & printable voting resolution cards featuring ballot checkboxes (`☐ PRO`, `☐ PROTI`, `☐ ZDRŽEL SE`). |
-| **SVJ Typewriter** | `style: svj-typewriter` | Retro pre-1989 Czechoslovak municipal typewriter aesthetic (Consul mechanical font, original palette, red-ribbon motion callouts, typed table grids). |
-| **SVJ Classic** | `style: svj-invitation` | Traditional serif assembly notices (*Pozvánka na shromáždění SVJ*), deep navy/teal/amber palette, proposal callouts. |
-| **School Report** | `style: school` | Academic progress assessments, course rubrics, student dossier grids, booktabs tables, faculty signatures. |
-| **Office Announcement** | `style: announcement` | Corporate executive memorandums, `TO/FROM/DATE/SUBJECT` header block, urgency banners, action task checklists. |
-| **Family & Party Invite** | `style: family-invite` | Electro-chic celebration invite (Daft Punk / Pet Shop Boys aesthetic): neon gradients, glassmorphism cards, festival timeline setlist, VIP guestlist pass. |
+```
+styles/
+├── forensic/
+│   ├── cyber.css (alias: forensic-cyber)   # Cyber DFIR HUD, IoC drawer, dark/light themes
+│   └── dossier.css (alias: forensic)       # Formal evidence dossier & court report layout
+├── svj/
+│   ├── modern.css (alias: svj-modern)      # Contemporary HOA meeting notice
+│   ├── ballot.css (alias: svj-ballot)      # Voting ballot resolution sheets
+│   ├── community.css                       # High-contrast accessible layout for seniors
+│   ├── invitation.css                      # Traditional serif assembly notice
+│   └── typewriter.css                     # Retro Czechoslovak typewriter aesthetic
+├── school.css                              # Academic syllabus & progress assessment
+└── announcement.css                        # Corporate executive memorandum
+```
 
-### Selecting a Theme
-1. **Via Markdown Frontmatter (Recommended):**
-   ```yaml
-   ---
-   title: "Pozvánka na shromáždění vlastníků jednotek"
-   style: svj-modern
-   language: cs
-   toc: false
-   ---
-   ```
-2. **Via CLI Argument:**
-   ```bash
-   ./md-to-report.sh -s svj-community examples/pozvánka-shromáždění-svj.md
-   ```
+| Theme | CLI Flag | Frontmatter | Purpose & Visual Identity |
+|---|---|---|---|
+| **Forensic Cyber** | `-s forensic/cyber` | `style: forensic/cyber` | Cyber threat investigation HUD, interactive slide-over knowledge drawer, MITRE ATT&CK pills, dark/light toggle. |
+| **Forensic Dossier** | `-s forensic/dossier` | `style: forensic` | Classic digital forensics report, evidence custody chain, TLP status badges, terminal code blocks. |
+| **SVJ Modern** | `-s svj/modern` | `style: svj-modern` | Building assembly notice: key info card grid (Date, Time, Place), agenda timeline, proposal callouts. |
+| **SVJ Ballot** | `-s svj/ballot` | `style: svj-ballot` | Extends `svj-modern` with printable voting resolution ballot boxes (`☐ PRO`, `☐ PROTI`, `☐ ZDRŽEL SE`). |
+| **SVJ Community** | `-s svj/community` | `style: svj-community` | WCAG AAA contrast, relaxed line height, large meeting cards, designed for elderly residents. |
+| **SVJ Typewriter** | `-s svj/typewriter` | `style: svj-typewriter` | Mechanical typewriter aesthetic (Consul typeface, red-ribbon motion callouts, typed table grids). |
+| **SVJ Classic** | `-s svj/invitation` | `style: svj-invitation` | Traditional serif assembly invitation notice (*Pozvánka na shromáždění SVJ*). |
+| **School Report** | `-s school` | `style: school` | Academic progress assessments, course rubrics, student dossier grids, booktabs tables. |
+| **Announcement** | `-s announcement` | `style: announcement` | Executive memorandums, `TO/FROM/DATE/SUBJECT` header block, urgency banners, action task checklists. |
 
 ---
 
-## Requirements
+## Requirements & Installation
 
-- **[Pandoc](https://pandoc.org/)** (v2.x or v3.x)
-- Modern web browser (Firefox, Chrome, Edge, Safari) for viewing and printing.
-- Optional: `chromium-browser`, `google-chrome`, or `weasyprint` for direct command-line PDF export (`-p` / `--pdf`).
+### Prerequisites
+- **[Pandoc](https://pandoc.org/)** (v2.19+ or v3.x)
+- **[uv](https://github.com/astral-sh/uv)** (recommended Python toolchain runner) or Python 3.9+ with `pyproject.toml` dependencies
+- Optional: `chromium-browser` or `google-chrome` for headless PDF generation (`-p` / `--pdf`)
+
+### Running via `uv` or POSIX Wrapper
+The repository includes a POSIX runner script `md-to-report.sh` that delegates directly to `uv run md-to-report`:
+
+```bash
+# Clone the repository
+git clone https://github.com/valor-x/md-style.git
+cd md-style
+
+# Direct execution via runner script:
+./md-to-report.sh --help
+
+# Or run natively with uv:
+uv run md-to-report --help
+```
 
 ---
 
 ## Quick Start
 
-### 1. Basic Compilation
-
-Generate a self-contained, standalone HTML report from any Markdown file:
-
+### 1. Generate an Interactive Cyber DFIR Report
 ```bash
-# Compile using default forensic styling:
-./md-to-report.sh examples/sample-forensic-report.md
-
-# Compile in native print mode with floating print action button:
-./md-to-report.sh --print examples/pozvánka-shromáždění-svj.md
-
-# Compile directly to a PDF:
-./md-to-report.sh --print -p examples/pozvánka-shromáždění-svj.md -o pozvánka.pdf
+./md-to-report.sh investigation.md -s forensic/cyber -o report.html
 ```
 
-### 2. View in Browser & Print to PDF
-
-Open the generated HTML in any web browser:
-
+### 2. Include Custom Case Knowledge (Accounts, Hostnames, IOCs)
 ```bash
-# Linux
-xdg-open report.html
-
-# macOS
-open report.html
+./md-to-report.sh investigation.md -s forensic/cyber -k ./case-knowledge -o report.html
 ```
 
-Press **`Ctrl + P`** (or click the floating print button):
-- Destination: **Save as PDF**
-- Options: Check **"Background graphics"** for colored headers, badges, and cards.
-- Paper Size: **A4** (or **Letter**)
+### 3. Generate a Building Assembly Ballot
+```bash
+./md-to-report.sh pozvanka-shromazdeni.md -s svj/ballot --print -o pozvanka.html
+```
+
+### 4. Compile Directly to PDF
+```bash
+./md-to-report.sh pozvanka-shromazdeni.md -s svj/modern --print -p -o pozvanka.pdf
+```
 
 ---
 
-## CLI Options & Usage
+## Command-Line Options (`md-to-report`)
 
 ```text
-md-to-report.sh [OPTIONS] <input.md> [output.html]
+md-to-report [OPTIONS] <input.md> [output.html]
 ```
 
 | Option | Description | Default |
 |---|---|---|
 | `-o, --output <file>` | Custom destination path (`.html` or `.pdf`) | `<input>.html` |
-| `-t, --title <string>` | Override report title metadata | Extracted from Markdown |
-| `-l, --lang <code>` | Set report language (`cs`, `en`) | `en` (or frontmatter) |
-| `-s, --style <name/path>`| Theme name (`svj-modern`, `forensic`, etc.) or custom CSS path | `styles/forensic.css` |
-| `--print` | Native Print mode (zero-JS, fast & deterministic W3C `@media print`) | Disabled |
-| `--paged` | Enable Paged.js W3C CSS Paged Media pagination (simulated A4 sheets on screen) | Disabled |
-| `--toc` / `--no-toc` | Toggle executive Table of Contents | Enabled (`--toc`) |
+| `-s, --style <name>` | Theme (`forensic/cyber`, `forensic/dossier`, `svj/ballot`, etc.) | `forensic` |
+| `-k, --knowledge <path>` | Path to custom knowledge directory or YAML/JSON file | Auto-detected (`./knowledge`) |
+| `-t, --title <string>` | Override document title | Extracted from Markdown |
+| `-l, --lang <code>` | Document language code (`cs`, `en`, `sk`, `de`) | `en` (or frontmatter) |
+| `--print` | Native Print mode (zero-JS, deterministic `@media print`) | Disabled |
+| `--paged` | Enable Paged.js pagination (simulated A4 sheets on screen) | Disabled |
+| `--toc` / `--no-toc` | Toggle Table of Contents | Enabled (`--toc`) |
 | `--toc-depth <1-6>` | Maximum heading depth shown in TOC | `3` |
 | `-N, --number-sections` | Auto-number headings (`1.`, `1.1`, `1.2`) | Off |
-| `--highlight-style <name>` | Pandoc syntax highlighting style | `kate` |
-| `--embed-resources` | Inlines styles/fonts into a standalone file | Enabled |
-| `--no-embed-resources` | Generates lightweight HTML with linked CSS | Disabled |
-| `--no-auto-nowrap` | Disables automatic table timestamp unwrapping | Disabled |
-| `-p, --pdf` | Compile directly to PDF via Chromium / WeasyPrint | Disabled |
-| `--pdf-engine <name>` | Specify explicit PDF engine for Pandoc | Auto-detect |
-| `--open` | Open report in default browser after build | Disabled |
-| `-v, --verbose` | Show verbose debug output | Disabled |
+| `--highlight-style <name>`| Syntax highlighting style (`kate`, `monochrome`, etc.) | `kate` |
+| `--embed-resources` | Inlines styles/fonts/images into a standalone HTML file | Enabled |
+| `--no-mermaid` | Disable Mermaid diagram rendering | Enabled |
+| `--offline` | Disable on-demand online scraping for indicators | Online enabled |
+| `--inspect` | Dry-run diagnostic scan (inspect enrichments and tokens) | Off |
+| `--list-styles` | List all available built-in document themes | - |
+| `-p, --pdf` | Compile directly to PDF via headless Chromium | Disabled |
+| `--open` | Open generated report in default browser after build | Disabled |
+| `-v, --verbose` | Verbose diagnostic logging | Disabled |
 | `-q, --quiet` | Silence non-error messages | Disabled |
-| `-h, --help` | Display comprehensive help screen | - |
-| `-V, --version` | Display version information | - |
+
+---
+
+## Custom Case Knowledge Base (YAML / JSON)
+
+To provide explanations and threat context for case-specific entities (service accounts, internal hostnames, IP subnets, or staging scripts), provide a folder of YAML files.
+
+### 1. Directory Structure & Discovery
+`md-style` automatically searches:
+1. CLI flag: `-k / --knowledge <path>`
+2. Frontmatter: `knowledge: ./case-intel`
+3. Sibling folder: `./knowledge/` or `./kb/`
+4. Parent case folder: `../knowledge/` (shared across reports in an incident folder)
+
+```
+case-2026-0920/
+├── knowledge/
+│   ├── accounts.yaml
+│   ├── assets.yaml
+│   └── tools.yaml
+└── 0report/
+    └── forenzni-analyza.md   # Automatically inherits ../knowledge/
+```
+
+### 2. Knowledge Entry Format (`knowledge/*.yaml`)
+```yaml
+# Example: knowledge/accounts.yaml
+- id: "svc_backup"                     # Unique identifier
+  match:
+    exact:
+      - "svc_backup"
+      - "svc_backup@corp.internal"
+    regex: '(?i)\bsvc_[a-z0-9_]+\b'     # Optional regex pattern
+    in_code: true                      # Match within `code backticks`
+    in_prose: true                     # Match within plain text prose
+    case_sensitive: false
+
+  badge: "SERVICE ACCOUNT"             # Drawer badge label
+  badge_type: "account"                # Visual theme: account, host, critical, warning, custom
+  category: "ACTIVE DIRECTORY // PRIVILEGED"
+  role: "Service Account"
+  title: "AD Backup Service Account"
+  summary: "Domain-level backup account with SeBackupPrivilege. Compromised via Kerberoasting."
+
+  fields:                              # Arbitrary key-value metadata rows
+    "DOMAIN": "corp.internal"
+    "PRIVILEGES": "Domain Admins, SeBackupPrivilege"
+    "STATUS": "Compromised // Kerberos Ticket 0x17 Requested"
+    "INCIDENT ROLE": "Primary Kerberoasting Target (T1558.003)"
+
+  investigation_tips:                  # Forensic guidance checklist
+    - "Check Event ID 4769 in Security.evtx filtered by ServiceName 'svc_backup'."
+    - "Verify Kerberos Ticket Encryption Type is 0x17 (RC4-HMAC)."
+
+  attacker_behavior:                   # Threat actor activity notes
+    - "Attacker used Rubeus to request a service ticket for offline cracking."
+
+  benign_causes:                       # Benign causes block
+    - "Scheduled backup job running Veeam tape synchronization."
+
+  pivots:                              # Custom reference links
+    - label: "ACTIVE DIRECTORY AUDIT DOCS ↗"
+      url: "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/monitoring-active-directory-for-signs-of-compromise"
+```
+
+### 3. Compact Syntax
+For quick definitions, compact single-string syntax is also supported:
+```yaml
+- match: "DC01.corp.internal"
+  badge: "PRIMARY DOMAIN CONTROLLER"
+  badge_type: "host"
+  summary: "Primary Domain Controller running Windows Server 2022 at 192.168.45.2."
+  fields:
+    "HOST IP": "192.168.45.2"
+    "ROLES": "AD DS, DNS, Kerberos KDC"
+```
+
+---
+
+## Interactive Cyber Telemetry & Indicator Intelligence
+
+When using `-s forensic/cyber`, `md-style` enriches security telemetry:
+
+- **Windows Event IDs (`EID 5001`, `Event ID 4624`)**:
+  - Automatically queries the local event database and persistent cache.
+  - Guarantees uniform prefix retention across compound lists:
+    `Event ID 4624, 4625 and 4672` $\to$ `<code class="eventid-pill">Event ID 4624</code>`, `<code class="eventid-pill">Event ID 4625</code>`, `<code class="eventid-pill">Event ID 4672</code>` (no bare numbers).
+  - Inspects channel, audit categories, investigation tips, and pivots to Ultimate Windows Security and Microsoft Docs.
+- **Windows EVTX Channels (`Security.evtx`, `Defender.evtx`)**:
+  - Identifies log channels, default filesystem paths, and key event associations.
+- **MITRE ATT&CK (`T1558.003`, `T1059.001`)**:
+  - Identifies tactics, platforms, description, and direct links to ATT&CK Framework.
+- **Vulnerabilities (`CVE-2024-21413`, `GHSA-...`)**:
+  - Displays CVSS severity badges, affected software components, and links to NIST NVD and GitHub Advisory Database.
+- **Network IP Addresses**:
+  - **RFC 1918 Private IPs (`10.x`, `192.168.x`, `172.16-31.x`, `127.x`)**: Tagged as `INTERNAL RFC 1918`. Outbound lookups to external reputation services are strictly suppressed to preserve client OPSEC.
+  - **Public WAN IPs**: Tagged as `PUBLIC WAN IP` with verified pivots to AbuseIPDB and VirusTotal.
+- **Cryptographic Hashes (SHA256, SHA1, MD5)**:
+  - Formatted with character length badges and VirusTotal hash search pivots.
 
 ---
 
 ## Markdown Formatting Guide
 
-### 1. YAML Metadata Header
-Place this block at the top of your markdown file:
-
+### 1. YAML Frontmatter
 ```yaml
 ---
-title: "Digital Forensics Incident Report"
-subtitle: "Incident IR-2026-0911A: Host Intrusion Analysis"
-author: "Jane Doe"
-date: "September 11, 2026"
-language: en # or 'cs' for Czech
-classification: "CONFIDENTIAL // LAW ENFORCEMENT" # optional override
-abstract: |
-  Executive summary of the investigation, scope of evidence analyzed,
-  and primary conclusions.
+title: "Forenzní analýza kybernetického incidentu"
+subtitle: "Incident IR-2026-0920: EnterpriseCorp Active Directory"
+author: "Forenzní analytik"
+date: "2026-09-21"
+lang: cs
+classification: "DŮVĚRNÉ // FORENZNÍ ŠETŘENÍ"
+style: forensic/cyber
+knowledge: "./knowledge"
+toc: true
+toc-depth: 3
 ---
 ```
 
-### 2. Localization & Language Support (i18n)
+### 2. Localization & Layered i18n
+Supported out of the box: `en` (English), `cs` (Czech), `sk` (Slovak), `de` (German).
+All standard headings (`Obsah`, `Datum`, `Vyšetřovatel`, `Oficiální zpráva`, `Důvěrné`) adapt automatically based on the document language.
 
-Reports support both **English (`en`)** and **Czech (`cs`)** out of the box. Set the language in frontmatter (`language: cs` or `lang: cs`) or via CLI (`-l cs`).
+### 3. Timeline Tables with Unwrapped Timestamps
+Table timestamps and hash registers are automatically kept on a single line (`filters/forensic-cyber.lua` / `styles/forensic-cyber.lua`):
 
-Localization adapts:
-- **Title header badge:** `OFFICIAL FORENSIC REPORT` ↔ `OFICIÁLNÍ FORENZNÍ ZPRÁVA`
-- **Examiner label:** `EXAMINER:` ↔ `ZPRACOVAL:`
-- **Date label:** `DATE:` ↔ `DATUM:`
-- **Running header & footer (Paged.js):** `CONFIDENTIAL...` ↔ `DŮVĚRNÉ`, `Page X` ↔ `Strana X`
-- **TOC & Abstract headings:** Automatically localized to `Obsah` and `Abstrakt`
-- **Code badges:** `HEX DUMP` ↔ `HEX VÝPIS`, `SYSTEM LOG` ↔ `SYSTÉMOVÝ PROTOKOL`
-
-#### Frontmatter Label Overrides
-```yaml
-classification: "DUVERNE"       # Overrides footer confidentiality text
-report-type: "AUDITNÍ ZPRÁVA"  # Overrides header badge
-examiner-label: "Analytik:"    # Overrides author prefix
-date-label: "Vystaveno:"       # Overrides date prefix
+```markdown
+| Položka | Časová značka (UTC) | Hostitel | Zjištěná aktivita |
+|---|---|---|---|
+| `LOG-01` | `2026-09-20 02:14:22` | `DC01` | Útočník vypíná ochranu Microsoft Defender (`EID 5001`) |
+| `LOG-02` | `2026-09-20 02:15:05` | `192.168.45.1` | Pokus o Kerberoasting servisního účtu `svc_backup` |
 ```
 
-### 3. Forensic Status Badges & Fenced Code Blocks
-```html
-<span class="badge tlp-amber">TLP:AMBER</span>
-<span class="badge badge-critical">SEVERITY: CRITICAL</span>
-<span class="badge badge-warning">SUSPICIOUS</span>
-<span class="badge badge-success">CLEAN / VERIFIED</span>
-```
-
-Syntax highlighting and dark terminal styling are applied automatically:
+### 4. Mermaid Diagrams
+Fenced Mermaid code blocks are rendered into static, dark-mode/light-mode compatible SVGs at build time without requiring client-side JavaScript:
 
 ````markdown
-```bash
-# Extract evidence hash
-sha256sum /opt/forensics/evidence.raw
-```
-
-```powershell
-Get-WinEvent -FilterHashtable @{LogName='Security';ID=4624}
+```mermaid
+graph LR
+    A[Compromised Host 192.168.45.1] -->|Kerberoasting T1558.003| B(DC01 svc_backup)
+    B -->|Offline Hash Cracking| C{Plaintext Recovery}
+    C -->|DCSync Privilege| D[NTDS.dit Extraction]
 ```
 ````
 
-### 4. Findings & Evidence Callouts
-Use standard blockquotes with strong prefixes or GitHub Alert syntax:
+### 5. Inlined Table of Contents (SVJ & Assemblies)
+For agenda documents where the TOC belongs inside the body text:
 
-```markdown
-> **CRITICAL FINDING**: Unauthorized privilege escalation detected in LSASS process memory.
-
-> **EVIDENCE RECORD**: Hash verified against acquisition log without discrepancies.
-
-> [!WARNING]
-> Registry persistence key discovered at `HKLM\Software\Microsoft\Windows\CurrentVersion\Run`.
-```
-
-### 5. Unwrapped Timelines & Localized Tables
-
-Forensic timelines and evidence registers require readable, unwrapped timestamps across both screen and print views.
-
-`md-to-report.sh` automatically routes markdown through a built-in Pandoc Lua filter (`filters/table-nowrap.lua`) that:
-- Detects timestamp column headers in English (`Timestamp`, `Time`, `Date`, `UTC`) as well as localized headers (`Časová značka`, `Casova znacka`, `Datum`, `Zeitstempel`).
-- Inspects table cells for standard date/time patterns (ISO-8601, European dot notation `DD.MM.YYYY HH:MM:SS`, Unix timestamps).
-- Prevents line breaks by applying `white-space: nowrap` to header and data cells.
-
-```markdown
-| Položka | Časová značka (UTC) | Zdrojový hostitel | Zjištěná aktivita |
-|---|---|---|---|
-| `LOG-01` | `2026-09-11 02:14:22` | `198.51.100.44` | Iniciační pokus o prolomení perimetru |
-| `LOG-02` | `2026-09-11 02:14:58` | `DC-CORP-01` | Spuštění podvrženého procesu PowerShell |
-```
-
----
-
-### 6. Inlined Table of Contents (TOC)
-
-To render a dynamic Table of Contents at an exact location inside the document body (such as under `## Program shromáždění`), use the standard Pandoc Fenced Div or common Markdown directives:
-
-#### Recommended Pandoc Fenced Div:
 ```markdown
 ## Program shromáždění
 
@@ -236,34 +295,10 @@ To render a dynamic Table of Contents at an exact location inside the document b
 :::
 ```
 
-#### Also Supported:
-- `[TOC]` *(Markdown Extra, Typora, Obsidian)*
-- `[[_TOC_]]` *(GitLab & GitHub Wiki)*
-- `<!-- TOC -->` *(HTML Comment Directive)*
-
-The pre-processing filter automatically populates this placeholder with a clean, anchor-linked `<ol class="agenda-toc">` pointing to all subsequent agenda sections.
+Also supports `[TOC]`, `[[_TOC_]]`, and `<!-- TOC -->`.
 
 ---
 
-### 7. Google Docs Numbered Headings Compatibility
+## License & Attribution
 
-When documents are exported from **Google Docs** to Markdown, numbered headings are typically formatted as an ordered list item wrapping a level-3 header:
-
-```markdown
-## Detaily jednání
-
-1. ### Zahájení
-2. ### Schválení účetní závěrky za rok 2025
-3. ### Zhodnocení aktivit v roce 2026
-```
-
-#### How `md-style` Handles This:
-- The pre-processing filter automatically detects this pattern under `## Detaily jednání` and unrolls the list into clean semantic headings:
-  ```html
-  <h3 class="agenda-heading" id="zahájení"><span class="agenda-num">1.</span> Zahájení</h3>
-  ```
-- Any inlined TOC placeholder (`::: {#toc}`, `[TOC]`, etc.) will extract and link these items in sequential order.
-- Standard Markdown headings (`### 1. Zahájení` or plain `### Zahájení`) are also supported.
-
-> [!NOTE]
-> **Backlog Roadmap:** A planned update will standardize section numbering entirely via CSS counters and native Pandoc AST filters, allowing authors to write pure, standard `### Heading` Markdown without any manual numbers.
+Distributed under the Apache 2.0 License. Developed for digital forensics practitioners, incident responders, building associations, and technical authors requiring uncompromising document quality.

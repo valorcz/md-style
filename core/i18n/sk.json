@@ -1,0 +1,29 @@
+{
+  "code": "sk",
+  "name": "Slovenčina",
+  "meta": {
+    "toc_title": "Obsah",
+    "abstract_title": "Zhrnutie zistení",
+    "figure_label": "Obrázok",
+    "table_label": "Tabuľka",
+    "page_label": "Strana",
+    "confidential_label": "DÔVERNÉ",
+    "report_type": "SPRÁVA",
+    "author_label": "Autor:",
+    "date_label": "Dátum:",
+    "page_prefix": "Strana ",
+    "page_of": " z ",
+    "section_tag": "§ SEKCIA",
+    "figure_prefix": "Obrázok "
+  },
+  "ui": {
+    "filter_placeholder": "Filtrovať záznamy...",
+    "all_categories": "Všetky kategórie",
+    "showing_records": "Zobrazené {count} z {total}",
+    "copied": "SKOPÍROVANÉ DO SCHRÁNKY",
+    "back_to_top": "Späť hore",
+    "print": "Tlačiť",
+    "offline_badge": "OFFLINE SPRÁVA",
+    "close": "Zavrieť"
+  }
+}

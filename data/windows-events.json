@@ -15,7 +15,8 @@
       "1102 (Log Cleared)"
     ],
     "retention": "Fixed maximum size (typically 20MB to 1GB in Enterprise). Wrap-around overwrite policy.",
-    "url": "https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/security-auditing-overview"
+    "url": "https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/security-auditing-overview",
+    "summary": "Primary forensic repository for authentication, user rights assignment, account management, audit policy changes, and object access."
   },
   "System.evtx": {
     "type": "evtx",
@@ -32,7 +33,8 @@
       "41 (Kernel Power / BSOD)"
     ],
     "retention": "Default 20MB. Circular overwrite policy.",
-    "url": "https://learn.microsoft.com/en-us/windows/win32/eventlog/system-event-log"
+    "url": "https://learn.microsoft.com/en-us/windows/win32/eventlog/system-event-log",
+    "summary": "Contains events logged by Windows system components, service control manager, hardware changes, kernel drivers, and system startup/shutdown."
   },
   "Application.evtx": {
     "type": "evtx",
@@ -48,7 +50,8 @@
       "11724 (App Uninstalled)"
     ],
     "retention": "Default 20MB circular buffer.",
-    "url": "https://learn.microsoft.com/en-us/windows/win32/eventlog/application-event-log"
+    "url": "https://learn.microsoft.com/en-us/windows/win32/eventlog/application-event-log",
+    "summary": "Logs software errors, application crashes (WerFault / Event 1000), MSI installer installations (Event 11707), and third-party utility telemetry."
   },
   "Microsoft-Windows-Sysmon/Operational.evtx": {
     "type": "evtx",
@@ -66,7 +69,8 @@
       "EID 22 (DNS Query)"
     ],
     "retention": "Typically configured to 64MB - 512MB by SOC engineering.",
-    "url": "https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon"
+    "url": "https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon",
+    "summary": "Premier endpoint telemetry sensor providing detailed process lineage, network sockets, raw disk access, process memory injection, and pipe/DNS activity."
   },
   "Operational.evtx": {
     "type": "evtx",
@@ -84,7 +88,8 @@
       "EID 22 (DNS Query)"
     ],
     "retention": "Typically configured to 64MB - 512MB by SOC engineering.",
-    "url": "https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon"
+    "url": "https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon",
+    "summary": "Premier endpoint telemetry sensor providing detailed process lineage, network sockets, raw disk access, process memory injection, and pipe/DNS activity."
   },
   "Sysmon.evtx": {
     "type": "evtx",
@@ -102,7 +107,8 @@
       "EID 22 (DNS Query)"
     ],
     "retention": "Typically configured to 64MB - 512MB by SOC engineering.",
-    "url": "https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon"
+    "url": "https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon",
+    "summary": "Premier endpoint telemetry sensor providing detailed process lineage, network sockets, raw disk access, process memory injection, and pipe/DNS activity."
   },
   "Microsoft-Windows-PowerShell/Operational.evtx": {
     "type": "evtx",
@@ -118,7 +124,8 @@
       "4106 (Completed Script)"
     ],
     "retention": "Default 15MB. Highly recommended to increase to 100MB+.",
-    "url": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_logging_windows"
+    "url": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_logging_windows",
+    "summary": "Deep PowerShell execution log capturing de-obfuscated script blocks (EID 4104), interactive command invocation (EID 4103), and AMSI bypass attempts."
   },
   "PowerShell.evtx": {
     "type": "evtx",
@@ -134,7 +141,8 @@
       "4106 (Completed Script)"
     ],
     "retention": "Default 15MB. Highly recommended to increase to 100MB+.",
-    "url": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_logging_windows"
+    "url": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_logging_windows",
+    "summary": "Deep PowerShell execution log capturing de-obfuscated script blocks (EID 4104), interactive command invocation (EID 4103), and AMSI bypass attempts."
   },
   "Microsoft-Windows-TaskScheduler/Operational.evtx": {
     "type": "evtx",
@@ -150,7 +158,8 @@
       "201 (Action Completed)"
     ],
     "retention": "Default 1MB. Wrap-around.",
-    "url": "https://learn.microsoft.com/en-us/windows/win32/taskschd/task-scheduler-start-page"
+    "url": "https://learn.microsoft.com/en-us/windows/win32/taskschd/task-scheduler-start-page",
+    "summary": "Monitors creation, execution, and modification of scheduled tasks (primary persistence mechanism for lateral movement and C2 triggers)."
   },
   "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational.evtx": {
     "type": "evtx",
@@ -165,7 +174,8 @@
       "25 (Session Reconnected)"
     ],
     "retention": "Default 1MB.",
-    "url": "https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/welcome-to-rds"
+    "url": "https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/welcome-to-rds",
+    "summary": "Records interactive and Remote Desktop (RDP) session connect, disconnect, and reconnect transitions with source IP mapping."
   },
   "Microsoft-Windows-Windows Defender/Operational.evtx": {
     "type": "evtx",
@@ -180,7 +190,376 @@
       "5001 (Real-Time Protection Disabled)"
     ],
     "retention": "Default 16MB.",
-    "url": "https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/troubleshoot-microsoft-defender-antivirus"
+    "url": "https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/troubleshoot-microsoft-defender-antivirus",
+    "summary": "Exposes real-time threat detections, quarantined payloads, AMSI blocks, and tamper protection overrides."
+  },
+  "Defender.evtx": {
+    "type": "evtx",
+    "id": "Defender.evtx",
+    "title": "Microsoft Defender Antivirus & EDR Operational Log",
+    "channel": "Microsoft-Windows-Windows Defender/Operational",
+    "path": "%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-Windows%20Defender%4Operational.evtx",
+    "role": "Primary endpoint log for antivirus and EDR telemetry. Contains detections, real-time protection tampering (EID 5001), signature updates, configuration changes (EID 5007), and engine unloading.",
+    "key_events": [
+      "1116 (Malware Detected)",
+      "1117 (Action Taken)",
+      "5000 (RTP Enabled)",
+      "5001 (RTP Disabled)",
+      "5007 (Configuration Changed)"
+    ],
+    "retention": "Default 16MB. Wrap-around.",
+    "url": "https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/troubleshoot-microsoft-defender-antivirus",
+    "summary": "Primary endpoint log for antivirus and EDR telemetry. Contains detections, real-time protection tampering (EID 5001), signature updates, configuration changes (EID 5007), and engine unloading."
+  },
+  "TerminalServices.evtx": {
+    "type": "evtx",
+    "id": "TerminalServices.evtx",
+    "title": "Remote Desktop Local Session Manager Log",
+    "channel": "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+    "path": "%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx",
+    "role": "High-fidelity RDP session reconstruction repository. Records interactive session logon (EID 21), shell start (EID 22), logoff (EID 23), disconnect (EID 24), and reconnection (EID 25) with originating client IP addresses.",
+    "key_events": [
+      "21 (Session Logon Succeeded)",
+      "22 (Shell Start)",
+      "23 (Session Logoff)",
+      "24 (Session Disconnected)",
+      "25 (Session Reconnected)"
+    ],
+    "retention": "Default 1MB. Unaffected by standard Security.evtx clearing.",
+    "url": "https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/welcome-to-rds",
+    "summary": "High-fidelity RDP session reconstruction repository. Records interactive session logon (EID 21), shell start (EID 22), logoff (EID 23), disconnect (EID 24), and reconnection (EID 25) with originating client IP addresses."
+  },
+  "TerminalServices-LocalSessionManager.evtx": {
+    "type": "evtx",
+    "id": "TerminalServices-LocalSessionManager.evtx",
+    "title": "Remote Desktop Local Session Manager Log",
+    "channel": "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+    "path": "%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx",
+    "role": "High-fidelity RDP session reconstruction repository. Records interactive session logon (EID 21), shell start (EID 22), logoff (EID 23), disconnect (EID 24), and reconnection (EID 25) with originating client IP addresses.",
+    "key_events": [
+      "21 (Session Logon Succeeded)",
+      "22 (Shell Start)",
+      "23 (Session Logoff)",
+      "24 (Session Disconnected)",
+      "25 (Session Reconnected)"
+    ],
+    "retention": "Default 1MB. Unaffected by standard Security.evtx clearing.",
+    "url": "https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/welcome-to-rds",
+    "summary": "High-fidelity RDP session reconstruction repository. Records interactive session logon (EID 21), shell start (EID 22), logoff (EID 23), disconnect (EID 24), and reconnection (EID 25) with originating client IP addresses."
+  },
+  "LocalSessionManager.evtx": {
+    "type": "evtx",
+    "id": "LocalSessionManager.evtx",
+    "title": "Remote Desktop Local Session Manager Log",
+    "channel": "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+    "path": "%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx",
+    "role": "High-fidelity RDP session reconstruction repository. Records interactive session logon (EID 21), shell start (EID 22), logoff (EID 23), disconnect (EID 24), and reconnection (EID 25) with originating client IP addresses.",
+    "key_events": [
+      "21 (Session Logon Succeeded)",
+      "22 (Shell Start)",
+      "23 (Session Logoff)",
+      "24 (Session Disconnected)",
+      "25 (Session Reconnected)"
+    ],
+    "retention": "Default 1MB. Unaffected by standard Security.evtx clearing.",
+    "url": "https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/welcome-to-rds",
+    "summary": "High-fidelity RDP session reconstruction repository. Records interactive session logon (EID 21), shell start (EID 22), logoff (EID 23), disconnect (EID 24), and reconnection (EID 25) with originating client IP addresses."
+  },
+  "TaskScheduler.evtx": {
+    "type": "evtx",
+    "id": "TaskScheduler.evtx",
+    "title": "Windows Task Scheduler Operational Log",
+    "channel": "Microsoft-Windows-TaskScheduler/Operational",
+    "path": "%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TaskScheduler%4Operational.evtx",
+    "role": "Monitors creation, execution, and modification of scheduled tasks (primary persistence mechanism for lateral movement and C2 triggers).",
+    "key_events": [
+      "106 (Task Registered)",
+      "140 (Task Updated)",
+      "200 (Action Started)",
+      "201 (Action Completed)"
+    ],
+    "retention": "Default 1MB. Wrap-around.",
+    "url": "https://learn.microsoft.com/en-us/windows/win32/taskschd/task-scheduler-start-page",
+    "summary": "Monitors creation, execution, and modification of scheduled tasks (primary persistence mechanism for lateral movement and C2 triggers)."
+  },
+  "21": {
+    "type": "eventid",
+    "id": "21",
+    "title": "Remote Desktop Session Logon Succeeded",
+    "channel": "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+    "category": "Remote Desktop Session Lifecycle",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Records successful interactive or remote desktop session logon. Discloses SessionID, User, and Client Address (Source IP). Key evidence for initial RDP intrusion and lateral movement.",
+    "key_fields": [
+      "User",
+      "SessionID",
+      "Address"
+    ],
+    "mitre": [
+      "T1021.001 (Remote Desktop Protocol)",
+      "T1078 (Valid Accounts)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=21"
+  },
+  "Event ID 21": {
+    "type": "eventid",
+    "id": "21",
+    "title": "Remote Desktop Session Logon Succeeded",
+    "channel": "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+    "category": "Remote Desktop Session Lifecycle",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Records successful interactive or remote desktop session logon. Discloses SessionID, User, and Client Address (Source IP). Key evidence for initial RDP intrusion and lateral movement.",
+    "key_fields": [
+      "User",
+      "SessionID",
+      "Address"
+    ],
+    "mitre": [
+      "T1021.001 (Remote Desktop Protocol)",
+      "T1078 (Valid Accounts)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=21"
+  },
+  "EID 21": {
+    "type": "eventid",
+    "id": "21",
+    "title": "Remote Desktop Session Logon Succeeded",
+    "channel": "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+    "category": "Remote Desktop Session Lifecycle",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Records successful interactive or remote desktop session logon. Discloses SessionID, User, and Client Address (Source IP). Key evidence for initial RDP intrusion and lateral movement.",
+    "key_fields": [
+      "User",
+      "SessionID",
+      "Address"
+    ],
+    "mitre": [
+      "T1021.001 (Remote Desktop Protocol)",
+      "T1078 (Valid Accounts)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=21"
+  },
+  "22": {
+    "type": "eventid",
+    "id": "22",
+    "title": "Event ID 22",
+    "channel": "Sysmon",
+    "category": "DNS Query",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 22 (DNSEvent: DNS query). Records DNS lookups initiated by endpoint processes. Essential for C2 domain beaconing and DGA analysis.",
+    "key_fields": [
+      "UtcTime",
+      "Image",
+      "QueryName",
+      "QueryStatus",
+      "QueryResults"
+    ],
+    "mitre": [
+      "T1071.004 (Application Layer Protocol: DNS)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=22"
+  },
+  "Event ID 22": {
+    "type": "eventid",
+    "id": "22",
+    "title": "Event ID 22",
+    "channel": "Sysmon",
+    "category": "DNS Query",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 22 (DNSEvent: DNS query). Records DNS lookups initiated by endpoint processes. Essential for C2 domain beaconing and DGA analysis.",
+    "key_fields": [
+      "UtcTime",
+      "Image",
+      "QueryName",
+      "QueryStatus",
+      "QueryResults"
+    ],
+    "mitre": [
+      "T1071.004 (Application Layer Protocol: DNS)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=22"
+  },
+  "EID 22": {
+    "type": "eventid",
+    "id": "22",
+    "title": "Event ID 22",
+    "channel": "Sysmon",
+    "category": "DNS Query",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 22 (DNSEvent: DNS query). Records DNS lookups initiated by endpoint processes. Essential for C2 domain beaconing and DGA analysis.",
+    "key_fields": [
+      "UtcTime",
+      "Image",
+      "QueryName",
+      "QueryStatus",
+      "QueryResults"
+    ],
+    "mitre": [
+      "T1071.004 (Application Layer Protocol: DNS)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=22"
+  },
+  "23": {
+    "type": "eventid",
+    "id": "23",
+    "title": "Remote Desktop Session Logoff Succeeded",
+    "channel": "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+    "category": "Remote Desktop Session Lifecycle",
+    "severity": "AUDIT SUCCESS",
+    "summary": "User cleanly closed and logged off from the Remote Desktop session. Essential for reconstructing the adversary active presence window and dwell time on the host.",
+    "key_fields": [
+      "User",
+      "SessionID",
+      "Address"
+    ],
+    "mitre": [
+      "T1021.001 (Remote Desktop Protocol)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=23"
+  },
+  "Event ID 23": {
+    "type": "eventid",
+    "id": "23",
+    "title": "Remote Desktop Session Logoff Succeeded",
+    "channel": "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+    "category": "Remote Desktop Session Lifecycle",
+    "severity": "AUDIT SUCCESS",
+    "summary": "User cleanly closed and logged off from the Remote Desktop session. Essential for reconstructing the adversary active presence window and dwell time on the host.",
+    "key_fields": [
+      "User",
+      "SessionID",
+      "Address"
+    ],
+    "mitre": [
+      "T1021.001 (Remote Desktop Protocol)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=23"
+  },
+  "EID 23": {
+    "type": "eventid",
+    "id": "23",
+    "title": "Remote Desktop Session Logoff Succeeded",
+    "channel": "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+    "category": "Remote Desktop Session Lifecycle",
+    "severity": "AUDIT SUCCESS",
+    "summary": "User cleanly closed and logged off from the Remote Desktop session. Essential for reconstructing the adversary active presence window and dwell time on the host.",
+    "key_fields": [
+      "User",
+      "SessionID",
+      "Address"
+    ],
+    "mitre": [
+      "T1021.001 (Remote Desktop Protocol)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=23"
+  },
+  "24": {
+    "type": "eventid",
+    "id": "24",
+    "title": "Remote Desktop Session Disconnected",
+    "channel": "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+    "category": "Remote Desktop Session Lifecycle",
+    "severity": "AUDIT INFORMATION",
+    "summary": "User disconnected from the session (e.g. closing the RDP client window or network disruption) without logging off. The session state remains active in background memory.",
+    "key_fields": [
+      "User",
+      "SessionID",
+      "Address"
+    ],
+    "mitre": [
+      "T1021.001 (Remote Desktop Protocol)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=24"
+  },
+  "Event ID 24": {
+    "type": "eventid",
+    "id": "24",
+    "title": "Remote Desktop Session Disconnected",
+    "channel": "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+    "category": "Remote Desktop Session Lifecycle",
+    "severity": "AUDIT INFORMATION",
+    "summary": "User disconnected from the session (e.g. closing the RDP client window or network disruption) without logging off. The session state remains active in background memory.",
+    "key_fields": [
+      "User",
+      "SessionID",
+      "Address"
+    ],
+    "mitre": [
+      "T1021.001 (Remote Desktop Protocol)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=24"
+  },
+  "EID 24": {
+    "type": "eventid",
+    "id": "24",
+    "title": "Remote Desktop Session Disconnected",
+    "channel": "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+    "category": "Remote Desktop Session Lifecycle",
+    "severity": "AUDIT INFORMATION",
+    "summary": "User disconnected from the session (e.g. closing the RDP client window or network disruption) without logging off. The session state remains active in background memory.",
+    "key_fields": [
+      "User",
+      "SessionID",
+      "Address"
+    ],
+    "mitre": [
+      "T1021.001 (Remote Desktop Protocol)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=24"
+  },
+  "25": {
+    "type": "eventid",
+    "id": "25",
+    "title": "Remote Desktop Session Reconnection Succeeded",
+    "channel": "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+    "category": "Remote Desktop Session Lifecycle",
+    "severity": "AUDIT SUCCESS",
+    "summary": "User reconnected to an existing disconnected session. Crucial for tracing recurring attacker access across multiple days without creating new user profile directories.",
+    "key_fields": [
+      "User",
+      "SessionID",
+      "Address"
+    ],
+    "mitre": [
+      "T1021.001 (Remote Desktop Protocol)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=25"
+  },
+  "Event ID 25": {
+    "type": "eventid",
+    "id": "25",
+    "title": "Remote Desktop Session Reconnection Succeeded",
+    "channel": "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+    "category": "Remote Desktop Session Lifecycle",
+    "severity": "AUDIT SUCCESS",
+    "summary": "User reconnected to an existing disconnected session. Crucial for tracing recurring attacker access across multiple days without creating new user profile directories.",
+    "key_fields": [
+      "User",
+      "SessionID",
+      "Address"
+    ],
+    "mitre": [
+      "T1021.001 (Remote Desktop Protocol)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=25"
+  },
+  "EID 25": {
+    "type": "eventid",
+    "id": "25",
+    "title": "Remote Desktop Session Reconnection Succeeded",
+    "channel": "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+    "category": "Remote Desktop Session Lifecycle",
+    "severity": "AUDIT SUCCESS",
+    "summary": "User reconnected to an existing disconnected session. Crucial for tracing recurring attacker access across multiple days without creating new user profile directories.",
+    "key_fields": [
+      "User",
+      "SessionID",
+      "Address"
+    ],
+    "mitre": [
+      "T1021.001 (Remote Desktop Protocol)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=25"
   },
   "4624": {
     "type": "eventid",
@@ -508,7 +887,7 @@
     "id": "7045",
     "title": "Event ID 7045",
     "channel": "System",
-    "category": "Work Email:",
+    "category": "System / Service Install",
     "severity": "SYSTEM NOTICE",
     "summary": "A new service was installed on the system (logged by Service Control Manager in System.evtx). Primary source for discovering backdoor persistence and remote execution services.",
     "key_fields": [
@@ -528,7 +907,7 @@
     "id": "7045",
     "title": "Event ID 7045",
     "channel": "System",
-    "category": "Work Email:",
+    "category": "System / Service Install",
     "severity": "SYSTEM NOTICE",
     "summary": "A new service was installed on the system (logged by Service Control Manager in System.evtx). Primary source for discovering backdoor persistence and remote execution services.",
     "key_fields": [
@@ -548,7 +927,7 @@
     "id": "7045",
     "title": "Event ID 7045",
     "channel": "System",
-    "category": "Work Email:",
+    "category": "System / Service Install",
     "severity": "SYSTEM NOTICE",
     "summary": "A new service was installed on the system (logged by Service Control Manager in System.evtx). Primary source for discovering backdoor persistence and remote execution services.",
     "key_fields": [
@@ -1138,7 +1517,7 @@
     "id": "104",
     "title": "Event ID 104",
     "channel": "System",
-    "category": "Work Email:",
+    "category": "Log Clear / Anti-Forensics",
     "severity": "CRITICAL AUDIT",
     "summary": "The log file was cleared (logged by eventlog service in System.evtx when System or Application log is wiped).",
     "key_fields": [
@@ -1155,7 +1534,7 @@
     "id": "104",
     "title": "Event ID 104",
     "channel": "System",
-    "category": "Work Email:",
+    "category": "Log Clear / Anti-Forensics",
     "severity": "CRITICAL AUDIT",
     "summary": "The log file was cleared (logged by eventlog service in System.evtx when System or Application log is wiped).",
     "key_fields": [
@@ -1172,7 +1551,7 @@
     "id": "104",
     "title": "Event ID 104",
     "channel": "System",
-    "category": "Work Email:",
+    "category": "Log Clear / Anti-Forensics",
     "severity": "CRITICAL AUDIT",
     "summary": "The log file was cleared (logged by eventlog service in System.evtx when System or Application log is wiped).",
     "key_fields": [
@@ -1189,7 +1568,7 @@
     "id": "4104",
     "title": "Event ID 4104",
     "channel": "Microsoft-Windows-PowerShell/Operational",
-    "category": "Work Email:",
+    "category": "PowerShell Execution",
     "severity": "AUDIT SUCCESS",
     "summary": "Script block logging. Captures complete, un-obfuscated script content and commands executed by PowerShell 5.0+, defeating base64/xor obfuscation.",
     "key_fields": [
@@ -1207,7 +1586,7 @@
     "id": "4104",
     "title": "Event ID 4104",
     "channel": "Microsoft-Windows-PowerShell/Operational",
-    "category": "Work Email:",
+    "category": "PowerShell Execution",
     "severity": "AUDIT SUCCESS",
     "summary": "Script block logging. Captures complete, un-obfuscated script content and commands executed by PowerShell 5.0+, defeating base64/xor obfuscation.",
     "key_fields": [
@@ -1225,7 +1604,7 @@
     "id": "4104",
     "title": "Event ID 4104",
     "channel": "Microsoft-Windows-PowerShell/Operational",
-    "category": "Work Email:",
+    "category": "PowerShell Execution",
     "severity": "AUDIT SUCCESS",
     "summary": "Script block logging. Captures complete, un-obfuscated script content and commands executed by PowerShell 5.0+, defeating base64/xor obfuscation.",
     "key_fields": [
@@ -1243,7 +1622,7 @@
     "id": "4103",
     "title": "Event ID 4103",
     "channel": "Microsoft-Windows-PowerShell/Operational",
-    "category": "Work Email:",
+    "category": "PowerShell Execution",
     "severity": "AUDIT SUCCESS",
     "summary": "PowerShell pipeline execution logging. Records pipeline invocation details and command line parameters.",
     "key_fields": [
@@ -1261,7 +1640,7 @@
     "id": "4103",
     "title": "Event ID 4103",
     "channel": "Microsoft-Windows-PowerShell/Operational",
-    "category": "Work Email:",
+    "category": "PowerShell Execution",
     "severity": "AUDIT SUCCESS",
     "summary": "PowerShell pipeline execution logging. Records pipeline invocation details and command line parameters.",
     "key_fields": [
@@ -1279,7 +1658,7 @@
     "id": "4103",
     "title": "Event ID 4103",
     "channel": "Microsoft-Windows-PowerShell/Operational",
-    "category": "Work Email:",
+    "category": "PowerShell Execution",
     "severity": "AUDIT SUCCESS",
     "summary": "PowerShell pipeline execution logging. Records pipeline invocation details and command line parameters.",
     "key_fields": [
@@ -1292,12 +1671,435 @@
     ],
     "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4103"
   },
+  "5000": {
+    "type": "eventid",
+    "id": "5000",
+    "title": "Event ID 5000",
+    "channel": "Microsoft-Windows-Windows Defender/Operational",
+    "category": "Antivirus Protection State",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Microsoft Defender Antivirus real-time protection feature was enabled and actively monitoring the system.",
+    "key_fields": [
+      "ProtectionState",
+      "Component",
+      "ConfigurationPath"
+    ],
+    "mitre": [],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=5000"
+  },
+  "Event ID 5000": {
+    "type": "eventid",
+    "id": "5000",
+    "title": "Event ID 5000",
+    "channel": "Microsoft-Windows-Windows Defender/Operational",
+    "category": "Antivirus Protection State",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Microsoft Defender Antivirus real-time protection feature was enabled and actively monitoring the system.",
+    "key_fields": [
+      "ProtectionState",
+      "Component",
+      "ConfigurationPath"
+    ],
+    "mitre": [],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=5000"
+  },
+  "EID 5000": {
+    "type": "eventid",
+    "id": "5000",
+    "title": "Event ID 5000",
+    "channel": "Microsoft-Windows-Windows Defender/Operational",
+    "category": "Antivirus Protection State",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Microsoft Defender Antivirus real-time protection feature was enabled and actively monitoring the system.",
+    "key_fields": [
+      "ProtectionState",
+      "Component",
+      "ConfigurationPath"
+    ],
+    "mitre": [],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=5000"
+  },
+  "5001": {
+    "type": "eventid",
+    "id": "5001",
+    "title": "Event ID 5001",
+    "channel": "Microsoft-Windows-Windows Defender/Operational",
+    "category": "Defense Evasion / Antivirus Tampering",
+    "severity": "CRITICAL TAMPERING",
+    "summary": "Microsoft Defender Antivirus real-time protection feature was disabled or turned off. Often indicates adversary tampering (e.g. Set-MpPreference -DisableRealtimeMonitoring $true) or security evasion during payload deployment.",
+    "key_fields": [
+      "ProtectionState",
+      "UserContext",
+      "Component"
+    ],
+    "mitre": [
+      "T1562.001 (Impair Defenses: Disable or Modify Tools)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=5001"
+  },
+  "Event ID 5001": {
+    "type": "eventid",
+    "id": "5001",
+    "title": "Event ID 5001",
+    "channel": "Microsoft-Windows-Windows Defender/Operational",
+    "category": "Defense Evasion / Antivirus Tampering",
+    "severity": "CRITICAL TAMPERING",
+    "summary": "Microsoft Defender Antivirus real-time protection feature was disabled or turned off. Often indicates adversary tampering (e.g. Set-MpPreference -DisableRealtimeMonitoring $true) or security evasion during payload deployment.",
+    "key_fields": [
+      "ProtectionState",
+      "UserContext",
+      "Component"
+    ],
+    "mitre": [
+      "T1562.001 (Impair Defenses: Disable or Modify Tools)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=5001"
+  },
+  "EID 5001": {
+    "type": "eventid",
+    "id": "5001",
+    "title": "Event ID 5001",
+    "channel": "Microsoft-Windows-Windows Defender/Operational",
+    "category": "Defense Evasion / Antivirus Tampering",
+    "severity": "CRITICAL TAMPERING",
+    "summary": "Microsoft Defender Antivirus real-time protection feature was disabled or turned off. Often indicates adversary tampering (e.g. Set-MpPreference -DisableRealtimeMonitoring $true) or security evasion during payload deployment.",
+    "key_fields": [
+      "ProtectionState",
+      "UserContext",
+      "Component"
+    ],
+    "mitre": [
+      "T1562.001 (Impair Defenses: Disable or Modify Tools)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=5001"
+  },
+  "5004": {
+    "type": "eventid",
+    "id": "5004",
+    "title": "Event ID 5004",
+    "channel": "Microsoft-Windows-Windows Defender/Operational",
+    "category": "Antivirus Configuration",
+    "severity": "NOTICE",
+    "summary": "Microsoft Defender Antivirus real-time protection configuration changed (e.g. excluded paths, network protection state, or cloud-delivered protection toggles).",
+    "key_fields": [
+      "ConfigurationType",
+      "OldValue",
+      "NewValue"
+    ],
+    "mitre": [
+      "T1562.001 (Impair Defenses: Disable or Modify Tools)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=5004"
+  },
+  "Event ID 5004": {
+    "type": "eventid",
+    "id": "5004",
+    "title": "Event ID 5004",
+    "channel": "Microsoft-Windows-Windows Defender/Operational",
+    "category": "Antivirus Configuration",
+    "severity": "NOTICE",
+    "summary": "Microsoft Defender Antivirus real-time protection configuration changed (e.g. excluded paths, network protection state, or cloud-delivered protection toggles).",
+    "key_fields": [
+      "ConfigurationType",
+      "OldValue",
+      "NewValue"
+    ],
+    "mitre": [
+      "T1562.001 (Impair Defenses: Disable or Modify Tools)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=5004"
+  },
+  "EID 5004": {
+    "type": "eventid",
+    "id": "5004",
+    "title": "Event ID 5004",
+    "channel": "Microsoft-Windows-Windows Defender/Operational",
+    "category": "Antivirus Configuration",
+    "severity": "NOTICE",
+    "summary": "Microsoft Defender Antivirus real-time protection configuration changed (e.g. excluded paths, network protection state, or cloud-delivered protection toggles).",
+    "key_fields": [
+      "ConfigurationType",
+      "OldValue",
+      "NewValue"
+    ],
+    "mitre": [
+      "T1562.001 (Impair Defenses: Disable or Modify Tools)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=5004"
+  },
+  "5007": {
+    "type": "eventid",
+    "id": "5007",
+    "title": "Event ID 5007",
+    "channel": "Microsoft-Windows-Windows Defender/Operational",
+    "category": "Antivirus Configuration",
+    "severity": "NOTICE",
+    "summary": "Microsoft Defender Antivirus configuration changed (exclusions, preferences, or engine update).",
+    "key_fields": [
+      "Setting",
+      "OldValue",
+      "NewValue"
+    ],
+    "mitre": [],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=5007"
+  },
+  "Event ID 5007": {
+    "type": "eventid",
+    "id": "5007",
+    "title": "Event ID 5007",
+    "channel": "Microsoft-Windows-Windows Defender/Operational",
+    "category": "Antivirus Configuration",
+    "severity": "NOTICE",
+    "summary": "Microsoft Defender Antivirus configuration changed (exclusions, preferences, or engine update).",
+    "key_fields": [
+      "Setting",
+      "OldValue",
+      "NewValue"
+    ],
+    "mitre": [],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=5007"
+  },
+  "EID 5007": {
+    "type": "eventid",
+    "id": "5007",
+    "title": "Event ID 5007",
+    "channel": "Microsoft-Windows-Windows Defender/Operational",
+    "category": "Antivirus Configuration",
+    "severity": "NOTICE",
+    "summary": "Microsoft Defender Antivirus configuration changed (exclusions, preferences, or engine update).",
+    "key_fields": [
+      "Setting",
+      "OldValue",
+      "NewValue"
+    ],
+    "mitre": [],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=5007"
+  },
+  "1116": {
+    "type": "eventid",
+    "id": "1116",
+    "title": "Event ID 1116",
+    "channel": "Microsoft-Windows-Windows Defender/Operational",
+    "category": "Malware Detection",
+    "severity": "HIGH ALERT",
+    "summary": "Microsoft Defender Antivirus detected malware or potentially unwanted software (PUA/PUP) on the host.",
+    "key_fields": [
+      "ThreatName",
+      "Severity",
+      "Path",
+      "ProcessName",
+      "DetectionOrigin"
+    ],
+    "mitre": [
+      "T1204 (User Execution)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=1116"
+  },
+  "Event ID 1116": {
+    "type": "eventid",
+    "id": "1116",
+    "title": "Event ID 1116",
+    "channel": "Microsoft-Windows-Windows Defender/Operational",
+    "category": "Malware Detection",
+    "severity": "HIGH ALERT",
+    "summary": "Microsoft Defender Antivirus detected malware or potentially unwanted software (PUA/PUP) on the host.",
+    "key_fields": [
+      "ThreatName",
+      "Severity",
+      "Path",
+      "ProcessName",
+      "DetectionOrigin"
+    ],
+    "mitre": [
+      "T1204 (User Execution)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=1116"
+  },
+  "EID 1116": {
+    "type": "eventid",
+    "id": "1116",
+    "title": "Event ID 1116",
+    "channel": "Microsoft-Windows-Windows Defender/Operational",
+    "category": "Malware Detection",
+    "severity": "HIGH ALERT",
+    "summary": "Microsoft Defender Antivirus detected malware or potentially unwanted software (PUA/PUP) on the host.",
+    "key_fields": [
+      "ThreatName",
+      "Severity",
+      "Path",
+      "ProcessName",
+      "DetectionOrigin"
+    ],
+    "mitre": [
+      "T1204 (User Execution)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=1116"
+  },
+  "1117": {
+    "type": "eventid",
+    "id": "1117",
+    "title": "Event ID 1117",
+    "channel": "Microsoft-Windows-Windows Defender/Operational",
+    "category": "Malware Remediation",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Microsoft Defender Antivirus took an action to protect the host against detected malware (quarantined, removed, or blocked).",
+    "key_fields": [
+      "ThreatName",
+      "ActionName",
+      "Path"
+    ],
+    "mitre": [],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=1117"
+  },
+  "Event ID 1117": {
+    "type": "eventid",
+    "id": "1117",
+    "title": "Event ID 1117",
+    "channel": "Microsoft-Windows-Windows Defender/Operational",
+    "category": "Malware Remediation",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Microsoft Defender Antivirus took an action to protect the host against detected malware (quarantined, removed, or blocked).",
+    "key_fields": [
+      "ThreatName",
+      "ActionName",
+      "Path"
+    ],
+    "mitre": [],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=1117"
+  },
+  "EID 1117": {
+    "type": "eventid",
+    "id": "1117",
+    "title": "Event ID 1117",
+    "channel": "Microsoft-Windows-Windows Defender/Operational",
+    "category": "Malware Remediation",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Microsoft Defender Antivirus took an action to protect the host against detected malware (quarantined, removed, or blocked).",
+    "key_fields": [
+      "ThreatName",
+      "ActionName",
+      "Path"
+    ],
+    "mitre": [],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=1117"
+  },
+  "600": {
+    "type": "eventid",
+    "id": "600",
+    "title": "Event ID 600",
+    "channel": "Windows PowerShell / Security",
+    "category": "Execution & Process Tracking",
+    "severity": "AUDIT INFORMATION",
+    "summary": "PowerShell: Provider (Registry, FileSystem, Environment, WSMan) lifecycle started and host application initialized. Security (Legacy/Compat): Process was assigned a primary token (equivalent to modern EID 4696).",
+    "key_fields": [
+      "HostApplication",
+      "ProviderName",
+      "SequenceNumber",
+      "UserContext"
+    ],
+    "mitre": [
+      "T1059.001 (Command and Scripting Interpreter: PowerShell)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=600"
+  },
+  "Event ID 600": {
+    "type": "eventid",
+    "id": "600",
+    "title": "Event ID 600",
+    "channel": "Windows PowerShell / Security",
+    "category": "Execution & Process Tracking",
+    "severity": "AUDIT INFORMATION",
+    "summary": "PowerShell: Provider (Registry, FileSystem, Environment, WSMan) lifecycle started and host application initialized. Security (Legacy/Compat): Process was assigned a primary token (equivalent to modern EID 4696).",
+    "key_fields": [
+      "HostApplication",
+      "ProviderName",
+      "SequenceNumber",
+      "UserContext"
+    ],
+    "mitre": [
+      "T1059.001 (Command and Scripting Interpreter: PowerShell)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=600"
+  },
+  "EID 600": {
+    "type": "eventid",
+    "id": "600",
+    "title": "Event ID 600",
+    "channel": "Windows PowerShell / Security",
+    "category": "Execution & Process Tracking",
+    "severity": "AUDIT INFORMATION",
+    "summary": "PowerShell: Provider (Registry, FileSystem, Environment, WSMan) lifecycle started and host application initialized. Security (Legacy/Compat): Process was assigned a primary token (equivalent to modern EID 4696).",
+    "key_fields": [
+      "HostApplication",
+      "ProviderName",
+      "SequenceNumber",
+      "UserContext"
+    ],
+    "mitre": [
+      "T1059.001 (Command and Scripting Interpreter: PowerShell)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=600"
+  },
+  "4696": {
+    "type": "eventid",
+    "id": "4696",
+    "title": "Event ID 4696",
+    "channel": "Security",
+    "category": "Process Tracking",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A primary token was assigned to a process. Modern replacement for legacy Event ID 600.",
+    "key_fields": [
+      "SubjectUserName",
+      "ProcessName",
+      "TargetProcessId"
+    ],
+    "mitre": [
+      "T1078 (Valid Accounts)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4696"
+  },
+  "Event ID 4696": {
+    "type": "eventid",
+    "id": "4696",
+    "title": "Event ID 4696",
+    "channel": "Security",
+    "category": "Process Tracking",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A primary token was assigned to a process. Modern replacement for legacy Event ID 600.",
+    "key_fields": [
+      "SubjectUserName",
+      "ProcessName",
+      "TargetProcessId"
+    ],
+    "mitre": [
+      "T1078 (Valid Accounts)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4696"
+  },
+  "EID 4696": {
+    "type": "eventid",
+    "id": "4696",
+    "title": "Event ID 4696",
+    "channel": "Security",
+    "category": "Process Tracking",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A primary token was assigned to a process. Modern replacement for legacy Event ID 600.",
+    "key_fields": [
+      "SubjectUserName",
+      "ProcessName",
+      "TargetProcessId"
+    ],
+    "mitre": [
+      "T1078 (Valid Accounts)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4696"
+  },
   "Sysmon-1": {
     "type": "eventid",
     "id": "1",
     "title": "Event ID 1",
     "channel": "Sysmon",
-    "category": "Work Email:",
+    "category": "Process Creation",
     "severity": "HIGH TELEMETRY",
     "summary": "Sysmon Event ID 1 (Process Create). Provides full process command line, image path, parent process image, hashes (SHA256), and integrity level.",
     "key_fields": [
@@ -1321,7 +2123,7 @@
     "id": "1",
     "title": "Event ID 1",
     "channel": "Sysmon",
-    "category": "Work Email:",
+    "category": "Process Creation",
     "severity": "HIGH TELEMETRY",
     "summary": "Sysmon Event ID 1 (Process Create). Provides full process command line, image path, parent process image, hashes (SHA256), and integrity level.",
     "key_fields": [
@@ -1345,7 +2147,7 @@
     "id": "1",
     "title": "Event ID 1",
     "channel": "Sysmon",
-    "category": "Work Email:",
+    "category": "Process Creation",
     "severity": "HIGH TELEMETRY",
     "summary": "Sysmon Event ID 1 (Process Create). Provides full process command line, image path, parent process image, hashes (SHA256), and integrity level.",
     "key_fields": [
@@ -1369,7 +2171,7 @@
     "id": "1",
     "title": "Event ID 1",
     "channel": "Sysmon",
-    "category": "Work Email:",
+    "category": "Process Creation",
     "severity": "HIGH TELEMETRY",
     "summary": "Sysmon Event ID 1 (Process Create). Provides full process command line, image path, parent process image, hashes (SHA256), and integrity level.",
     "key_fields": [
@@ -1393,7 +2195,7 @@
     "id": "3",
     "title": "Event ID 3",
     "channel": "Sysmon",
-    "category": "Work Email:",
+    "category": "Network Connection",
     "severity": "HIGH TELEMETRY",
     "summary": "Sysmon Event ID 3 (Network Connection). Discloses TCP/UDP connections initiated by binaries, with source/dest IP, port, and resolved hostname.",
     "key_fields": [
@@ -1418,7 +2220,7 @@
     "id": "3",
     "title": "Event ID 3",
     "channel": "Sysmon",
-    "category": "Work Email:",
+    "category": "Network Connection",
     "severity": "HIGH TELEMETRY",
     "summary": "Sysmon Event ID 3 (Network Connection). Discloses TCP/UDP connections initiated by binaries, with source/dest IP, port, and resolved hostname.",
     "key_fields": [
@@ -1443,7 +2245,7 @@
     "id": "3",
     "title": "Event ID 3",
     "channel": "Sysmon",
-    "category": "Work Email:",
+    "category": "Network Connection",
     "severity": "HIGH TELEMETRY",
     "summary": "Sysmon Event ID 3 (Network Connection). Discloses TCP/UDP connections initiated by binaries, with source/dest IP, port, and resolved hostname.",
     "key_fields": [
@@ -1468,7 +2270,7 @@
     "id": "3",
     "title": "Event ID 3",
     "channel": "Sysmon",
-    "category": "Work Email:",
+    "category": "Network Connection",
     "severity": "HIGH TELEMETRY",
     "summary": "Sysmon Event ID 3 (Network Connection). Discloses TCP/UDP connections initiated by binaries, with source/dest IP, port, and resolved hostname.",
     "key_fields": [
@@ -1493,7 +2295,7 @@
     "id": "7",
     "title": "Event ID 7",
     "channel": "Sysmon",
-    "category": "Work Email:",
+    "category": "Image Loaded",
     "severity": "HIGH TELEMETRY",
     "summary": "Sysmon Event ID 7 (Image Loaded). Logs DLLs and modules loaded into process memory. Key for DLL hijacking and sideloading investigation.",
     "key_fields": [
@@ -1514,7 +2316,7 @@
     "id": "7",
     "title": "Event ID 7",
     "channel": "Sysmon",
-    "category": "Work Email:",
+    "category": "Image Loaded",
     "severity": "HIGH TELEMETRY",
     "summary": "Sysmon Event ID 7 (Image Loaded). Logs DLLs and modules loaded into process memory. Key for DLL hijacking and sideloading investigation.",
     "key_fields": [
@@ -1535,7 +2337,7 @@
     "id": "7",
     "title": "Event ID 7",
     "channel": "Sysmon",
-    "category": "Work Email:",
+    "category": "Image Loaded",
     "severity": "HIGH TELEMETRY",
     "summary": "Sysmon Event ID 7 (Image Loaded). Logs DLLs and modules loaded into process memory. Key for DLL hijacking and sideloading investigation.",
     "key_fields": [
@@ -1556,7 +2358,7 @@
     "id": "7",
     "title": "Event ID 7",
     "channel": "Sysmon",
-    "category": "Work Email:",
+    "category": "Image Loaded",
     "severity": "HIGH TELEMETRY",
     "summary": "Sysmon Event ID 7 (Image Loaded). Logs DLLs and modules loaded into process memory. Key for DLL hijacking and sideloading investigation.",
     "key_fields": [
@@ -1577,7 +2379,7 @@
     "id": "8",
     "title": "Event ID 8",
     "channel": "Sysmon",
-    "category": "Work Email:",
+    "category": "Process Injection",
     "severity": "CRITICAL TELEMETRY",
     "summary": "Sysmon Event ID 8 (CreateRemoteThread). Detects thread injection into another process address space (classic shellcode injection, Cobalt Strike beacons, Mimikatz).",
     "key_fields": [
@@ -1597,7 +2399,7 @@
     "id": "8",
     "title": "Event ID 8",
     "channel": "Sysmon",
-    "category": "Work Email:",
+    "category": "Process Injection",
     "severity": "CRITICAL TELEMETRY",
     "summary": "Sysmon Event ID 8 (CreateRemoteThread). Detects thread injection into another process address space (classic shellcode injection, Cobalt Strike beacons, Mimikatz).",
     "key_fields": [
@@ -1617,7 +2419,7 @@
     "id": "8",
     "title": "Event ID 8",
     "channel": "Sysmon",
-    "category": "Work Email:",
+    "category": "Process Injection",
     "severity": "CRITICAL TELEMETRY",
     "summary": "Sysmon Event ID 8 (CreateRemoteThread). Detects thread injection into another process address space (classic shellcode injection, Cobalt Strike beacons, Mimikatz).",
     "key_fields": [
@@ -1637,7 +2439,7 @@
     "id": "8",
     "title": "Event ID 8",
     "channel": "Sysmon",
-    "category": "Work Email:",
+    "category": "Process Injection",
     "severity": "CRITICAL TELEMETRY",
     "summary": "Sysmon Event ID 8 (CreateRemoteThread). Detects thread injection into another process address space (classic shellcode injection, Cobalt Strike beacons, Mimikatz).",
     "key_fields": [
@@ -1657,7 +2459,7 @@
     "id": "10",
     "title": "Event ID 10",
     "channel": "Sysmon",
-    "category": "Work Email:",
+    "category": "Process Access",
     "severity": "CRITICAL TELEMETRY",
     "summary": "Sysmon Event ID 10 (ProcessAccess). Detects processes opening handles to target processes. Primary detector for LSASS memory dumping (Mimikatz, Procdump).",
     "key_fields": [
@@ -1677,7 +2479,7 @@
     "id": "10",
     "title": "Event ID 10",
     "channel": "Sysmon",
-    "category": "Work Email:",
+    "category": "Process Access",
     "severity": "CRITICAL TELEMETRY",
     "summary": "Sysmon Event ID 10 (ProcessAccess). Detects processes opening handles to target processes. Primary detector for LSASS memory dumping (Mimikatz, Procdump).",
     "key_fields": [
@@ -1697,7 +2499,7 @@
     "id": "10",
     "title": "Event ID 10",
     "channel": "Sysmon",
-    "category": "Work Email:",
+    "category": "Process Access",
     "severity": "CRITICAL TELEMETRY",
     "summary": "Sysmon Event ID 10 (ProcessAccess). Detects processes opening handles to target processes. Primary detector for LSASS memory dumping (Mimikatz, Procdump).",
     "key_fields": [
@@ -1717,7 +2519,7 @@
     "id": "10",
     "title": "Event ID 10",
     "channel": "Sysmon",
-    "category": "Work Email:",
+    "category": "Process Access",
     "severity": "CRITICAL TELEMETRY",
     "summary": "Sysmon Event ID 10 (ProcessAccess). Detects processes opening handles to target processes. Primary detector for LSASS memory dumping (Mimikatz, Procdump).",
     "key_fields": [
@@ -1987,101 +2789,5 @@
       "T1071.004 (Application Layer Protocol: DNS)"
     ],
     "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=22"
-  },
-  "Event ID 22": {
-    "type": "eventid",
-    "id": "22",
-    "title": "Event ID 22",
-    "channel": "Sysmon",
-    "category": "DNS Query",
-    "severity": "HIGH TELEMETRY",
-    "summary": "Sysmon Event ID 22 (DNSEvent: DNS query). Records DNS lookups initiated by endpoint processes. Essential for C2 domain beaconing and DGA analysis.",
-    "key_fields": [
-      "UtcTime",
-      "Image",
-      "QueryName",
-      "QueryStatus",
-      "QueryResults"
-    ],
-    "mitre": [
-      "T1071.004 (Application Layer Protocol: DNS)"
-    ],
-    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=22"
-  },
-  "EID 22": {
-    "type": "eventid",
-    "id": "22",
-    "title": "Event ID 22",
-    "channel": "Sysmon",
-    "category": "DNS Query",
-    "severity": "HIGH TELEMETRY",
-    "summary": "Sysmon Event ID 22 (DNSEvent: DNS query). Records DNS lookups initiated by endpoint processes. Essential for C2 domain beaconing and DGA analysis.",
-    "key_fields": [
-      "UtcTime",
-      "Image",
-      "QueryName",
-      "QueryStatus",
-      "QueryResults"
-    ],
-    "mitre": [
-      "T1071.004 (Application Layer Protocol: DNS)"
-    ],
-    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=22"
-  },
-  "22": {
-    "type": "eventid",
-    "id": "22",
-    "title": "Event ID 22",
-    "channel": "Sysmon",
-    "category": "DNS Query",
-    "severity": "HIGH TELEMETRY",
-    "summary": "Sysmon Event ID 22 (DNSEvent: DNS query). Records DNS lookups initiated by endpoint processes. Essential for C2 domain beaconing and DGA analysis.",
-    "key_fields": [
-      "UtcTime",
-      "Image",
-      "QueryName",
-      "QueryStatus",
-      "QueryResults"
-    ],
-    "mitre": [
-      "T1071.004 (Application Layer Protocol: DNS)"
-    ],
-    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=22"
-  },
-  "4740": {
-    "type": "eventid",
-    "id": "4740",
-    "title": "Event ID 4740",
-    "channel": "Security",
-    "category": "Windows Security",
-    "severity": "AUDIT EVENT",
-    "summary": "Windows audit telemetry record for Event ID 4740.",
-    "key_fields": [],
-    "mitre": [],
-    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4740"
-  },
-  "Event ID 4740": {
-    "type": "eventid",
-    "id": "4740",
-    "title": "Event ID 4740",
-    "channel": "Security",
-    "category": "Windows Security",
-    "severity": "AUDIT EVENT",
-    "summary": "Windows audit telemetry record for Event ID 4740.",
-    "key_fields": [],
-    "mitre": [],
-    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4740"
-  },
-  "EID 4740": {
-    "type": "eventid",
-    "id": "4740",
-    "title": "Event ID 4740",
-    "channel": "Security",
-    "category": "Windows Security",
-    "severity": "AUDIT EVENT",
-    "summary": "Windows audit telemetry record for Event ID 4740.",
-    "key_fields": [],
-    "mitre": [],
-    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4740"
   }
 }

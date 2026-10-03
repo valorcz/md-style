@@ -2644,7 +2644,7 @@ Timeline &amp; Forensic Reconstruction</h2>
 <code>$MFT</code>, Windows Event Logs (<code>Security.evtx</code>,
 <code>System.evtx</code>), and memory volatility artifacts.</p>
 <figure class="mermaid-diagram" data-engine="beautiful-mermaid" id="fig-attack-chain">
-  <div class="mermaid-svg-wrapper">
+<div class="mermaid-svg-wrapper">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 285.84799999999996 1290.8000000000002" width="285.84799999999996" height="1290.8000000000002" style="--bg:#FFFFFF;--fg:#27272A">
 <style>
 @font-face {
@@ -2693,28 +2693,27 @@ svg {
 }
 </style>
 <defs>
-  <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
-    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round"></polygon>
-  </marker>
-  <marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
-    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round"></polygon>
-  </marker>
-</defs>
+<marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+<polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round"></polygon>
+</marker>
+<marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+<polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round"></polygon>
+</marker> </defs>
 <g class="subgraph" data-id="Perimeter" data-label="Perimeter Breach">
-  <rect x="50.744499999999974" y="40" width="184.359" height="283.90000000000003" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
-  <rect x="50.744499999999974" y="40" width="184.359" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
-  <text x="62.744499999999974" y="54" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Perimeter Breach</text>
-</g>
+<rect x="50.744499999999974" y="40" width="184.359" height="283.90000000000003" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+<rect x="50.744499999999974" y="40" width="184.359" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+<text x="62.744499999999974" y="54" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Perimeter
+Breach</text> </g>
 <g class="subgraph" data-id="Privilege" data-label="Execution &amp; PrivEsc">
-  <rect x="51.85599999999998" y="452.20000000000005" width="182.136" height="250.1" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
-  <rect x="51.85599999999998" y="452.20000000000005" width="182.136" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
-  <text x="63.85599999999998" y="466.20000000000005" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Execution &amp; PrivEsc</text>
-</g>
+<rect x="51.85599999999998" y="452.20000000000005" width="182.136" height="250.1" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+<rect x="51.85599999999998" y="452.20000000000005" width="182.136" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+<text x="63.85599999999998" y="466.20000000000005" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Execution
+&amp; PrivEsc</text> </g>
 <g class="subgraph" data-id="Impact" data-label="Staging &amp; Impact">
-  <rect x="40" y="830.6" width="205.84799999999996" height="420.20000000000005" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
-  <rect x="40" y="830.6" width="205.84799999999996" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
-  <text x="52" y="844.6" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Staging &amp; Impact</text>
-</g>
+<rect x="40" y="830.6" width="205.84799999999996" height="420.20000000000005" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+<rect x="40" y="830.6" width="205.84799999999996" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+<text x="52" y="844.6" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Staging
+&amp; Impact</text> </g>
 <polyline class="edge" data-from="B" data-to="C" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Spawn Child" points="142.92399999999998,307.90000000000003 142.92399999999998,496.20000000000005" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)"></polyline>
 <polyline class="edge" data-from="D" data-to="E" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Dump Hashes" points="142.92399999999998,686.3000000000001 142.92399999999998,874.6" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)"></polyline>
 <polyline class="edge" data-from="A" data-to="B" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Exploit SMB 445/TCP" points="142.92399999999998,137.8 142.92399999999998,254.10000000000002" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)"></polyline>
@@ -2722,63 +2721,66 @@ svg {
 <polyline class="edge" data-from="E" data-to="F" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Create Task" points="142.92399999999998,911.5 142.92399999999998,1027.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)"></polyline>
 <polyline class="edge" data-from="F" data-to="G" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Archive Staging" points="142.92399999999998,1081.6 142.92399999999998,1197.9" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)"></polyline>
 <g class="edge-label" data-from="B" data-to="C" data-label="Spawn Child">
-  <rect x="104.92399999999998" y="372.90000000000003" width="75.26800000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
-  <text x="142.558" y="388.05" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Spawn Child</text>
-</g>
+<rect x="104.92399999999998" y="372.90000000000003" width="75.26800000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+<text x="142.558" y="388.05" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Spawn
+Child</text> </g>
 <g class="edge-label" data-from="D" data-to="E" data-label="Dump Hashes">
-  <rect x="101.42399999999998" y="751.3000000000001" width="82.39600000000002" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
-  <text x="142.62199999999999" y="766.45" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Dump Hashes</text>
-</g>
+<rect x="101.42399999999998" y="751.3000000000001" width="82.39600000000002" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+<text x="142.62199999999999" y="766.45" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Dump
+Hashes</text> </g>
 <g class="edge-label" data-from="A" data-to="B" data-label="Exploit SMB 445/TCP">
-  <rect x="83.42399999999998" y="180.8" width="118.63000000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
-  <text x="142.73899999999998" y="195.95000000000002" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Exploit SMB 445/TCP</text>
-</g>
+<rect x="83.42399999999998" y="180.8" width="118.63000000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+<text x="142.73899999999998" y="195.95000000000002" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Exploit
+SMB 445/TCP</text> </g>
 <g class="edge-label" data-from="C" data-to="D" data-label="Inject LSASS">
-  <rect x="102.42399999999998" y="576.1" width="80.02" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
-  <text x="142.43399999999997" y="591.25" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Inject LSASS</text>
-</g>
+<rect x="102.42399999999998" y="576.1" width="80.02" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+<text x="142.43399999999997" y="591.25" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Inject
+LSASS</text> </g>
 <g class="edge-label" data-from="E" data-to="F" data-label="Create Task">
-  <rect x="104.42399999999998" y="954.5000000000001" width="76.456" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
-  <text x="142.652" y="969.6500000000001" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Create Task</text>
-</g>
+<rect x="104.42399999999998" y="954.5000000000001" width="76.456" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+<text x="142.652" y="969.6500000000001" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Create
+Task</text> </g>
 <g class="edge-label" data-from="F" data-to="G" data-label="Archive Staging">
-  <rect x="95.92399999999998" y="1124.6" width="93.08800000000002" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
-  <text x="142.468" y="1139.75" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Archive Staging</text>
-</g>
+<rect x="95.92399999999998" y="1124.6" width="93.08800000000002" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+<text x="142.468" y="1139.75" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Archive
+Staging</text> </g>
 <g class="node" data-id="A" data-label="198.51.100.44
 (External Attacker)" data-shape="rectangle">
-  <rect x="66.74449999999997" y="84" width="152.359" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
-  <text x="142.92399999999998" y="110.9" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="142.92399999999998" dy="-3.9000000000000012">198.51.100.44</tspan><tspan x="142.92399999999998" dy="16.900000000000002">(External Attacker)</tspan></text>
-</g>
+<rect x="66.74449999999997" y="84" width="152.359" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+<text x="142.92399999999998" y="110.9" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="142.92399999999998" dy="-3.9000000000000012">198.51.100.44</tspan><tspan x="142.92399999999998" dy="16.900000000000002">(External
+Attacker)</tspan></text> </g>
 <g class="node" data-id="B" data-label="DC-CORP-01
 spoolsv.exe" data-shape="rectangle">
-  <rect x="85.63999999999999" y="254.10000000000002" width="114.568" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
-  <text x="142.92399999999998" y="281" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="142.92399999999998" dy="-3.9000000000000012">DC-CORP-01</tspan><tspan x="142.92399999999998" dy="16.900000000000002">spoolsv.exe</tspan></text>
+<rect x="85.63999999999999" y="254.10000000000002" width="114.568" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+<text x="142.92399999999998" y="281" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="142.92399999999998" dy="-3.9000000000000012">DC-CORP-01</tspan><tspan x="142.92399999999998" dy="16.900000000000002">spoolsv.exe</tspan></text>
 </g>
 <g class="node" data-id="C" data-label="powershell.exe" data-shape="rectangle">
-  <rect x="76.74799999999998" y="496.20000000000005" width="132.352" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
-  <text x="142.92399999999998" y="514.6500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">powershell.exe</text>
+<rect x="76.74799999999998" y="496.20000000000005" width="132.352" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+<text x="142.92399999999998" y="514.6500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">powershell.exe</text>
 </g>
 <g class="node" data-id="D" data-label="Mimikatz Sekurlsa" data-shape="rectangle">
-  <rect x="67.85599999999998" y="649.4000000000001" width="150.136" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
-  <text x="142.92399999999998" y="667.8500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Mimikatz Sekurlsa</text>
-</g>
+<rect x="67.85599999999998" y="649.4000000000001" width="150.136" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+<text x="142.92399999999998" y="667.8500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Mimikatz
+Sekurlsa</text> </g>
 <g class="node" data-id="E" data-label="Domain Admin Account" data-shape="rectangle">
-  <rect x="56" y="874.6" width="173.84799999999996" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
-  <text x="142.92399999999998" y="893.0500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Domain Admin Account</text>
-</g>
+<rect x="56" y="874.6" width="173.84799999999996" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+<text x="142.92399999999998" y="893.0500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Domain
+Admin Account</text> </g>
 <g class="node" data-id="F" data-label="WinUpdateSync
 (Persistence)" data-shape="rectangle">
-  <rect x="74.89549999999998" y="1027.8" width="136.057" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
-  <text x="142.92399999999998" y="1054.7" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="142.92399999999998" dy="-3.9000000000000012">WinUpdateSync</tspan><tspan x="142.92399999999998" dy="16.900000000000002">(Persistence)</tspan></text>
+<rect x="74.89549999999998" y="1027.8" width="136.057" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+<text x="142.92399999999998" y="1054.7" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="142.92399999999998" dy="-3.9000000000000012">WinUpdateSync</tspan><tspan x="142.92399999999998" dy="16.900000000000002">(Persistence)</tspan></text>
 </g>
 <g class="node" data-id="G" data-label="fin_export_2026.enc" data-shape="rectangle">
-  <rect x="61.18699999999998" y="1197.9" width="163.474" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
-  <text x="142.92399999999998" y="1216.3500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">fin_export_2026.enc</text>
+<rect x="61.18699999999998" y="1197.9" width="163.474" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+<text x="142.92399999999998" y="1216.3500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">fin_export_2026.enc</text>
 </g>
 </svg>
-  </div>
-  <figcaption class="mermaid-caption"><span class="figure-label">Figure 1:</span> Reconstruction of the Attacker Intrusion &amp; Lateral Movement Kill-Chain</figcaption>
+</div>
+<figcaption class="mermaid-caption">
+<span class="figure-label">Figure 1:</span> Reconstruction of the
+Attacker Intrusion &amp; Lateral Movement Kill-Chain
+</figcaption>
 </figure>
 <table class="table-timeline">
 <colgroup>
@@ -2899,7 +2901,7 @@ Static analysis revealed UPX compression and encrypted import
 tables.</p>
 </blockquote>
 <figure class="mermaid-diagram" data-engine="beautiful-mermaid" id="fig-payload-staging">
-  <div class="mermaid-svg-wrapper">
+<div class="mermaid-svg-wrapper">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 836.27 390" width="836.27" height="390" style="--bg:#FFFFFF;--fg:#27272A">
 <style>
 @font-face {
@@ -2948,60 +2950,61 @@ svg {
 }
 </style>
 <defs>
-  <marker id="seq-arrow" markerWidth="8" markerHeight="5" refX="8" refY="2.5" orient="auto-start-reverse">
-    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)"></polygon>
-  </marker>
-  <marker id="seq-arrow-open" markerWidth="8" markerHeight="5" refX="8" refY="2.5" orient="auto-start-reverse">
-    <polyline points="0 0, 8 2.5, 0 5" fill="none" stroke="var(--_arrow)" stroke-width="1"></polyline>
-  </marker>
-</defs>
+<marker id="seq-arrow" markerWidth="8" markerHeight="5" refX="8" refY="2.5" orient="auto-start-reverse">
+<polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)"></polygon> </marker>
+<marker id="seq-arrow-open" markerWidth="8" markerHeight="5" refX="8" refY="2.5" orient="auto-start-reverse">
+<polyline points="0 0, 8 2.5, 0 5" fill="none" stroke="var(--_arrow)" stroke-width="1"></polyline>
+</marker> </defs>
 <line class="lifeline" data-actor="T" x1="94.7695" y1="70" x2="94.7695" y2="360" stroke="var(--_line)" stroke-width="0.75" stroke-dasharray="6 4"></line>
 <line class="lifeline" data-actor="C" x1="249.118" y1="70" x2="249.118" y2="360" stroke="var(--_line)" stroke-width="0.75" stroke-dasharray="6 4"></line>
 <line class="lifeline" data-actor="A" x1="429.772" y1="70" x2="429.772" y2="360" stroke="var(--_line)" stroke-width="0.75" stroke-dasharray="6 4"></line>
 <line class="lifeline" data-actor="R" x1="614.872" y1="70" x2="614.872" y2="360" stroke="var(--_line)" stroke-width="0.75" stroke-dasharray="6 4"></line>
 <g class="message" data-from="T" data-to="C" data-label="Launch certutil.exe with URL cache" data-line-style="solid" data-arrow-head="filled" data-self="false">
-  <line x1="94.7695" y1="90" x2="249.118" y2="90" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)"></line>
-  <text x="171.94375" y="80" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">Launch certutil.exe with URL cache</text>
-</g>
+<line x1="94.7695" y1="90" x2="249.118" y2="90" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)"></line>
+<text x="171.94375" y="80" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">Launch
+certutil.exe with URL cache</text> </g>
 <g class="message" data-from="C" data-to="A" data-label="HTTP GET /stage2.dll" data-line-style="solid" data-arrow-head="filled" data-self="false">
-  <line x1="249.118" y1="130" x2="429.772" y2="130" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)"></line>
-  <text x="339.445" y="120" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">HTTP GET /stage2.dll</text>
-</g>
+<line x1="249.118" y1="130" x2="429.772" y2="130" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)"></line>
+<text x="339.445" y="120" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">HTTP
+GET /stage2.dll</text> </g>
 <g class="message" data-from="A" data-to="C" data-label="200 OK (ntdll_bk.dll payload)" data-line-style="dashed" data-arrow-head="filled" data-self="false">
-  <line x1="429.772" y1="170" x2="249.118" y2="170" stroke="var(--_line)" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#seq-arrow)"></line>
-  <text x="339.445" y="160" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">200 OK (ntdll_bk.dll payload)</text>
-</g>
+<line x1="429.772" y1="170" x2="249.118" y2="170" stroke="var(--_line)" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#seq-arrow)"></line>
+<text x="339.445" y="160" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">200
+OK (ntdll_bk.dll payload)</text> </g>
 <g class="message" data-from="C" data-to="T" data-label="Saved payload to C:\Windows\Temp\" data-line-style="solid" data-arrow-head="filled" data-self="false">
-  <line x1="249.118" y1="210" x2="94.7695" y2="210" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)"></line>
-  <text x="171.94375" y="200" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">Saved payload to C:\Windows\Temp\</text>
-</g>
+<line x1="249.118" y1="210" x2="94.7695" y2="210" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)"></line>
+<text x="171.94375" y="200" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">Saved
+payload to C:&lt;/text&gt; </g>
 <g class="message" data-from="T" data-to="R" data-label="Spawn rundll32.exe ntdll_bk.dll,Init" data-line-style="solid" data-arrow-head="filled" data-self="false">
-  <line x1="94.7695" y1="250" x2="614.872" y2="250" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)"></line>
-  <text x="354.82075" y="240" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">Spawn rundll32.exe ntdll_bk.dll,Init</text>
-</g>
+<line x1="94.7695" y1="250" x2="614.872" y2="250" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)"></line>
+<text x="354.82075" y="240" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">Spawn
+rundll32.exe ntdll_bk.dll,Init</text> </g>
 <g class="message" data-from="R" data-to="R" data-label="Unpack UPX &amp; Inject Shellcode" data-line-style="solid" data-arrow-head="filled" data-self="true">
-  <polyline points="614.872,290 644.872,290 644.872,310 614.872,310" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)"></polyline>
-  <text x="652.872" y="300" font-size="11" text-anchor="start" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">Unpack UPX &amp; Inject Shellcode</text>
-</g>
+<polyline points="614.872,290 644.872,290 644.872,310 614.872,310" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)"></polyline>
+<text x="652.872" y="300" font-size="11" text-anchor="start" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">Unpack
+UPX &amp; Inject Shellcode</text> </g>
 <g class="actor" data-id="T" data-label="Task Scheduler" data-type="participant">
-  <rect x="30" y="30" width="129.539" height="40" rx="4" ry="4" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
-  <text x="94.7695" y="50" font-size="13" text-anchor="middle" font-weight="500" fill="var(--_text)" dy="4.55">Task Scheduler</text>
-</g>
+<rect x="30" y="30" width="129.539" height="40" rx="4" ry="4" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+<text x="94.7695" y="50" font-size="13" text-anchor="middle" font-weight="500" fill="var(--_text)" dy="4.55">Task
+Scheduler</text> </g>
 <g class="actor" data-id="C" data-label="certutil.exe" data-type="participant">
-  <rect x="199.539" y="30" width="99.158" height="40" rx="4" ry="4" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
-  <text x="249.118" y="50" font-size="13" text-anchor="middle" font-weight="500" fill="var(--_text)" dy="4.55">certutil.exe</text>
+<rect x="199.539" y="30" width="99.158" height="40" rx="4" ry="4" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+<text x="249.118" y="50" font-size="13" text-anchor="middle" font-weight="500" fill="var(--_text)" dy="4.55">certutil.exe</text>
 </g>
 <g class="actor" data-id="A" data-label="Attacker C2 (198.51.100.44)" data-type="participant">
-  <rect x="338.697" y="30" width="182.14999999999998" height="40" rx="4" ry="4" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
-  <text x="429.772" y="50" font-size="13" text-anchor="middle" font-weight="500" fill="var(--_text)" dy="4.55">Attacker C2 (198.51.100.44)</text>
-</g>
+<rect x="338.697" y="30" width="182.14999999999998" height="40" rx="4" ry="4" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+<text x="429.772" y="50" font-size="13" text-anchor="middle" font-weight="500" fill="var(--_text)" dy="4.55">Attacker
+C2 (198.51.100.44)</text> </g>
 <g class="actor" data-id="R" data-label="rundll32.exe" data-type="participant">
-  <rect x="560.847" y="30" width="108.05" height="40" rx="4" ry="4" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
-  <text x="614.872" y="50" font-size="13" text-anchor="middle" font-weight="500" fill="var(--_text)" dy="4.55">rundll32.exe</text>
+<rect x="560.847" y="30" width="108.05" height="40" rx="4" ry="4" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+<text x="614.872" y="50" font-size="13" text-anchor="middle" font-weight="500" fill="var(--_text)" dy="4.55">rundll32.exe</text>
 </g>
 </svg>
-  </div>
-  <figcaption class="mermaid-caption"><span class="figure-label">Figure 2:</span> Execution and Staging Sequence of Malicious Scheduled Task</figcaption>
+</div>
+<figcaption class="mermaid-caption">
+<span class="figure-label">Figure 2:</span> Execution and Staging
+Sequence of Malicious Scheduled Task
+</figcaption>
 </figure>
 <h3 id="42-forensic-memory-ingestion--hash-parsing-script">4.2 Forensic
 Memory Ingestion &amp; Hash Parsing Script</h3>
@@ -3388,7 +3391,7 @@ preserved throughout the examination.</p>
     var renderDropdown = !renderPills && fallbackColIdx !== -1 && uniqueCats.length > 5;
 
     // Discover column label from header th
-    var colHeaderEl = table.querySelector('thead tr th:nth-child(' + (catColIdx + 1) + ')');
+    var colHeaderEl = catColIdx !== -1 ? table.querySelector('thead tr th:nth-child(' + (catColIdx + 1) + ')') : null;
     var colHeaderTitle = colHeaderEl ? colHeaderEl.textContent.trim() : '';
     var categoryLabel = colHeaderTitle ? colHeaderTitle + ':' : i18nFilter.categoryPrefix;
 

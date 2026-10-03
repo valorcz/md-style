@@ -1,0 +1,29 @@
+- id: "svc_backup"
+  match:
+    exact:
+      - "svc_backup"
+      - "svc_backup@corp.internal"
+    in_code: true
+    in_prose: true
+    case_sensitive: false
+  badge: "SERVICE ACCOUNT"
+  badge_type: "account"
+  category: "ACTIVE DIRECTORY // PRIVILEGED IDENTITY"
+  role: "Service Account"
+  title: "AD Backup Service Account"
+  summary: "Domain-level backup account with SeBackupPrivilege. Targeted via Kerberoasting during the incident."
+  fields:
+    "DOMAIN": "corp.internal"
+    "PRIVILEGES": "Domain Admins, SeBackupPrivilege, SeRestorePrivilege"
+    "STATUS": "Compromised // Kerberos Ticket 0x17 Requested"
+    "INCIDENT ROLE": "Primary Kerberoasting Target (T1558.003)"
+  investigation_tips:
+    - "Check Event ID 4769 in Security.evtx filtered by ServiceName 'svc_backup'."
+    - "Verify Kerberos Ticket Encryption Type is 0x17 (RC4-HMAC)."
+  attacker_behavior:
+    - "Attacker used Rubeus / Invoke-Kerberoast to request a ticket for offline hash cracking."
+  benign_causes:
+    - "Scheduled backup job running Veeam / Commvault tape synchronization."
+  pivots:
+    - label: "ACTIVE DIRECTORY AUDIT DOCS ↗"
+      url: "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/monitoring-active-directory-for-signs-of-compromise"

@@ -13,6 +13,36 @@
 -- 7. Cyber telemetry badges ([THREAT: CRITICAL], [CONFIDENCE: XX%])
 -- ==============================================================================
 
+-- Custom Knowledge Base Rules
+local custom_exact_tokens = {}
+local custom_prose_rules = {}
+
+function Meta(meta)
+  if meta["custom-knowledge-manifest"] then
+    local manifest_path = pandoc.utils.stringify(meta["custom-knowledge-manifest"])
+    local f = io.open(manifest_path, "r")
+    if f then
+      local content = f:read("*a")
+      f:close()
+      if pandoc.json and pandoc.json.decode then
+        local ok, parsed = pcall(pandoc.json.decode, content)
+        if ok and parsed then
+          if parsed.exact_tokens then
+            for _, item in ipairs(parsed.exact_tokens) do
+              local key = item.case_sensitive and item.token or item.token:lower()
+              custom_exact_tokens[key] = item
+            end
+          end
+          if parsed.prose_rules then
+            custom_prose_rules = parsed.prose_rules
+          end
+        end
+      end
+    end
+  end
+  return meta
+end
+
 -- Check if cell string matches common timestamp / date formats
 local function is_timestamp_str(s)
   if not s or #s == 0 then return false end
@@ -159,14 +189,18 @@ end
 local function is_eventid_str(s)
   if not s then return false end
   s = s:gsub("^%s+", ""):gsub("%s+$", "")
-  if s:match("^[Ee]vent%s*[Ii]?[Dd]?:?%s*%d+$") or s:match("^[Ee][Ii][Dd]:?%s*%d+$") then
+  local lower = s:lower()
+  if lower:match("^event%s*[ii]?[dd]s?:?%s*%d+") or lower:match("^eids?:?%s*%d+") then
     return true
   end
   local common_eids = {
     ["4624"]=true, ["4625"]=true, ["4672"]=true, ["4688"]=true,
-    ["4697"]=true, ["7045"]=true, ["4720"]=true, ["4728"]=true,
-    ["4732"]=true, ["4768"]=true, ["4769"]=true, ["4771"]=true,
-    ["4776"]=true, ["1102"]=true, ["104"]=true,  ["4104"]=true
+    ["4697"]=true, ["7045"]=true, ["4720"]=true, ["4726"]=true,
+    ["4728"]=true, ["4732"]=true, ["4738"]=true, ["4768"]=true,
+    ["4769"]=true, ["4771"]=true, ["4776"]=true, ["1102"]=true,
+    ["104"]=true,  ["4104"]=true, ["4103"]=true, ["5000"]=true,
+    ["5001"]=true, ["5004"]=true, ["5007"]=true, ["1116"]=true,
+    ["1117"]=true, ["600"]=true,  ["4696"]=true
   }
   return common_eids[s] == true
 end
@@ -191,9 +225,47 @@ end
 -- Registry for build-time knowledge enrichment
 local collected_identifiers = {}
 
+-- Construct an eventid pill and record it in the knowledge registry
+local function make_eid_pill(val, display_text)
+  collected_identifiers[val] = true
+  collected_identifiers["Event ID " .. val] = true
+  collected_identifiers["EID " .. val] = true
+  return pandoc.Code(display_text, pandoc.Attr("", {"eventid-pill", "cyber-ioc"}, {{"data-ioc-type", "eventid"}, {"data-ioc-value", val}}))
+end
+
 -- Process inline Code elements for MITRE, Hashes, and IoCs with data attributes
 function Code(el)
   local text = el.text
+
+  -- Check for compound or singular Event ID in code backticks
+  local lower_txt = text:lower():gsub("^%s+", ""):gsub("%s+$", "")
+  if lower_txt:match("^eids?:?") or lower_txt:match("^event%s*[ii]?[dd]s?:?") then
+    local nums = {}
+    for num in text:gmatch("%d+") do
+      table.insert(nums, num)
+    end
+    if #nums > 1 then
+      collected_identifiers[text] = true
+      local inlines = {}
+      local norm_prefix = (lower_txt:find("event") and "Event ID " or "EID ")
+      for idx, n in ipairs(nums) do
+        if idx > 1 then
+          if idx == #nums and (lower_txt:find("and", 1, true) or lower_txt:find("&", 1, true) or lower_txt:find(" a ", 1, true)) then
+            table.insert(inlines, pandoc.Str(" and "))
+          elseif lower_txt:find("/", 1, true) then
+            table.insert(inlines, pandoc.Str(" / "))
+          else
+            table.insert(inlines, pandoc.Str(", "))
+          end
+        end
+        table.insert(inlines, make_eid_pill(n, norm_prefix .. n))
+      end
+      return inlines
+    elseif #nums == 1 then
+      collected_identifiers[text] = true
+      return make_eid_pill(nums[1], text)
+    end
+  end
 
   if is_mitre_str(text) then
     ensure_class(el, "mitre-pill")
@@ -232,12 +304,11 @@ function Code(el)
   end
 
   if is_eventid_str(text) then
-    ensure_class(el, "eventid-pill")
-    ensure_class(el, "cyber-ioc")
-    el.attributes["data-ioc-type"] = "eventid"
-    el.attributes["data-ioc-value"] = text
-    collected_identifiers[text] = true
-    return el
+    local digits = text:match("%d+")
+    if digits then
+      collected_identifiers[text] = true
+      return make_eid_pill(digits, text)
+    end
   end
 
   if is_ipv4_str(text) or is_ipv6_str(text) then
@@ -253,6 +324,17 @@ function Code(el)
     ensure_class(el, "cyber-ioc")
     el.attributes["data-ioc-type"] = "hash"
     el.attributes["data-ioc-value"] = text
+    return el
+  end
+
+  -- Check custom knowledge base tokens
+  local custom_item = custom_exact_tokens[text] or custom_exact_tokens[text:lower()]
+  if custom_item then
+    ensure_class(el, "custom-pill")
+    ensure_class(el, "cyber-ioc")
+    el.attributes["data-ioc-type"] = "custom"
+    el.attributes["data-ioc-value"] = custom_item.id or text
+    collected_identifiers[text] = true
     return el
   end
 
@@ -446,6 +528,155 @@ local function process_table(tbl, preceding_header_text)
   return tbl
 end
 
+-- Process inline text to automatically highlight Windows Event IDs and compound lists (e.g. EID 5000, 5001 and 600)
+function Inlines(inlines)
+  local new_inlines = {}
+  local i = 1
+  while i <= #inlines do
+    local el = inlines[i]
+    local matched = false
+    local prefix_len = 0
+    local label = ""
+
+    if el.t == "Str" then
+      local lead, core = el.text:match("^([%(%[%'\"«„“]*)(.-)$")
+      if core and #core > 0 then
+        local lower = core:lower()
+        if lower:match("^eids?:?$") then
+          prefix_len = 1
+          lead_punct = lead or ""
+          label = core:gsub(":$", "")
+        elseif lower == "event" and i + 2 <= #inlines and inlines[i+1].t == "Space" and inlines[i+2].t == "Str" and inlines[i+2].text:lower():match("^ids?:?$") then
+          prefix_len = 3
+          lead_punct = lead or ""
+          label = core .. " " .. inlines[i+2].text:gsub(":$", "")
+        end
+      end
+    end
+
+    if prefix_len > 0 and i + prefix_len <= #inlines then
+      local peek_idx = i + prefix_len
+      if inlines[peek_idx].t == "Space" and peek_idx + 1 <= #inlines then
+        peek_idx = peek_idx + 1
+        local raw_token = inlines[peek_idx].text
+        local sub_nums = {}
+        for num in raw_token:gmatch("%d+") do
+          table.insert(sub_nums, num)
+        end
+        if #sub_nums > 0 then
+          matched = true
+          local collected_eids = {}
+          local sep = raw_token:find("/") and " / " or ", "
+          for s_idx, sn in ipairs(sub_nums) do
+            table.insert(collected_eids, { id = sn, connector = sep })
+          end
+
+          -- Extract trailing non-digits after the last number in this token
+          local last_num = sub_nums[#sub_nums]
+          local last_pos = raw_token:find(last_num, 1, true)
+          if last_pos then
+            local trail_str = raw_token:sub(last_pos + #last_num)
+            collected_eids[#collected_eids].trail = trail_str
+          end
+
+          local curr_idx = peek_idx + 1
+
+          while curr_idx <= #inlines do
+            if inlines[curr_idx].t == "Space" and curr_idx + 1 <= #inlines then
+              local next_el = inlines[curr_idx + 1]
+              if next_el.t == "Str" and (next_el.text:lower() == "and" or next_el.text == "&" or next_el.text:lower() == "a") and curr_idx + 2 <= #inlines and inlines[curr_idx + 2].t == "Space" and curr_idx + 3 <= #inlines then
+                local next_token = inlines[curr_idx + 3].text
+                local added_nums = {}
+                for n in next_token:gmatch("%d+") do
+                  table.insert(added_nums, n)
+                  table.insert(collected_eids, { id = n, connector = " " .. next_el.text .. " " })
+                end
+                if #added_nums > 0 then
+                  local ln = added_nums[#added_nums]
+                  local lp = next_token:find(ln, 1, true)
+                  if lp then
+                    collected_eids[#collected_eids].trail = next_token:sub(lp + #ln)
+                  end
+                  curr_idx = curr_idx + 4
+                else
+                  break
+                end
+              elseif next_el.t == "Str" then
+                local next_token = next_el.text
+                local added_nums = {}
+                for n in next_token:gmatch("%d+") do
+                  table.insert(added_nums, n)
+                  table.insert(collected_eids, { id = n, connector = next_token:find("/") and " / " or ", " })
+                end
+                if #added_nums > 0 then
+                  local ln = added_nums[#added_nums]
+                  local lp = next_token:find(ln, 1, true)
+                  if lp then
+                    collected_eids[#collected_eids].trail = next_token:sub(lp + #ln)
+                  end
+                  curr_idx = curr_idx + 2
+                else
+                  break
+                end
+              else
+                break
+              end
+            else
+              break
+            end
+          end
+
+          if lead_punct and #lead_punct > 0 then
+            table.insert(new_inlines, pandoc.Str(lead_punct))
+          end
+
+          local norm_label = (label:lower():find("event") and "Event ID" or "EID")
+          for e_idx, item in ipairs(collected_eids) do
+            if e_idx == 1 then
+              table.insert(new_inlines, make_eid_pill(item.id, norm_label .. " " .. item.id))
+            else
+              table.insert(new_inlines, pandoc.Str(item.connector or ", "))
+              table.insert(new_inlines, make_eid_pill(item.id, norm_label .. " " .. item.id))
+            end
+            if item.trail and #item.trail > 0 and item.trail ~= "," and item.trail ~= "/" then
+              table.insert(new_inlines, pandoc.Str(item.trail))
+            end
+          end
+
+          i = curr_idx
+        end
+      end
+    end
+
+    -- Check for Custom Knowledge prose match
+    if not matched and el.t == "Str" and #custom_prose_rules > 0 then
+      local raw_str = el.text
+      local lead_p, clean_w, trail_p = raw_str:match("^([%(%[%'\"«„“]*)(.-)([%'\"»”%]%),%.%:%;%!%?]*)$")
+      if clean_w and #clean_w > 0 then
+        local c_item = custom_exact_tokens[clean_w] or custom_exact_tokens[clean_w:lower()]
+        if c_item then
+          matched = true
+          if lead_p and #lead_p > 0 then
+            table.insert(new_inlines, pandoc.Str(lead_p))
+          end
+          local pill = pandoc.Code(clean_w, pandoc.Attr("", {"custom-pill", "cyber-ioc"}, {{"data-ioc-type", "custom"}, {"data-ioc-value", c_item.id or clean_w}}))
+          table.insert(new_inlines, pill)
+          if trail_p and #trail_p > 0 then
+            table.insert(new_inlines, pandoc.Str(trail_p))
+          end
+          i = i + 1
+        end
+      end
+    end
+
+    if not matched then
+      table.insert(new_inlines, el)
+      i = i + 1
+    end
+  end
+  return new_inlines
+end
+
 -- Document-level transformation
 function Pandoc(doc)
   local new_blocks = {}
@@ -510,34 +741,17 @@ function Pandoc(doc)
     end
   end
 
-  -- Embed Enriched Knowledge Base if any identifiers were detected
-  if next(collected_identifiers) then
-    local ids_args = {}
-    for id_val, _ in pairs(collected_identifiers) do
-      table.insert(ids_args, string.format("%q", id_val))
-    end
-    local script_dir = pandoc.path.directory(PANDOC_SCRIPT_FILE or ".")
-    local enrich_py = pandoc.path.join({script_dir, "..", "scripts", "enrich-identifiers.py"})
-    local cmd = string.format("python3 %q %s", enrich_py, table.concat(ids_args, " "))
-    local h = io.popen(cmd)
-    if h then
-      local json_data = h:read("*a")
-      h:close()
-      if json_data and #json_data > 2 then
-        local clean_json = json_data:gsub("^%s+", ""):gsub("%s+$", "")
-        local kb_block = pandoc.RawBlock("html", string.format('<script id="cyber-kb-data" type="application/json">\n%s\n</script>', clean_json))
-        table.insert(new_blocks, kb_block)
-      end
-    end
-  end
-
   doc.blocks = new_blocks
   return doc
 end
 
 return {
   {
+    Meta = Meta
+  },
+  {
     Code = Code,
+    Inlines = Inlines,
     BlockQuote = BlockQuote
   },
   {

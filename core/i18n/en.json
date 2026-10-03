@@ -1,0 +1,29 @@
+{
+  "code": "en",
+  "name": "English",
+  "meta": {
+    "toc_title": "Table of Contents",
+    "abstract_title": "Executive Summary",
+    "figure_label": "Figure",
+    "table_label": "Table",
+    "page_label": "Page",
+    "confidential_label": "CONFIDENTIAL",
+    "report_type": "REPORT",
+    "author_label": "Author:",
+    "date_label": "Date:",
+    "page_prefix": "Page ",
+    "page_of": " of ",
+    "section_tag": "§ SECTION",
+    "figure_prefix": "Figure "
+  },
+  "ui": {
+    "filter_placeholder": "Filter records...",
+    "all_categories": "All Categories",
+    "showing_records": "Showing {count} of {total}",
+    "copied": "COPIED TO CLIPBOARD",
+    "back_to_top": "Back to top",
+    "print": "Print",
+    "offline_badge": "OFFLINE REPORT",
+    "close": "Close"
+  }
+}

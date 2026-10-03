@@ -1,5 +1,5 @@
 -- ==============================================================================
--- svj-ballot/filter.lua
+-- styles/svj/ballot.lua
 -- Dedicated Lua filter for the svj-ballot style.
 -- Dynamically appends interactive/printable ballot options to proposal callouts.
 -- Isolated strictly to svj-ballot to prevent bleed into any other themes.

@@ -1,0 +1,13 @@
+{
+  "meta": {
+    "report_type": "DIGITAL FORENSIC INVESTIGATION REPORT",
+    "examiner_label": "Digital Forensic Examiner:",
+    "confidential_label": "CONFIDENTIAL // LAW ENFORCEMENT & LEGAL PRIVILEGED",
+    "hex_dump": "HEX DUMP",
+    "sys_log": "SYSTEM LOG"
+  },
+  "ui": {
+    "filter_placeholder": "Search artifacts, timelines, accounts...",
+    "chain_of_custody": "Evidence Custody Log"
+  }
+}

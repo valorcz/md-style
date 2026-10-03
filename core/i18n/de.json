@@ -1,0 +1,29 @@
+{
+  "code": "de",
+  "name": "Deutsch",
+  "meta": {
+    "toc_title": "Inhaltsverzeichnis",
+    "abstract_title": "Zusammenfassung",
+    "figure_label": "Abbildung",
+    "table_label": "Tabelle",
+    "page_label": "Seite",
+    "confidential_label": "VERTRAULICH",
+    "report_type": "BERICHT",
+    "author_label": "Autor:",
+    "date_label": "Datum:",
+    "page_prefix": "Seite ",
+    "page_of": " von ",
+    "section_tag": "§ ABSCHNITT",
+    "figure_prefix": "Abbildung "
+  },
+  "ui": {
+    "filter_placeholder": "Einträge filtern...",
+    "all_categories": "Alle Kategorien",
+    "showing_records": "Angezeigt {count} von {total}",
+    "copied": "IN ZWISCHENABLAGE KOPIERT",
+    "back_to_top": "Nach oben",
+    "print": "Drucken",
+    "offline_badge": "OFFLINE-BERICHT",
+    "close": "Schließen"
+  }
+}

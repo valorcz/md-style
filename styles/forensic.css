@@ -64,72 +64,17 @@
   /* Layout dimensions */
   --doc-max-width: 54rem;          /* ~864px: optimal 75-character measure */
 
-  /* Localization (i18n) Defaults - English */
-  --i18n-report-title: "OFFICIAL FORENSIC REPORT";
-  --i18n-examiner: "EXAMINER:";
-  --i18n-date: "DATE:";
-  --i18n-hex-dump: "HEX DUMP";
-  --i18n-sys-log: "SYSTEM LOG";
-  --i18n-confidential: "CONFIDENTIAL // LAW ENFORCEMENT & LEGAL PRIVILEGED";
-  --i18n-page-prefix: "Page ";
-  --i18n-section-tag: "§ SECTION";
-  --i18n-figure-prefix: "Figure ";
-
-  /* Running Header & Footer for Paged Media */
-  --page-header-left: var(--i18n-report-title);
+  /* Running Header & Footer for Paged Media (Supplied by Python i18n Engine) */
+  --page-header-left: var(--i18n-report-title, "OFFICIAL FORENSIC REPORT");
   --page-header-right: string(section-title);
   --page-header-border: 1px solid #cbd5e1;
   --page-header-color: #64748b;
-  --page-footer-left: var(--i18n-confidential);
+  --page-footer-left: var(--i18n-confidential, "CONFIDENTIAL // LAW ENFORCEMENT & LEGAL PRIVILEGED");
   --page-footer-right: var(--i18n-page-prefix, "Page ") counter(page);
   --page-footer-border: 1px solid #cbd5e1;
   --page-first-footer-left: var(--page-footer-left);
   --page-first-footer-right: var(--page-footer-right);
   --page-first-footer-border: var(--page-footer-border);
-}
-
-/* Localization (i18n) - Czech */
-:root:lang(cs),
-:root:lang(cz),
-html[lang^="cs"],
-html[lang^="cz"] {
-  --i18n-report-title: "OFICIÁLNÍ FORENZNÍ ZPRÁVA";
-  --i18n-examiner: "ZPRACOVAL:";
-  --i18n-date: "DATUM:";
-  --i18n-hex-dump: "HEX VÝPIS";
-  --i18n-sys-log: "SYSTÉMOVÝ PROTOKOL";
-  --i18n-confidential: "DŮVĚRNÉ";
-  --i18n-page-prefix: "Strana ";
-  --i18n-section-tag: "§ SEKCE";
-  --i18n-figure-prefix: "Obrázek ";
-}
-
-/* Localization (i18n) - Slovak */
-:root:lang(sk),
-html[lang^="sk"] {
-  --i18n-report-title: "OFICIÁLNA FORENZNÁ SPRÁVA";
-  --i18n-examiner: "SPRACOVAL:";
-  --i18n-date: "DÁTUM:";
-  --i18n-hex-dump: "HEX VÝPIS";
-  --i18n-sys-log: "SYSTÉMOVÝ PROTOKOL";
-  --i18n-confidential: "DÔVERNÉ";
-  --i18n-page-prefix: "Strana ";
-  --i18n-section-tag: "§ SEKCIA";
-  --i18n-figure-prefix: "Obrázok ";
-}
-
-/* Localization (i18n) - German */
-:root:lang(de),
-html[lang^="de"] {
-  --i18n-report-title: "OFFIZIELLER FORENSIK-BERICHT";
-  --i18n-examiner: "PRÜFER:";
-  --i18n-date: "DATUM:";
-  --i18n-hex-dump: "HEX-DUMP";
-  --i18n-sys-log: "SYSTEMPROTOKOLL";
-  --i18n-confidential: "VERTRAULICH";
-  --i18n-page-prefix: "Seite ";
-  --i18n-section-tag: "§ ABSCHNITT";
-  --i18n-figure-prefix: "Abbildung ";
 }
 
 /* --------------------------------------------------------------------------

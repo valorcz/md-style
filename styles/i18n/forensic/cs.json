@@ -1,0 +1,13 @@
+{
+  "meta": {
+    "report_type": "ZPRÁVA Z DIGITÁLNÍHO FORENZNÍHO VYŠETŘOVÁNÍ",
+    "examiner_label": "Zpracoval:",
+    "confidential_label": "DŮVĚRNÉ",
+    "hex_dump": "HEX VÝPIS",
+    "sys_log": "SYSTÉMOVÝ PROTOKOL"
+  },
+  "ui": {
+    "filter_placeholder": "Hledat v artefaktech, časové ose, účtech...",
+    "chain_of_custody": "Předávací protokol důkazního materiálu"
+  }
+}

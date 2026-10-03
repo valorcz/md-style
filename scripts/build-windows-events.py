@@ -135,11 +135,111 @@ CORE_EVTX_CHANNELS = {
         "key_events": ["1116 (Malware Detected)", "1117 (Action Taken / Cleaned)", "5001 (Real-Time Protection Disabled)"],
         "retention": "Default 16MB.",
         "url": "https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/troubleshoot-microsoft-defender-antivirus"
+    },
+    "Defender.evtx": {
+        "type": "evtx",
+        "id": "Defender.evtx",
+        "title": "Microsoft Defender Antivirus & EDR Operational Log",
+        "channel": "Microsoft-Windows-Windows Defender/Operational",
+        "path": "%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-Windows%20Defender%4Operational.evtx",
+        "role": "Primary endpoint log for antivirus and EDR telemetry. Contains detections, real-time protection tampering (EID 5001), signature updates, configuration changes (EID 5007), and engine unloading.",
+        "key_events": ["1116 (Malware Detected)", "1117 (Action Taken)", "5000 (RTP Enabled)", "5001 (RTP Disabled)", "5007 (Configuration Changed)"],
+        "retention": "Default 16MB. Wrap-around.",
+        "url": "https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/troubleshoot-microsoft-defender-antivirus"
+    },
+    "TerminalServices.evtx": {
+        "type": "evtx",
+        "id": "TerminalServices.evtx",
+        "title": "Remote Desktop Local Session Manager Log",
+        "channel": "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+        "path": "%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx",
+        "role": "High-fidelity RDP session reconstruction repository. Records interactive session logon (EID 21), shell start (EID 22), logoff (EID 23), disconnect (EID 24), and reconnection (EID 25) with originating client IP addresses.",
+        "key_events": ["21 (Session Logon Succeeded)", "22 (Shell Start)", "23 (Session Logoff)", "24 (Session Disconnected)", "25 (Session Reconnected)"],
+        "retention": "Default 1MB. Unaffected by standard Security.evtx clearing.",
+        "url": "https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/welcome-to-rds"
+    },
+    "TerminalServices-LocalSessionManager.evtx": {
+        "type": "evtx",
+        "id": "TerminalServices-LocalSessionManager.evtx",
+        "title": "Remote Desktop Local Session Manager Log",
+        "channel": "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+        "path": "%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx",
+        "role": "High-fidelity RDP session reconstruction repository. Records interactive session logon (EID 21), shell start (EID 22), logoff (EID 23), disconnect (EID 24), and reconnection (EID 25) with originating client IP addresses.",
+        "key_events": ["21 (Session Logon Succeeded)", "22 (Shell Start)", "23 (Session Logoff)", "24 (Session Disconnected)", "25 (Session Reconnected)"],
+        "retention": "Default 1MB. Unaffected by standard Security.evtx clearing.",
+        "url": "https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/welcome-to-rds"
+    },
+    "LocalSessionManager.evtx": {
+        "type": "evtx",
+        "id": "LocalSessionManager.evtx",
+        "title": "Remote Desktop Local Session Manager Log",
+        "channel": "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+        "path": "%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx",
+        "role": "High-fidelity RDP session reconstruction repository. Records interactive session logon (EID 21), shell start (EID 22), logoff (EID 23), disconnect (EID 24), and reconnection (EID 25) with originating client IP addresses.",
+        "key_events": ["21 (Session Logon Succeeded)", "22 (Shell Start)", "23 (Session Logoff)", "24 (Session Disconnected)", "25 (Session Reconnected)"],
+        "retention": "Default 1MB. Unaffected by standard Security.evtx clearing.",
+        "url": "https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/welcome-to-rds"
+    },
+    "TaskScheduler.evtx": {
+        "type": "evtx",
+        "id": "TaskScheduler.evtx",
+        "title": "Windows Task Scheduler Operational Log",
+        "channel": "Microsoft-Windows-TaskScheduler/Operational",
+        "path": "%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TaskScheduler%4Operational.evtx",
+        "role": "Monitors creation, execution, and modification of scheduled tasks (primary persistence mechanism for lateral movement and C2 triggers).",
+        "key_events": ["106 (Task Registered)", "140 (Task Updated)", "200 (Action Started)", "201 (Action Completed)"],
+        "retention": "Default 1MB. Wrap-around.",
+        "url": "https://learn.microsoft.com/en-us/windows/win32/taskschd/task-scheduler-start-page"
     }
 }
 
 # Core Forensic Event Definitions with rich contextual analysis
 CORE_FORENSIC_EVENTS = {
+    "21": {
+        "channel": "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+        "category": "Remote Desktop Session Lifecycle",
+        "severity": "AUDIT SUCCESS",
+        "title": "Remote Desktop Session Logon Succeeded",
+        "summary": "Records successful interactive or remote desktop session logon. Discloses SessionID, User, and Client Address (Source IP). Key evidence for initial RDP intrusion and lateral movement.",
+        "key_fields": ["User", "SessionID", "Address"],
+        "mitre": ["T1021.001 (Remote Desktop Protocol)", "T1078 (Valid Accounts)"]
+    },
+    "22": {
+        "channel": "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+        "category": "Remote Desktop Session Lifecycle",
+        "severity": "AUDIT SUCCESS",
+        "title": "Remote Desktop Session Shell Start",
+        "summary": "Logged when the user desktop shell (explorer.exe or custom application shell) successfully starts following logon.",
+        "key_fields": ["User", "SessionID", "Address"],
+        "mitre": ["T1021.001 (Remote Desktop Protocol)"]
+    },
+    "23": {
+        "channel": "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+        "category": "Remote Desktop Session Lifecycle",
+        "severity": "AUDIT SUCCESS",
+        "title": "Remote Desktop Session Logoff Succeeded",
+        "summary": "User cleanly closed and logged off from the Remote Desktop session. Essential for reconstructing the adversary active presence window and dwell time on the host.",
+        "key_fields": ["User", "SessionID", "Address"],
+        "mitre": ["T1021.001 (Remote Desktop Protocol)"]
+    },
+    "24": {
+        "channel": "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+        "category": "Remote Desktop Session Lifecycle",
+        "severity": "AUDIT INFORMATION",
+        "title": "Remote Desktop Session Disconnected",
+        "summary": "User disconnected from the session (e.g. closing the RDP client window or network disruption) without logging off. The session state remains active in background memory.",
+        "key_fields": ["User", "SessionID", "Address"],
+        "mitre": ["T1021.001 (Remote Desktop Protocol)"]
+    },
+    "25": {
+        "channel": "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+        "category": "Remote Desktop Session Lifecycle",
+        "severity": "AUDIT SUCCESS",
+        "title": "Remote Desktop Session Reconnection Succeeded",
+        "summary": "User reconnected to an existing disconnected session. Crucial for tracing recurring attacker access across multiple days without creating new user profile directories.",
+        "key_fields": ["User", "SessionID", "Address"],
+        "mitre": ["T1021.001 (Remote Desktop Protocol)"]
+    },
     "4624": {
         "channel": "Security",
         "category": "Logon / Authentication",
@@ -292,6 +392,70 @@ CORE_FORENSIC_EVENTS = {
         "key_fields": ["Payload", "CommandLine", "ContextInfo"],
         "mitre": ["T1059.001 (Command and Scripting Interpreter: PowerShell)"]
     },
+    "5000": {
+        "channel": "Microsoft-Windows-Windows Defender/Operational",
+        "category": "Antivirus Protection State",
+        "severity": "AUDIT SUCCESS",
+        "summary": "Microsoft Defender Antivirus real-time protection feature was enabled and actively monitoring the system.",
+        "key_fields": ["ProtectionState", "Component", "ConfigurationPath"],
+        "url": "https://learn.microsoft.com/en-us/defender-endpoint/troubleshoot-microsoft-defender-antivirus"
+    },
+    "5001": {
+        "channel": "Microsoft-Windows-Windows Defender/Operational",
+        "category": "Defense Evasion / Antivirus Tampering",
+        "severity": "CRITICAL TAMPERING",
+        "summary": "Microsoft Defender Antivirus real-time protection feature was disabled or turned off. Often indicates adversary tampering (e.g. Set-MpPreference -DisableRealtimeMonitoring $true) or security evasion during payload deployment.",
+        "key_fields": ["ProtectionState", "UserContext", "Component"],
+        "mitre": ["T1562.001 (Impair Defenses: Disable or Modify Tools)"],
+        "url": "https://learn.microsoft.com/en-us/defender-endpoint/troubleshoot-microsoft-defender-antivirus"
+    },
+    "5004": {
+        "channel": "Microsoft-Windows-Windows Defender/Operational",
+        "category": "Antivirus Configuration",
+        "severity": "NOTICE",
+        "summary": "Microsoft Defender Antivirus real-time protection configuration changed (e.g. excluded paths, network protection state, or cloud-delivered protection toggles).",
+        "key_fields": ["ConfigurationType", "OldValue", "NewValue"],
+        "mitre": ["T1562.001 (Impair Defenses: Disable or Modify Tools)"]
+    },
+    "5007": {
+        "channel": "Microsoft-Windows-Windows Defender/Operational",
+        "category": "Antivirus Configuration",
+        "severity": "NOTICE",
+        "summary": "Microsoft Defender Antivirus configuration changed (exclusions, preferences, or engine update).",
+        "key_fields": ["Setting", "OldValue", "NewValue"]
+    },
+    "1116": {
+        "channel": "Microsoft-Windows-Windows Defender/Operational",
+        "category": "Malware Detection",
+        "severity": "HIGH ALERT",
+        "summary": "Microsoft Defender Antivirus detected malware or potentially unwanted software (PUA/PUP) on the host.",
+        "key_fields": ["ThreatName", "Severity", "Path", "ProcessName", "DetectionOrigin"],
+        "mitre": ["T1204 (User Execution)"]
+    },
+    "1117": {
+        "channel": "Microsoft-Windows-Windows Defender/Operational",
+        "category": "Malware Remediation",
+        "severity": "AUDIT SUCCESS",
+        "summary": "Microsoft Defender Antivirus took an action to protect the host against detected malware (quarantined, removed, or blocked).",
+        "key_fields": ["ThreatName", "ActionName", "Path"]
+    },
+    "600": {
+        "channel": "Windows PowerShell / Security",
+        "category": "Execution & Process Tracking",
+        "severity": "AUDIT INFORMATION",
+        "summary": "PowerShell: Provider (Registry, FileSystem, Environment, WSMan) lifecycle started and host application initialized. Security (Legacy/Compat): Process was assigned a primary token (equivalent to modern EID 4696).",
+        "key_fields": ["HostApplication", "ProviderName", "SequenceNumber", "UserContext"],
+        "mitre": ["T1059.001 (Command and Scripting Interpreter: PowerShell)"],
+        "url": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_logging"
+    },
+    "4696": {
+        "channel": "Security",
+        "category": "Process Tracking",
+        "severity": "AUDIT SUCCESS",
+        "summary": "A primary token was assigned to a process. Modern replacement for legacy Event ID 600.",
+        "key_fields": ["SubjectUserName", "ProcessName", "TargetProcessId"],
+        "mitre": ["T1078 (Valid Accounts)"]
+    },
     "Sysmon-1": {
         "channel": "Sysmon",
         "category": "Process Creation",
@@ -403,11 +567,14 @@ def build_events_dataset(output_path: str = DEFAULT_OUTPUT, refresh_online: bool
 
     # 1. Add EVTX channels
     for name, data in CORE_EVTX_CHANNELS.items():
-        dataset[name] = data
+        data_copy = dict(data)
+        if "role" in data_copy and "summary" not in data_copy:
+            data_copy["summary"] = data_copy["role"]
+        dataset[name] = data_copy
         # Also alias without directory path
         base = os.path.basename(name)
         if base not in dataset:
-            dataset[base] = data
+            dataset[base] = data_copy
 
     # 2. Build Event IDs list
     eids_to_process = list(CORE_FORENSIC_EVENTS.keys())

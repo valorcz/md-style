@@ -129,9 +129,14 @@ local function is_cve_id(s)
   return s:match("^CVE%-%d%d%d%d%-%d+$") ~= nil
 end
 
--- Process Code elements: hashes, MITRE pills, IoCs
+local function make_eid_pill(val, display_text)
+  return pandoc.Code(display_text, pandoc.Attr("", {"eventid-pill", "ioc"}, {{"data-ioc-type", "eventid"}, {"data-ioc-value", val}}))
+end
+
+-- Process Code elements: hashes, MITRE pills, IoCs, Windows Event IDs & EVTX
 function Code(el)
   local txt = el.text
+  local lower = txt:lower():gsub("^%s+", ""):gsub("%s+$", "")
   if is_mitre_id(txt) then
     ensure_class(el, "mitre-pill")
     ensure_class(el, "ioc")
@@ -140,8 +145,142 @@ function Code(el)
     ensure_class(el, "ioc")
   elseif is_ipv4_str(txt) or is_cve_id(txt) then
     ensure_class(el, "ioc")
+  elseif lower:match("^event%s*[ii]?[dd]s?:?%s*%d+") or lower:match("^eids?:?%s*%d+") then
+    ensure_class(el, "ioc")
+    ensure_class(el, "eventid-pill")
+  elseif lower:match("%.evtx$") then
+    ensure_class(el, "ioc")
+    ensure_class(el, "evtx-pill")
   end
   return el
+end
+
+-- Process inline text to automatically highlight Windows Event IDs and compound lists (e.g. EID 5000, 5001 and 600)
+function Inlines(inlines)
+  local new_inlines = {}
+  local i = 1
+  while i <= #inlines do
+    local el = inlines[i]
+    local matched = false
+    local prefix_len = 0
+    local label = ""
+    local lead_punct = ""
+
+    if el.t == "Str" then
+      local lead, core = el.text:match("^([%(%[%'\"«„“]*)(.-)$")
+      if core and #core > 0 then
+        local lower = core:lower()
+        if lower:match("^eids?:?$") then
+          prefix_len = 1
+          lead_punct = lead or ""
+          label = core:gsub(":$", "")
+        elseif lower == "event" and i + 2 <= #inlines and inlines[i+1].t == "Space" and inlines[i+2].t == "Str" and inlines[i+2].text:lower():match("^ids?:?$") then
+          prefix_len = 3
+          lead_punct = lead or ""
+          label = core .. " " .. inlines[i+2].text:gsub(":$", "")
+        end
+      end
+    end
+
+    if prefix_len > 0 and i + prefix_len <= #inlines then
+      local peek_idx = i + prefix_len
+      if inlines[peek_idx].t == "Space" and peek_idx + 1 <= #inlines then
+        peek_idx = peek_idx + 1
+        local raw_token = inlines[peek_idx].text
+        local sub_nums = {}
+        for num in raw_token:gmatch("%d+") do
+          table.insert(sub_nums, num)
+        end
+        if #sub_nums > 0 then
+          matched = true
+          local collected_eids = {}
+          local sep = raw_token:find("/") and " / " or ", "
+          for s_idx, sn in ipairs(sub_nums) do
+            table.insert(collected_eids, { id = sn, connector = sep })
+          end
+
+          local last_num = sub_nums[#sub_nums]
+          local last_pos = raw_token:find(last_num, 1, true)
+          if last_pos then
+            local trail_str = raw_token:sub(last_pos + #last_num)
+            collected_eids[#collected_eids].trail = trail_str
+          end
+
+          local curr_idx = peek_idx + 1
+
+          while curr_idx <= #inlines do
+            if inlines[curr_idx].t == "Space" and curr_idx + 1 <= #inlines then
+              local next_el = inlines[curr_idx + 1]
+              if next_el.t == "Str" and (next_el.text:lower() == "and" or next_el.text == "&" or next_el.text:lower() == "a") and curr_idx + 2 <= #inlines and inlines[curr_idx + 2].t == "Space" and curr_idx + 3 <= #inlines then
+                local next_token = inlines[curr_idx + 3].text
+                local added_nums = {}
+                for n in next_token:gmatch("%d+") do
+                  table.insert(added_nums, n)
+                  table.insert(collected_eids, { id = n, connector = " " .. next_el.text .. " " })
+                end
+                if #added_nums > 0 then
+                  local ln = added_nums[#added_nums]
+                  local lp = next_token:find(ln, 1, true)
+                  if lp then
+                    collected_eids[#collected_eids].trail = next_token:sub(lp + #ln)
+                  end
+                  curr_idx = curr_idx + 4
+                else
+                  break
+                end
+              elseif next_el.t == "Str" then
+                local next_token = next_el.text
+                local added_nums = {}
+                for n in next_token:gmatch("%d+") do
+                  table.insert(added_nums, n)
+                  table.insert(collected_eids, { id = n, connector = next_token:find("/") and " / " or ", " })
+                end
+                if #added_nums > 0 then
+                  local ln = added_nums[#added_nums]
+                  local lp = next_token:find(ln, 1, true)
+                  if lp then
+                    collected_eids[#collected_eids].trail = next_token:sub(lp + #ln)
+                  end
+                  curr_idx = curr_idx + 2
+                else
+                  break
+                end
+              else
+                break
+              end
+            else
+              break
+            end
+          end
+
+          if lead_punct and #lead_punct > 0 then
+            table.insert(new_inlines, pandoc.Str(lead_punct))
+          end
+
+          local norm_label = (label:lower():find("event") and "Event ID" or "EID")
+          for e_idx, item in ipairs(collected_eids) do
+            if e_idx == 1 then
+              table.insert(new_inlines, make_eid_pill(item.id, norm_label .. " " .. item.id))
+            else
+              table.insert(new_inlines, pandoc.Str(item.connector or ", "))
+              table.insert(new_inlines, make_eid_pill(item.id, norm_label .. " " .. item.id))
+            end
+            if item.trail and #item.trail > 0 and item.trail ~= "," and item.trail ~= "/" then
+              table.insert(new_inlines, pandoc.Str(item.trail))
+            end
+          end
+
+          i = curr_idx
+        end
+      end
+    end
+
+    if not matched then
+      table.insert(new_inlines, el)
+      i = i + 1
+    end
+  end
+  return new_inlines
 end
 
 -- Parse a BulletList item into a KPI card structure

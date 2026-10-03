@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "report_type": "HOMEOWNERS ASSOCIATION ASSEMBLY MATERIALS",
+    "abstract_title": "Assembly Agenda",
+    "ballot_title": "Voting Ballot for Homeowners Assembly",
+    "quorum_label": "Quorum Requirement",
+    "unit_label": "Unit No.",
+    "share_label": "Voting Share",
+    "vote_yes": "IN FAVOR",
+    "vote_no": "AGAINST",
+    "vote_abstain": "ABSTAIN",
+    "owner_signature": "Unit Owner Signature"
+  },
+  "ui": {
+    "filter_placeholder": "Search agenda and resolutions..."
+  }
+}

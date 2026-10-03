@@ -1,0 +1,29 @@
+{
+  "code": "cs",
+  "name": "Čeština",
+  "meta": {
+    "toc_title": "Obsah",
+    "abstract_title": "Shrnutí zjištění",
+    "figure_label": "Obrázek",
+    "table_label": "Tabulka",
+    "page_label": "Strana",
+    "confidential_label": "DŮVĚRNÉ",
+    "report_type": "ZPRÁVA",
+    "author_label": "Autor:",
+    "date_label": "Datum:",
+    "page_prefix": "Strana ",
+    "page_of": " z ",
+    "section_tag": "§ SEKCE",
+    "figure_prefix": "Obrázek "
+  },
+  "ui": {
+    "filter_placeholder": "Filtrovat záznamy...",
+    "all_categories": "Všechny kategorie",
+    "showing_records": "Zobrazeno {count} z {total}",
+    "copied": "ZKOPÍROVÁNO DO SCHRÁNKY",
+    "back_to_top": "Zpět nahoru",
+    "print": "Tisk",
+    "offline_badge": "OFFLINE ZPRÁVA",
+    "close": "Zavřít"
+  }
+}

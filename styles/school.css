@@ -29,16 +29,10 @@
   --line-height-body: 1.65;
 
   /* Running Header/Footer Overrides for Paged Media */
-  --page-header-left: string(document-institution, "Academic Evaluation");
+  --page-header-left: var(--page-header-left, string(document-institution, "Academic Evaluation"));
   --page-header-right: string(heading-title);
-  --page-footer-left: "Official Academic Record";
+  --page-footer-left: var(--page-footer-left, "Official Academic Record");
   --page-footer-right: counter(page) " / " counter(pages);
-}
-
-:root:lang(cs),
-html[lang^="cs"] {
-  --page-header-left: string(document-institution, "Akademické hodnocení");
-  --page-footer-left: "Oficiální studijní záznam";
 }
 
 /* --------------------------------------------------------------------------

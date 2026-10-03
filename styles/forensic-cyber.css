@@ -973,6 +973,25 @@ div.finding .title,
   color: #c084fc;
 }
 
+.custom-pill {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(245, 158, 11, 0.12);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  padding: 1px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: var(--cyber-transition);
+}
+
+.custom-pill:hover {
+  border-color: #fbbf24;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+  color: #fef3c7;
+}
+
 /* General Inline Code & Preformatted */
 code {
   font-family: var(--font-mono);
@@ -1372,6 +1391,45 @@ tr.table-row-hidden {
   user-select: all;
 }
 
+/* Unresolved Telemetry Warning Banner in Drawer */
+.drawer-unresolved-banner {
+  background: var(--cyber-amber-bg);
+  border: 1px solid var(--color-warning);
+  border-left: 3px solid var(--color-warning);
+  border-radius: 4px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.74rem;
+  color: var(--color-warning);
+}
+
+.drawer-unresolved-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.drawer-unresolved-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+
+.drawer-unresolved-title {
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.drawer-unresolved-msg {
+  font-size: 0.72rem;
+  color: var(--color-text-strong);
+  line-height: 1.4;
+  word-break: break-word;
+}
+
 /* Enriched Knowledge Base Card in Drawer */
 .drawer-kb-section {
   display: flex;
@@ -1436,6 +1494,13 @@ tr.table-row-hidden {
   border: 1px solid #38bdf8;
 }
 
+.badge-wan {
+  background: rgba(249, 115, 22, 0.15);
+  color: #f97316;
+  border: 1px solid #f97316;
+}
+
+
 .badge-evtx {
   background: rgba(14, 165, 233, 0.15);
   color: #0ea5e9;
@@ -1458,6 +1523,24 @@ tr.table-row-hidden {
   background: var(--cyber-coral-bg);
   color: var(--cyber-coral);
   border: 1px solid var(--cyber-coral);
+}
+
+.badge-custom, .badge-warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid #fbbf24;
+}
+
+.badge-account {
+  background: rgba(168, 85, 247, 0.15);
+  color: #c084fc;
+  border: 1px solid #c084fc;
+}
+
+.badge-host {
+  background: rgba(6, 182, 212, 0.15);
+  color: #22d3ee;
+  border: 1px solid #22d3ee;
 }
 
 .drawer-kb-score {
@@ -1515,6 +1598,64 @@ tr.table-row-hidden {
 
 .drawer-kb-val {
   color: var(--color-text-muted);
+  word-break: break-word;
+}
+
+/* Deep Forensic Intel Blocks (Investigation Tips, Attacker Behavior, Benign Causes) */
+.drawer-intel-block {
+  margin-top: 6px;
+  background: var(--code-bg);
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--cyber-cyan);
+  border-radius: 4px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.drawer-intel-danger {
+  border-left-color: var(--color-critical);
+  background: var(--cyber-coral-bg);
+}
+
+.drawer-intel-muted {
+  border-left-color: var(--cyber-emerald);
+  background: var(--cyber-emerald-bg);
+}
+
+.drawer-intel-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.drawer-intel-icon {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.drawer-intel-title {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-strong);
+}
+
+.drawer-intel-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: var(--color-text);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.drawer-intel-list li {
   word-break: break-word;
 }
 

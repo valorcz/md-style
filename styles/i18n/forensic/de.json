@@ -1,0 +1,13 @@
+{
+  "meta": {
+    "report_type": "OFFIZIELLER FORENSIK-BERICHT",
+    "examiner_label": "Digitalforensischer Gutachter:",
+    "confidential_label": "VERTRAULICH",
+    "hex_dump": "HEX-DUMP",
+    "sys_log": "SYSTEMPROTOKOLL"
+  },
+  "ui": {
+    "filter_placeholder": "In Artefakten, Zeitachse, Konten suchen...",
+    "chain_of_custody": "Beweismittel-Verwahrungsprotokoll"
+  }
+}

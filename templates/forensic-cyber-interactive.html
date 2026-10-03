@@ -39,19 +39,28 @@
 <!-- Slide-over IoC / Knowledge Inspector Drawer -->
 <aside id="ioc-inspector-drawer" role="dialog" aria-modal="true" aria-label="IoC Telemetry Inspector">
   <div class="drawer-header">
-    <span class="drawer-title">IOC // KNOWLEDGE INSPECTOR</span>
+    <span class="drawer-title" id="drawer-main-title">IOC // KNOWLEDGE INSPECTOR</span>
     <button type="button" class="drawer-close" id="drawer-close-btn" aria-label="Close Inspector">✕ ESC</button>
   </div>
   <div class="drawer-body">
+    <!-- Unresolved Warning Banner -->
+    <div id="drawer-unresolved-banner" class="drawer-unresolved-banner" style="display: none;">
+      <div class="drawer-unresolved-icon" aria-hidden="true">⚠️</div>
+      <div class="drawer-unresolved-content">
+        <div class="drawer-unresolved-title" id="drawer-unresolved-title">TELEMETRY UNRESOLVED</div>
+        <div class="drawer-unresolved-msg" id="drawer-unresolved-msg">Could not resolve external telemetry or documentation for this indicator.</div>
+      </div>
+    </div>
+
     <!-- Value Box -->
     <div>
-      <div class="drawer-section-title">Artifact Value</div>
+      <div class="drawer-section-title" id="drawer-lbl-val">Artifact Value</div>
       <div class="drawer-val-box" id="drawer-val"></div>
     </div>
     
-    <!-- Enriched Knowledge Section (Populated at build-time for MITRE, CVE, GHSA) -->
+    <!-- Enriched Knowledge Section (Populated at build-time for MITRE, CVE, GHSA, EVTX, EID) -->
     <div id="drawer-kb-section" class="drawer-kb-section" style="display: none;">
-      <div class="drawer-section-title">Knowledge Base Intelligence</div>
+      <div class="drawer-section-title" id="drawer-lbl-kb">Knowledge Base Intelligence</div>
       <div class="drawer-kb-card">
         <div class="drawer-kb-header">
           <span class="drawer-kb-badge" id="drawer-kb-badge">CRITICAL</span>
@@ -66,24 +75,55 @@
             <span class="drawer-kb-val" id="drawer-kb-channel"></span>
           </div>
           <div class="drawer-kb-field" id="drawer-kb-platforms-row" style="display: none;">
-            <span class="drawer-kb-label">PLATFORMS / PATH:</span>
+            <span class="drawer-kb-label" id="drawer-kb-platforms-label">PLATFORMS / PATH:</span>
             <span class="drawer-kb-val" id="drawer-kb-platforms"></span>
           </div>
           <div class="drawer-kb-field" id="drawer-kb-affected-row" style="display: none;">
-            <span class="drawer-kb-label">AFFECTED:</span>
+            <span class="drawer-kb-label" id="drawer-kb-affected-label">AFFECTED:</span>
             <span class="drawer-kb-val" id="drawer-kb-affected"></span>
           </div>
           <div class="drawer-kb-field" id="drawer-kb-extra-row" style="display: none;">
             <span class="drawer-kb-label" id="drawer-kb-extra-label">KEY FIELDS:</span>
             <span class="drawer-kb-val" id="drawer-kb-extra-val"></span>
           </div>
+          <div class="drawer-kb-field" id="drawer-kb-also-row" style="display: none;">
+            <span class="drawer-kb-label">ALSO LOGGED IN:</span>
+            <span class="drawer-kb-val" id="drawer-kb-also-val"></span>
+          </div>
+        </div>
+
+        <!-- Investigation Tips Block -->
+        <div class="drawer-intel-block" id="drawer-kb-investigation-block" style="display: none;">
+          <div class="drawer-intel-header">
+            <span class="drawer-intel-icon">🔍</span>
+            <span class="drawer-intel-title" id="drawer-lbl-investigation">FORENSIC INVESTIGATION TIPS</span>
+          </div>
+          <ul class="drawer-intel-list" id="drawer-kb-investigation-list"></ul>
+        </div>
+
+        <!-- Attacker Behavior Block -->
+        <div class="drawer-intel-block drawer-intel-danger" id="drawer-kb-attacker-block" style="display: none;">
+          <div class="drawer-intel-header">
+            <span class="drawer-intel-icon">⚡</span>
+            <span class="drawer-intel-title" id="drawer-lbl-attacker">ATTACKER BEHAVIOR & TECHNIQUE</span>
+          </div>
+          <ul class="drawer-intel-list" id="drawer-kb-attacker-list"></ul>
+        </div>
+
+        <!-- Benign Causes Block -->
+        <div class="drawer-intel-block drawer-intel-muted" id="drawer-kb-benign-block" style="display: none;">
+          <div class="drawer-intel-header">
+            <span class="drawer-intel-icon">ℹ️</span>
+            <span class="drawer-intel-title" id="drawer-lbl-benign">BENIGN / NORMAL CAUSES</span>
+          </div>
+          <ul class="drawer-intel-list" id="drawer-kb-benign-list"></ul>
         </div>
       </div>
     </div>
 
     <!-- Telemetry Classification Metadata -->
     <div>
-      <div class="drawer-section-title">Telemetry Metadata</div>
+      <div class="drawer-section-title" id="drawer-lbl-meta">Telemetry Metadata</div>
       <div class="drawer-meta-grid">
         <div class="drawer-meta-tile">
           <div class="drawer-meta-label">CLASSIFICATION</div>
@@ -98,7 +138,7 @@
 
     <!-- Threat Intel Pivots & Actions -->
     <div>
-      <div class="drawer-section-title">Threat Intel Pivots</div>
+      <div class="drawer-section-title" id="drawer-lbl-actions">Threat Intel Pivots</div>
       <div class="drawer-actions">
         <a href="#" target="_blank" rel="noopener noreferrer" class="drawer-btn drawer-btn-primary" id="drawer-sec-link">
           OFFICIAL DATABASE PIVOT ↗
@@ -142,6 +182,67 @@
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s];
     });
   };
+
+  // 0. i18n Localization Initialization
+  var docLang = (document.documentElement.lang || document.body.getAttribute('lang') || 'en').toLowerCase();
+  var isCzech = docLang.startsWith('cs') || docLang.startsWith('cz');
+
+  var _uiStrings = null;
+  function getUiStrings() {
+    if (!_uiStrings) {
+      _uiStrings = {};
+      var i18nScript = document.getElementById('report-i18n');
+      if (i18nScript) {
+        try {
+          var runtimeI18n = JSON.parse(i18nScript.textContent || '{}');
+          _uiStrings = runtimeI18n.ui || {};
+        } catch(e) {}
+      }
+    }
+    return _uiStrings;
+  }
+
+  function applyUiStrings() {
+    var uiStrings = getUiStrings();
+    var hudThreatPill = document.getElementById('hud-threat-pill');
+    if (hudThreatPill && uiStrings.hud_threat) hudThreatPill.textContent = uiStrings.hud_threat;
+
+    var modeFullBtn = document.getElementById('cyber-mode-full');
+    if (modeFullBtn && uiStrings.view_mode_full) modeFullBtn.textContent = uiStrings.view_mode_full;
+
+    var modeSectionsBtn = document.getElementById('cyber-mode-sections');
+    if (modeSectionsBtn && uiStrings.view_mode_sections) modeSectionsBtn.textContent = uiStrings.view_mode_sections;
+
+    var stepperPrev = document.getElementById('stepper-prev');
+    if (stepperPrev && uiStrings.stepper_prev) stepperPrev.textContent = uiStrings.stepper_prev;
+
+    var stepperNext = document.getElementById('stepper-next');
+    if (stepperNext && uiStrings.stepper_next) stepperNext.textContent = uiStrings.stepper_next;
+
+    var hudNavPrefix = document.querySelector('.hud-nav-prefix');
+    if (hudNavPrefix && uiStrings.hud_nav_prefix) hudNavPrefix.textContent = uiStrings.hud_nav_prefix;
+
+    var drawerMainTitle = document.getElementById('drawer-main-title');
+    var drawerLblVal = document.getElementById('drawer-lbl-val');
+    var drawerLblKb = document.getElementById('drawer-lbl-kb');
+    var drawerLblActions = document.getElementById('drawer-lbl-actions');
+    var drawerFilterBtn = document.getElementById('drawer-filter-btn');
+    var drawerCopyBtn = document.getElementById('drawer-copy-btn');
+    var drawerLblInvestigation = document.getElementById('drawer-lbl-investigation');
+    var drawerLblAttacker = document.getElementById('drawer-lbl-attacker');
+    var drawerLblBenign = document.getElementById('drawer-lbl-benign');
+
+    if (drawerMainTitle && uiStrings.drawer_title) drawerMainTitle.textContent = uiStrings.drawer_title;
+    if (drawerLblVal && uiStrings.drawer_artifact_value) drawerLblVal.textContent = uiStrings.drawer_artifact_value;
+    if (drawerLblKb && uiStrings.drawer_kb_title) drawerLblKb.textContent = uiStrings.drawer_kb_title;
+    if (drawerLblActions && uiStrings.drawer_actions) drawerLblActions.textContent = uiStrings.drawer_actions;
+    if (drawerFilterBtn && uiStrings.drawer_filter_btn) drawerFilterBtn.textContent = uiStrings.drawer_filter_btn;
+    if (drawerCopyBtn && uiStrings.drawer_copy_btn) drawerCopyBtn.textContent = uiStrings.drawer_copy_btn;
+    if (drawerLblInvestigation && uiStrings.drawer_investigation_title) drawerLblInvestigation.textContent = uiStrings.drawer_investigation_title;
+    if (drawerLblAttacker && uiStrings.drawer_attacker_title) drawerLblAttacker.textContent = uiStrings.drawer_attacker_title;
+    if (drawerLblBenign && uiStrings.drawer_benign_title) drawerLblBenign.textContent = uiStrings.drawer_benign_title;
+  }
+  applyUiStrings();
 
   // 1. Theme Switcher (Cyber Dark vs. Lab Light)
   var themeBtn = document.getElementById('cyber-theme-btn');
@@ -466,14 +567,20 @@
   initSections();
 
   // 5. Enriched Knowledge Base & IoC Inspector Drawer
-  var kbData = {};
-  var kbScript = document.getElementById('cyber-kb-data');
-  if (kbScript) {
-    try {
-      kbData = JSON.parse(kbScript.textContent.trim());
-    } catch (err) {
-      console.warn('[KB] Failed to parse cyber-kb-data:', err);
+  var _kbData = null;
+  function getKbData() {
+    if (!_kbData) {
+      _kbData = {};
+      var kbScript = document.getElementById('cyber-kb-data');
+      if (kbScript) {
+        try {
+          _kbData = JSON.parse(kbScript.textContent.trim());
+        } catch (err) {
+          console.warn('[KB] Failed to parse cyber-kb-data:', err);
+        }
+      }
     }
+    return _kbData;
   }
 
   var drawer = document.getElementById('ioc-inspector-drawer');
@@ -486,6 +593,15 @@
   var drawerFilterBtn = document.getElementById('drawer-filter-btn');
   var drawerCopyBtn = document.getElementById('drawer-copy-btn');
 
+  var drawerUnresolvedBanner = document.getElementById('drawer-unresolved-banner');
+  var drawerUnresolvedTitle = document.getElementById('drawer-unresolved-title');
+  var drawerUnresolvedMsg = document.getElementById('drawer-unresolved-msg');
+  var drawerMainTitle = document.getElementById('drawer-main-title');
+  var drawerLblVal = document.getElementById('drawer-lbl-val');
+  var drawerLblKb = document.getElementById('drawer-lbl-kb');
+  var drawerLblMeta = document.getElementById('drawer-lbl-meta');
+  var drawerLblActions = document.getElementById('drawer-lbl-actions');
+
   var drawerKbSection = document.getElementById('drawer-kb-section');
   var drawerKbBadge = document.getElementById('drawer-kb-badge');
   var drawerKbScore = document.getElementById('drawer-kb-score');
@@ -493,14 +609,29 @@
   var drawerKbTitle = document.getElementById('drawer-kb-title');
   var drawerKbSummary = document.getElementById('drawer-kb-summary');
   var drawerKbPlatformsRow = document.getElementById('drawer-kb-platforms-row');
+  var drawerKbPlatformsLabel = document.getElementById('drawer-kb-platforms-label');
   var drawerKbPlatforms = document.getElementById('drawer-kb-platforms');
   var drawerKbAffectedRow = document.getElementById('drawer-kb-affected-row');
+  var drawerKbAffectedLabel = document.getElementById('drawer-kb-affected-label');
   var drawerKbAffected = document.getElementById('drawer-kb-affected');
   var drawerKbChannelRow = document.getElementById('drawer-kb-channel-row');
   var drawerKbChannel = document.getElementById('drawer-kb-channel');
   var drawerKbExtraRow = document.getElementById('drawer-kb-extra-row');
   var drawerKbExtraLabel = document.getElementById('drawer-kb-extra-label');
   var drawerKbExtraVal = document.getElementById('drawer-kb-extra-val');
+  var drawerKbAlsoRow = document.getElementById('drawer-kb-also-row');
+  var drawerKbAlsoVal = document.getElementById('drawer-kb-also-val');
+
+  var drawerLblInvestigation = document.getElementById('drawer-lbl-investigation');
+  var drawerLblAttacker = document.getElementById('drawer-lbl-attacker');
+  var drawerLblBenign = document.getElementById('drawer-lbl-benign');
+
+  var drawerKbInvestigationBlock = document.getElementById('drawer-kb-investigation-block');
+  var drawerKbInvestigationList = document.getElementById('drawer-kb-investigation-list');
+  var drawerKbAttackerBlock = document.getElementById('drawer-kb-attacker-block');
+  var drawerKbAttackerList = document.getElementById('drawer-kb-attacker-list');
+  var drawerKbBenignBlock = document.getElementById('drawer-kb-benign-block');
+  var drawerKbBenignList = document.getElementById('drawer-kb-benign-list');
 
   var currentSelectedIoc = '';
 
@@ -511,7 +642,50 @@
     if (drawerType) drawerType.textContent = type.toUpperCase();
     if (drawerLength) drawerLength.textContent = val.length + ' CHARS';
 
+    applyUiStrings();
+    var uiStrings = getUiStrings();
+    var kbData = getKbData();
     var kb = kbData[val] || kbData[val.toUpperCase()];
+    if (kb && kb.role && drawerType) {
+      drawerType.textContent = kb.role.toUpperCase();
+    }
+
+    // Check unresolved indicator state
+    var isUnresolved = (kb && kb.unresolved === true);
+    if (!kb && (type === 'eventid' || type === 'evtx' || type === 'cve' || type === 'ghsa')) {
+      isUnresolved = true;
+    }
+
+    if (drawerUnresolvedBanner) {
+      if (isUnresolved) {
+        drawerUnresolvedBanner.style.display = 'flex';
+        if (drawerUnresolvedTitle) {
+          drawerUnresolvedTitle.textContent = uiStrings.drawer_unresolved_title || 'TELEMETRY UNRESOLVED';
+        }
+        if (drawerUnresolvedMsg) {
+          var errReason = (kb && kb.error_reason) ? kb.error_reason : ('Indicator "' + val + '" not found in catalog or documentation.');
+          var prefix = uiStrings.drawer_unresolved_desc || 'Could not automatically retrieve intelligence for this indicator:';
+          drawerUnresolvedMsg.textContent = prefix + ' ' + errReason;
+        }
+      } else {
+        drawerUnresolvedBanner.style.display = 'none';
+      }
+    }
+
+    // Clean slate reset of all dynamic KB elements
+    if (drawerKbSection) drawerKbSection.style.display = 'none';
+    if (drawerKbScore) drawerKbScore.style.display = 'none';
+    if (drawerKbTactic) drawerKbTactic.style.display = 'none';
+    if (drawerKbPlatformsRow) drawerKbPlatformsRow.style.display = 'none';
+    if (drawerKbChannelRow) drawerKbChannelRow.style.display = 'none';
+    if (drawerKbAffectedRow) drawerKbAffectedRow.style.display = 'none';
+    if (drawerKbExtraRow) drawerKbExtraRow.style.display = 'none';
+    if (drawerKbAlsoRow) drawerKbAlsoRow.style.display = 'none';
+    if (drawerKbInvestigationBlock) drawerKbInvestigationBlock.style.display = 'none';
+    if (drawerKbAttackerBlock) drawerKbAttackerBlock.style.display = 'none';
+    if (drawerKbBenignBlock) drawerKbBenignBlock.style.display = 'none';
+    if (drawerSecLink) drawerSecLink.style.display = 'none';
+    if (drawerVtLink) drawerVtLink.style.display = 'none';
 
     if (kb) {
       if (drawerKbSection) drawerKbSection.style.display = 'block';
@@ -530,6 +704,7 @@
         }
         if (kb.platforms && kb.platforms.length > 0) {
           if (drawerKbPlatformsRow) drawerKbPlatformsRow.style.display = 'flex';
+          if (drawerKbPlatformsLabel) drawerKbPlatformsLabel.textContent = 'PLATFORMS / PATH:';
           if (drawerKbPlatforms) drawerKbPlatforms.textContent = kb.platforms.join(', ');
         } else {
           if (drawerKbPlatformsRow) drawerKbPlatformsRow.style.display = 'none';
@@ -556,6 +731,7 @@
         if (drawerKbChannelRow) drawerKbChannelRow.style.display = 'none';
         if (kb.affected && kb.affected.length > 0) {
           if (drawerKbAffectedRow) drawerKbAffectedRow.style.display = 'flex';
+          if (drawerKbAffectedLabel) drawerKbAffectedLabel.textContent = 'AFFECTED:';
           if (drawerKbAffected) drawerKbAffected.textContent = kb.affected.join(', ');
         } else {
           if (drawerKbAffectedRow) drawerKbAffectedRow.style.display = 'none';
@@ -573,6 +749,7 @@
         }
         if (kb.path) {
           if (drawerKbPlatformsRow) drawerKbPlatformsRow.style.display = 'flex';
+          if (drawerKbPlatformsLabel) drawerKbPlatformsLabel.textContent = 'PLATFORMS / PATH:';
           if (drawerKbPlatforms) drawerKbPlatforms.textContent = kb.path;
         } else {
           if (drawerKbPlatformsRow) drawerKbPlatformsRow.style.display = 'none';
@@ -624,20 +801,198 @@
         } else {
           if (drawerKbExtraRow) drawerKbExtraRow.style.display = 'none';
         }
+
+        // Also logged in other channels
+        if (drawerKbAlsoRow && drawerKbAlsoVal) {
+          if (kb.also_in && kb.also_in.length > 0) {
+            var alsoTxt = kb.also_in.map(function(a) { return (a.channel_slug || a.channel) + ': ' + a.title; }).join(' | ');
+            drawerKbAlsoVal.textContent = alsoTxt;
+            drawerKbAlsoRow.style.display = 'flex';
+          } else {
+            drawerKbAlsoRow.style.display = 'none';
+          }
+        }
+      } else if (kb.type === 'ip' || type === 'ip') {
+        var isPriv = (kb.is_private !== undefined) ? kb.is_private : (/^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|127\.)/.test(val));
+        if (drawerKbBadge) {
+          drawerKbBadge.textContent = isPriv ? 'INTERNAL RFC 1918' : 'PUBLIC WAN IP';
+          drawerKbBadge.className = isPriv ? 'drawer-kb-badge badge-internal' : 'drawer-kb-badge badge-wan';
+        }
+        if (drawerKbScore) drawerKbScore.style.display = 'none';
+        if (drawerKbTactic) {
+          drawerKbTactic.style.display = 'inline-block';
+          drawerKbTactic.textContent = isPriv ? 'PRIVATE INTRANET // OPSEC PROTECTED' : 'PUBLIC NETWORK ENDPOINT';
+        }
+        if (drawerKbPlatformsRow) {
+          drawerKbPlatformsRow.style.display = 'flex';
+          if (drawerKbPlatformsLabel) drawerKbPlatformsLabel.textContent = 'NETWORK SCOPE:';
+          if (drawerKbPlatforms) drawerKbPlatforms.textContent = kb.subnet || (isPriv ? 'RFC 1918 Private Intranet' : 'Public IPv4/IPv6 Address');
+        }
+        if (drawerKbAffectedRow) {
+          drawerKbAffectedRow.style.display = 'flex';
+          if (drawerKbAffectedLabel) drawerKbAffectedLabel.textContent = 'OPSEC POLICY:';
+          if (drawerKbAffected) drawerKbAffected.textContent = isPriv ? 'External threat queries suppressed for client confidentiality' : 'Open OSINT / external reputation query allowed';
+        }
+        if (drawerKbChannelRow) drawerKbChannelRow.style.display = 'none';
+        if (drawerKbExtraRow) drawerKbExtraRow.style.display = 'none';
+        if (drawerKbAlsoRow) drawerKbAlsoRow.style.display = 'none';
+      } else if (kb.type === 'custom' || kb.custom) {
+        if (drawerKbBadge) {
+          drawerKbBadge.textContent = kb.badge || 'CUSTOM ENTITY';
+          var bType = (kb.badge_type || 'custom').toLowerCase();
+          drawerKbBadge.className = 'drawer-kb-badge badge-' + bType;
+        }
+        if (drawerKbScore) drawerKbScore.style.display = 'none';
+        if (drawerKbTactic) {
+          drawerKbTactic.style.display = 'inline-block';
+          drawerKbTactic.textContent = kb.category || 'CASE INTELLIGENCE';
+        }
+        if (drawerKbTitle) {
+          drawerKbTitle.textContent = kb.title || val;
+        }
+        if (drawerKbSummary) {
+          drawerKbSummary.textContent = kb.summary || 'Custom case intelligence entity.';
+        }
+        if (drawerKbChannelRow) drawerKbChannelRow.style.display = 'none';
+        if (drawerKbAlsoRow) drawerKbAlsoRow.style.display = 'none';
+
+        // Render dynamic fields from kb.fields
+        if (kb.fields && typeof kb.fields === 'object') {
+          var fieldKeys = Object.keys(kb.fields);
+          if (fieldKeys.length > 0) {
+            // Field 1
+            if (fieldKeys[0]) {
+              var k1 = fieldKeys[0];
+              if (drawerKbPlatformsRow) drawerKbPlatformsRow.style.display = 'flex';
+              if (drawerKbPlatformsLabel) drawerKbPlatformsLabel.textContent = k1 + ':';
+              if (drawerKbPlatforms) drawerKbPlatforms.textContent = kb.fields[k1];
+            } else {
+              if (drawerKbPlatformsRow) drawerKbPlatformsRow.style.display = 'none';
+            }
+
+            // Field 2
+            if (fieldKeys[1]) {
+              var k2 = fieldKeys[1];
+              if (drawerKbAffectedRow) drawerKbAffectedRow.style.display = 'flex';
+              if (drawerKbAffectedLabel) drawerKbAffectedLabel.textContent = k2 + ':';
+              if (drawerKbAffected) drawerKbAffected.textContent = kb.fields[k2];
+            } else {
+              if (drawerKbAffectedRow) drawerKbAffectedRow.style.display = 'none';
+            }
+
+            // Remaining fields
+            if (fieldKeys.length > 2) {
+              var remaining = [];
+              for (var fIdx = 2; fIdx < fieldKeys.length; fIdx++) {
+                var fk = fieldKeys[fIdx];
+                remaining.push(fk + ': ' + kb.fields[fk]);
+              }
+              if (drawerKbExtraRow) drawerKbExtraRow.style.display = 'flex';
+              if (drawerKbExtraLabel) drawerKbExtraLabel.textContent = 'DETAILS:';
+              if (drawerKbExtraVal) drawerKbExtraVal.textContent = remaining.join(' | ');
+            } else {
+              if (drawerKbExtraRow) drawerKbExtraRow.style.display = 'none';
+            }
+          } else {
+            if (drawerKbPlatformsRow) drawerKbPlatformsRow.style.display = 'none';
+            if (drawerKbAffectedRow) drawerKbAffectedRow.style.display = 'none';
+            if (drawerKbExtraRow) drawerKbExtraRow.style.display = 'none';
+          }
+        } else {
+          if (drawerKbPlatformsRow) drawerKbPlatformsRow.style.display = 'none';
+          if (drawerKbAffectedRow) drawerKbAffectedRow.style.display = 'none';
+          if (drawerKbExtraRow) drawerKbExtraRow.style.display = 'none';
+        }
+      }
+
+      // Universal Forensic Intel Blocks (Investigation Tips, Attacker Behavior, Benign Causes)
+      if (drawerKbInvestigationBlock && drawerKbInvestigationList) {
+        if (kb.investigation_tips && kb.investigation_tips.length > 0) {
+          drawerKbInvestigationList.innerHTML = '';
+          kb.investigation_tips.forEach(function(tip) {
+            var li = document.createElement('li');
+            li.textContent = tip;
+            drawerKbInvestigationList.appendChild(li);
+          });
+          drawerKbInvestigationBlock.style.display = 'flex';
+        } else {
+          drawerKbInvestigationBlock.style.display = 'none';
+        }
+      }
+
+      if (drawerKbAttackerBlock && drawerKbAttackerList) {
+        if (kb.attacker_behavior && kb.attacker_behavior.length > 0) {
+          drawerKbAttackerList.innerHTML = '';
+          kb.attacker_behavior.forEach(function(att) {
+            var li = document.createElement('li');
+            li.textContent = att;
+            drawerKbAttackerList.appendChild(li);
+          });
+          drawerKbAttackerBlock.style.display = 'flex';
+        } else {
+          drawerKbAttackerBlock.style.display = 'none';
+        }
+      }
+
+      if (drawerKbBenignBlock && drawerKbBenignList) {
+        if (kb.benign_causes && kb.benign_causes.length > 0) {
+          drawerKbBenignList.innerHTML = '';
+          kb.benign_causes.forEach(function(ben) {
+            var li = document.createElement('li');
+            li.textContent = ben;
+            drawerKbBenignList.appendChild(li);
+          });
+          drawerKbBenignBlock.style.display = 'flex';
+        } else {
+          drawerKbBenignBlock.style.display = 'none';
+        }
       }
     } else {
-      // Check for private IP address (OPSEC safety guard)
-      var isPrivateIp = (type === 'ip') && (/^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|127\.)/.test(val));
-      if (isPrivateIp) {
+      if (drawerKbInvestigationBlock) drawerKbInvestigationBlock.style.display = 'none';
+      if (drawerKbAttackerBlock) drawerKbAttackerBlock.style.display = 'none';
+      if (drawerKbBenignBlock) drawerKbBenignBlock.style.display = 'none';
+      if (drawerKbAlsoRow) drawerKbAlsoRow.style.display = 'none';
+
+      // Check for IP address (OPSEC safety guard)
+      var isIp = (type === 'ip') || /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(val);
+      var isPrivateIp = isIp && (/^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|127\.)/.test(val));
+      if (isIp) {
         if (drawerKbSection) drawerKbSection.style.display = 'block';
         if (drawerKbBadge) {
-          drawerKbBadge.textContent = 'INTERNAL RFC 1918';
-          drawerKbBadge.className = 'drawer-kb-badge badge-internal';
+          drawerKbBadge.textContent = isPrivateIp ? 'INTERNAL RFC 1918' : 'PUBLIC WAN IP';
+          drawerKbBadge.className = isPrivateIp ? 'drawer-kb-badge badge-internal' : 'drawer-kb-badge badge-wan';
+        }
+        if (drawerKbScore) drawerKbScore.style.display = 'none';
+        if (drawerKbTactic) {
+          drawerKbTactic.style.display = 'inline-block';
+          drawerKbTactic.textContent = isPrivateIp ? 'PRIVATE INTRANET // OPSEC PROTECTED' : 'PUBLIC NETWORK ENDPOINT';
+        }
+        if (drawerKbTitle) drawerKbTitle.textContent = isPrivateIp ? ('RFC 1918 Private Intranet (' + val + ')') : ('Public Internet Endpoint (' + val + ')');
+        if (drawerKbSummary) drawerKbSummary.textContent = isPrivateIp
+          ? 'Internal private subnet IP. External threat intel queries are suppressed to protect investigative OPSEC and client data confidentiality.'
+          : 'Public WAN IP address. Queryable via public threat intelligence services.';
+        if (drawerKbPlatformsRow) {
+          drawerKbPlatformsRow.style.display = 'flex';
+          if (drawerKbPlatformsLabel) drawerKbPlatformsLabel.textContent = 'NETWORK SCOPE:';
+          if (drawerKbPlatforms) drawerKbPlatforms.textContent = isPrivateIp ? 'RFC 1918 Private Intranet' : 'Public IPv4/IPv6 Address';
+        }
+        if (drawerKbAffectedRow) {
+          drawerKbAffectedRow.style.display = 'flex';
+          if (drawerKbAffectedLabel) drawerKbAffectedLabel.textContent = 'OPSEC POLICY:';
+          if (drawerKbAffected) drawerKbAffected.textContent = isPrivateIp ? 'External threat queries suppressed for client confidentiality' : 'Open OSINT / external reputation query allowed';
+        }
+        if (drawerKbChannelRow) drawerKbChannelRow.style.display = 'none';
+        if (drawerKbExtraRow) drawerKbExtraRow.style.display = 'none';
+      } else if (isUnresolved) {
+        if (drawerKbSection) drawerKbSection.style.display = 'block';
+        if (drawerKbBadge) {
+          drawerKbBadge.textContent = 'UNRESOLVED';
+          drawerKbBadge.className = 'drawer-kb-badge badge-high';
         }
         if (drawerKbScore) drawerKbScore.style.display = 'none';
         if (drawerKbTactic) drawerKbTactic.style.display = 'none';
-        if (drawerKbTitle) drawerKbTitle.textContent = 'Private Intranet Endpoint';
-        if (drawerKbSummary) drawerKbSummary.textContent = 'Internal private subnet IP. External threat intel queries are suppressed to protect investigative OPSEC and client data confidentiality.';
+        if (drawerKbTitle) drawerKbTitle.textContent = val + ' (Uncataloged)';
+        if (drawerKbSummary) drawerKbSummary.textContent = 'This indicator was not identified in the local threat catalog or online intelligence APIs.';
         if (drawerKbPlatformsRow) drawerKbPlatformsRow.style.display = 'none';
         if (drawerKbChannelRow) drawerKbChannelRow.style.display = 'none';
         if (drawerKbAffectedRow) drawerKbAffectedRow.style.display = 'none';
@@ -648,15 +1003,31 @@
     }
 
     // Pivot Links
+    var isPrivIp = (type === 'ip') && (/^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|127\.)/.test(val) || (kb && kb.is_private));
     if (drawerSecLink) {
-      if (kb && kb.url) {
+      if (isPrivIp) {
+        drawerSecLink.style.display = 'none';
+      } else if (kb && (kb.type === 'custom' || kb.custom) && kb.pivots && kb.pivots.length > 0) {
+        drawerSecLink.href = kb.pivots[0].url;
+        drawerSecLink.textContent = kb.pivots[0].label || 'CASE REFERENCE ↗';
+        drawerSecLink.style.display = 'flex';
+        if (kb.pivots.length > 1 && drawerVtLink) {
+          drawerVtLink.href = kb.pivots[1].url;
+          drawerVtLink.textContent = kb.pivots[1].label || 'SECONDARY REFERENCE ↗';
+          drawerVtLink.style.display = 'flex';
+        }
+      } else if (kb && kb.url) {
         drawerSecLink.href = kb.url;
         if (kb.type === 'mitre') {
           drawerSecLink.textContent = 'MITRE ATT&CK FRAMEWORK ↗';
         } else if (kb.type === 'evtx') {
           drawerSecLink.textContent = 'MICROSOFT EVENT LOG DOCS ↗';
         } else if (kb.type === 'eventid') {
-          drawerSecLink.textContent = 'ULTIMATE WINDOWS SECURITY PIVOT ↗';
+          if (kb.url.indexOf('evtxparser.com') !== -1) {
+            drawerSecLink.textContent = 'EVTXPARSER.COM INTEL ↗';
+          } else {
+            drawerSecLink.textContent = 'SECURITY EVENT INTEL PIVOT ↗';
+          }
         } else if (kb.type === 'ghsa') {
           drawerSecLink.textContent = 'GITHUB SECURITY ADVISORY ↗';
         } else {
@@ -675,10 +1046,21 @@
         drawerSecLink.href = 'https://github.com/advisories/' + encodeURIComponent(val);
         drawerSecLink.textContent = 'GITHUB ADVISORY DATABASE ↗';
         drawerSecLink.style.display = 'flex';
+      } else if (type === 'eventid') {
+        var cleanEid = val.replace(/\D/g, '');
+        drawerSecLink.href = 'https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=' + encodeURIComponent(cleanEid);
+        drawerSecLink.textContent = 'ULTIMATE WINDOWS SECURITY PIVOT ↗';
+        drawerSecLink.style.display = 'flex';
+      } else if (type === 'evtx') {
+        drawerSecLink.href = 'https://learn.microsoft.com/en-us/search/?terms=' + encodeURIComponent(val);
+        drawerSecLink.textContent = 'MICROSOFT EVENT LOG DOCS ↗';
+        drawerSecLink.style.display = 'flex';
       } else if (type === 'ip') {
         drawerSecLink.href = 'https://www.abuseipdb.com/check/' + encodeURIComponent(val);
         drawerSecLink.textContent = 'ABUSEIPDB LOOKUP ↗';
         drawerSecLink.style.display = 'flex';
+      } else if (type === 'custom') {
+        drawerSecLink.style.display = 'none';
       } else {
         drawerSecLink.href = 'https://otx.alienvault.com/indicator/file/' + encodeURIComponent(val);
         drawerSecLink.textContent = 'ALIENVAULT OTX ↗';
@@ -686,8 +1068,10 @@
       }
     }
 
-    if (drawerVtLink) {
-      if (type === 'hash') {
+    if (drawerVtLink && !(kb && (kb.type === 'custom' || kb.custom) && kb.pivots && kb.pivots.length > 1)) {
+      if (isPrivIp) {
+        drawerVtLink.style.display = 'none';
+      } else if (type === 'hash') {
         drawerVtLink.href = 'https://www.virustotal.com/gui/file/' + encodeURIComponent(val);
         drawerVtLink.style.display = 'flex';
       } else if (type === 'ip') {
@@ -705,6 +1089,9 @@
     if (drawer) drawer.classList.remove('is-open');
   }
 
+  window.openCyberDrawer = openDrawer;
+  window.closeCyberDrawer = closeDrawer;
+
   if (drawerClose) drawerClose.addEventListener('click', closeDrawer);
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeDrawer();
@@ -714,7 +1101,7 @@
     drawerCopyBtn.addEventListener('click', function() {
       if (currentSelectedIoc && navigator.clipboard) {
         navigator.clipboard.writeText(currentSelectedIoc);
-        showToast('COPIED VALUE TO CLIPBOARD');
+        showToast(uiStrings.copied || 'COPIED VALUE TO CLIPBOARD');
       }
     });
   }
@@ -763,14 +1150,14 @@
   });
 
   // 7. Adaptive Table & Timeline Filter Bar (Strategy 1: Pills when <= 5, Select when > 5)
-  var docLang = (document.documentElement.lang || document.body.getAttribute('lang') || 'en').toLowerCase();
-  var isCzech = docLang.startsWith('cs') || docLang.startsWith('cz');
-
   var i18n = {
-    placeholder: isCzech ? 'Filtrovat záznamy (např. IP, uživatel, proces)...' : 'Filter telemetry (e.g. IP, command, hash)...',
-    allLabel: isCzech ? 'Vše' : 'All',
-    allDropdown: isCzech ? 'Všechny kategorie' : 'All categories',
+    placeholder: uiStrings.filter_placeholder || (isCzech ? 'Filtrovat záznamy (např. IP, uživatel, proces)...' : 'Filter telemetry (e.g. IP, command, hash)...'),
+    allLabel: uiStrings.all_label || (isCzech ? 'Vše' : 'All'),
+    allDropdown: uiStrings.all_categories || (isCzech ? 'Všechny kategorie' : 'All categories'),
     showing: function(s, t) {
+      if (uiStrings.showing_records) {
+        return uiStrings.showing_records.replace('{count}', s).replace('{total}', t);
+      }
       return isCzech ? 'Zobrazeno ' + s + ' z ' + t : 'Showing ' + s + ' of ' + t;
     }
   };

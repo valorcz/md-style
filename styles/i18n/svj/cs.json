@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "report_type": "PODKLADY PRO SHROMÁŽDĚNÍ VLASTNÍKŮ",
+    "abstract_title": "Program shromáždění",
+    "ballot_title": "Hlasovací lístek shromáždění vlastníků jednotek",
+    "quorum_label": "Usnášeníschopnost",
+    "unit_label": "Jednotka č.",
+    "share_label": "Hlasovací podíl",
+    "vote_yes": "PRO",
+    "vote_no": "PROTI",
+    "vote_abstain": "ZDRŽEL SE",
+    "owner_signature": "Podpis vlastníka jednotky"
+  },
+  "ui": {
+    "filter_placeholder": "Hledat v programu a usneseních..."
+  }
+}

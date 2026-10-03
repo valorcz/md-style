@@ -31,18 +31,11 @@
   --line-height-body: 1.6;
 
   /* i18n Strings */
-  --memo-label: "MEMORANDUM";
-  --page-header-left: "INTERNAL MEMORANDUM";
+  --memo-label: var(--memo-label, "MEMORANDUM");
+  --page-header-left: var(--page-header-left, "INTERNAL MEMORANDUM");
   --page-header-right: string(heading-title);
-  --page-footer-left: "CONFIDENTIAL // INTERNAL USE ONLY";
+  --page-footer-left: var(--page-footer-left, "CONFIDENTIAL // INTERNAL USE ONLY");
   --page-footer-right: counter(page) " / " counter(pages);
-}
-
-:root:lang(cs),
-html[lang^="cs"] {
-  --memo-label: "INTERNÍ SDĚLENÍ";
-  --page-header-left: "INTERNÍ SDĚLENÍ";
-  --page-footer-left: "DŮVĚRNÉ // POUZE PRO VNITŘNÍ POTŘEBU";
 }
 
 /* --------------------------------------------------------------------------
