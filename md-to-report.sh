@@ -27,6 +27,8 @@ PAGED=false
 PRINT_MODE=false
 PRINT_CSS="${SCRIPT_DIR}/styles/print.css"
 PRINT_ACTION="${SCRIPT_DIR}/templates/print-action.html"
+FORENSIC_INTERACTIVE="${SCRIPT_DIR}/templates/forensic-interactive.html"
+FORENSIC_CYBER_INTERACTIVE="${SCRIPT_DIR}/templates/forensic-cyber-interactive.html"
 INPUT_FILE=""
 OUTPUT_FILE=""
 DOC_TITLE=""
@@ -48,6 +50,8 @@ LUA_CALLOUTS_FILTER="${SCRIPT_DIR}/filters/callouts.lua"
 LUA_OCTICONS_FILTER="${SCRIPT_DIR}/filters/octicons.lua"
 LUA_I18N_FILTER="${SCRIPT_DIR}/filters/i18n.lua"
 LUA_SVJ_FILTER="${SCRIPT_DIR}/filters/svj-prep.lua"
+LUA_MERMAID_FILTER="${SCRIPT_DIR}/filters/mermaid.lua"
+ENABLE_MERMAID=true
 
 # Temp files tracking for cleanup
 TEMP_FILES=()
@@ -270,6 +274,10 @@ while [[ $# -gt 0 ]]; do
             AUTO_NOWRAP=false
             shift
             ;;
+        --no-mermaid)
+            ENABLE_MERMAID=false
+            shift
+            ;;
         --paged)
             PAGED=true
             PRINT_MODE=false
@@ -490,6 +498,15 @@ elif [[ "${PRINT_MODE}" = true ]]; then
     log_verbose "Enabled Native Print mode (zero-JS, pure W3C print styles)."
 fi
 
+# Forensic interactive screen template (reading progress bar, 1-click IoC copy)
+if [[ "${STYLE_NAME}" = "forensic" ]] && [[ "${PRINT_MODE}" = false ]] && [[ "${GENERATE_PDF}" = false ]] && [[ -f "${FORENSIC_INTERACTIVE}" ]]; then
+    PANDOC_ARGS+=("--include-after-body=${FORENSIC_INTERACTIVE}")
+    log_verbose "Included interactive screen enhancements for forensic report."
+elif [[ "${STYLE_NAME}" = "forensic-cyber" ]] && [[ "${PRINT_MODE}" = false ]] && [[ "${GENERATE_PDF}" = false ]] && [[ -f "${FORENSIC_CYBER_INTERACTIVE}" ]]; then
+    PANDOC_ARGS+=("--include-after-body=${FORENSIC_CYBER_INTERACTIVE}")
+    log_verbose "Included interactive screen enhancements for forensic-cyber report."
+fi
+
 # Table of Contents
 if [[ "${TOC}" = true ]]; then
     PANDOC_ARGS+=("--toc" "--toc-depth=${TOC_DEPTH}")
@@ -529,6 +546,11 @@ fi
 if [[ -f "${LUA_OCTICONS_FILTER}" ]]; then
     PANDOC_ARGS+=("--lua-filter=${LUA_OCTICONS_FILTER}")
     log_verbose "Using global Lua filter for Primer Octicons: ${LUA_OCTICONS_FILTER}"
+fi
+
+if [[ "${ENABLE_MERMAID}" = true ]] && [[ -f "${LUA_MERMAID_FILTER}" ]]; then
+    PANDOC_ARGS+=("--lua-filter=${LUA_MERMAID_FILTER}")
+    log_verbose "Using global Lua filter for Mermaid diagrams: ${LUA_MERMAID_FILTER}"
 fi
 
 # 2. Style-specific Lua filters (isolated strictly to the active theme)

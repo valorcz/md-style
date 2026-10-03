@@ -1,0 +1,2087 @@
+{
+  "Security.evtx": {
+    "type": "evtx",
+    "id": "Security.evtx",
+    "title": "Windows Security Event Log",
+    "channel": "Security",
+    "path": "%SystemRoot%\\System32\\Winevt\\Logs\\Security.evtx",
+    "role": "Primary forensic repository for authentication, user rights assignment, account management, audit policy changes, and object access.",
+    "key_events": [
+      "4624 (Logon)",
+      "4625 (Failed Logon)",
+      "4672 (Admin Privs)",
+      "4688 (Process Created)",
+      "4720 (User Created)",
+      "1102 (Log Cleared)"
+    ],
+    "retention": "Fixed maximum size (typically 20MB to 1GB in Enterprise). Wrap-around overwrite policy.",
+    "url": "https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/security-auditing-overview"
+  },
+  "System.evtx": {
+    "type": "evtx",
+    "id": "System.evtx",
+    "title": "Windows System Event Log",
+    "channel": "System",
+    "path": "%SystemRoot%\\System32\\Winevt\\Logs\\System.evtx",
+    "role": "Contains events logged by Windows system components, service control manager, hardware changes, kernel drivers, and system startup/shutdown.",
+    "key_events": [
+      "7045 (Service Installed)",
+      "7036 (Service State Change)",
+      "104 (Log Cleared)",
+      "1074 (System Shutdown)",
+      "41 (Kernel Power / BSOD)"
+    ],
+    "retention": "Default 20MB. Circular overwrite policy.",
+    "url": "https://learn.microsoft.com/en-us/windows/win32/eventlog/system-event-log"
+  },
+  "Application.evtx": {
+    "type": "evtx",
+    "id": "Application.evtx",
+    "title": "Windows Application Event Log",
+    "channel": "Application",
+    "path": "%SystemRoot%\\System32\\Winevt\\Logs\\Application.evtx",
+    "role": "Logs software errors, application crashes (WerFault / Event 1000), MSI installer installations (Event 11707), and third-party utility telemetry.",
+    "key_events": [
+      "1000 (App Crash)",
+      "1001 (Windows Error Reporting)",
+      "11707 (MSI Install Success)",
+      "11724 (App Uninstalled)"
+    ],
+    "retention": "Default 20MB circular buffer.",
+    "url": "https://learn.microsoft.com/en-us/windows/win32/eventlog/application-event-log"
+  },
+  "Microsoft-Windows-Sysmon/Operational.evtx": {
+    "type": "evtx",
+    "id": "Microsoft-Windows-Sysmon/Operational.evtx",
+    "title": "Microsoft Sysmon Operational Telemetry Log",
+    "channel": "Microsoft-Windows-Sysmon/Operational",
+    "path": "%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-Sysmon%4Operational.evtx",
+    "role": "Premier endpoint telemetry sensor providing detailed process lineage, network sockets, raw disk access, process memory injection, and pipe/DNS activity.",
+    "key_events": [
+      "EID 1 (Process Create)",
+      "EID 3 (Network Connect)",
+      "EID 8 (CreateRemoteThread)",
+      "EID 10 (ProcessAccess)",
+      "EID 11 (FileCreate)",
+      "EID 22 (DNS Query)"
+    ],
+    "retention": "Typically configured to 64MB - 512MB by SOC engineering.",
+    "url": "https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon"
+  },
+  "Operational.evtx": {
+    "type": "evtx",
+    "id": "Microsoft-Windows-Sysmon/Operational.evtx",
+    "title": "Microsoft Sysmon Operational Telemetry Log",
+    "channel": "Microsoft-Windows-Sysmon/Operational",
+    "path": "%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-Sysmon%4Operational.evtx",
+    "role": "Premier endpoint telemetry sensor providing detailed process lineage, network sockets, raw disk access, process memory injection, and pipe/DNS activity.",
+    "key_events": [
+      "EID 1 (Process Create)",
+      "EID 3 (Network Connect)",
+      "EID 8 (CreateRemoteThread)",
+      "EID 10 (ProcessAccess)",
+      "EID 11 (FileCreate)",
+      "EID 22 (DNS Query)"
+    ],
+    "retention": "Typically configured to 64MB - 512MB by SOC engineering.",
+    "url": "https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon"
+  },
+  "Sysmon.evtx": {
+    "type": "evtx",
+    "id": "Sysmon.evtx",
+    "title": "Microsoft Sysmon Operational Telemetry Log",
+    "channel": "Microsoft-Windows-Sysmon/Operational",
+    "path": "%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-Sysmon%4Operational.evtx",
+    "role": "Premier endpoint telemetry sensor providing detailed process lineage, network sockets, raw disk access, process memory injection, and pipe/DNS activity.",
+    "key_events": [
+      "EID 1 (Process Create)",
+      "EID 3 (Network Connect)",
+      "EID 8 (CreateRemoteThread)",
+      "EID 10 (ProcessAccess)",
+      "EID 11 (FileCreate)",
+      "EID 22 (DNS Query)"
+    ],
+    "retention": "Typically configured to 64MB - 512MB by SOC engineering.",
+    "url": "https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon"
+  },
+  "Microsoft-Windows-PowerShell/Operational.evtx": {
+    "type": "evtx",
+    "id": "Microsoft-Windows-PowerShell/Operational.evtx",
+    "title": "Microsoft PowerShell Operational Log",
+    "channel": "Microsoft-Windows-PowerShell/Operational",
+    "path": "%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-PowerShell%4Operational.evtx",
+    "role": "Deep PowerShell execution log capturing de-obfuscated script blocks (EID 4104), interactive command invocation (EID 4103), and AMSI bypass attempts.",
+    "key_events": [
+      "4104 (ScriptBlock Logging)",
+      "4103 (Pipeline Execution)",
+      "4105 (Started Script)",
+      "4106 (Completed Script)"
+    ],
+    "retention": "Default 15MB. Highly recommended to increase to 100MB+.",
+    "url": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_logging_windows"
+  },
+  "PowerShell.evtx": {
+    "type": "evtx",
+    "id": "PowerShell.evtx",
+    "title": "Microsoft PowerShell Operational Log",
+    "channel": "Microsoft-Windows-PowerShell/Operational",
+    "path": "%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-PowerShell%4Operational.evtx",
+    "role": "Deep PowerShell execution log capturing de-obfuscated script blocks (EID 4104), interactive command invocation (EID 4103), and AMSI bypass attempts.",
+    "key_events": [
+      "4104 (ScriptBlock Logging)",
+      "4103 (Pipeline Execution)",
+      "4105 (Started Script)",
+      "4106 (Completed Script)"
+    ],
+    "retention": "Default 15MB. Highly recommended to increase to 100MB+.",
+    "url": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_logging_windows"
+  },
+  "Microsoft-Windows-TaskScheduler/Operational.evtx": {
+    "type": "evtx",
+    "id": "Microsoft-Windows-TaskScheduler/Operational.evtx",
+    "title": "Windows Task Scheduler Operational Log",
+    "channel": "Microsoft-Windows-TaskScheduler/Operational",
+    "path": "%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TaskScheduler%4Operational.evtx",
+    "role": "Monitors creation, execution, and modification of scheduled tasks (primary persistence mechanism for lateral movement and C2 triggers).",
+    "key_events": [
+      "106 (Task Registered)",
+      "140 (Task Updated)",
+      "200 (Action Started)",
+      "201 (Action Completed)"
+    ],
+    "retention": "Default 1MB. Wrap-around.",
+    "url": "https://learn.microsoft.com/en-us/windows/win32/taskschd/task-scheduler-start-page"
+  },
+  "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational.evtx": {
+    "type": "evtx",
+    "id": "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational.evtx",
+    "title": "RDP Local Session Manager Log",
+    "channel": "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+    "path": "%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx",
+    "role": "Records interactive and Remote Desktop (RDP) session connect, disconnect, and reconnect transitions with source IP mapping.",
+    "key_events": [
+      "21 (Session Logon Succeeded)",
+      "24 (Session Disconnected)",
+      "25 (Session Reconnected)"
+    ],
+    "retention": "Default 1MB.",
+    "url": "https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/welcome-to-rds"
+  },
+  "Microsoft-Windows-Windows Defender/Operational.evtx": {
+    "type": "evtx",
+    "id": "Microsoft-Windows-Windows Defender/Operational.evtx",
+    "title": "Microsoft Defender Antivirus Operational Log",
+    "channel": "Microsoft-Windows-Windows Defender/Operational",
+    "path": "%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-Windows%20Defender%4Operational.evtx",
+    "role": "Exposes real-time threat detections, quarantined payloads, AMSI blocks, and tamper protection overrides.",
+    "key_events": [
+      "1116 (Malware Detected)",
+      "1117 (Action Taken / Cleaned)",
+      "5001 (Real-Time Protection Disabled)"
+    ],
+    "retention": "Default 16MB.",
+    "url": "https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/troubleshoot-microsoft-defender-antivirus"
+  },
+  "4624": {
+    "type": "eventid",
+    "id": "4624",
+    "title": "Event ID 4624",
+    "channel": "Security",
+    "category": "Logon / Authentication",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Records successful authentication sessions. The LogonType code discloses how authentication occurred: 2 (Interactive Console), 3 (Network / SMB / WMI), 5 (Service), 9 (NewCredentials / Pass-the-Hash / Mimikatz), 10 (RemoteInteractive / RDP).",
+    "key_fields": [
+      "LogonType",
+      "TargetUserName",
+      "TargetDomainName",
+      "IpAddress",
+      "WorkstationName",
+      "ProcessName",
+      "ElevatedToken"
+    ],
+    "mitre": [
+      "T1078 (Valid Accounts)",
+      "T1021.001 (Remote Desktop Protocol)",
+      "T1021.002 (SMB/Windows Admin Shares)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4624"
+  },
+  "Event ID 4624": {
+    "type": "eventid",
+    "id": "4624",
+    "title": "Event ID 4624",
+    "channel": "Security",
+    "category": "Logon / Authentication",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Records successful authentication sessions. The LogonType code discloses how authentication occurred: 2 (Interactive Console), 3 (Network / SMB / WMI), 5 (Service), 9 (NewCredentials / Pass-the-Hash / Mimikatz), 10 (RemoteInteractive / RDP).",
+    "key_fields": [
+      "LogonType",
+      "TargetUserName",
+      "TargetDomainName",
+      "IpAddress",
+      "WorkstationName",
+      "ProcessName",
+      "ElevatedToken"
+    ],
+    "mitre": [
+      "T1078 (Valid Accounts)",
+      "T1021.001 (Remote Desktop Protocol)",
+      "T1021.002 (SMB/Windows Admin Shares)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4624"
+  },
+  "EID 4624": {
+    "type": "eventid",
+    "id": "4624",
+    "title": "Event ID 4624",
+    "channel": "Security",
+    "category": "Logon / Authentication",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Records successful authentication sessions. The LogonType code discloses how authentication occurred: 2 (Interactive Console), 3 (Network / SMB / WMI), 5 (Service), 9 (NewCredentials / Pass-the-Hash / Mimikatz), 10 (RemoteInteractive / RDP).",
+    "key_fields": [
+      "LogonType",
+      "TargetUserName",
+      "TargetDomainName",
+      "IpAddress",
+      "WorkstationName",
+      "ProcessName",
+      "ElevatedToken"
+    ],
+    "mitre": [
+      "T1078 (Valid Accounts)",
+      "T1021.001 (Remote Desktop Protocol)",
+      "T1021.002 (SMB/Windows Admin Shares)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4624"
+  },
+  "4625": {
+    "type": "eventid",
+    "id": "4625",
+    "title": "Event ID 4625",
+    "channel": "Security",
+    "category": "Logon / Authentication",
+    "severity": "AUDIT FAILURE",
+    "summary": "Records failed authentication attempts. Vital for identifying brute force attacks, credential stuffing, and password spraying. Status/SubStatus codes reveal specific failure reasons (e.g. 0xC000006A: wrong password, 0xC0000064: user doesn't exist, 0xC000006D: bad credentials, 0xC0000234: account locked).",
+    "key_fields": [
+      "Status",
+      "SubStatus",
+      "TargetUserName",
+      "WorkstationName",
+      "IpAddress",
+      "FailureReason",
+      "ProcessName"
+    ],
+    "mitre": [
+      "T1110 (Brute Force)",
+      "T1110.003 (Password Spraying)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4625"
+  },
+  "Event ID 4625": {
+    "type": "eventid",
+    "id": "4625",
+    "title": "Event ID 4625",
+    "channel": "Security",
+    "category": "Logon / Authentication",
+    "severity": "AUDIT FAILURE",
+    "summary": "Records failed authentication attempts. Vital for identifying brute force attacks, credential stuffing, and password spraying. Status/SubStatus codes reveal specific failure reasons (e.g. 0xC000006A: wrong password, 0xC0000064: user doesn't exist, 0xC000006D: bad credentials, 0xC0000234: account locked).",
+    "key_fields": [
+      "Status",
+      "SubStatus",
+      "TargetUserName",
+      "WorkstationName",
+      "IpAddress",
+      "FailureReason",
+      "ProcessName"
+    ],
+    "mitre": [
+      "T1110 (Brute Force)",
+      "T1110.003 (Password Spraying)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4625"
+  },
+  "EID 4625": {
+    "type": "eventid",
+    "id": "4625",
+    "title": "Event ID 4625",
+    "channel": "Security",
+    "category": "Logon / Authentication",
+    "severity": "AUDIT FAILURE",
+    "summary": "Records failed authentication attempts. Vital for identifying brute force attacks, credential stuffing, and password spraying. Status/SubStatus codes reveal specific failure reasons (e.g. 0xC000006A: wrong password, 0xC0000064: user doesn't exist, 0xC000006D: bad credentials, 0xC0000234: account locked).",
+    "key_fields": [
+      "Status",
+      "SubStatus",
+      "TargetUserName",
+      "WorkstationName",
+      "IpAddress",
+      "FailureReason",
+      "ProcessName"
+    ],
+    "mitre": [
+      "T1110 (Brute Force)",
+      "T1110.003 (Password Spraying)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4625"
+  },
+  "4672": {
+    "type": "eventid",
+    "id": "4672",
+    "title": "Event ID 4672",
+    "channel": "Security",
+    "category": "Privilege Use",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Special administrative privileges assigned to a new logon session. Logged immediately following event 4624 when an account possessing sensitive rights logs in. Sensitive privileges include SeDebugPrivilege, SeTcbPrivilege, SeSecurityPrivilege, SeBackupPrivilege.",
+    "key_fields": [
+      "SubjectUserName",
+      "SubjectDomainName",
+      "PrivilegeList"
+    ],
+    "mitre": [
+      "T1078 (Valid Accounts)",
+      "T1068 (Exploitation for Privilege Escalation)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4672"
+  },
+  "Event ID 4672": {
+    "type": "eventid",
+    "id": "4672",
+    "title": "Event ID 4672",
+    "channel": "Security",
+    "category": "Privilege Use",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Special administrative privileges assigned to a new logon session. Logged immediately following event 4624 when an account possessing sensitive rights logs in. Sensitive privileges include SeDebugPrivilege, SeTcbPrivilege, SeSecurityPrivilege, SeBackupPrivilege.",
+    "key_fields": [
+      "SubjectUserName",
+      "SubjectDomainName",
+      "PrivilegeList"
+    ],
+    "mitre": [
+      "T1078 (Valid Accounts)",
+      "T1068 (Exploitation for Privilege Escalation)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4672"
+  },
+  "EID 4672": {
+    "type": "eventid",
+    "id": "4672",
+    "title": "Event ID 4672",
+    "channel": "Security",
+    "category": "Privilege Use",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Special administrative privileges assigned to a new logon session. Logged immediately following event 4624 when an account possessing sensitive rights logs in. Sensitive privileges include SeDebugPrivilege, SeTcbPrivilege, SeSecurityPrivilege, SeBackupPrivilege.",
+    "key_fields": [
+      "SubjectUserName",
+      "SubjectDomainName",
+      "PrivilegeList"
+    ],
+    "mitre": [
+      "T1078 (Valid Accounts)",
+      "T1068 (Exploitation for Privilege Escalation)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4672"
+  },
+  "4688": {
+    "type": "eventid",
+    "id": "4688",
+    "title": "Event ID 4688",
+    "channel": "Security",
+    "category": "Detailed Tracking",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Tracks execution of all binaries. When CommandLine auditing policy is active, exposes full script execution arguments, PowerShell one-liners, and living-off-the-land commands.",
+    "key_fields": [
+      "NewProcessName",
+      "CommandLine",
+      "ParentProcessName",
+      "SubjectUserName",
+      "TokenElevationType"
+    ],
+    "mitre": [
+      "T1059 (Command and Scripting Interpreter)",
+      "T1105 (Ingress Tool Transfer)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4688"
+  },
+  "Event ID 4688": {
+    "type": "eventid",
+    "id": "4688",
+    "title": "Event ID 4688",
+    "channel": "Security",
+    "category": "Detailed Tracking",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Tracks execution of all binaries. When CommandLine auditing policy is active, exposes full script execution arguments, PowerShell one-liners, and living-off-the-land commands.",
+    "key_fields": [
+      "NewProcessName",
+      "CommandLine",
+      "ParentProcessName",
+      "SubjectUserName",
+      "TokenElevationType"
+    ],
+    "mitre": [
+      "T1059 (Command and Scripting Interpreter)",
+      "T1105 (Ingress Tool Transfer)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4688"
+  },
+  "EID 4688": {
+    "type": "eventid",
+    "id": "4688",
+    "title": "Event ID 4688",
+    "channel": "Security",
+    "category": "Detailed Tracking",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Tracks execution of all binaries. When CommandLine auditing policy is active, exposes full script execution arguments, PowerShell one-liners, and living-off-the-land commands.",
+    "key_fields": [
+      "NewProcessName",
+      "CommandLine",
+      "ParentProcessName",
+      "SubjectUserName",
+      "TokenElevationType"
+    ],
+    "mitre": [
+      "T1059 (Command and Scripting Interpreter)",
+      "T1105 (Ingress Tool Transfer)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4688"
+  },
+  "4697": {
+    "type": "eventid",
+    "id": "4697",
+    "title": "Event ID 4697",
+    "channel": "Security",
+    "category": "System / Service Install",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A service was installed in the system. Logged in Security.evtx with service account details and service binary path. High fidelity persistence and lateral movement indicator (e.g. PsExec, malware services).",
+    "key_fields": [
+      "ServiceName",
+      "ServiceFileName",
+      "ServiceType",
+      "ServiceStartType",
+      "ServiceAccount"
+    ],
+    "mitre": [
+      "T1543.003 (Create or Modify System Process: Windows Service)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4697"
+  },
+  "Event ID 4697": {
+    "type": "eventid",
+    "id": "4697",
+    "title": "Event ID 4697",
+    "channel": "Security",
+    "category": "System / Service Install",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A service was installed in the system. Logged in Security.evtx with service account details and service binary path. High fidelity persistence and lateral movement indicator (e.g. PsExec, malware services).",
+    "key_fields": [
+      "ServiceName",
+      "ServiceFileName",
+      "ServiceType",
+      "ServiceStartType",
+      "ServiceAccount"
+    ],
+    "mitre": [
+      "T1543.003 (Create or Modify System Process: Windows Service)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4697"
+  },
+  "EID 4697": {
+    "type": "eventid",
+    "id": "4697",
+    "title": "Event ID 4697",
+    "channel": "Security",
+    "category": "System / Service Install",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A service was installed in the system. Logged in Security.evtx with service account details and service binary path. High fidelity persistence and lateral movement indicator (e.g. PsExec, malware services).",
+    "key_fields": [
+      "ServiceName",
+      "ServiceFileName",
+      "ServiceType",
+      "ServiceStartType",
+      "ServiceAccount"
+    ],
+    "mitre": [
+      "T1543.003 (Create or Modify System Process: Windows Service)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4697"
+  },
+  "7045": {
+    "type": "eventid",
+    "id": "7045",
+    "title": "Event ID 7045",
+    "channel": "System",
+    "category": "Work Email:",
+    "severity": "SYSTEM NOTICE",
+    "summary": "A new service was installed on the system (logged by Service Control Manager in System.evtx). Primary source for discovering backdoor persistence and remote execution services.",
+    "key_fields": [
+      "ServiceName",
+      "ImagePath",
+      "ServiceType",
+      "StartType",
+      "AccountName"
+    ],
+    "mitre": [
+      "T1543.003 (Create or Modify System Process: Windows Service)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=7045"
+  },
+  "Event ID 7045": {
+    "type": "eventid",
+    "id": "7045",
+    "title": "Event ID 7045",
+    "channel": "System",
+    "category": "Work Email:",
+    "severity": "SYSTEM NOTICE",
+    "summary": "A new service was installed on the system (logged by Service Control Manager in System.evtx). Primary source for discovering backdoor persistence and remote execution services.",
+    "key_fields": [
+      "ServiceName",
+      "ImagePath",
+      "ServiceType",
+      "StartType",
+      "AccountName"
+    ],
+    "mitre": [
+      "T1543.003 (Create or Modify System Process: Windows Service)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=7045"
+  },
+  "EID 7045": {
+    "type": "eventid",
+    "id": "7045",
+    "title": "Event ID 7045",
+    "channel": "System",
+    "category": "Work Email:",
+    "severity": "SYSTEM NOTICE",
+    "summary": "A new service was installed on the system (logged by Service Control Manager in System.evtx). Primary source for discovering backdoor persistence and remote execution services.",
+    "key_fields": [
+      "ServiceName",
+      "ImagePath",
+      "ServiceType",
+      "StartType",
+      "AccountName"
+    ],
+    "mitre": [
+      "T1543.003 (Create or Modify System Process: Windows Service)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=7045"
+  },
+  "4720": {
+    "type": "eventid",
+    "id": "4720",
+    "title": "Event ID 4720",
+    "channel": "Security",
+    "category": "Account Management",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A user account was created. Critical indicator for unauthorized persistence, rogue backdoor creation, or shadow admin accounts.",
+    "key_fields": [
+      "TargetUserName",
+      "TargetDomainName",
+      "SubjectUserName",
+      "SubjectDomainName",
+      "SamAccountName"
+    ],
+    "mitre": [
+      "T1136.001 (Create Account: Local Account)",
+      "T1136.002 (Create Account: Domain Account)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4720"
+  },
+  "Event ID 4720": {
+    "type": "eventid",
+    "id": "4720",
+    "title": "Event ID 4720",
+    "channel": "Security",
+    "category": "Account Management",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A user account was created. Critical indicator for unauthorized persistence, rogue backdoor creation, or shadow admin accounts.",
+    "key_fields": [
+      "TargetUserName",
+      "TargetDomainName",
+      "SubjectUserName",
+      "SubjectDomainName",
+      "SamAccountName"
+    ],
+    "mitre": [
+      "T1136.001 (Create Account: Local Account)",
+      "T1136.002 (Create Account: Domain Account)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4720"
+  },
+  "EID 4720": {
+    "type": "eventid",
+    "id": "4720",
+    "title": "Event ID 4720",
+    "channel": "Security",
+    "category": "Account Management",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A user account was created. Critical indicator for unauthorized persistence, rogue backdoor creation, or shadow admin accounts.",
+    "key_fields": [
+      "TargetUserName",
+      "TargetDomainName",
+      "SubjectUserName",
+      "SubjectDomainName",
+      "SamAccountName"
+    ],
+    "mitre": [
+      "T1136.001 (Create Account: Local Account)",
+      "T1136.002 (Create Account: Domain Account)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4720"
+  },
+  "4726": {
+    "type": "eventid",
+    "id": "4726",
+    "title": "Event ID 4726",
+    "channel": "Security",
+    "category": "Account Management",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A user account was deleted. Often used by attackers to clean up temporary staging accounts or cover lateral tracks.",
+    "key_fields": [
+      "TargetUserName",
+      "TargetDomainName",
+      "SubjectUserName"
+    ],
+    "mitre": [
+      "T1531 (Account Access Removal)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4726"
+  },
+  "Event ID 4726": {
+    "type": "eventid",
+    "id": "4726",
+    "title": "Event ID 4726",
+    "channel": "Security",
+    "category": "Account Management",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A user account was deleted. Often used by attackers to clean up temporary staging accounts or cover lateral tracks.",
+    "key_fields": [
+      "TargetUserName",
+      "TargetDomainName",
+      "SubjectUserName"
+    ],
+    "mitre": [
+      "T1531 (Account Access Removal)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4726"
+  },
+  "EID 4726": {
+    "type": "eventid",
+    "id": "4726",
+    "title": "Event ID 4726",
+    "channel": "Security",
+    "category": "Account Management",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A user account was deleted. Often used by attackers to clean up temporary staging accounts or cover lateral tracks.",
+    "key_fields": [
+      "TargetUserName",
+      "TargetDomainName",
+      "SubjectUserName"
+    ],
+    "mitre": [
+      "T1531 (Account Access Removal)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4726"
+  },
+  "4728": {
+    "type": "eventid",
+    "id": "4728",
+    "title": "Event ID 4728",
+    "channel": "Security",
+    "category": "Account Management",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A member was added to a security-enabled global group (e.g. Domain Admins, Enterprise Admins). A premier privilege escalation indicator in Active Directory breaches.",
+    "key_fields": [
+      "MemberName",
+      "TargetGroupName",
+      "SubjectUserName",
+      "SubjectDomainName"
+    ],
+    "mitre": [
+      "T1098 (Account Manipulation)",
+      "T1078 (Valid Accounts)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4728"
+  },
+  "Event ID 4728": {
+    "type": "eventid",
+    "id": "4728",
+    "title": "Event ID 4728",
+    "channel": "Security",
+    "category": "Account Management",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A member was added to a security-enabled global group (e.g. Domain Admins, Enterprise Admins). A premier privilege escalation indicator in Active Directory breaches.",
+    "key_fields": [
+      "MemberName",
+      "TargetGroupName",
+      "SubjectUserName",
+      "SubjectDomainName"
+    ],
+    "mitre": [
+      "T1098 (Account Manipulation)",
+      "T1078 (Valid Accounts)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4728"
+  },
+  "EID 4728": {
+    "type": "eventid",
+    "id": "4728",
+    "title": "Event ID 4728",
+    "channel": "Security",
+    "category": "Account Management",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A member was added to a security-enabled global group (e.g. Domain Admins, Enterprise Admins). A premier privilege escalation indicator in Active Directory breaches.",
+    "key_fields": [
+      "MemberName",
+      "TargetGroupName",
+      "SubjectUserName",
+      "SubjectDomainName"
+    ],
+    "mitre": [
+      "T1098 (Account Manipulation)",
+      "T1078 (Valid Accounts)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4728"
+  },
+  "4732": {
+    "type": "eventid",
+    "id": "4732",
+    "title": "Event ID 4732",
+    "channel": "Security",
+    "category": "Account Management",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A member was added to a security-enabled local group (e.g. local Administrators, Remote Desktop Users). Indicates local privilege escalation.",
+    "key_fields": [
+      "MemberName",
+      "TargetGroupName",
+      "SubjectUserName"
+    ],
+    "mitre": [
+      "T1098 (Account Manipulation)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4732"
+  },
+  "Event ID 4732": {
+    "type": "eventid",
+    "id": "4732",
+    "title": "Event ID 4732",
+    "channel": "Security",
+    "category": "Account Management",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A member was added to a security-enabled local group (e.g. local Administrators, Remote Desktop Users). Indicates local privilege escalation.",
+    "key_fields": [
+      "MemberName",
+      "TargetGroupName",
+      "SubjectUserName"
+    ],
+    "mitre": [
+      "T1098 (Account Manipulation)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4732"
+  },
+  "EID 4732": {
+    "type": "eventid",
+    "id": "4732",
+    "title": "Event ID 4732",
+    "channel": "Security",
+    "category": "Account Management",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A member was added to a security-enabled local group (e.g. local Administrators, Remote Desktop Users). Indicates local privilege escalation.",
+    "key_fields": [
+      "MemberName",
+      "TargetGroupName",
+      "SubjectUserName"
+    ],
+    "mitre": [
+      "T1098 (Account Manipulation)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4732"
+  },
+  "4738": {
+    "type": "eventid",
+    "id": "4738",
+    "title": "Event ID 4738",
+    "channel": "Security",
+    "category": "Account Management",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A user account was modified. Highlights account tampering such as password never expires, account enabled/disabled, UserAccountControl flags changed, or Kerberos pre-authentication disabled.",
+    "key_fields": [
+      "TargetUserName",
+      "SubjectUserName",
+      "UserAccountControl",
+      "PasswordLastSet"
+    ],
+    "mitre": [
+      "T1098 (Account Manipulation)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4738"
+  },
+  "Event ID 4738": {
+    "type": "eventid",
+    "id": "4738",
+    "title": "Event ID 4738",
+    "channel": "Security",
+    "category": "Account Management",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A user account was modified. Highlights account tampering such as password never expires, account enabled/disabled, UserAccountControl flags changed, or Kerberos pre-authentication disabled.",
+    "key_fields": [
+      "TargetUserName",
+      "SubjectUserName",
+      "UserAccountControl",
+      "PasswordLastSet"
+    ],
+    "mitre": [
+      "T1098 (Account Manipulation)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4738"
+  },
+  "EID 4738": {
+    "type": "eventid",
+    "id": "4738",
+    "title": "Event ID 4738",
+    "channel": "Security",
+    "category": "Account Management",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A user account was modified. Highlights account tampering such as password never expires, account enabled/disabled, UserAccountControl flags changed, or Kerberos pre-authentication disabled.",
+    "key_fields": [
+      "TargetUserName",
+      "SubjectUserName",
+      "UserAccountControl",
+      "PasswordLastSet"
+    ],
+    "mitre": [
+      "T1098 (Account Manipulation)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4738"
+  },
+  "4768": {
+    "type": "eventid",
+    "id": "4768",
+    "title": "Event ID 4768",
+    "channel": "Security",
+    "category": "Kerberos Authentication",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A Kerberos authentication ticket (TGT) was requested. Key forensic event for Golden Ticket verification and domain controller authentication telemetry.",
+    "key_fields": [
+      "TargetUserName",
+      "IpAddress",
+      "TicketOptions",
+      "ResultCode"
+    ],
+    "mitre": [
+      "T1558.001 (Steal or Forge Kerberos Tickets: Golden Ticket)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4768"
+  },
+  "Event ID 4768": {
+    "type": "eventid",
+    "id": "4768",
+    "title": "Event ID 4768",
+    "channel": "Security",
+    "category": "Kerberos Authentication",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A Kerberos authentication ticket (TGT) was requested. Key forensic event for Golden Ticket verification and domain controller authentication telemetry.",
+    "key_fields": [
+      "TargetUserName",
+      "IpAddress",
+      "TicketOptions",
+      "ResultCode"
+    ],
+    "mitre": [
+      "T1558.001 (Steal or Forge Kerberos Tickets: Golden Ticket)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4768"
+  },
+  "EID 4768": {
+    "type": "eventid",
+    "id": "4768",
+    "title": "Event ID 4768",
+    "channel": "Security",
+    "category": "Kerberos Authentication",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A Kerberos authentication ticket (TGT) was requested. Key forensic event for Golden Ticket verification and domain controller authentication telemetry.",
+    "key_fields": [
+      "TargetUserName",
+      "IpAddress",
+      "TicketOptions",
+      "ResultCode"
+    ],
+    "mitre": [
+      "T1558.001 (Steal or Forge Kerberos Tickets: Golden Ticket)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4768"
+  },
+  "4769": {
+    "type": "eventid",
+    "id": "4769",
+    "title": "Event ID 4769",
+    "channel": "Security",
+    "category": "Kerberos Service Ticket",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A Kerberos service ticket (TGS) was requested. Ticket encryption type 0x17 (RC4) indicates potential Kerberoasting attack against service account SPNs.",
+    "key_fields": [
+      "ServiceName",
+      "TargetUserName",
+      "TicketEncryptionType",
+      "TicketOptions",
+      "IpAddress"
+    ],
+    "mitre": [
+      "T1558.003 (Steal or Forge Kerberos Tickets: Kerberoasting)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4769"
+  },
+  "Event ID 4769": {
+    "type": "eventid",
+    "id": "4769",
+    "title": "Event ID 4769",
+    "channel": "Security",
+    "category": "Kerberos Service Ticket",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A Kerberos service ticket (TGS) was requested. Ticket encryption type 0x17 (RC4) indicates potential Kerberoasting attack against service account SPNs.",
+    "key_fields": [
+      "ServiceName",
+      "TargetUserName",
+      "TicketEncryptionType",
+      "TicketOptions",
+      "IpAddress"
+    ],
+    "mitre": [
+      "T1558.003 (Steal or Forge Kerberos Tickets: Kerberoasting)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4769"
+  },
+  "EID 4769": {
+    "type": "eventid",
+    "id": "4769",
+    "title": "Event ID 4769",
+    "channel": "Security",
+    "category": "Kerberos Service Ticket",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A Kerberos service ticket (TGS) was requested. Ticket encryption type 0x17 (RC4) indicates potential Kerberoasting attack against service account SPNs.",
+    "key_fields": [
+      "ServiceName",
+      "TargetUserName",
+      "TicketEncryptionType",
+      "TicketOptions",
+      "IpAddress"
+    ],
+    "mitre": [
+      "T1558.003 (Steal or Forge Kerberos Tickets: Kerberoasting)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4769"
+  },
+  "4771": {
+    "type": "eventid",
+    "id": "4771",
+    "title": "Event ID 4771",
+    "channel": "Security",
+    "category": "Kerberos Pre-Authentication",
+    "severity": "AUDIT FAILURE",
+    "summary": "Kerberos pre-authentication failed. Failure code 0x18 indicates wrong password; high volume indicates AS-REP roasting or password spraying.",
+    "key_fields": [
+      "TargetUserName",
+      "IpAddress",
+      "FailureCode"
+    ],
+    "mitre": [
+      "T1558.004 (Steal or Forge Kerberos Tickets: AS-REP Roasting)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4771"
+  },
+  "Event ID 4771": {
+    "type": "eventid",
+    "id": "4771",
+    "title": "Event ID 4771",
+    "channel": "Security",
+    "category": "Kerberos Pre-Authentication",
+    "severity": "AUDIT FAILURE",
+    "summary": "Kerberos pre-authentication failed. Failure code 0x18 indicates wrong password; high volume indicates AS-REP roasting or password spraying.",
+    "key_fields": [
+      "TargetUserName",
+      "IpAddress",
+      "FailureCode"
+    ],
+    "mitre": [
+      "T1558.004 (Steal or Forge Kerberos Tickets: AS-REP Roasting)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4771"
+  },
+  "EID 4771": {
+    "type": "eventid",
+    "id": "4771",
+    "title": "Event ID 4771",
+    "channel": "Security",
+    "category": "Kerberos Pre-Authentication",
+    "severity": "AUDIT FAILURE",
+    "summary": "Kerberos pre-authentication failed. Failure code 0x18 indicates wrong password; high volume indicates AS-REP roasting or password spraying.",
+    "key_fields": [
+      "TargetUserName",
+      "IpAddress",
+      "FailureCode"
+    ],
+    "mitre": [
+      "T1558.004 (Steal or Forge Kerberos Tickets: AS-REP Roasting)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4771"
+  },
+  "4776": {
+    "type": "eventid",
+    "id": "4776",
+    "title": "Event ID 4776",
+    "channel": "Security",
+    "category": "Credential Validation",
+    "severity": "AUDIT SUCCESS / FAILURE",
+    "summary": "The computer attempted to validate credentials for an account (NTLM authentication). Error code 0xC000006A denotes bad password.",
+    "key_fields": [
+      "PackageName",
+      "TargetUserName",
+      "Workstation",
+      "Status"
+    ],
+    "mitre": [
+      "T1110 (Brute Force)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4776"
+  },
+  "Event ID 4776": {
+    "type": "eventid",
+    "id": "4776",
+    "title": "Event ID 4776",
+    "channel": "Security",
+    "category": "Credential Validation",
+    "severity": "AUDIT SUCCESS / FAILURE",
+    "summary": "The computer attempted to validate credentials for an account (NTLM authentication). Error code 0xC000006A denotes bad password.",
+    "key_fields": [
+      "PackageName",
+      "TargetUserName",
+      "Workstation",
+      "Status"
+    ],
+    "mitre": [
+      "T1110 (Brute Force)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4776"
+  },
+  "EID 4776": {
+    "type": "eventid",
+    "id": "4776",
+    "title": "Event ID 4776",
+    "channel": "Security",
+    "category": "Credential Validation",
+    "severity": "AUDIT SUCCESS / FAILURE",
+    "summary": "The computer attempted to validate credentials for an account (NTLM authentication). Error code 0xC000006A denotes bad password.",
+    "key_fields": [
+      "PackageName",
+      "TargetUserName",
+      "Workstation",
+      "Status"
+    ],
+    "mitre": [
+      "T1110 (Brute Force)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4776"
+  },
+  "1102": {
+    "type": "eventid",
+    "id": "1102",
+    "title": "Event ID 1102",
+    "channel": "Security",
+    "category": "Log Clear / Anti-Forensics",
+    "severity": "CRITICAL AUDIT",
+    "summary": "Logged when the Security event log is cleared via wevtutil cl Security, PowerShell Clear-EventLog, or attacker scripts. Always treated as an active malicious tampering indicator.",
+    "key_fields": [
+      "SubjectUserName",
+      "SubjectDomainName",
+      "SubjectLogonId"
+    ],
+    "mitre": [
+      "T1070.001 (Clear Windows Event Logs)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=1102"
+  },
+  "Event ID 1102": {
+    "type": "eventid",
+    "id": "1102",
+    "title": "Event ID 1102",
+    "channel": "Security",
+    "category": "Log Clear / Anti-Forensics",
+    "severity": "CRITICAL AUDIT",
+    "summary": "Logged when the Security event log is cleared via wevtutil cl Security, PowerShell Clear-EventLog, or attacker scripts. Always treated as an active malicious tampering indicator.",
+    "key_fields": [
+      "SubjectUserName",
+      "SubjectDomainName",
+      "SubjectLogonId"
+    ],
+    "mitre": [
+      "T1070.001 (Clear Windows Event Logs)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=1102"
+  },
+  "EID 1102": {
+    "type": "eventid",
+    "id": "1102",
+    "title": "Event ID 1102",
+    "channel": "Security",
+    "category": "Log Clear / Anti-Forensics",
+    "severity": "CRITICAL AUDIT",
+    "summary": "Logged when the Security event log is cleared via wevtutil cl Security, PowerShell Clear-EventLog, or attacker scripts. Always treated as an active malicious tampering indicator.",
+    "key_fields": [
+      "SubjectUserName",
+      "SubjectDomainName",
+      "SubjectLogonId"
+    ],
+    "mitre": [
+      "T1070.001 (Clear Windows Event Logs)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=1102"
+  },
+  "104": {
+    "type": "eventid",
+    "id": "104",
+    "title": "Event ID 104",
+    "channel": "System",
+    "category": "Work Email:",
+    "severity": "CRITICAL AUDIT",
+    "summary": "The log file was cleared (logged by eventlog service in System.evtx when System or Application log is wiped).",
+    "key_fields": [
+      "SubjectUserName",
+      "SubjectDomainName"
+    ],
+    "mitre": [
+      "T1070.001 (Clear Windows Event Logs)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=104"
+  },
+  "Event ID 104": {
+    "type": "eventid",
+    "id": "104",
+    "title": "Event ID 104",
+    "channel": "System",
+    "category": "Work Email:",
+    "severity": "CRITICAL AUDIT",
+    "summary": "The log file was cleared (logged by eventlog service in System.evtx when System or Application log is wiped).",
+    "key_fields": [
+      "SubjectUserName",
+      "SubjectDomainName"
+    ],
+    "mitre": [
+      "T1070.001 (Clear Windows Event Logs)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=104"
+  },
+  "EID 104": {
+    "type": "eventid",
+    "id": "104",
+    "title": "Event ID 104",
+    "channel": "System",
+    "category": "Work Email:",
+    "severity": "CRITICAL AUDIT",
+    "summary": "The log file was cleared (logged by eventlog service in System.evtx when System or Application log is wiped).",
+    "key_fields": [
+      "SubjectUserName",
+      "SubjectDomainName"
+    ],
+    "mitre": [
+      "T1070.001 (Clear Windows Event Logs)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=104"
+  },
+  "4104": {
+    "type": "eventid",
+    "id": "4104",
+    "title": "Event ID 4104",
+    "channel": "Microsoft-Windows-PowerShell/Operational",
+    "category": "Work Email:",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Script block logging. Captures complete, un-obfuscated script content and commands executed by PowerShell 5.0+, defeating base64/xor obfuscation.",
+    "key_fields": [
+      "ScriptBlockText",
+      "Path",
+      "UserId"
+    ],
+    "mitre": [
+      "T1059.001 (Command and Scripting Interpreter: PowerShell)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4104"
+  },
+  "Event ID 4104": {
+    "type": "eventid",
+    "id": "4104",
+    "title": "Event ID 4104",
+    "channel": "Microsoft-Windows-PowerShell/Operational",
+    "category": "Work Email:",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Script block logging. Captures complete, un-obfuscated script content and commands executed by PowerShell 5.0+, defeating base64/xor obfuscation.",
+    "key_fields": [
+      "ScriptBlockText",
+      "Path",
+      "UserId"
+    ],
+    "mitre": [
+      "T1059.001 (Command and Scripting Interpreter: PowerShell)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4104"
+  },
+  "EID 4104": {
+    "type": "eventid",
+    "id": "4104",
+    "title": "Event ID 4104",
+    "channel": "Microsoft-Windows-PowerShell/Operational",
+    "category": "Work Email:",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Script block logging. Captures complete, un-obfuscated script content and commands executed by PowerShell 5.0+, defeating base64/xor obfuscation.",
+    "key_fields": [
+      "ScriptBlockText",
+      "Path",
+      "UserId"
+    ],
+    "mitre": [
+      "T1059.001 (Command and Scripting Interpreter: PowerShell)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4104"
+  },
+  "4103": {
+    "type": "eventid",
+    "id": "4103",
+    "title": "Event ID 4103",
+    "channel": "Microsoft-Windows-PowerShell/Operational",
+    "category": "Work Email:",
+    "severity": "AUDIT SUCCESS",
+    "summary": "PowerShell pipeline execution logging. Records pipeline invocation details and command line parameters.",
+    "key_fields": [
+      "Payload",
+      "CommandLine",
+      "ContextInfo"
+    ],
+    "mitre": [
+      "T1059.001 (Command and Scripting Interpreter: PowerShell)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4103"
+  },
+  "Event ID 4103": {
+    "type": "eventid",
+    "id": "4103",
+    "title": "Event ID 4103",
+    "channel": "Microsoft-Windows-PowerShell/Operational",
+    "category": "Work Email:",
+    "severity": "AUDIT SUCCESS",
+    "summary": "PowerShell pipeline execution logging. Records pipeline invocation details and command line parameters.",
+    "key_fields": [
+      "Payload",
+      "CommandLine",
+      "ContextInfo"
+    ],
+    "mitre": [
+      "T1059.001 (Command and Scripting Interpreter: PowerShell)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4103"
+  },
+  "EID 4103": {
+    "type": "eventid",
+    "id": "4103",
+    "title": "Event ID 4103",
+    "channel": "Microsoft-Windows-PowerShell/Operational",
+    "category": "Work Email:",
+    "severity": "AUDIT SUCCESS",
+    "summary": "PowerShell pipeline execution logging. Records pipeline invocation details and command line parameters.",
+    "key_fields": [
+      "Payload",
+      "CommandLine",
+      "ContextInfo"
+    ],
+    "mitre": [
+      "T1059.001 (Command and Scripting Interpreter: PowerShell)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4103"
+  },
+  "Sysmon-1": {
+    "type": "eventid",
+    "id": "1",
+    "title": "Event ID 1",
+    "channel": "Sysmon",
+    "category": "Work Email:",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 1 (Process Create). Provides full process command line, image path, parent process image, hashes (SHA256), and integrity level.",
+    "key_fields": [
+      "UtcTime",
+      "ProcessGuid",
+      "Image",
+      "CommandLine",
+      "CurrentDirectory",
+      "User",
+      "ParentImage",
+      "ParentCommandLine",
+      "Hashes"
+    ],
+    "mitre": [
+      "T1059 (Command and Scripting Interpreter)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=1"
+  },
+  "Event ID 1": {
+    "type": "eventid",
+    "id": "1",
+    "title": "Event ID 1",
+    "channel": "Sysmon",
+    "category": "Work Email:",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 1 (Process Create). Provides full process command line, image path, parent process image, hashes (SHA256), and integrity level.",
+    "key_fields": [
+      "UtcTime",
+      "ProcessGuid",
+      "Image",
+      "CommandLine",
+      "CurrentDirectory",
+      "User",
+      "ParentImage",
+      "ParentCommandLine",
+      "Hashes"
+    ],
+    "mitre": [
+      "T1059 (Command and Scripting Interpreter)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=1"
+  },
+  "EID 1": {
+    "type": "eventid",
+    "id": "1",
+    "title": "Event ID 1",
+    "channel": "Sysmon",
+    "category": "Work Email:",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 1 (Process Create). Provides full process command line, image path, parent process image, hashes (SHA256), and integrity level.",
+    "key_fields": [
+      "UtcTime",
+      "ProcessGuid",
+      "Image",
+      "CommandLine",
+      "CurrentDirectory",
+      "User",
+      "ParentImage",
+      "ParentCommandLine",
+      "Hashes"
+    ],
+    "mitre": [
+      "T1059 (Command and Scripting Interpreter)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=1"
+  },
+  "1": {
+    "type": "eventid",
+    "id": "1",
+    "title": "Event ID 1",
+    "channel": "Sysmon",
+    "category": "Work Email:",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 1 (Process Create). Provides full process command line, image path, parent process image, hashes (SHA256), and integrity level.",
+    "key_fields": [
+      "UtcTime",
+      "ProcessGuid",
+      "Image",
+      "CommandLine",
+      "CurrentDirectory",
+      "User",
+      "ParentImage",
+      "ParentCommandLine",
+      "Hashes"
+    ],
+    "mitre": [
+      "T1059 (Command and Scripting Interpreter)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=1"
+  },
+  "Sysmon-3": {
+    "type": "eventid",
+    "id": "3",
+    "title": "Event ID 3",
+    "channel": "Sysmon",
+    "category": "Work Email:",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 3 (Network Connection). Discloses TCP/UDP connections initiated by binaries, with source/dest IP, port, and resolved hostname.",
+    "key_fields": [
+      "UtcTime",
+      "Image",
+      "User",
+      "Protocol",
+      "SourceIp",
+      "SourcePort",
+      "DestinationIp",
+      "DestinationPort",
+      "DestinationHostname"
+    ],
+    "mitre": [
+      "T1071 (Application Layer Protocol)",
+      "T1043 (Commonly Used Port)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=3"
+  },
+  "Event ID 3": {
+    "type": "eventid",
+    "id": "3",
+    "title": "Event ID 3",
+    "channel": "Sysmon",
+    "category": "Work Email:",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 3 (Network Connection). Discloses TCP/UDP connections initiated by binaries, with source/dest IP, port, and resolved hostname.",
+    "key_fields": [
+      "UtcTime",
+      "Image",
+      "User",
+      "Protocol",
+      "SourceIp",
+      "SourcePort",
+      "DestinationIp",
+      "DestinationPort",
+      "DestinationHostname"
+    ],
+    "mitre": [
+      "T1071 (Application Layer Protocol)",
+      "T1043 (Commonly Used Port)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=3"
+  },
+  "EID 3": {
+    "type": "eventid",
+    "id": "3",
+    "title": "Event ID 3",
+    "channel": "Sysmon",
+    "category": "Work Email:",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 3 (Network Connection). Discloses TCP/UDP connections initiated by binaries, with source/dest IP, port, and resolved hostname.",
+    "key_fields": [
+      "UtcTime",
+      "Image",
+      "User",
+      "Protocol",
+      "SourceIp",
+      "SourcePort",
+      "DestinationIp",
+      "DestinationPort",
+      "DestinationHostname"
+    ],
+    "mitre": [
+      "T1071 (Application Layer Protocol)",
+      "T1043 (Commonly Used Port)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=3"
+  },
+  "3": {
+    "type": "eventid",
+    "id": "3",
+    "title": "Event ID 3",
+    "channel": "Sysmon",
+    "category": "Work Email:",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 3 (Network Connection). Discloses TCP/UDP connections initiated by binaries, with source/dest IP, port, and resolved hostname.",
+    "key_fields": [
+      "UtcTime",
+      "Image",
+      "User",
+      "Protocol",
+      "SourceIp",
+      "SourcePort",
+      "DestinationIp",
+      "DestinationPort",
+      "DestinationHostname"
+    ],
+    "mitre": [
+      "T1071 (Application Layer Protocol)",
+      "T1043 (Commonly Used Port)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=3"
+  },
+  "Sysmon-7": {
+    "type": "eventid",
+    "id": "7",
+    "title": "Event ID 7",
+    "channel": "Sysmon",
+    "category": "Work Email:",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 7 (Image Loaded). Logs DLLs and modules loaded into process memory. Key for DLL hijacking and sideloading investigation.",
+    "key_fields": [
+      "UtcTime",
+      "Image",
+      "ImageLoaded",
+      "Hashes",
+      "Signed",
+      "SignatureStatus"
+    ],
+    "mitre": [
+      "T1574.002 (DLL Side-Loading)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=7"
+  },
+  "Event ID 7": {
+    "type": "eventid",
+    "id": "7",
+    "title": "Event ID 7",
+    "channel": "Sysmon",
+    "category": "Work Email:",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 7 (Image Loaded). Logs DLLs and modules loaded into process memory. Key for DLL hijacking and sideloading investigation.",
+    "key_fields": [
+      "UtcTime",
+      "Image",
+      "ImageLoaded",
+      "Hashes",
+      "Signed",
+      "SignatureStatus"
+    ],
+    "mitre": [
+      "T1574.002 (DLL Side-Loading)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=7"
+  },
+  "EID 7": {
+    "type": "eventid",
+    "id": "7",
+    "title": "Event ID 7",
+    "channel": "Sysmon",
+    "category": "Work Email:",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 7 (Image Loaded). Logs DLLs and modules loaded into process memory. Key for DLL hijacking and sideloading investigation.",
+    "key_fields": [
+      "UtcTime",
+      "Image",
+      "ImageLoaded",
+      "Hashes",
+      "Signed",
+      "SignatureStatus"
+    ],
+    "mitre": [
+      "T1574.002 (DLL Side-Loading)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=7"
+  },
+  "7": {
+    "type": "eventid",
+    "id": "7",
+    "title": "Event ID 7",
+    "channel": "Sysmon",
+    "category": "Work Email:",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 7 (Image Loaded). Logs DLLs and modules loaded into process memory. Key for DLL hijacking and sideloading investigation.",
+    "key_fields": [
+      "UtcTime",
+      "Image",
+      "ImageLoaded",
+      "Hashes",
+      "Signed",
+      "SignatureStatus"
+    ],
+    "mitre": [
+      "T1574.002 (DLL Side-Loading)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=7"
+  },
+  "Sysmon-8": {
+    "type": "eventid",
+    "id": "8",
+    "title": "Event ID 8",
+    "channel": "Sysmon",
+    "category": "Work Email:",
+    "severity": "CRITICAL TELEMETRY",
+    "summary": "Sysmon Event ID 8 (CreateRemoteThread). Detects thread injection into another process address space (classic shellcode injection, Cobalt Strike beacons, Mimikatz).",
+    "key_fields": [
+      "UtcTime",
+      "SourceImage",
+      "TargetImage",
+      "StartAddress",
+      "StartFunction"
+    ],
+    "mitre": [
+      "T1055.002 (Process Injection: Portable Executable Injection)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=8"
+  },
+  "Event ID 8": {
+    "type": "eventid",
+    "id": "8",
+    "title": "Event ID 8",
+    "channel": "Sysmon",
+    "category": "Work Email:",
+    "severity": "CRITICAL TELEMETRY",
+    "summary": "Sysmon Event ID 8 (CreateRemoteThread). Detects thread injection into another process address space (classic shellcode injection, Cobalt Strike beacons, Mimikatz).",
+    "key_fields": [
+      "UtcTime",
+      "SourceImage",
+      "TargetImage",
+      "StartAddress",
+      "StartFunction"
+    ],
+    "mitre": [
+      "T1055.002 (Process Injection: Portable Executable Injection)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=8"
+  },
+  "EID 8": {
+    "type": "eventid",
+    "id": "8",
+    "title": "Event ID 8",
+    "channel": "Sysmon",
+    "category": "Work Email:",
+    "severity": "CRITICAL TELEMETRY",
+    "summary": "Sysmon Event ID 8 (CreateRemoteThread). Detects thread injection into another process address space (classic shellcode injection, Cobalt Strike beacons, Mimikatz).",
+    "key_fields": [
+      "UtcTime",
+      "SourceImage",
+      "TargetImage",
+      "StartAddress",
+      "StartFunction"
+    ],
+    "mitre": [
+      "T1055.002 (Process Injection: Portable Executable Injection)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=8"
+  },
+  "8": {
+    "type": "eventid",
+    "id": "8",
+    "title": "Event ID 8",
+    "channel": "Sysmon",
+    "category": "Work Email:",
+    "severity": "CRITICAL TELEMETRY",
+    "summary": "Sysmon Event ID 8 (CreateRemoteThread). Detects thread injection into another process address space (classic shellcode injection, Cobalt Strike beacons, Mimikatz).",
+    "key_fields": [
+      "UtcTime",
+      "SourceImage",
+      "TargetImage",
+      "StartAddress",
+      "StartFunction"
+    ],
+    "mitre": [
+      "T1055.002 (Process Injection: Portable Executable Injection)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=8"
+  },
+  "Sysmon-10": {
+    "type": "eventid",
+    "id": "10",
+    "title": "Event ID 10",
+    "channel": "Sysmon",
+    "category": "Work Email:",
+    "severity": "CRITICAL TELEMETRY",
+    "summary": "Sysmon Event ID 10 (ProcessAccess). Detects processes opening handles to target processes. Primary detector for LSASS memory dumping (Mimikatz, Procdump).",
+    "key_fields": [
+      "UtcTime",
+      "SourceImage",
+      "TargetImage",
+      "GrantedAccess",
+      "CallTrace"
+    ],
+    "mitre": [
+      "T1003.001 (OS Credential Dumping: LSASS Memory)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=10"
+  },
+  "Event ID 10": {
+    "type": "eventid",
+    "id": "10",
+    "title": "Event ID 10",
+    "channel": "Sysmon",
+    "category": "Work Email:",
+    "severity": "CRITICAL TELEMETRY",
+    "summary": "Sysmon Event ID 10 (ProcessAccess). Detects processes opening handles to target processes. Primary detector for LSASS memory dumping (Mimikatz, Procdump).",
+    "key_fields": [
+      "UtcTime",
+      "SourceImage",
+      "TargetImage",
+      "GrantedAccess",
+      "CallTrace"
+    ],
+    "mitre": [
+      "T1003.001 (OS Credential Dumping: LSASS Memory)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=10"
+  },
+  "EID 10": {
+    "type": "eventid",
+    "id": "10",
+    "title": "Event ID 10",
+    "channel": "Sysmon",
+    "category": "Work Email:",
+    "severity": "CRITICAL TELEMETRY",
+    "summary": "Sysmon Event ID 10 (ProcessAccess). Detects processes opening handles to target processes. Primary detector for LSASS memory dumping (Mimikatz, Procdump).",
+    "key_fields": [
+      "UtcTime",
+      "SourceImage",
+      "TargetImage",
+      "GrantedAccess",
+      "CallTrace"
+    ],
+    "mitre": [
+      "T1003.001 (OS Credential Dumping: LSASS Memory)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=10"
+  },
+  "10": {
+    "type": "eventid",
+    "id": "10",
+    "title": "Event ID 10",
+    "channel": "Sysmon",
+    "category": "Work Email:",
+    "severity": "CRITICAL TELEMETRY",
+    "summary": "Sysmon Event ID 10 (ProcessAccess). Detects processes opening handles to target processes. Primary detector for LSASS memory dumping (Mimikatz, Procdump).",
+    "key_fields": [
+      "UtcTime",
+      "SourceImage",
+      "TargetImage",
+      "GrantedAccess",
+      "CallTrace"
+    ],
+    "mitre": [
+      "T1003.001 (OS Credential Dumping: LSASS Memory)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=10"
+  },
+  "Sysmon-11": {
+    "type": "eventid",
+    "id": "11",
+    "title": "Event ID 11",
+    "channel": "Sysmon",
+    "category": "File Creation",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 11 (FileCreate). Logs creation or overwrite of files on disk. Tracks dropped ransomware notes, malware payloads, and staging archives.",
+    "key_fields": [
+      "UtcTime",
+      "ProcessGuid",
+      "Image",
+      "TargetFilename",
+      "CreationUtcTime"
+    ],
+    "mitre": [
+      "T1105 (Ingress Tool Transfer)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=11"
+  },
+  "Event ID 11": {
+    "type": "eventid",
+    "id": "11",
+    "title": "Event ID 11",
+    "channel": "Sysmon",
+    "category": "File Creation",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 11 (FileCreate). Logs creation or overwrite of files on disk. Tracks dropped ransomware notes, malware payloads, and staging archives.",
+    "key_fields": [
+      "UtcTime",
+      "ProcessGuid",
+      "Image",
+      "TargetFilename",
+      "CreationUtcTime"
+    ],
+    "mitre": [
+      "T1105 (Ingress Tool Transfer)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=11"
+  },
+  "EID 11": {
+    "type": "eventid",
+    "id": "11",
+    "title": "Event ID 11",
+    "channel": "Sysmon",
+    "category": "File Creation",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 11 (FileCreate). Logs creation or overwrite of files on disk. Tracks dropped ransomware notes, malware payloads, and staging archives.",
+    "key_fields": [
+      "UtcTime",
+      "ProcessGuid",
+      "Image",
+      "TargetFilename",
+      "CreationUtcTime"
+    ],
+    "mitre": [
+      "T1105 (Ingress Tool Transfer)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=11"
+  },
+  "11": {
+    "type": "eventid",
+    "id": "11",
+    "title": "Event ID 11",
+    "channel": "Sysmon",
+    "category": "File Creation",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 11 (FileCreate). Logs creation or overwrite of files on disk. Tracks dropped ransomware notes, malware payloads, and staging archives.",
+    "key_fields": [
+      "UtcTime",
+      "ProcessGuid",
+      "Image",
+      "TargetFilename",
+      "CreationUtcTime"
+    ],
+    "mitre": [
+      "T1105 (Ingress Tool Transfer)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=11"
+  },
+  "Sysmon-12": {
+    "type": "eventid",
+    "id": "12",
+    "title": "Event ID 12",
+    "channel": "Sysmon",
+    "category": "Registry Modification",
+    "severity": "MEDIUM TELEMETRY",
+    "summary": "Sysmon Event ID 12 (RegistryEvent: Object create and delete). Monitors registry key creation/deletion.",
+    "key_fields": [
+      "EventType",
+      "UtcTime",
+      "Image",
+      "TargetObject"
+    ],
+    "mitre": [
+      "T1112 (Modify Registry)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=12"
+  },
+  "Event ID 12": {
+    "type": "eventid",
+    "id": "12",
+    "title": "Event ID 12",
+    "channel": "Sysmon",
+    "category": "Registry Modification",
+    "severity": "MEDIUM TELEMETRY",
+    "summary": "Sysmon Event ID 12 (RegistryEvent: Object create and delete). Monitors registry key creation/deletion.",
+    "key_fields": [
+      "EventType",
+      "UtcTime",
+      "Image",
+      "TargetObject"
+    ],
+    "mitre": [
+      "T1112 (Modify Registry)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=12"
+  },
+  "EID 12": {
+    "type": "eventid",
+    "id": "12",
+    "title": "Event ID 12",
+    "channel": "Sysmon",
+    "category": "Registry Modification",
+    "severity": "MEDIUM TELEMETRY",
+    "summary": "Sysmon Event ID 12 (RegistryEvent: Object create and delete). Monitors registry key creation/deletion.",
+    "key_fields": [
+      "EventType",
+      "UtcTime",
+      "Image",
+      "TargetObject"
+    ],
+    "mitre": [
+      "T1112 (Modify Registry)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=12"
+  },
+  "12": {
+    "type": "eventid",
+    "id": "12",
+    "title": "Event ID 12",
+    "channel": "Sysmon",
+    "category": "Registry Modification",
+    "severity": "MEDIUM TELEMETRY",
+    "summary": "Sysmon Event ID 12 (RegistryEvent: Object create and delete). Monitors registry key creation/deletion.",
+    "key_fields": [
+      "EventType",
+      "UtcTime",
+      "Image",
+      "TargetObject"
+    ],
+    "mitre": [
+      "T1112 (Modify Registry)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=12"
+  },
+  "Sysmon-13": {
+    "type": "eventid",
+    "id": "13",
+    "title": "Event ID 13",
+    "channel": "Sysmon",
+    "category": "Registry Persistence",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 13 (RegistryEvent: Value Set). Discloses registry values written to Run/RunOnce, Services, or COM hijack keys.",
+    "key_fields": [
+      "EventType",
+      "UtcTime",
+      "Image",
+      "TargetObject",
+      "Details"
+    ],
+    "mitre": [
+      "T1547.001 (Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=13"
+  },
+  "Event ID 13": {
+    "type": "eventid",
+    "id": "13",
+    "title": "Event ID 13",
+    "channel": "Sysmon",
+    "category": "Registry Persistence",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 13 (RegistryEvent: Value Set). Discloses registry values written to Run/RunOnce, Services, or COM hijack keys.",
+    "key_fields": [
+      "EventType",
+      "UtcTime",
+      "Image",
+      "TargetObject",
+      "Details"
+    ],
+    "mitre": [
+      "T1547.001 (Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=13"
+  },
+  "EID 13": {
+    "type": "eventid",
+    "id": "13",
+    "title": "Event ID 13",
+    "channel": "Sysmon",
+    "category": "Registry Persistence",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 13 (RegistryEvent: Value Set). Discloses registry values written to Run/RunOnce, Services, or COM hijack keys.",
+    "key_fields": [
+      "EventType",
+      "UtcTime",
+      "Image",
+      "TargetObject",
+      "Details"
+    ],
+    "mitre": [
+      "T1547.001 (Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=13"
+  },
+  "13": {
+    "type": "eventid",
+    "id": "13",
+    "title": "Event ID 13",
+    "channel": "Sysmon",
+    "category": "Registry Persistence",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 13 (RegistryEvent: Value Set). Discloses registry values written to Run/RunOnce, Services, or COM hijack keys.",
+    "key_fields": [
+      "EventType",
+      "UtcTime",
+      "Image",
+      "TargetObject",
+      "Details"
+    ],
+    "mitre": [
+      "T1547.001 (Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=13"
+  },
+  "Sysmon-22": {
+    "type": "eventid",
+    "id": "22",
+    "title": "Event ID 22",
+    "channel": "Sysmon",
+    "category": "DNS Query",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 22 (DNSEvent: DNS query). Records DNS lookups initiated by endpoint processes. Essential for C2 domain beaconing and DGA analysis.",
+    "key_fields": [
+      "UtcTime",
+      "Image",
+      "QueryName",
+      "QueryStatus",
+      "QueryResults"
+    ],
+    "mitre": [
+      "T1071.004 (Application Layer Protocol: DNS)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=22"
+  },
+  "Event ID 22": {
+    "type": "eventid",
+    "id": "22",
+    "title": "Event ID 22",
+    "channel": "Sysmon",
+    "category": "DNS Query",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 22 (DNSEvent: DNS query). Records DNS lookups initiated by endpoint processes. Essential for C2 domain beaconing and DGA analysis.",
+    "key_fields": [
+      "UtcTime",
+      "Image",
+      "QueryName",
+      "QueryStatus",
+      "QueryResults"
+    ],
+    "mitre": [
+      "T1071.004 (Application Layer Protocol: DNS)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=22"
+  },
+  "EID 22": {
+    "type": "eventid",
+    "id": "22",
+    "title": "Event ID 22",
+    "channel": "Sysmon",
+    "category": "DNS Query",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 22 (DNSEvent: DNS query). Records DNS lookups initiated by endpoint processes. Essential for C2 domain beaconing and DGA analysis.",
+    "key_fields": [
+      "UtcTime",
+      "Image",
+      "QueryName",
+      "QueryStatus",
+      "QueryResults"
+    ],
+    "mitre": [
+      "T1071.004 (Application Layer Protocol: DNS)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=22"
+  },
+  "22": {
+    "type": "eventid",
+    "id": "22",
+    "title": "Event ID 22",
+    "channel": "Sysmon",
+    "category": "DNS Query",
+    "severity": "HIGH TELEMETRY",
+    "summary": "Sysmon Event ID 22 (DNSEvent: DNS query). Records DNS lookups initiated by endpoint processes. Essential for C2 domain beaconing and DGA analysis.",
+    "key_fields": [
+      "UtcTime",
+      "Image",
+      "QueryName",
+      "QueryStatus",
+      "QueryResults"
+    ],
+    "mitre": [
+      "T1071.004 (Application Layer Protocol: DNS)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=22"
+  },
+  "4740": {
+    "type": "eventid",
+    "id": "4740",
+    "title": "Event ID 4740",
+    "channel": "Security",
+    "category": "Windows Security",
+    "severity": "AUDIT EVENT",
+    "summary": "Windows audit telemetry record for Event ID 4740.",
+    "key_fields": [],
+    "mitre": [],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4740"
+  },
+  "Event ID 4740": {
+    "type": "eventid",
+    "id": "4740",
+    "title": "Event ID 4740",
+    "channel": "Security",
+    "category": "Windows Security",
+    "severity": "AUDIT EVENT",
+    "summary": "Windows audit telemetry record for Event ID 4740.",
+    "key_fields": [],
+    "mitre": [],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4740"
+  },
+  "EID 4740": {
+    "type": "eventid",
+    "id": "4740",
+    "title": "Event ID 4740",
+    "channel": "Security",
+    "category": "Windows Security",
+    "severity": "AUDIT EVENT",
+    "summary": "Windows audit telemetry record for Event ID 4740.",
+    "key_fields": [],
+    "mitre": [],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4740"
+  }
+}
