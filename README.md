@@ -299,6 +299,19 @@ Also supports `[TOC]`, `[[_TOC_]]`, and `<!-- TOC -->`.
 
 ---
 
+## Technical Documentation
+
+Detailed architecture manuals, threat intelligence specifications, layout guides, and localization references are available in the [`docs/`](docs/index.md) directory:
+
+- 📖 **[Documentation Hub](docs/index.md)**: Master index and role-based reading guide.
+- ⚙️ **[System Architecture](docs/architecture.md)**: Deep dive into the 4-stage pipeline, `uv` CLI integration, and Pandoc multi-pass AST filters.
+- 🛡️ **[Threat Intelligence & Knowledge Base](docs/knowledge-base.md)**: Specifications for Windows Event IDs, EVTX logs, CVE/GHSA/MITRE, network OPSEC, and custom YAML case intelligence.
+- 🎨 **[Style & Layout Development](docs/style-development.md)**: Theme creation guide, design tokens, Paged.js Firefox multi-column fixes, and automated headless verification.
+- 🌐 **[Localization & Internationalization](docs/localization.md)**: The 3-tier cascading i18n framework, CLDR language normalization, and polyglot delivery.
+
+---
+
 ## License & Attribution
 
 Distributed under the Apache 2.0 License. Developed for digital forensics practitioners, incident responders, building associations, and technical authors requiring uncompromising document quality.
+
