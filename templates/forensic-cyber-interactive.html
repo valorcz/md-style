@@ -201,6 +201,7 @@
     }
     return _uiStrings;
   }
+  var uiStrings = getUiStrings();
 
   function applyUiStrings() {
     var uiStrings = getUiStrings();
@@ -1149,13 +1150,15 @@
     });
   });
 
-  // 7. Adaptive Table & Timeline Filter Bar (Strategy 1: Pills when <= 5, Select when > 5)
+  // 7. Adaptive Table & Timeline Filter Bar
   var i18n = {
-    placeholder: uiStrings.filter_placeholder || (isCzech ? 'Filtrovat záznamy (např. IP, uživatel, proces)...' : 'Filter telemetry (e.g. IP, command, hash)...'),
-    allLabel: uiStrings.all_label || (isCzech ? 'Vše' : 'All'),
-    allDropdown: uiStrings.all_categories || (isCzech ? 'Všechny kategorie' : 'All categories'),
+    placeholder: (uiStrings && uiStrings.filter_placeholder) || (isCzech ? 'Filtrovat záznamy (např. IP, uživatel, proces)...' : 'Filter telemetry (e.g. IP, command, hash)...'),
+    allLabel: (uiStrings && uiStrings.all_label) || (isCzech ? 'Vše' : 'All'),
+    allDropdown: (uiStrings && uiStrings.all_categories) || (isCzech ? 'Všechny kategorie' : 'All categories'),
+    categoryPrefix: (uiStrings && uiStrings.category_label) || (isCzech ? 'Kategorie:' : 'Category:'),
+    noMatch: (uiStrings && uiStrings.no_match) || (isCzech ? 'Nenalezen žádný záznam' : 'No matching records'),
     showing: function(s, t) {
-      if (uiStrings.showing_records) {
+      if (uiStrings && uiStrings.showing_records) {
         return uiStrings.showing_records.replace('{count}', s).replace('{total}', t);
       }
       return isCzech ? 'Zobrazeno ' + s + ' z ' + t : 'Showing ' + s + ' of ' + t;
@@ -1171,18 +1174,18 @@
     if (rows.length < 4 && !isTimeline) return;
 
     var numCols = rows[0].children.length;
-    var bestColIdx = -1;
-    var bestCatCounts = null;
-    var fallbackColIdx = -1;
-    var fallbackCatCounts = null;
+    var scoredCols = [];
+    var categoryKeywords = ['phase', 'fáze', 'status', 'stav', 'threat', 'hrozba', 'severity', 'závažnost', 'category', 'kategorie', 'source', 'zdroj', 'host', 'log', 'channel', 'action', 'akce', 'type', 'typ'];
 
-    var scanOrder = isTimeline ? [1] : [];
-    for (var c = 0; c < numCols; c++) {
-      if (scanOrder.indexOf(c) === -1) scanOrder.push(c);
-    }
+    for (var col = 0; col < numCols; col++) {
+      var headerEl = table.querySelector('thead tr th:nth-child(' + (col + 1) + ')');
+      var headerText = headerEl ? headerEl.textContent.trim().toLowerCase() : '';
 
-    for (var i = 0; i < scanOrder.length; i++) {
-      var col = scanOrder[i];
+      // Skip timestamp headers from category grouping
+      if (headerText.indexOf('time') !== -1 || headerText.indexOf('čas') !== -1 || headerText.indexOf('datum') !== -1 || headerText.indexOf('date') !== -1) {
+        continue;
+      }
+
       var counts = {};
       var isValid = true;
       for (var r = 0; r < rows.length; r++) {
@@ -1194,125 +1197,162 @@
       }
       if (!isValid) continue;
 
-      var numDistinct = Object.keys(counts).length;
-      if (numDistinct >= 2 && numDistinct <= 5) {
-        bestColIdx = col;
-        bestCatCounts = counts;
-        break;
-      } else if (numDistinct > 5 && numDistinct <= 12 && fallbackColIdx === -1) {
-        fallbackColIdx = col;
-        fallbackCatCounts = counts;
+      var uCats = Object.keys(counts);
+      if (uCats.length < 2) continue;
+
+      var score = 0;
+      // Bonus for semantic header names
+      for (var k = 0; k < categoryKeywords.length; k++) {
+        if (headerText.indexOf(categoryKeywords[k]) !== -1) {
+          score += 50;
+          break;
+        }
       }
+
+      // Bonus for recurring categories where multiple rows share the same value
+      if (uCats.length < rows.length) {
+        score += 30 * (1 - (uCats.length / rows.length));
+      }
+
+      // Bonus for ideal pill count (2 to 6 values)
+      if (uCats.length >= 2 && uCats.length <= 6) {
+        score += 25;
+      } else if (uCats.length <= 10) {
+        score += 15;
+      }
+
+      // Timeline preference for Phase / Threat Status
+      if (isTimeline && (headerText.indexOf('phase') !== -1 || headerText.indexOf('threat') !== -1 || headerText.indexOf('status') !== -1)) {
+        score += 40;
+      }
+
+      scoredCols.push({
+        col: col,
+        counts: counts,
+        uCats: uCats,
+        score: score,
+        header: headerEl ? headerEl.textContent.trim() : ''
+      });
     }
 
-    var selectedCol = bestColIdx !== -1 ? bestColIdx : fallbackColIdx;
-    var selectedCounts = bestColIdx !== -1 ? bestCatCounts : fallbackCatCounts;
-    var usePills = (bestColIdx !== -1);
+    scoredCols.sort(function(a, b) { return b.score - a.score; });
 
+    var best = scoredCols.length > 0 ? scoredCols[0] : null;
+    var catColIdx = best ? best.col : -1;
+    var catCounts = best ? best.counts : {};
+    var uniqueCats = best ? best.uCats : [];
+
+    var renderPills = best && uniqueCats.length >= 2 && uniqueCats.length <= 8;
+    var renderDropdown = best && !renderPills && uniqueCats.length > 8;
+
+    var colHeaderTitle = (best && best.header) ? best.header : '';
+    var categoryLabel = colHeaderTitle ? colHeaderTitle + ':' : i18n.categoryPrefix;
+
+    // Build Toolbar DOM matching .table-filter-toolbar CSS
     var toolbar = document.createElement('div');
     toolbar.className = 'table-filter-toolbar';
     toolbar.id = 'filter-toolbar-' + tableIdx;
+    toolbar.setAttribute('data-table-idx', tableIdx);
 
-    var searchBox = document.createElement('div');
-    searchBox.className = 'table-filter-search-box';
+    var mainRow = document.createElement('div');
+    mainRow.className = 'table-filter-main';
 
-    var searchIcon = document.createElement('span');
-    searchIcon.className = 'table-filter-icon';
-    searchIcon.textContent = '⌕';
-    searchBox.appendChild(searchIcon);
+    var searchWrap = document.createElement('div');
+    searchWrap.className = 'table-filter-search-wrap';
 
-    var searchInput = document.createElement('input');
-    searchInput.type = 'text';
-    searchInput.className = 'table-filter-input';
-    searchInput.placeholder = i18n.placeholder;
-    searchInput.setAttribute('aria-label', i18n.placeholder);
-    searchBox.appendChild(searchInput);
+    var icon = document.createElement('span');
+    icon.className = 'table-filter-icon';
+    icon.setAttribute('aria-hidden', 'true');
+    icon.textContent = '⌕';
+
+    var input = document.createElement('input');
+    input.type = 'search';
+    input.className = 'table-filter-input';
+    input.placeholder = i18n.placeholder;
+    input.setAttribute('aria-label', i18n.placeholder);
 
     var clearBtn = document.createElement('button');
     clearBtn.type = 'button';
     clearBtn.className = 'table-filter-clear';
+    clearBtn.setAttribute('aria-label', 'Clear filter');
+    clearBtn.title = 'Clear filter (Esc)';
     clearBtn.textContent = '×';
-    clearBtn.title = 'Clear search (Esc)';
     clearBtn.style.display = 'none';
-    searchBox.appendChild(clearBtn);
 
-    toolbar.appendChild(searchBox);
+    searchWrap.appendChild(icon);
+    searchWrap.appendChild(input);
+    searchWrap.appendChild(clearBtn);
+    mainRow.appendChild(searchWrap);
 
-    var categoryFilter = null;
-    var activeCategory = 'all';
+    var selectDropdown = null;
+    if (renderDropdown) {
+      selectDropdown = document.createElement('select');
+      selectDropdown.className = 'table-filter-select';
+      selectDropdown.setAttribute('aria-label', colHeaderTitle || i18n.allDropdown);
 
-    if (selectedCol !== -1 && selectedCounts) {
-      if (usePills) {
-        var pillsContainer = document.createElement('div');
-        pillsContainer.className = 'table-filter-pills';
+      var optAll = document.createElement('option');
+      optAll.value = '';
+      optAll.textContent = (colHeaderTitle ? colHeaderTitle + ': ' : '') + i18n.allDropdown + ' (' + rows.length + ')';
+      selectDropdown.appendChild(optAll);
 
-        var allPill = document.createElement('button');
-        allPill.type = 'button';
-        allPill.className = 'table-filter-pill is-active';
-        allPill.setAttribute('data-value', 'all');
-        allPill.innerHTML = i18n.allLabel + ' <span class="pill-count">' + rows.length + '</span>';
-        pillsContainer.appendChild(allPill);
+      uniqueCats.forEach(function(cat) {
+        var opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat + ' (' + catCounts[cat] + ')';
+        selectDropdown.appendChild(opt);
+      });
 
-        var cats = Object.keys(selectedCounts).sort();
-        cats.forEach(function(cat) {
-          var pill = document.createElement('button');
-          pill.type = 'button';
-          pill.className = 'table-filter-pill';
-          pill.setAttribute('data-value', cat);
-          pill.innerHTML = escapeHtml(cat) + ' <span class="pill-count">' + selectedCounts[cat] + '</span>';
-          pillsContainer.appendChild(pill);
-        });
-
-        pillsContainer.addEventListener('click', function(e) {
-          var btn = e.target.closest('.table-filter-pill');
-          if (!btn) return;
-          pillsContainer.querySelectorAll('.table-filter-pill').forEach(function(b) {
-            b.classList.remove('is-active');
-          });
-          btn.classList.add('is-active');
-          activeCategory = btn.getAttribute('data-value');
-          applyFilter();
-        });
-
-        toolbar.appendChild(pillsContainer);
-      } else {
-        var selectWrap = document.createElement('div');
-        selectWrap.className = 'table-filter-select-wrap';
-
-        var select = document.createElement('select');
-        select.className = 'table-filter-select';
-
-        var allOpt = document.createElement('option');
-        allOpt.value = 'all';
-        allOpt.textContent = i18n.allDropdown + ' (' + rows.length + ')';
-        select.appendChild(allOpt);
-
-        var cats = Object.keys(selectedCounts).sort();
-        cats.forEach(function(cat) {
-          var opt = document.createElement('option');
-          opt.value = cat;
-          opt.textContent = cat + ' (' + selectedCounts[cat] + ')';
-          select.appendChild(opt);
-        });
-
-        select.addEventListener('change', function() {
-          activeCategory = select.value;
-          applyFilter();
-        });
-
-        selectWrap.appendChild(select);
-        toolbar.appendChild(selectWrap);
-      }
+      mainRow.appendChild(selectDropdown);
     }
 
-    var countBadge = document.createElement('span');
-    countBadge.className = 'table-filter-count';
-    countBadge.textContent = i18n.showing(rows.length, rows.length);
-    toolbar.appendChild(countBadge);
+    var counter = document.createElement('span');
+    counter.className = 'table-filter-counter';
+    counter.textContent = i18n.showing(rows.length, rows.length);
+    mainRow.appendChild(counter);
 
-    table.parentNode.insertBefore(toolbar, table);
-    if (table.hasAttribute('data-section-idx')) {
-      var tSec = table.getAttribute('data-section-idx');
+    toolbar.appendChild(mainRow);
+
+    var pillBtns = [];
+    if (renderPills) {
+      var pillsRow = document.createElement('div');
+      pillsRow.className = 'table-filter-pills';
+
+      var pillsLabel = document.createElement('span');
+      pillsLabel.className = 'table-filter-pills-label';
+      pillsLabel.textContent = categoryLabel;
+      pillsRow.appendChild(pillsLabel);
+
+      var pillAll = document.createElement('button');
+      pillAll.type = 'button';
+      pillAll.className = 'filter-pill is-active';
+      pillAll.setAttribute('data-category', '');
+      pillAll.innerHTML = i18n.allLabel + ' <span class="pill-count">' + rows.length + '</span>';
+      pillsRow.appendChild(pillAll);
+      pillBtns.push(pillAll);
+
+      uniqueCats.forEach(function(cat) {
+        var pill = document.createElement('button');
+        pill.type = 'button';
+        pill.className = 'filter-pill';
+        pill.setAttribute('data-category', cat);
+        pill.innerHTML = escapeHtml(cat) + ' <span class="pill-count">' + catCounts[cat] + '</span>';
+        pillsRow.appendChild(pill);
+        pillBtns.push(pill);
+      });
+
+      toolbar.appendChild(pillsRow);
+    }
+
+    // Mount toolbar immediately above outermost table-wrapper (or table)
+    var mountTarget = table;
+    while (mountTarget.parentElement && mountTarget.parentElement.classList.contains('table-wrapper')) {
+      mountTarget = mountTarget.parentElement;
+    }
+    mountTarget.parentElement.insertBefore(toolbar, mountTarget);
+
+    var secSource = table.hasAttribute('data-section-idx') ? table : (mountTarget.hasAttribute('data-section-idx') ? mountTarget : null);
+    if (secSource) {
+      var tSec = secSource.getAttribute('data-section-idx');
       toolbar.setAttribute('data-section-idx', tSec);
       if (document.body.classList.contains('section-mode-active')) {
         if (parseInt(tSec, 10) !== currentSectionIdx) {
@@ -1321,59 +1361,92 @@
       }
     }
 
+    // Filter Logic
+    var activeCategory = '';
+    var searchQuery = '';
+
+    function updateTimelineRails() {
+      if (!isTimeline) return;
+      var visible = rows.filter(function(r) { return !r.classList.contains('table-row-hidden'); });
+      rows.forEach(function(r) {
+        r.classList.remove('is-first-visible', 'is-last-visible');
+      });
+      if (visible.length > 0) {
+        visible[0].classList.add('is-first-visible');
+        visible[visible.length - 1].classList.add('is-last-visible');
+      }
+    }
+
     function applyFilter() {
-      var query = searchInput.value.trim().toLowerCase();
-      clearBtn.style.display = query.length > 0 ? 'inline-block' : 'none';
-
       var visibleCount = 0;
-      var firstVisible = null;
-      var lastVisible = null;
-
-      rows.forEach(function(tr) {
-        tr.classList.remove('is-first-visible', 'is-last-visible');
-        var textMatch = true;
-        if (query.length > 0) {
-          textMatch = tr.textContent.toLowerCase().indexOf(query) !== -1;
-        }
-
-        var catMatch = true;
-        if (selectedCol !== -1 && activeCategory !== 'all') {
-          var cell = tr.children[selectedCol];
-          var cellVal = cell ? cell.textContent.trim().replace(/\s+/g, ' ') : '';
-          catMatch = (cellVal === activeCategory);
+      rows.forEach(function(row) {
+        var textMatch = (searchQuery === '') || (row.textContent.toLowerCase().indexOf(searchQuery) !== -1);
+        var catMatch = (activeCategory === '');
+        if (!catMatch && catColIdx !== -1 && row.children[catColIdx]) {
+          var rowCat = row.children[catColIdx].textContent.trim().replace(/\s+/g, ' ');
+          catMatch = (rowCat === activeCategory);
         }
 
         if (textMatch && catMatch) {
-          tr.classList.remove('table-row-hidden');
+          row.classList.remove('table-row-hidden');
           visibleCount++;
-          if (!firstVisible) firstVisible = tr;
-          lastVisible = tr;
         } else {
-          tr.classList.add('table-row-hidden');
+          row.classList.add('table-row-hidden');
         }
       });
 
-      if (isTimeline) {
-        if (firstVisible) firstVisible.classList.add('is-first-visible');
-        if (lastVisible) lastVisible.classList.add('is-last-visible');
+      if (visibleCount === 0) {
+        counter.textContent = i18n.noMatch;
+        counter.classList.add('is-empty');
+      } else {
+        counter.textContent = i18n.showing(visibleCount, rows.length);
+        counter.classList.remove('is-empty');
       }
 
-      countBadge.textContent = i18n.showing(visibleCount, rows.length);
+      clearBtn.style.display = (searchQuery !== '' || activeCategory !== '') ? 'inline-block' : 'none';
+      updateTimelineRails();
     }
 
-    searchInput.addEventListener('input', applyFilter);
-    clearBtn.addEventListener('click', function() {
-      searchInput.value = '';
-      searchInput.focus();
+    input.addEventListener('input', function() {
+      searchQuery = this.value.trim().toLowerCase();
       applyFilter();
     });
 
-    searchInput.addEventListener('keydown', function(e) {
+    input.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') {
-        searchInput.value = '';
+        input.value = '';
+        searchQuery = '';
         applyFilter();
-        searchInput.blur();
       }
+    });
+
+    clearBtn.addEventListener('click', function() {
+      input.value = '';
+      searchQuery = '';
+      activeCategory = '';
+      if (selectDropdown) selectDropdown.value = '';
+      pillBtns.forEach(function(p) {
+        p.classList.remove('is-active');
+        if (p.getAttribute('data-category') === '') p.classList.add('is-active');
+      });
+      applyFilter();
+      input.focus();
+    });
+
+    if (selectDropdown) {
+      selectDropdown.addEventListener('change', function() {
+        activeCategory = this.value;
+        applyFilter();
+      });
+    }
+
+    pillBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        pillBtns.forEach(function(p) { p.classList.remove('is-active'); });
+        btn.classList.add('is-active');
+        activeCategory = btn.getAttribute('data-category');
+        applyFilter();
+      });
     });
   });
 

@@ -430,9 +430,89 @@ local function bullet_list_to_kpi_grid(bl)
   return nil
 end
 
--- Transform Table elements (nowrap timestamps, timeline detection, malicious pulse)
+-- Check if cell string matches a timestamp range (e.g. 2026-01-01T11:12:13-14:15:16, 2026-09-11 02:10 - 02:50)
+local function is_timestamp_range_str(s)
+  if not s or #s == 0 or #s > 60 then return false end
+  s = s:gsub("^%s+", ""):gsub("%s+$", "")
+  -- ISO datetime range: 2026-01-01... - 2026-01-02... or 2026-01-01T11:12:13-14:15:16
+  if s:match("^%d%d%d%d%-%d%d%-%d%d.*[%-%–%—].*%d") then
+    return true
+  end
+  -- European date range: 01.01.2026 - 02.01.2026
+  if s:match("^%d%d?%.%d%d?%.%d%d%d%d.*[%-%–%—].*%d") then
+    return true
+  end
+  -- Time range: 11:12:13-14:15:16 or 11:12 - 14:15
+  if s:match("^%d%d?:%d%d.*[%-%–%—].*%d%d?:%d%d") then
+    return true
+  end
+  return false
+end
+
+-- Make timestamp range cell breakable between dates/times while keeping units intact
+local function make_range_breakable(cell)
+  ensure_class(cell, "timestamp-range")
+  for idx, c in ipairs(cell.classes) do
+    if c == "nowrap" then
+      table.remove(cell.classes, idx)
+      break
+    end
+  end
+
+  local function add_wbr_to_str(text)
+    local pre, post = text:match("^(.-%d%d?:%d%d:%d%d)%-(%d%d?:%d%d.*)$")
+    if pre and post then
+      return { pandoc.Str(pre .. "-"), pandoc.RawInline("html", "<wbr>"), pandoc.Str(post) }
+    end
+    pre, post = text:match("^(.-%d%d?:%d%d)%-(%d%d?:%d%d.*)$")
+    if pre and post then
+      return { pandoc.Str(pre .. "-"), pandoc.RawInline("html", "<wbr>"), pandoc.Str(post) }
+    end
+    pre, post = text:match("^(.-%d%d%d%d%-%d%d%-%d%d)%-(%d%d%d%d%-%d%d%-%d%d.*)$")
+    if pre and post then
+      return { pandoc.Str(pre .. "-"), pandoc.RawInline("html", "<wbr>"), pandoc.Str(post) }
+    end
+    return nil
+  end
+
+  local contents = cell.content or cell.contents or {}
+  local div = pandoc.Div(contents)
+  local walked = pandoc.walk_block(div, {
+    Str = function(el)
+      local rep = add_wbr_to_str(el.text)
+      if rep then return rep end
+      return el
+    end,
+    Code = function(el)
+      local pre, post = el.text:match("^(.-%d%d?:%d%d:%d%d)%-(%d%d?:%d%d.*)$")
+      if not pre then
+        pre, post = el.text:match("^(.-%d%d?:%d%d)%-(%d%d?:%d%d.*)$")
+      end
+      if not pre then
+        pre, post = el.text:match("^(.-%d%d%d%d%-%d%d%-%d%d)%-(%d%d%d%d%-%d%d%-%d%d.*)$")
+      end
+      if pre and post then
+        return {
+          pandoc.Code(pre .. "-"),
+          pandoc.RawInline("html", "<wbr>"),
+          pandoc.Code(post)
+        }
+      end
+      return el
+    end
+  })
+  if cell.content then
+    cell.content = walked.content
+  else
+    cell.contents = walked.content
+  end
+end
+
+-- Transform Table elements (nowrap timestamps, range breakability, timeline detection, malicious pulse)
 local function process_table(tbl, preceding_header_text)
-  local inferred_cols = {}
+  local header_time_cols = {}
+  local col_timestamp_cells = {}
+  local col_total_cells = {}
   local is_timeline = preceding_header_text and is_timeline_title(preceding_header_text)
 
   -- Scan header
@@ -441,14 +521,14 @@ local function process_table(tbl, preceding_header_text)
       for col_idx, cell in ipairs(row.cells) do
         local cell_text = pandoc.utils.stringify(cell)
         if is_timestamp_header(cell_text) then
-          inferred_cols[col_idx] = true
+          header_time_cols[col_idx] = true
           ensure_class(cell, "nowrap")
         end
       end
     end
   end
 
-  -- Scan bodies for timestamps and malicious timeline actions
+  -- Scan bodies for timestamps, ranges, and malicious timeline actions
   if tbl.bodies then
     for _, body in ipairs(tbl.bodies) do
       local rows = body.body or body.rows or {}
@@ -469,8 +549,20 @@ local function process_table(tbl, preceding_header_text)
             ensure_class(cell, "timeline-malicious")
           end
           local cell_text = pandoc.utils.stringify(cell)
-          if is_timestamp_str(cell_text) then
-            inferred_cols[col_idx] = true
+          col_total_cells[col_idx] = (col_total_cells[col_idx] or 0) + 1
+
+          local is_range = is_timestamp_range_str(cell_text)
+          local is_ts = is_timestamp_str(cell_text)
+
+          if is_range then
+            make_range_breakable(cell)
+            col_timestamp_cells[col_idx] = (col_timestamp_cells[col_idx] or 0) + 1
+          elseif is_ts then
+            col_timestamp_cells[col_idx] = (col_timestamp_cells[col_idx] or 0) + 1
+            if header_time_cols[col_idx] or is_ts then
+              ensure_class(cell, "nowrap")
+            end
+          elseif header_time_cols[col_idx] then
             ensure_class(cell, "nowrap")
           end
         end
@@ -478,12 +570,21 @@ local function process_table(tbl, preceding_header_text)
     end
   end
 
-  -- Apply nowrap across all rows for inferred timestamp columns
+  -- Infer timestamp columns where majority of cells (>50% and >1) are timestamps
+  local inferred_cols = {}
+  for col_idx, ts_count in pairs(col_timestamp_cells) do
+    local total = col_total_cells[col_idx] or 0
+    if not header_time_cols[col_idx] and total > 1 and (ts_count / total) >= 0.5 then
+      inferred_cols[col_idx] = true
+    end
+  end
+
+  -- Apply nowrap across all rows for inferred timestamp columns (except ranges)
   if next(inferred_cols) ~= nil then
     if tbl.head and tbl.head.rows then
       for _, row in ipairs(tbl.head.rows) do
         for col_idx, cell in ipairs(row.cells) do
-          if inferred_cols[col_idx] then
+          if inferred_cols[col_idx] and not cell.classes:includes("timestamp-range") then
             ensure_class(cell, "nowrap")
           end
         end
@@ -495,7 +596,7 @@ local function process_table(tbl, preceding_header_text)
         local rows = body.body or body.rows or {}
         for _, row in ipairs(rows) do
           for col_idx, cell in ipairs(row.cells) do
-            if inferred_cols[col_idx] then
+            if inferred_cols[col_idx] and not cell.classes:includes("timestamp-range") then
               ensure_class(cell, "nowrap")
             end
           end
@@ -508,20 +609,10 @@ local function process_table(tbl, preceding_header_text)
     ensure_class(tbl, "table-timeline")
   end
 
-  -- Normalize crushed column widths
+  -- Normalize column widths so Pandoc outputs fluid, content-driven columns
   if tbl.colspecs then
-    local has_crushed = false
-    for _, colspec in ipairs(tbl.colspecs) do
-      local w = colspec[2]
-      if type(w) == "number" and w > 0 and w < 0.12 then
-        has_crushed = true
-        break
-      end
-    end
-    if has_crushed then
-      for i, colspec in ipairs(tbl.colspecs) do
-        tbl.colspecs[i] = {colspec[1], pandoc.ColWidthDefault}
-      end
+    for i, colspec in ipairs(tbl.colspecs) do
+      tbl.colspecs[i] = {colspec[1], pandoc.ColWidthDefault}
     end
   end
 
@@ -734,7 +825,8 @@ function Pandoc(doc)
 
     elseif block.t == "Table" then
       local processed_tbl = process_table(block, recent_header_text)
-      table.insert(new_blocks, processed_tbl)
+      local wrapped = pandoc.Div({ processed_tbl }, pandoc.Attr("", { "table-wrapper" }))
+      table.insert(new_blocks, wrapped)
 
     else
       table.insert(new_blocks, block)

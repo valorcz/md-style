@@ -51,7 +51,10 @@ tr {
 blockquote,
 div.note,
 div.warning,
-div.tip {
+div.tip,
+div.important,
+div.caution,
+div.critical {
   break-inside: avoid !important;
   page-break-inside: avoid !important;
 }

@@ -28,7 +28,7 @@ local CALLOUT_CONFIG = {
   ["info"]      = { class = "note",      icon = "info",         cs_title = "INFORMACE", en_title = "INFO" },
   ["tip"]       = { class = "tip",       icon = "light-bulb",   cs_title = "TIP",       en_title = "TIP" },
   ["success"]   = { class = "tip",       icon = "check-circle", cs_title = "ÚSPĚCH",    en_title = "SUCCESS" },
-  ["important"] = { class = "important", icon = "important",    cs_title = "DŮLEŽITÉ",  en_title = "IMPORTANT" },
+  ["important"] = { class = "important", icon = "report",       cs_title = "DŮLEŽITÉ",  en_title = "IMPORTANT" },
   ["warning"]   = { class = "warning",   icon = "alert",        cs_title = "VAROVÁNÍ",  en_title = "WARNING" },
   ["caution"]   = { class = "caution",   icon = "stop",         cs_title = "POZOR",     en_title = "CAUTION" },
   ["critical"]  = { class = "critical",  icon = "shield-slash", cs_title = "KRITICKÉ",  en_title = "CRITICAL" },

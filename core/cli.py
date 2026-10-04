@@ -80,6 +80,8 @@ Examples:
 
     # Threat Intel & Offline Flags
     parser.add_argument("-k", "--knowledge", dest="knowledge_path", default=None, help="Path to custom knowledge directory or YAML/JSON file")
+    parser.add_argument("--enrich", dest="enrich", action="store_true", default=None, help="Explicitly enable Stage 2 indicator enrichment")
+    parser.add_argument("--no-enrich", dest="enrich", action="store_false", help="Explicitly disable Stage 2 indicator enrichment")
     parser.add_argument("--offline", dest="allow_online", action="store_false", default=True, help="Disable on-demand online scraping for indicators")
     parser.add_argument("--no-mermaid", dest="enable_mermaid", action="store_false", default=True, help="Disable Mermaid diagram rendering")
     parser.add_argument("--no-auto-nowrap", dest="auto_nowrap", action="store_false", default=True, help="Disable auto-nowrap on tables")
@@ -124,12 +126,17 @@ def main():
         inspector_main()
         sys.exit(0)
 
+    output_target = Path(args.output_opt or args.output) if (args.output_opt or args.output) else None
+    generate_pdf = args.generate_pdf
+    if output_target and output_target.suffix.lower() == ".pdf":
+        generate_pdf = True
+
     # Prerequisite verification
-    check_prerequisites(generate_pdf=args.generate_pdf, enable_mermaid=args.enable_mermaid)
+    check_prerequisites(generate_pdf=generate_pdf, enable_mermaid=args.enable_mermaid)
 
     cfg = PipelineConfig(
         input_file=input_path,
-        output_file=Path(args.output_opt or args.output) if (args.output_opt or args.output) else None,
+        output_file=output_target,
         style=args.style,
         title=args.title,
         lang=args.lang,
@@ -140,11 +147,12 @@ def main():
         highlight_style=args.highlight_style,
         paged=args.paged,
         print_mode=args.print_mode,
-        generate_pdf=args.generate_pdf,
+        generate_pdf=generate_pdf,
         pdf_engine=args.pdf_engine,
         enable_mermaid=args.enable_mermaid,
         auto_nowrap=args.auto_nowrap,
         allow_online=args.allow_online,
+        enrich=args.enrich,
         knowledge_path=Path(args.knowledge_path) if args.knowledge_path else None,
         verbose=args.verbose,
         quiet=args.quiet

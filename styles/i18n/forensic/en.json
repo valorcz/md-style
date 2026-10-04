@@ -1,7 +1,7 @@
 {
   "meta": {
     "report_type": "DIGITAL FORENSIC INVESTIGATION REPORT",
-    "examiner_label": "Digital Forensic Examiner:",
+    "examiner_label": "EXAMINER:",
     "confidential_label": "CONFIDENTIAL // LAW ENFORCEMENT & LEGAL PRIVILEGED",
     "hex_dump": "HEX DUMP",
     "sys_log": "SYSTEM LOG"

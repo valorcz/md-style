@@ -47,6 +47,7 @@ class PipelineConfig:
     enable_mermaid: bool = True
     auto_nowrap: bool = True
     allow_online: bool = True
+    enrich: Optional[bool] = None
     knowledge_path: Optional[Path] = None
     verbose: bool = False
     quiet: bool = False
@@ -135,6 +136,8 @@ class ReportEngine:
             stem = self.config.input_file.stem
             ext = ".pdf" if self.config.generate_pdf else ".html"
             self.config.output_file = self.config.input_file.parent / f"{stem}{ext}"
+        elif self.config.output_file.suffix.lower() == ".pdf":
+            self.config.generate_pdf = True
 
         # Resolve Style
         style_name, css_path = self.resolve_style()
@@ -203,9 +206,10 @@ class ReportEngine:
         kb_data: Dict[str, Any] = {}
         unresolved_indicators: List[Dict[str, Any]] = []
 
-        # Run Stage 2 enrichment for cyber styles or when indicators exist
+        # Run Stage 2 enrichment for cyber styles or when explicitly enabled
         is_cyber = (style_name == "forensic-cyber" or "cyber" in style_name)
-        if is_cyber:
+        should_enrich = self.config.enrich if self.config.enrich is not None else is_cyber
+        if should_enrich:
             # Configure online permission on providers
             for enricher in registry.get_all():
                 prov = getattr(enricher, "provider", None)
@@ -284,37 +288,37 @@ class ReportEngine:
         if self.config.embed_resources and not self.config.generate_pdf:
             pandoc_cmd.append("--embed-resources")
 
-        # Stylesheets
+        # Stylesheets - Triple cascade: fonts.css -> base.css -> theme.css
         fonts_css = STYLES_DIR / "fonts.css"
         base_css = STYLES_DIR / "base.css"
         if fonts_css.is_file():
-            pandoc_cmd.extend(["--css", str(fonts_css)])
-        if base_css.is_file():
-            pandoc_cmd.extend(["--css", str(base_css)])
-        pandoc_cmd.extend(["--css", str(css_path)])
+            pandoc_cmd.extend(["--css", str(fonts_css.resolve())])
+        if base_css.is_file() and css_path != base_css:
+            pandoc_cmd.extend(["--css", str(base_css.resolve())])
+        pandoc_cmd.extend(["--css", str(css_path.resolve())])
 
         # Print / Paged options
         if self.config.paged:
             paged_css = STYLES_DIR / "paged.css"
             paged_hdr = TEMPLATES["paged-header"]
             if paged_css.is_file():
-                pandoc_cmd.extend(["--css", str(paged_css)])
+                pandoc_cmd.extend(["--css", str(paged_css.resolve())])
             if paged_hdr.is_file():
-                pandoc_cmd.append(f"--include-in-header={paged_hdr}")
+                pandoc_cmd.append(f"--include-in-header={paged_hdr.resolve()}")
         elif self.config.print_mode:
             print_css = STYLES_DIR / "print.css"
             print_act = TEMPLATES["print-action"]
             if print_css.is_file():
-                pandoc_cmd.extend(["--css", str(print_css)])
+                pandoc_cmd.extend(["--css", str(print_css.resolve())])
             if print_act.is_file():
-                pandoc_cmd.append(f"--include-after-body={print_act}")
+                pandoc_cmd.append(f"--include-after-body={print_act.resolve()}")
 
         # Interactive Screen Enhancements (TOC, IoC drawer, reading bar)
-        if not self.config.print_mode and not self.config.generate_pdf:
+        if not self.config.print_mode and not self.config.generate_pdf and not self.config.paged:
             if is_cyber and TEMPLATES["forensic-cyber"].is_file():
-                pandoc_cmd.append(f"--include-after-body={TEMPLATES['forensic-cyber']}")
+                pandoc_cmd.append(f"--include-after-body={TEMPLATES['forensic-cyber'].resolve()}")
             elif (style_name.startswith("forensic") or style_name in ("forensic", "forensic/dossier", "forensic/base")) and TEMPLATES["forensic"].is_file():
-                pandoc_cmd.append(f"--include-after-body={TEMPLATES['forensic']}")
+                pandoc_cmd.append(f"--include-after-body={TEMPLATES['forensic'].resolve()}")
 
         # TOC & Sections
         if self.config.toc:
@@ -340,23 +344,32 @@ class ReportEngine:
             manifest_tmp_path = Path(manifest_file.name)
             pandoc_cmd.extend(["--metadata", f"custom-knowledge-manifest={manifest_tmp_path.resolve()}"])
 
-        # Prepend CSS custom properties style block
+        # Include CSS custom properties style block in document <head>
+        css_header_tmp_path: Optional[Path] = None
         if css_custom_props:
-            processed_md = f"<style>\n{css_custom_props}\n</style>\n\n" + processed_md
+            css_header_file = tempfile.NamedTemporaryFile("w", suffix="-i18n-props.html", delete=False, encoding="utf-8")
+            css_header_file.write(f"<style>\n{css_custom_props}\n</style>\n")
+            css_header_file.close()
+            css_header_tmp_path = Path(css_header_file.name)
+            pandoc_cmd.append(f"--include-in-header={css_header_tmp_path.resolve()}")
 
         # Lua Filters
+        filters_added = set()
         callouts_lua = FILTERS_DIR / "callouts.lua"
         octicons_lua = FILTERS_DIR / "octicons.lua"
         if callouts_lua.is_file():
-            pandoc_cmd.append(f"--lua-filter={callouts_lua}")
+            pandoc_cmd.append(f"--lua-filter={callouts_lua.resolve()}")
+            filters_added.add(callouts_lua.resolve())
         if octicons_lua.is_file():
-            pandoc_cmd.append(f"--lua-filter={octicons_lua}")
+            pandoc_cmd.append(f"--lua-filter={octicons_lua.resolve()}")
+            filters_added.add(octicons_lua.resolve())
 
-        # SVJ filter
+        # SVJ filter (if document has [TOC] marker)
         if "svj" in style_name or re.search(r"(\[TOC\]|<!--\s*TOC\s*-->|:::\s*\{\.toc\})", processed_md):
             svj_lua = FILTERS_DIR / "svj-prep.lua"
-            if svj_lua.is_file():
-                pandoc_cmd.append(f"--lua-filter={svj_lua}")
+            if svj_lua.is_file() and svj_lua.resolve() not in filters_added:
+                pandoc_cmd.append(f"--lua-filter={svj_lua.resolve()}")
+                filters_added.add(svj_lua.resolve())
 
         # Style-specific filters with hierarchical discovery
         filter_candidates = [
@@ -367,9 +380,17 @@ class ReportEngine:
             (STYLES_DIR / (style_name.split("/")[0] + ".lua")) if "/" in style_name else None,
         ]
         for fc in filter_candidates:
-            if fc and fc.is_file():
+            if fc and fc.is_file() and fc.resolve() not in filters_added:
                 pandoc_cmd.append(f"--lua-filter={fc.resolve()}")
+                filters_added.add(fc.resolve())
                 break
+
+        # Table nowrap filter (if auto_nowrap is enabled and not already handled by style filter)
+        if self.config.auto_nowrap and not any("forensic" in str(f) for f in filters_added):
+            nowrap_lua = FILTERS_DIR / "table-nowrap.lua"
+            if nowrap_lua.is_file() and nowrap_lua.resolve() not in filters_added:
+                pandoc_cmd.append(f"--lua-filter={nowrap_lua.resolve()}")
+                filters_added.add(nowrap_lua.resolve())
 
         pandoc_cmd.extend(["-o", str(target_html)])
 
@@ -451,6 +472,12 @@ class ReportEngine:
             except Exception:
                 pass
 
+        if css_header_tmp_path and css_header_tmp_path.exists():
+            try:
+                css_header_tmp_path.unlink()
+            except Exception:
+                pass
+
         return self.config.output_file
 
     def _compile_pdf(self, src_html: Path, dst_pdf: Path):
@@ -470,7 +497,7 @@ class ReportEngine:
                 "--disable-gpu",
                 "--no-sandbox",
                 "--run-all-compositor-stages-before-draw",
-                "--print-to-pdf-no-header",
+                "--no-pdf-header-footer",
                 f"--print-to-pdf={dst_pdf.resolve()}",
                 str(src_html.resolve())
             ]

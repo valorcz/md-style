@@ -369,8 +369,11 @@
       toolbar.appendChild(pillsRow);
     }
 
-    // Insert toolbar immediately above table (or table-wrapper)
-    var mountTarget = table.parentElement.classList.contains('table-wrapper') ? table.parentElement : table;
+    // Insert toolbar immediately above outermost table-wrapper (or table)
+    var mountTarget = table;
+    while (mountTarget.parentElement && mountTarget.parentElement.classList.contains('table-wrapper')) {
+      mountTarget = mountTarget.parentElement;
+    }
     mountTarget.parentElement.insertBefore(toolbar, mountTarget);
 
     // Filter Logic

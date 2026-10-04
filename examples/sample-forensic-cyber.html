@@ -145,11 +145,6 @@ src: url(data:font/ttf;base64,AAEAAAAQAQAABAAAR0RFRr8SwdsAAAIkAAACPkdQT1O9RKmuAA
 --i18n-page-prefix: "Page ";
 --i18n-page-of: " of ";
 }
-:root:lang(cs),
-html[lang^="cs"] {
---i18n-page-prefix: "Strana ";
---i18n-page-of: " z ";
-}
 
 html {
 font-size: 100%;
@@ -353,6 +348,37 @@ overflow-wrap: normal !important;
 font-variant-numeric: tabular-nums;
 }
 
+.timestamp-range,
+.timestamp-range *,
+th.timestamp-range,
+td.timestamp-range,
+th.timestamp-range code,
+td.timestamp-range code {
+white-space: normal !important;
+word-break: keep-all !important;
+overflow-wrap: normal !important;
+}
+
+.table-wrapper {
+width: 100%;
+max-width: 100%;
+overflow-x: auto;
+margin: 1.5em 0 1.8em;
+-webkit-overflow-scrolling: touch;
+}
+.table-wrapper table {
+margin: 0;
+width: 100%;
+}
+@media print {
+.table-wrapper {
+overflow: visible !important;
+margin: 1.2em 0 1.5em !important;
+display: block !important;
+max-width: none !important;
+}
+}
+
 div.callout,
 div.warning, div.note, div.tip, div.important, div.caution,
 div.critical, div.evidence, div.finding {
@@ -464,6 +490,18 @@ color: #047857;
 }
 
 @media print {
+
+.cyber-drawer,
+.drawer-backdrop,
+.hud-bar,
+.theme-toggle,
+.print-action-bar,
+.reading-progress,
+#report-toc-hud,
+#toc-hud-toggle,
+.screen-only {
+display: none !important;
+}
 html, body {
 background: transparent !important;
 max-width: none !important;
@@ -1425,8 +1463,25 @@ border-color: #c084fc;
 box-shadow: 0 0 10px rgba(192, 132, 252, 0.4);
 color: #c084fc;
 }
+.custom-pill {
+font-family: var(--font-mono);
+font-size: 0.75rem;
+font-weight: 600;
+background: rgba(245, 158, 11, 0.12);
+color: #fbbf24;
+border: 1px solid rgba(245, 158, 11, 0.4);
+padding: 1px 6px;
+border-radius: 3px;
+cursor: pointer;
+transition: var(--cyber-transition);
+}
+.custom-pill:hover {
+border-color: #fbbf24;
+box-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+color: #fef3c7;
+}
 
-code {
+code:not(pre code) {
 font-family: var(--font-mono);
 font-size: 0.85em;
 background-color: var(--code-inline-bg);
@@ -1434,6 +1489,9 @@ color: var(--code-text);
 border: 1px solid var(--color-border);
 padding: 0.15em 0.35em;
 border-radius: 3px;
+word-break: normal;
+overflow-wrap: break-word;
+white-space: normal;
 }
 pre {
 background-color: var(--code-bg);
@@ -1450,7 +1508,7 @@ padding: 0;
 color: var(--color-text);
 }
 
-code.hash, .hash, code.ioc, .ioc, .cyber-ioc {
+code.ioc, .ioc, .cyber-ioc, .mitre-pill, .custom-pill, .eid, .eventid-pill, .evtx-pill {
 font-family: var(--font-mono);
 font-size: 0.8rem;
 background: var(--code-inline-bg);
@@ -1461,7 +1519,24 @@ border-radius: 3px;
 cursor: pointer;
 position: relative;
 transition: var(--cyber-transition);
-word-break: break-all;
+white-space: nowrap !important;
+word-break: keep-all !important;
+overflow-wrap: normal !important;
+}
+
+.timestamp-range,
+.timestamp-range *,
+td.timestamp-range,
+th.timestamp-range {
+white-space: normal !important;
+word-break: keep-all !important;
+overflow-wrap: normal !important;
+}
+
+code.hash, .hash, code.break-all, .break-all, .drawer-val-box {
+white-space: normal !important;
+word-break: break-all !important;
+overflow-wrap: anywhere !important;
 }
 code.hash:hover, .cyber-ioc:hover {
 border-color: var(--color-accent);
@@ -1477,8 +1552,11 @@ margin: 24px 0;
 font-size: 0.86rem;
 border: 1px solid var(--color-border);
 border-radius: 4px;
-overflow: hidden;
+overflow: visible;
 background: var(--color-card-bg);
+}
+thead {
+background: transparent;
 }
 thead th {
 font-family: var(--font-mono);
@@ -1489,7 +1567,7 @@ letter-spacing: 0.08em;
 color: var(--color-text-muted);
 background: var(--color-hud-bg);
 border-bottom: 2px solid var(--color-border);
-padding: 10px 14px;
+padding: 8px 12px;
 text-align: left;
 position: sticky;
 top: 42px;
@@ -1499,7 +1577,7 @@ body.section-mode-active thead th {
 top: 110px;
 }
 tbody td {
-padding: 10px 14px;
+padding: 8px 12px;
 border-bottom: 1px solid var(--color-border-subtle);
 color: var(--color-text);
 }
@@ -1509,10 +1587,50 @@ border-bottom: none;
 tbody tr:hover {
 background: rgba(0, 240, 255, 0.03);
 }
-td.nowrap {
-white-space: nowrap;
+td.nowrap,
+th.nowrap,
+.nowrap,
+.nowrap * {
+white-space: nowrap !important;
+word-break: keep-all !important;
+overflow-wrap: normal !important;
 font-family: var(--font-mono);
 font-size: 0.8rem;
+}
+
+.timestamp-range,
+.timestamp-range *,
+td.timestamp-range,
+th.timestamp-range,
+td.timestamp-range *,
+th.timestamp-range * {
+white-space: normal !important;
+word-break: keep-all !important;
+overflow-wrap: normal !important;
+}
+
+.table-wrapper {
+width: 100%;
+max-width: 100%;
+overflow: visible;
+margin: 24px 0;
+}
+@media screen and (max-width: 768px) {
+.table-wrapper {
+overflow-x: auto;
+-webkit-overflow-scrolling: touch;
+}
+}
+.table-wrapper table {
+margin: 0;
+width: 100%;
+}
+.table-filter-toolbar + .table-wrapper {
+margin-top: 0 !important;
+}
+.table-filter-toolbar + .table-wrapper table {
+border-top-left-radius: 0;
+border-top-right-radius: 0;
 }
 
 .table-timeline {
@@ -1525,15 +1643,21 @@ position: relative;
 
 .table-timeline tbody td:first-child {
 position: relative;
-padding-left: 24px;
-white-space: nowrap;
+padding-left: 20px;
 font-family: var(--font-mono);
 font-size: 0.8rem;
+}
+.table-timeline tbody td:first-child:not(.timestamp-range) {
+white-space: nowrap !important;
+}
+.table-timeline tbody td:first-child.timestamp-range {
+white-space: normal !important;
+word-break: keep-all !important;
 }
 .table-timeline tbody td:first-child::before {
 content: "";
 position: absolute;
-left: 8px;
+left: 7px;
 top: 0;
 bottom: 0;
 width: 2px;
@@ -1543,7 +1667,7 @@ background: var(--color-border);
 .table-timeline tbody td:first-child::after {
 content: "";
 position: absolute;
-left: 4px;
+left: 3px;
 top: 15px;
 width: 10px;
 height: 10px;
@@ -1771,6 +1895,40 @@ word-break: break-all;
 user-select: all;
 }
 
+.drawer-unresolved-banner {
+background: var(--cyber-amber-bg);
+border: 1px solid var(--color-warning);
+border-left: 3px solid var(--color-warning);
+border-radius: 4px;
+padding: 10px 12px;
+display: flex;
+align-items: flex-start;
+gap: 10px;
+font-size: 0.74rem;
+color: var(--color-warning);
+}
+.drawer-unresolved-icon {
+font-size: 1.1rem;
+line-height: 1;
+}
+.drawer-unresolved-content {
+display: flex;
+flex-direction: column;
+gap: 3px;
+flex: 1;
+}
+.drawer-unresolved-title {
+font-weight: 800;
+letter-spacing: 0.05em;
+text-transform: uppercase;
+}
+.drawer-unresolved-msg {
+font-size: 0.72rem;
+color: var(--color-text-strong);
+line-height: 1.4;
+word-break: break-word;
+}
+
 .drawer-kb-section {
 display: flex;
 flex-direction: column;
@@ -1825,6 +1983,11 @@ background: rgba(56, 189, 248, 0.15);
 color: #38bdf8;
 border: 1px solid #38bdf8;
 }
+.badge-wan {
+background: rgba(249, 115, 22, 0.15);
+color: #f97316;
+border: 1px solid #f97316;
+}
 .badge-evtx {
 background: rgba(14, 165, 233, 0.15);
 color: #0ea5e9;
@@ -1844,6 +2007,21 @@ border: 1px solid var(--cyber-emerald);
 background: var(--cyber-coral-bg);
 color: var(--cyber-coral);
 border: 1px solid var(--cyber-coral);
+}
+.badge-custom, .badge-warning {
+background: rgba(245, 158, 11, 0.15);
+color: #fbbf24;
+border: 1px solid #fbbf24;
+}
+.badge-account {
+background: rgba(168, 85, 247, 0.15);
+color: #c084fc;
+border: 1px solid #c084fc;
+}
+.badge-host {
+background: rgba(6, 182, 212, 0.15);
+color: #22d3ee;
+border: 1px solid #22d3ee;
 }
 .drawer-kb-score {
 font-family: var(--font-mono);
@@ -1893,6 +2071,56 @@ font-size: 0.65rem;
 }
 .drawer-kb-val {
 color: var(--color-text-muted);
+word-break: break-word;
+}
+
+.drawer-intel-block {
+margin-top: 6px;
+background: var(--code-bg);
+border: 1px solid var(--color-border);
+border-left: 3px solid var(--cyber-cyan);
+border-radius: 4px;
+padding: 8px 10px;
+display: flex;
+flex-direction: column;
+gap: 6px;
+}
+.drawer-intel-danger {
+border-left-color: var(--color-critical);
+background: var(--cyber-coral-bg);
+}
+.drawer-intel-muted {
+border-left-color: var(--cyber-emerald);
+background: var(--cyber-emerald-bg);
+}
+.drawer-intel-header {
+display: flex;
+align-items: center;
+gap: 6px;
+}
+.drawer-intel-icon {
+font-size: 0.85rem;
+line-height: 1;
+}
+.drawer-intel-title {
+font-family: var(--font-mono);
+font-size: 0.65rem;
+font-weight: 800;
+letter-spacing: 0.06em;
+text-transform: uppercase;
+color: var(--color-text-strong);
+}
+.drawer-intel-list {
+margin: 0;
+padding-left: 18px;
+font-size: 0.72rem;
+line-height: 1.45;
+color: var(--color-text);
+display: flex;
+flex-direction: column;
+gap: 4px;
+}
+.drawer-intel-list li {
 word-break: break-word;
 }
 .drawer-meta-grid {
@@ -2036,9 +2264,68 @@ display: table-row !important;
 }
 figure.mermaid-diagram,
 table,
+.table-wrapper,
 .ai-insight-card {
 page-break-inside: avoid;
 }
+.table-wrapper {
+overflow: visible !important;
+margin: 16px 0 !important;
+display: block !important;
+max-width: none !important;
+}
+.ioc,
+.cyber-ioc,
+.mitre-pill,
+.custom-pill,
+.eid,
+.eventid-pill,
+.evtx-pill {
+white-space: nowrap !important;
+word-break: keep-all !important;
+overflow-wrap: normal !important;
+}
+.timestamp-range,
+.timestamp-range *,
+td.timestamp-range,
+th.timestamp-range {
+white-space: normal !important;
+word-break: keep-all !important;
+overflow-wrap: normal !important;
+}
+code.hash,
+.hash,
+code.break-all,
+.break-all {
+white-space: normal !important;
+word-break: break-all !important;
+overflow-wrap: anywhere !important;
+}
+th.nowrap,
+td.nowrap {
+white-space: nowrap !important;
+word-break: keep-all !important;
+}
+}
+</style>
+  <style>
+:root, :root:lang(en), html[lang^='en'] {
+--toc-title: "Table of Contents";
+--abstract-title: "Executive Summary";
+--i18n-figure: "Figure";
+--i18n-table: "Table";
+--page-label: "Page";
+--i18n-confidential: "TOP SECRET // TLP:AMBER";
+--i18n-report-title: "FORENSIC CYBER INVESTIGATION REPORT";
+--i18n-author: "Author:";
+--i18n-date: "Investigation Date:";
+--i18n-page-prefix: "Page ";
+--i18n-page-of: " of ";
+--i18n-section-tag: "§ SECTION";
+--figure-prefix: "Figure ";
+--i18n-examiner: "Lead Forensic Examiner:";
+--i18n-hex-dump: "HEX DUMP";
+--i18n-sys-log: "SYSTEM LOG";
 }
 </style>
 </head>
@@ -2053,7 +2340,7 @@ Sentinel-9</p>
 <p class="date">2026-10-02</p>
 </header>
 <nav id="TOC" role="doc-toc">
-<h2 id="toc-title">Table of contents</h2>
+<h2 id="toc-title">Table of Contents</h2>
 <ul>
 <li><a href="#executive-telemetry--ai-synthesis" id="toc-executive-telemetry--ai-synthesis">Executive Telemetry &amp; AI
 Synthesis</a></li>
@@ -2075,11 +2362,6 @@ Compromise (IoCs) &amp; Threat Pivots</a></li>
 &amp; Containment Tasks</a></li>
 </ul>
 </nav>
-<style>
-:root {
---i18n-confidential: "TOP SECRET // TLP:AMBER";
-}
-</style>
 <h1 id="executive-telemetry--ai-synthesis">Executive Telemetry &amp; AI
 Synthesis</h1>
 <p>During the early morning hours of September 22, 2026, the
@@ -2259,14 +2541,8 @@ Beaconing // Malicious</text> </g>
 <p>The table below documents the chronological timeline of events
 reconstructed through forensic timeline analysis of disk bitstreams and
 volatile memory dumps:</p>
+<div class="table-wrapper">
 <table class="table-timeline">
-<colgroup>
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-</colgroup>
 <thead>
 <tr>
 <th class="nowrap">Timestamp (UTC)</th>
@@ -2336,6 +2612,7 @@ isolation of DC-CORP cluster</td>
 </tr>
 </tbody>
 </table>
+</div>
 <hr />
 <h1 id="evidence-artifacts--cryptographic-ledger">Evidence Artifacts
 &amp; Cryptographic Ledger</h1>
@@ -2344,13 +2621,8 @@ NIST Special Publication 800-86 forensic standards. Hashes were
 calculated immediately upon bitstream capture.</p>
 <pre><code>Hash Algorithm: SHA-256 / MD5
 Forensic Verification Target: Master Incident Evidence Pool</code></pre>
+<div class="table-wrapper">
 <table>
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-</colgroup>
 <thead>
 <tr>
 <th>Artifact Name</th>
@@ -2392,6 +2664,7 @@ Forensic Verification Target: Master Incident Evidence Pool</code></pre>
 </tr>
 </tbody>
 </table>
+</div>
 <hr />
 <h1 id="windows-event-log-telemetry--artifacts">Windows Event Log
 Telemetry &amp; Artifacts</h1>
@@ -2401,13 +2674,8 @@ any log artifact or Event ID to inspect forensic definitions, key audit
 fields, and official Microsoft / Ultimate Windows Security
 documentation.</p>
 <h3 id="core-event-log-repositories">Core Event Log Repositories</h3>
+<div class="table-wrapper">
 <table>
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-</colgroup>
 <thead>
 <tr>
 <th>Event Log File</th>
@@ -2446,16 +2714,11 @@ reflection</td>
 </tr>
 </tbody>
 </table>
+</div>
 <h3 id="correlated-windows-forensic-events">Correlated Windows Forensic
 Events</h3>
+<div class="table-wrapper">
 <table>
-<colgroup>
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-</colgroup>
 <thead>
 <tr>
 <th class="nowrap">Timestamp (UTC)</th>
@@ -2469,7 +2732,7 @@ Events</h3>
 <tr>
 <td class="nowrap">2026-09-30 02:14:22</td>
 <td><code class="evtx-pill cyber-ioc" data-ioc-type="evtx" data-ioc-value="Security.evtx">Security.evtx</code></td>
-<td><code class="eventid-pill cyber-ioc" data-ioc-type="eventid" data-ioc-value="Event ID 4624">Event ID 4624</code></td>
+<td><code class="eventid-pill cyber-ioc" data-ioc-type="eventid" data-ioc-value="4624">Event ID 4624</code></td>
 <td>Authentication</td>
 <td>Successful network logon (<code>LogonType 3</code>) for account
 <code>svc_backup</code> from <code class="ioc cyber-ioc" data-ioc-type="ip" data-ioc-value="194.26.29.114">194.26.29.114</code></td>
@@ -2477,7 +2740,7 @@ Events</h3>
 <tr>
 <td class="nowrap">2026-09-30 02:15:05</td>
 <td><code class="evtx-pill cyber-ioc" data-ioc-type="evtx" data-ioc-value="Security.evtx">Security.evtx</code></td>
-<td><code class="eventid-pill cyber-ioc" data-ioc-type="eventid" data-ioc-value="Event ID 4672">Event ID 4672</code></td>
+<td><code class="eventid-pill cyber-ioc" data-ioc-type="eventid" data-ioc-value="4672">Event ID 4672</code></td>
 <td>Privilege</td>
 <td>Special privileges assigned to new logon session
 (<code>SeDebugPrivilege</code>, <code>SeTcbPrivilege</code>)</td>
@@ -2485,7 +2748,7 @@ Events</h3>
 <tr>
 <td class="nowrap">2026-09-30 02:16:11</td>
 <td><code class="evtx-pill cyber-ioc" data-ioc-type="evtx" data-ioc-value="Security.evtx">Security.evtx</code></td>
-<td><code class="eventid-pill cyber-ioc" data-ioc-type="eventid" data-ioc-value="Event ID 4688">Event ID 4688</code></td>
+<td><code class="eventid-pill cyber-ioc" data-ioc-type="eventid" data-ioc-value="4688">Event ID 4688</code></td>
 <td>Process Tracking</td>
 <td>Process spawned: <code>powershell.exe -enc JABz...</code> by parent
 <code>wsmprovhost.exe</code></td>
@@ -2493,7 +2756,7 @@ Events</h3>
 <tr>
 <td class="nowrap">2026-09-30 02:18:40</td>
 <td><code class="evtx-pill cyber-ioc" data-ioc-type="evtx" data-ioc-value="System.evtx">System.evtx</code></td>
-<td><code class="eventid-pill cyber-ioc" data-ioc-type="eventid" data-ioc-value="Event ID 7045">Event ID 7045</code></td>
+<td><code class="eventid-pill cyber-ioc" data-ioc-type="eventid" data-ioc-value="7045">Event ID 7045</code></td>
 <td>Service Install</td>
 <td>Malicious service <code>SentinelBypassSvc</code> installed executing
 <code>%TEMP%\payload_drop.bin</code></td>
@@ -2501,7 +2764,7 @@ Events</h3>
 <tr>
 <td class="nowrap">2026-09-30 02:22:15</td>
 <td><code class="evtx-pill cyber-ioc" data-ioc-type="evtx" data-ioc-value="Security.evtx">Security.evtx</code></td>
-<td><code class="eventid-pill cyber-ioc" data-ioc-type="eventid" data-ioc-value="Event ID 4720">Event ID 4720</code></td>
+<td><code class="eventid-pill cyber-ioc" data-ioc-type="eventid" data-ioc-value="4720">Event ID 4720</code></td>
 <td>Account Mgmt</td>
 <td>Rogue backdoor user account <code>admin_fallback</code> created by
 <code>svc_backup</code></td>
@@ -2509,7 +2772,7 @@ Events</h3>
 <tr>
 <td class="nowrap">2026-09-30 02:22:50</td>
 <td><code class="evtx-pill cyber-ioc" data-ioc-type="evtx" data-ioc-value="Security.evtx">Security.evtx</code></td>
-<td><code class="eventid-pill cyber-ioc" data-ioc-type="eventid" data-ioc-value="Event ID 4728">Event ID 4728</code></td>
+<td><code class="eventid-pill cyber-ioc" data-ioc-type="eventid" data-ioc-value="4728">Event ID 4728</code></td>
 <td>Group Tampering</td>
 <td>Rogue user <code>admin_fallback</code> added to
 <code>Domain Admins</code> security-enabled global group</td>
@@ -2517,13 +2780,14 @@ Events</h3>
 <tr>
 <td class="nowrap">2026-09-30 02:35:10</td>
 <td><code class="evtx-pill cyber-ioc" data-ioc-type="evtx" data-ioc-value="Security.evtx">Security.evtx</code></td>
-<td><code class="eventid-pill cyber-ioc" data-ioc-type="eventid" data-ioc-value="Event ID 1102">Event ID 1102</code></td>
+<td><code class="eventid-pill cyber-ioc" data-ioc-type="eventid" data-ioc-value="1102">Event ID 1102</code></td>
 <td>Anti-Forensics</td>
 <td>Security audit log was cleared via <code>wevtutil cl Security</code>
 to conceal lateral movement</td>
 </tr>
 </tbody>
 </table>
+</div>
 <hr />
 <h1 id="indicators-of-compromise-iocs--threat-pivots">Indicators of
 Compromise (IoCs) &amp; Threat Pivots</h1>
@@ -2570,14 +2834,14 @@ Web Protocols)</li>
 Authentication &amp; Security Log)</li>
 <li><code class="evtx-pill cyber-ioc" data-ioc-type="evtx" data-ioc-value="System.evtx">System.evtx</code> (System Service &amp;
 Driver Execution Log)</li>
-<li><code class="eventid-pill cyber-ioc" data-ioc-type="eventid" data-ioc-value="Event ID 4624">Event ID 4624</code> (Successful Logon /
-LogonType Telemetry)</li>
-<li><code class="eventid-pill cyber-ioc" data-ioc-type="eventid" data-ioc-value="Event ID 4688">Event ID 4688</code> (Process Creation
-Tracking with Command Lines)</li>
-<li><code class="eventid-pill cyber-ioc" data-ioc-type="eventid" data-ioc-value="Event ID 7045">Event ID 7045</code> (New Service
-Installed - Persistence Indicator)</li>
-<li><code class="eventid-pill cyber-ioc" data-ioc-type="eventid" data-ioc-value="Event ID 1102">Event ID 1102</code> (Audit Log Cleared -
-Critical Tampering Event)</li>
+<li><code class="eventid-pill cyber-ioc" data-ioc-type="eventid" data-ioc-value="4624">Event ID 4624</code> (Successful Logon / LogonType
+Telemetry)</li>
+<li><code class="eventid-pill cyber-ioc" data-ioc-type="eventid" data-ioc-value="4688">Event ID 4688</code> (Process Creation Tracking
+with Command Lines)</li>
+<li><code class="eventid-pill cyber-ioc" data-ioc-type="eventid" data-ioc-value="7045">Event ID 7045</code> (New Service Installed -
+Persistence Indicator)</li>
+<li><code class="eventid-pill cyber-ioc" data-ioc-type="eventid" data-ioc-value="1102">Event ID 1102</code> (Audit Log Cleared - Critical
+Tampering Event)</li>
 </ul></li>
 </ul>
 <hr />
@@ -2597,9 +2861,6 @@ any orphaned WSL2 runtime hooks.</li>
 rules on perimeter border routers for <code class="ioc cyber-ioc" data-ioc-type="ip" data-ioc-value="194.26.29.114">194.26.29.114</code>
 and <code class="ioc cyber-ioc" data-ioc-type="ip" data-ioc-value="45.142.214.88">45.142.214.88</code>.</li>
 </ol>
-<script id="cyber-kb-data" type="application/json">
-{"T1021.002": {"type": "mitre", "id": "T1021.002", "name": "SMB/Windows Admin Shares", "summary": "Adversaries may use Valid Accounts to interact with a remote network share using Server Message Block (SMB). The adversary may then perform actions as the logged-on user. SMB is a file, printer, and serial port sharing protocol for Windows machines on the same network or domain. Adversaries may use SMB to interact with...", "tactics": ["lateral movement"], "platforms": ["Windows"], "url": "https://attack.mitre.org/techniques/T1021/002"}, "T1003.001": {"type": "mitre", "id": "T1003.001", "name": "LSASS Memory", "summary": "Adversaries may attempt to access credential material stored in the process memory of the Local Security Authority Subsystem Service (LSASS). After a user logs on, the system generates and stores a variety of credential materials in LSASS process memory. These credential materials can be harvested by an administrative...", "tactics": ["credential access"], "platforms": ["Windows"], "url": "https://attack.mitre.org/techniques/T1003/001"}, "Sysmon.evtx": {"type": "evtx", "id": "Sysmon.evtx", "title": "Microsoft Sysmon Operational Telemetry Log", "channel": "Microsoft-Windows-Sysmon/Operational", "path": "%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-Sysmon%4Operational.evtx", "role": "Premier endpoint telemetry sensor providing detailed process lineage, network sockets, raw disk access, process memory injection, and pipe/DNS activity.", "key_events": ["EID 1 (Process Create)", "EID 3 (Network Connect)", "EID 8 (CreateRemoteThread)", "EID 10 (ProcessAccess)", "EID 11 (FileCreate)", "EID 22 (DNS Query)"], "retention": "Typically configured to 64MB - 512MB by SOC engineering.", "url": "https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon"}, "T1071.001": {"type": "mitre", "id": "T1071.001", "name": "Web Protocols", "summary": "Adversaries may communicate using application layer protocols associated with web traffic to avoid detection/network filtering by blending in with existing traffic. Commands to the remote system, and often the results of those commands, will be embedded within the protocol traffic between the client and server. Protoco...", "tactics": ["command and control"], "platforms": ["ESXi", "Linux", "macOS", "Network Devices", "Windows"], "url": "https://attack.mitre.org/techniques/T1071/001"}, "System.evtx": {"type": "evtx", "id": "System.evtx", "title": "Windows System Event Log", "channel": "System", "path": "%SystemRoot%\\System32\\Winevt\\Logs\\System.evtx", "role": "Contains events logged by Windows system components, service control manager, hardware changes, kernel drivers, and system startup/shutdown.", "key_events": ["7045 (Service Installed)", "7036 (Service State Change)", "104 (Log Cleared)", "1074 (System Shutdown)", "41 (Kernel Power / BSOD)"], "retention": "Default 20MB. Circular overwrite policy.", "url": "https://learn.microsoft.com/en-us/windows/win32/eventlog/system-event-log"}, "CVE-2024-21762": {"type": "cve", "id": "CVE-2024-21762", "title": "CVE-2024-21762: Security Vulnerability", "summary": "No detailed synopsis available.", "score": null, "severity": "MEDIUM", "affected": [], "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-21762"}, "T1059.001": {"type": "mitre", "id": "T1059.001", "name": "PowerShell", "summary": "Adversaries may abuse PowerShell commands and scripts for execution. PowerShell is a powerful interactive command-line interface and scripting environment included in the Windows operating system. Adversaries can use PowerShell to perform a number of actions, including discovery of information and execution of code. Ex...", "tactics": ["execution"], "platforms": ["Windows"], "url": "https://attack.mitre.org/techniques/T1059/001"}, "Event ID 4728": {"type": "eventid", "id": "4728", "title": "Event ID 4728", "channel": "Security", "category": "Account Management", "severity": "AUDIT SUCCESS", "summary": "A member was added to a security-enabled global group (e.g. Domain Admins, Enterprise Admins). A premier privilege escalation indicator in Active Directory breaches.", "key_fields": ["MemberName", "TargetGroupName", "SubjectUserName", "SubjectDomainName"], "mitre": ["T1098 (Account Manipulation)", "T1078 (Valid Accounts)"], "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4728"}, "Security.evtx": {"type": "evtx", "id": "Security.evtx", "title": "Windows Security Event Log", "channel": "Security", "path": "%SystemRoot%\\System32\\Winevt\\Logs\\Security.evtx", "role": "Primary forensic repository for authentication, user rights assignment, account management, audit policy changes, and object access.", "key_events": ["4624 (Logon)", "4625 (Failed Logon)", "4672 (Admin Privs)", "4688 (Process Created)", "4720 (User Created)", "1102 (Log Cleared)"], "retention": "Fixed maximum size (typically 20MB to 1GB in Enterprise). Wrap-around overwrite policy.", "url": "https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/security-auditing-overview"}, "%SystemRoot%\\System32\\Winevt\\Logs\\Security.evtx": {"type": "evtx", "id": "%SystemRoot%\\System32\\Winevt\\Logs\\Security.evtx", "title": "Windows Event Log (%SystemRoot%\\System32\\Winevt\\Logs\\Security.evtx)", "channel": "%SystemRoot%\\System32\\Winevt\\Logs\\Security", "role": "Binary XML Windows Event Log repository.", "url": "https://learn.microsoft.com/en-us/windows/win32/eventlog/event-logging"}, "PowerShell.evtx": {"type": "evtx", "id": "PowerShell.evtx", "title": "Microsoft PowerShell Operational Log", "channel": "Microsoft-Windows-PowerShell/Operational", "path": "%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-PowerShell%4Operational.evtx", "role": "Deep PowerShell execution log capturing de-obfuscated script blocks (EID 4104), interactive command invocation (EID 4103), and AMSI bypass attempts.", "key_events": ["4104 (ScriptBlock Logging)", "4103 (Pipeline Execution)", "4105 (Started Script)", "4106 (Completed Script)"], "retention": "Default 15MB. Highly recommended to increase to 100MB+.", "url": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_logging_windows"}, "%SystemRoot%\\System32\\Winevt\\Logs\\PowerShell.evtx": {"type": "evtx", "id": "%SystemRoot%\\System32\\Winevt\\Logs\\PowerShell.evtx", "title": "Windows Event Log (%SystemRoot%\\System32\\Winevt\\Logs\\PowerShell.evtx)", "channel": "%SystemRoot%\\System32\\Winevt\\Logs\\PowerShell", "role": "Binary XML Windows Event Log repository.", "url": "https://learn.microsoft.com/en-us/windows/win32/eventlog/event-logging"}, "GHSA-jfh8-c2jp-5v3q": {"type": "ghsa", "id": "GHSA-jfh8-c2jp-5v3q", "title": "Remote code injection in Log4j", "summary": "# Summary\n\nLog4j versions prior to 2.16.0 are subject to a remote code execution vulnerability via the ldap JNDI parser.\nAs per [Apache's Log4j security guide](https://logging.apache.org/log4j/2.x/security.html): Apache Log4j2 <=2.14.1 JNDI features used in configuration, log messages, and parameters do not protect aga...", "severity": "CRITICAL", "score": 10.0, "cve": "CVE-2021-44228", "url": "https://github.com/advisories/GHSA-jfh8-c2jp-5v3q"}, "Event ID 7045": {"type": "eventid", "id": "7045", "title": "Event ID 7045", "channel": "System", "category": "Work Email:", "severity": "SYSTEM NOTICE", "summary": "A new service was installed on the system (logged by Service Control Manager in System.evtx). Primary source for discovering backdoor persistence and remote execution services.", "key_fields": ["ServiceName", "ImagePath", "ServiceType", "StartType", "AccountName"], "mitre": ["T1543.003 (Create or Modify System Process: Windows Service)"], "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=7045"}, "Event ID 1102": {"type": "eventid", "id": "1102", "title": "Event ID 1102", "channel": "Security", "category": "Log Clear / Anti-Forensics", "severity": "CRITICAL AUDIT", "summary": "Logged when the Security event log is cleared via wevtutil cl Security, PowerShell Clear-EventLog, or attacker scripts. Always treated as an active malicious tampering indicator.", "key_fields": ["SubjectUserName", "SubjectDomainName", "SubjectLogonId"], "mitre": ["T1070.001 (Clear Windows Event Logs)"], "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=1102"}, "Event ID 4672": {"type": "eventid", "id": "4672", "title": "Event ID 4672", "channel": "Security", "category": "Privilege Use", "severity": "AUDIT SUCCESS", "summary": "Special administrative privileges assigned to a new logon session. Logged immediately following event 4624 when an account possessing sensitive rights logs in. Sensitive privileges include SeDebugPrivilege, SeTcbPrivilege, SeSecurityPrivilege, SeBackupPrivilege.", "key_fields": ["SubjectUserName", "SubjectDomainName", "PrivilegeList"], "mitre": ["T1078 (Valid Accounts)", "T1068 (Exploitation for Privilege Escalation)"], "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4672"}, "%SystemRoot%\\System32\\Winevt\\Logs\\Sysmon.evtx": {"type": "evtx", "id": "%SystemRoot%\\System32\\Winevt\\Logs\\Sysmon.evtx", "title": "Windows Event Log (%SystemRoot%\\System32\\Winevt\\Logs\\Sysmon.evtx)", "channel": "%SystemRoot%\\System32\\Winevt\\Logs\\Sysmon", "role": "Binary XML Windows Event Log repository.", "url": "https://learn.microsoft.com/en-us/windows/win32/eventlog/event-logging"}, "Event ID 4720": {"type": "eventid", "id": "4720", "title": "Event ID 4720", "channel": "Security", "category": "Account Management", "severity": "AUDIT SUCCESS", "summary": "A user account was created. Critical indicator for unauthorized persistence, rogue backdoor creation, or shadow admin accounts.", "key_fields": ["TargetUserName", "TargetDomainName", "SubjectUserName", "SubjectDomainName", "SamAccountName"], "mitre": ["T1136.001 (Create Account: Local Account)", "T1136.002 (Create Account: Domain Account)"], "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4720"}, "CVE-2026-3184": {"type": "cve", "id": "CVE-2026-3184", "title": "CVE-2026-3184: Security Vulnerability", "summary": "No detailed synopsis available.", "score": null, "severity": "MEDIUM", "affected": [], "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-3184"}, "%SystemRoot%\\System32\\Winevt\\Logs\\System.evtx": {"type": "evtx", "id": "%SystemRoot%\\System32\\Winevt\\Logs\\System.evtx", "title": "Windows Event Log (%SystemRoot%\\System32\\Winevt\\Logs\\System.evtx)", "channel": "%SystemRoot%\\System32\\Winevt\\Logs\\System", "role": "Binary XML Windows Event Log repository.", "url": "https://learn.microsoft.com/en-us/windows/win32/eventlog/event-logging"}, "Event ID 4688": {"type": "eventid", "id": "4688", "title": "Event ID 4688", "channel": "Security", "category": "Detailed Tracking", "severity": "AUDIT SUCCESS", "summary": "Tracks execution of all binaries. When CommandLine auditing policy is active, exposes full script execution arguments, PowerShell one-liners, and living-off-the-land commands.", "key_fields": ["NewProcessName", "CommandLine", "ParentProcessName", "SubjectUserName", "TokenElevationType"], "mitre": ["T1059 (Command and Scripting Interpreter)", "T1105 (Ingress Tool Transfer)"], "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4688"}, "Event ID 4624": {"type": "eventid", "id": "4624", "title": "Event ID 4624", "channel": "Security", "category": "Logon / Authentication", "severity": "AUDIT SUCCESS", "summary": "Records successful authentication sessions. The LogonType code discloses how authentication occurred: 2 (Interactive Console), 3 (Network / SMB / WMI), 5 (Service), 9 (NewCredentials / Pass-the-Hash / Mimikatz), 10 (RemoteInteractive / RDP).", "key_fields": ["LogonType", "TargetUserName", "TargetDomainName", "IpAddress", "WorkstationName", "ProcessName", "ElevatedToken"], "mitre": ["T1078 (Valid Accounts)", "T1021.001 (Remote Desktop Protocol)", "T1021.002 (SMB/Windows Admin Shares)"], "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4624"}}
-</script>
 <!-- forensic-cyber-interactive.html: Cyber AI Forensic Interactive Engine -->
 <div id="cyber-hud" role="banner" aria-label="Cyber AI Telemetry Bar">
   <div class="hud-left">
@@ -2641,19 +2902,28 @@ and <code class="ioc cyber-ioc" data-ioc-type="ip" data-ioc-value="45.142.214.88
 <!-- Slide-over IoC / Knowledge Inspector Drawer -->
 <aside id="ioc-inspector-drawer" role="dialog" aria-modal="true" aria-label="IoC Telemetry Inspector">
   <div class="drawer-header">
-    <span class="drawer-title">IOC // KNOWLEDGE INSPECTOR</span>
+    <span class="drawer-title" id="drawer-main-title">IOC // KNOWLEDGE INSPECTOR</span>
     <button type="button" class="drawer-close" id="drawer-close-btn" aria-label="Close Inspector">✕ ESC</button>
   </div>
   <div class="drawer-body">
+    <!-- Unresolved Warning Banner -->
+    <div id="drawer-unresolved-banner" class="drawer-unresolved-banner" style="display: none;">
+      <div class="drawer-unresolved-icon" aria-hidden="true">⚠️</div>
+      <div class="drawer-unresolved-content">
+        <div class="drawer-unresolved-title" id="drawer-unresolved-title">TELEMETRY UNRESOLVED</div>
+        <div class="drawer-unresolved-msg" id="drawer-unresolved-msg">Could not resolve external telemetry or documentation for this indicator.</div>
+      </div>
+    </div>
+
     <!-- Value Box -->
     <div>
-      <div class="drawer-section-title">Artifact Value</div>
+      <div class="drawer-section-title" id="drawer-lbl-val">Artifact Value</div>
       <div class="drawer-val-box" id="drawer-val"></div>
     </div>
     
-    <!-- Enriched Knowledge Section (Populated at build-time for MITRE, CVE, GHSA) -->
+    <!-- Enriched Knowledge Section (Populated at build-time for MITRE, CVE, GHSA, EVTX, EID) -->
     <div id="drawer-kb-section" class="drawer-kb-section" style="display: none;">
-      <div class="drawer-section-title">Knowledge Base Intelligence</div>
+      <div class="drawer-section-title" id="drawer-lbl-kb">Knowledge Base Intelligence</div>
       <div class="drawer-kb-card">
         <div class="drawer-kb-header">
           <span class="drawer-kb-badge" id="drawer-kb-badge">CRITICAL</span>
@@ -2668,24 +2938,55 @@ and <code class="ioc cyber-ioc" data-ioc-type="ip" data-ioc-value="45.142.214.88
             <span class="drawer-kb-val" id="drawer-kb-channel"></span>
           </div>
           <div class="drawer-kb-field" id="drawer-kb-platforms-row" style="display: none;">
-            <span class="drawer-kb-label">PLATFORMS / PATH:</span>
+            <span class="drawer-kb-label" id="drawer-kb-platforms-label">PLATFORMS / PATH:</span>
             <span class="drawer-kb-val" id="drawer-kb-platforms"></span>
           </div>
           <div class="drawer-kb-field" id="drawer-kb-affected-row" style="display: none;">
-            <span class="drawer-kb-label">AFFECTED:</span>
+            <span class="drawer-kb-label" id="drawer-kb-affected-label">AFFECTED:</span>
             <span class="drawer-kb-val" id="drawer-kb-affected"></span>
           </div>
           <div class="drawer-kb-field" id="drawer-kb-extra-row" style="display: none;">
             <span class="drawer-kb-label" id="drawer-kb-extra-label">KEY FIELDS:</span>
             <span class="drawer-kb-val" id="drawer-kb-extra-val"></span>
           </div>
+          <div class="drawer-kb-field" id="drawer-kb-also-row" style="display: none;">
+            <span class="drawer-kb-label">ALSO LOGGED IN:</span>
+            <span class="drawer-kb-val" id="drawer-kb-also-val"></span>
+          </div>
+        </div>
+
+        <!-- Investigation Tips Block -->
+        <div class="drawer-intel-block" id="drawer-kb-investigation-block" style="display: none;">
+          <div class="drawer-intel-header">
+            <span class="drawer-intel-icon">🔍</span>
+            <span class="drawer-intel-title" id="drawer-lbl-investigation">FORENSIC INVESTIGATION TIPS</span>
+          </div>
+          <ul class="drawer-intel-list" id="drawer-kb-investigation-list"></ul>
+        </div>
+
+        <!-- Attacker Behavior Block -->
+        <div class="drawer-intel-block drawer-intel-danger" id="drawer-kb-attacker-block" style="display: none;">
+          <div class="drawer-intel-header">
+            <span class="drawer-intel-icon">⚡</span>
+            <span class="drawer-intel-title" id="drawer-lbl-attacker">ATTACKER BEHAVIOR &amp; TECHNIQUE</span>
+          </div>
+          <ul class="drawer-intel-list" id="drawer-kb-attacker-list"></ul>
+        </div>
+
+        <!-- Benign Causes Block -->
+        <div class="drawer-intel-block drawer-intel-muted" id="drawer-kb-benign-block" style="display: none;">
+          <div class="drawer-intel-header">
+            <span class="drawer-intel-icon">ℹ️</span>
+            <span class="drawer-intel-title" id="drawer-lbl-benign">BENIGN / NORMAL CAUSES</span>
+          </div>
+          <ul class="drawer-intel-list" id="drawer-kb-benign-list"></ul>
         </div>
       </div>
     </div>
 
     <!-- Telemetry Classification Metadata -->
     <div>
-      <div class="drawer-section-title">Telemetry Metadata</div>
+      <div class="drawer-section-title" id="drawer-lbl-meta">Telemetry Metadata</div>
       <div class="drawer-meta-grid">
         <div class="drawer-meta-tile">
           <div class="drawer-meta-label">CLASSIFICATION</div>
@@ -2700,7 +3001,7 @@ and <code class="ioc cyber-ioc" data-ioc-type="ip" data-ioc-value="45.142.214.88
 
     <!-- Threat Intel Pivots & Actions -->
     <div>
-      <div class="drawer-section-title">Threat Intel Pivots</div>
+      <div class="drawer-section-title" id="drawer-lbl-actions">Threat Intel Pivots</div>
       <div class="drawer-actions">
         <a href="#" target="_blank" rel="noopener noreferrer" class="drawer-btn drawer-btn-primary" id="drawer-sec-link">
           OFFICIAL DATABASE PIVOT ↗
@@ -2744,6 +3045,68 @@ and <code class="ioc cyber-ioc" data-ioc-type="ip" data-ioc-value="45.142.214.88
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s];
     });
   };
+
+  // 0. i18n Localization Initialization
+  var docLang = (document.documentElement.lang || document.body.getAttribute('lang') || 'en').toLowerCase();
+  var isCzech = docLang.startsWith('cs') || docLang.startsWith('cz');
+
+  var _uiStrings = null;
+  function getUiStrings() {
+    if (!_uiStrings) {
+      _uiStrings = {};
+      var i18nScript = document.getElementById('report-i18n');
+      if (i18nScript) {
+        try {
+          var runtimeI18n = JSON.parse(i18nScript.textContent || '{}');
+          _uiStrings = runtimeI18n.ui || {};
+        } catch(e) {}
+      }
+    }
+    return _uiStrings;
+  }
+  var uiStrings = getUiStrings();
+
+  function applyUiStrings() {
+    var uiStrings = getUiStrings();
+    var hudThreatPill = document.getElementById('hud-threat-pill');
+    if (hudThreatPill && uiStrings.hud_threat) hudThreatPill.textContent = uiStrings.hud_threat;
+
+    var modeFullBtn = document.getElementById('cyber-mode-full');
+    if (modeFullBtn && uiStrings.view_mode_full) modeFullBtn.textContent = uiStrings.view_mode_full;
+
+    var modeSectionsBtn = document.getElementById('cyber-mode-sections');
+    if (modeSectionsBtn && uiStrings.view_mode_sections) modeSectionsBtn.textContent = uiStrings.view_mode_sections;
+
+    var stepperPrev = document.getElementById('stepper-prev');
+    if (stepperPrev && uiStrings.stepper_prev) stepperPrev.textContent = uiStrings.stepper_prev;
+
+    var stepperNext = document.getElementById('stepper-next');
+    if (stepperNext && uiStrings.stepper_next) stepperNext.textContent = uiStrings.stepper_next;
+
+    var hudNavPrefix = document.querySelector('.hud-nav-prefix');
+    if (hudNavPrefix && uiStrings.hud_nav_prefix) hudNavPrefix.textContent = uiStrings.hud_nav_prefix;
+
+    var drawerMainTitle = document.getElementById('drawer-main-title');
+    var drawerLblVal = document.getElementById('drawer-lbl-val');
+    var drawerLblKb = document.getElementById('drawer-lbl-kb');
+    var drawerLblActions = document.getElementById('drawer-lbl-actions');
+    var drawerFilterBtn = document.getElementById('drawer-filter-btn');
+    var drawerCopyBtn = document.getElementById('drawer-copy-btn');
+    var drawerLblInvestigation = document.getElementById('drawer-lbl-investigation');
+    var drawerLblAttacker = document.getElementById('drawer-lbl-attacker');
+    var drawerLblBenign = document.getElementById('drawer-lbl-benign');
+
+    if (drawerMainTitle && uiStrings.drawer_title) drawerMainTitle.textContent = uiStrings.drawer_title;
+    if (drawerLblVal && uiStrings.drawer_artifact_value) drawerLblVal.textContent = uiStrings.drawer_artifact_value;
+    if (drawerLblKb && uiStrings.drawer_kb_title) drawerLblKb.textContent = uiStrings.drawer_kb_title;
+    if (drawerLblActions && uiStrings.drawer_actions) drawerLblActions.textContent = uiStrings.drawer_actions;
+    if (drawerFilterBtn && uiStrings.drawer_filter_btn) drawerFilterBtn.textContent = uiStrings.drawer_filter_btn;
+    if (drawerCopyBtn && uiStrings.drawer_copy_btn) drawerCopyBtn.textContent = uiStrings.drawer_copy_btn;
+    if (drawerLblInvestigation && uiStrings.drawer_investigation_title) drawerLblInvestigation.textContent = uiStrings.drawer_investigation_title;
+    if (drawerLblAttacker && uiStrings.drawer_attacker_title) drawerLblAttacker.textContent = uiStrings.drawer_attacker_title;
+    if (drawerLblBenign && uiStrings.drawer_benign_title) drawerLblBenign.textContent = uiStrings.drawer_benign_title;
+  }
+  applyUiStrings();
 
   // 1. Theme Switcher (Cyber Dark vs. Lab Light)
   var themeBtn = document.getElementById('cyber-theme-btn');
@@ -3068,14 +3431,20 @@ and <code class="ioc cyber-ioc" data-ioc-type="ip" data-ioc-value="45.142.214.88
   initSections();
 
   // 5. Enriched Knowledge Base & IoC Inspector Drawer
-  var kbData = {};
-  var kbScript = document.getElementById('cyber-kb-data');
-  if (kbScript) {
-    try {
-      kbData = JSON.parse(kbScript.textContent.trim());
-    } catch (err) {
-      console.warn('[KB] Failed to parse cyber-kb-data:', err);
+  var _kbData = null;
+  function getKbData() {
+    if (!_kbData) {
+      _kbData = {};
+      var kbScript = document.getElementById('cyber-kb-data');
+      if (kbScript) {
+        try {
+          _kbData = JSON.parse(kbScript.textContent.trim());
+        } catch (err) {
+          console.warn('[KB] Failed to parse cyber-kb-data:', err);
+        }
+      }
     }
+    return _kbData;
   }
 
   var drawer = document.getElementById('ioc-inspector-drawer');
@@ -3088,6 +3457,15 @@ and <code class="ioc cyber-ioc" data-ioc-type="ip" data-ioc-value="45.142.214.88
   var drawerFilterBtn = document.getElementById('drawer-filter-btn');
   var drawerCopyBtn = document.getElementById('drawer-copy-btn');
 
+  var drawerUnresolvedBanner = document.getElementById('drawer-unresolved-banner');
+  var drawerUnresolvedTitle = document.getElementById('drawer-unresolved-title');
+  var drawerUnresolvedMsg = document.getElementById('drawer-unresolved-msg');
+  var drawerMainTitle = document.getElementById('drawer-main-title');
+  var drawerLblVal = document.getElementById('drawer-lbl-val');
+  var drawerLblKb = document.getElementById('drawer-lbl-kb');
+  var drawerLblMeta = document.getElementById('drawer-lbl-meta');
+  var drawerLblActions = document.getElementById('drawer-lbl-actions');
+
   var drawerKbSection = document.getElementById('drawer-kb-section');
   var drawerKbBadge = document.getElementById('drawer-kb-badge');
   var drawerKbScore = document.getElementById('drawer-kb-score');
@@ -3095,14 +3473,29 @@ and <code class="ioc cyber-ioc" data-ioc-type="ip" data-ioc-value="45.142.214.88
   var drawerKbTitle = document.getElementById('drawer-kb-title');
   var drawerKbSummary = document.getElementById('drawer-kb-summary');
   var drawerKbPlatformsRow = document.getElementById('drawer-kb-platforms-row');
+  var drawerKbPlatformsLabel = document.getElementById('drawer-kb-platforms-label');
   var drawerKbPlatforms = document.getElementById('drawer-kb-platforms');
   var drawerKbAffectedRow = document.getElementById('drawer-kb-affected-row');
+  var drawerKbAffectedLabel = document.getElementById('drawer-kb-affected-label');
   var drawerKbAffected = document.getElementById('drawer-kb-affected');
   var drawerKbChannelRow = document.getElementById('drawer-kb-channel-row');
   var drawerKbChannel = document.getElementById('drawer-kb-channel');
   var drawerKbExtraRow = document.getElementById('drawer-kb-extra-row');
   var drawerKbExtraLabel = document.getElementById('drawer-kb-extra-label');
   var drawerKbExtraVal = document.getElementById('drawer-kb-extra-val');
+  var drawerKbAlsoRow = document.getElementById('drawer-kb-also-row');
+  var drawerKbAlsoVal = document.getElementById('drawer-kb-also-val');
+
+  var drawerLblInvestigation = document.getElementById('drawer-lbl-investigation');
+  var drawerLblAttacker = document.getElementById('drawer-lbl-attacker');
+  var drawerLblBenign = document.getElementById('drawer-lbl-benign');
+
+  var drawerKbInvestigationBlock = document.getElementById('drawer-kb-investigation-block');
+  var drawerKbInvestigationList = document.getElementById('drawer-kb-investigation-list');
+  var drawerKbAttackerBlock = document.getElementById('drawer-kb-attacker-block');
+  var drawerKbAttackerList = document.getElementById('drawer-kb-attacker-list');
+  var drawerKbBenignBlock = document.getElementById('drawer-kb-benign-block');
+  var drawerKbBenignList = document.getElementById('drawer-kb-benign-list');
 
   var currentSelectedIoc = '';
 
@@ -3113,7 +3506,50 @@ and <code class="ioc cyber-ioc" data-ioc-type="ip" data-ioc-value="45.142.214.88
     if (drawerType) drawerType.textContent = type.toUpperCase();
     if (drawerLength) drawerLength.textContent = val.length + ' CHARS';
 
+    applyUiStrings();
+    var uiStrings = getUiStrings();
+    var kbData = getKbData();
     var kb = kbData[val] || kbData[val.toUpperCase()];
+    if (kb && kb.role && drawerType) {
+      drawerType.textContent = kb.role.toUpperCase();
+    }
+
+    // Check unresolved indicator state
+    var isUnresolved = (kb && kb.unresolved === true);
+    if (!kb && (type === 'eventid' || type === 'evtx' || type === 'cve' || type === 'ghsa')) {
+      isUnresolved = true;
+    }
+
+    if (drawerUnresolvedBanner) {
+      if (isUnresolved) {
+        drawerUnresolvedBanner.style.display = 'flex';
+        if (drawerUnresolvedTitle) {
+          drawerUnresolvedTitle.textContent = uiStrings.drawer_unresolved_title || 'TELEMETRY UNRESOLVED';
+        }
+        if (drawerUnresolvedMsg) {
+          var errReason = (kb && kb.error_reason) ? kb.error_reason : ('Indicator "' + val + '" not found in catalog or documentation.');
+          var prefix = uiStrings.drawer_unresolved_desc || 'Could not automatically retrieve intelligence for this indicator:';
+          drawerUnresolvedMsg.textContent = prefix + ' ' + errReason;
+        }
+      } else {
+        drawerUnresolvedBanner.style.display = 'none';
+      }
+    }
+
+    // Clean slate reset of all dynamic KB elements
+    if (drawerKbSection) drawerKbSection.style.display = 'none';
+    if (drawerKbScore) drawerKbScore.style.display = 'none';
+    if (drawerKbTactic) drawerKbTactic.style.display = 'none';
+    if (drawerKbPlatformsRow) drawerKbPlatformsRow.style.display = 'none';
+    if (drawerKbChannelRow) drawerKbChannelRow.style.display = 'none';
+    if (drawerKbAffectedRow) drawerKbAffectedRow.style.display = 'none';
+    if (drawerKbExtraRow) drawerKbExtraRow.style.display = 'none';
+    if (drawerKbAlsoRow) drawerKbAlsoRow.style.display = 'none';
+    if (drawerKbInvestigationBlock) drawerKbInvestigationBlock.style.display = 'none';
+    if (drawerKbAttackerBlock) drawerKbAttackerBlock.style.display = 'none';
+    if (drawerKbBenignBlock) drawerKbBenignBlock.style.display = 'none';
+    if (drawerSecLink) drawerSecLink.style.display = 'none';
+    if (drawerVtLink) drawerVtLink.style.display = 'none';
 
     if (kb) {
       if (drawerKbSection) drawerKbSection.style.display = 'block';
@@ -3132,6 +3568,7 @@ and <code class="ioc cyber-ioc" data-ioc-type="ip" data-ioc-value="45.142.214.88
         }
         if (kb.platforms && kb.platforms.length > 0) {
           if (drawerKbPlatformsRow) drawerKbPlatformsRow.style.display = 'flex';
+          if (drawerKbPlatformsLabel) drawerKbPlatformsLabel.textContent = 'PLATFORMS / PATH:';
           if (drawerKbPlatforms) drawerKbPlatforms.textContent = kb.platforms.join(', ');
         } else {
           if (drawerKbPlatformsRow) drawerKbPlatformsRow.style.display = 'none';
@@ -3158,6 +3595,7 @@ and <code class="ioc cyber-ioc" data-ioc-type="ip" data-ioc-value="45.142.214.88
         if (drawerKbChannelRow) drawerKbChannelRow.style.display = 'none';
         if (kb.affected && kb.affected.length > 0) {
           if (drawerKbAffectedRow) drawerKbAffectedRow.style.display = 'flex';
+          if (drawerKbAffectedLabel) drawerKbAffectedLabel.textContent = 'AFFECTED:';
           if (drawerKbAffected) drawerKbAffected.textContent = kb.affected.join(', ');
         } else {
           if (drawerKbAffectedRow) drawerKbAffectedRow.style.display = 'none';
@@ -3175,6 +3613,7 @@ and <code class="ioc cyber-ioc" data-ioc-type="ip" data-ioc-value="45.142.214.88
         }
         if (kb.path) {
           if (drawerKbPlatformsRow) drawerKbPlatformsRow.style.display = 'flex';
+          if (drawerKbPlatformsLabel) drawerKbPlatformsLabel.textContent = 'PLATFORMS / PATH:';
           if (drawerKbPlatforms) drawerKbPlatforms.textContent = kb.path;
         } else {
           if (drawerKbPlatformsRow) drawerKbPlatformsRow.style.display = 'none';
@@ -3226,20 +3665,198 @@ and <code class="ioc cyber-ioc" data-ioc-type="ip" data-ioc-value="45.142.214.88
         } else {
           if (drawerKbExtraRow) drawerKbExtraRow.style.display = 'none';
         }
+
+        // Also logged in other channels
+        if (drawerKbAlsoRow && drawerKbAlsoVal) {
+          if (kb.also_in && kb.also_in.length > 0) {
+            var alsoTxt = kb.also_in.map(function(a) { return (a.channel_slug || a.channel) + ': ' + a.title; }).join(' | ');
+            drawerKbAlsoVal.textContent = alsoTxt;
+            drawerKbAlsoRow.style.display = 'flex';
+          } else {
+            drawerKbAlsoRow.style.display = 'none';
+          }
+        }
+      } else if (kb.type === 'ip' || type === 'ip') {
+        var isPriv = (kb.is_private !== undefined) ? kb.is_private : (/^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|127\.)/.test(val));
+        if (drawerKbBadge) {
+          drawerKbBadge.textContent = isPriv ? 'INTERNAL RFC 1918' : 'PUBLIC WAN IP';
+          drawerKbBadge.className = isPriv ? 'drawer-kb-badge badge-internal' : 'drawer-kb-badge badge-wan';
+        }
+        if (drawerKbScore) drawerKbScore.style.display = 'none';
+        if (drawerKbTactic) {
+          drawerKbTactic.style.display = 'inline-block';
+          drawerKbTactic.textContent = isPriv ? 'PRIVATE INTRANET // OPSEC PROTECTED' : 'PUBLIC NETWORK ENDPOINT';
+        }
+        if (drawerKbPlatformsRow) {
+          drawerKbPlatformsRow.style.display = 'flex';
+          if (drawerKbPlatformsLabel) drawerKbPlatformsLabel.textContent = 'NETWORK SCOPE:';
+          if (drawerKbPlatforms) drawerKbPlatforms.textContent = kb.subnet || (isPriv ? 'RFC 1918 Private Intranet' : 'Public IPv4/IPv6 Address');
+        }
+        if (drawerKbAffectedRow) {
+          drawerKbAffectedRow.style.display = 'flex';
+          if (drawerKbAffectedLabel) drawerKbAffectedLabel.textContent = 'OPSEC POLICY:';
+          if (drawerKbAffected) drawerKbAffected.textContent = isPriv ? 'External threat queries suppressed for client confidentiality' : 'Open OSINT / external reputation query allowed';
+        }
+        if (drawerKbChannelRow) drawerKbChannelRow.style.display = 'none';
+        if (drawerKbExtraRow) drawerKbExtraRow.style.display = 'none';
+        if (drawerKbAlsoRow) drawerKbAlsoRow.style.display = 'none';
+      } else if (kb.type === 'custom' || kb.custom) {
+        if (drawerKbBadge) {
+          drawerKbBadge.textContent = kb.badge || 'CUSTOM ENTITY';
+          var bType = (kb.badge_type || 'custom').toLowerCase();
+          drawerKbBadge.className = 'drawer-kb-badge badge-' + bType;
+        }
+        if (drawerKbScore) drawerKbScore.style.display = 'none';
+        if (drawerKbTactic) {
+          drawerKbTactic.style.display = 'inline-block';
+          drawerKbTactic.textContent = kb.category || 'CASE INTELLIGENCE';
+        }
+        if (drawerKbTitle) {
+          drawerKbTitle.textContent = kb.title || val;
+        }
+        if (drawerKbSummary) {
+          drawerKbSummary.textContent = kb.summary || 'Custom case intelligence entity.';
+        }
+        if (drawerKbChannelRow) drawerKbChannelRow.style.display = 'none';
+        if (drawerKbAlsoRow) drawerKbAlsoRow.style.display = 'none';
+
+        // Render dynamic fields from kb.fields
+        if (kb.fields && typeof kb.fields === 'object') {
+          var fieldKeys = Object.keys(kb.fields);
+          if (fieldKeys.length > 0) {
+            // Field 1
+            if (fieldKeys[0]) {
+              var k1 = fieldKeys[0];
+              if (drawerKbPlatformsRow) drawerKbPlatformsRow.style.display = 'flex';
+              if (drawerKbPlatformsLabel) drawerKbPlatformsLabel.textContent = k1 + ':';
+              if (drawerKbPlatforms) drawerKbPlatforms.textContent = kb.fields[k1];
+            } else {
+              if (drawerKbPlatformsRow) drawerKbPlatformsRow.style.display = 'none';
+            }
+
+            // Field 2
+            if (fieldKeys[1]) {
+              var k2 = fieldKeys[1];
+              if (drawerKbAffectedRow) drawerKbAffectedRow.style.display = 'flex';
+              if (drawerKbAffectedLabel) drawerKbAffectedLabel.textContent = k2 + ':';
+              if (drawerKbAffected) drawerKbAffected.textContent = kb.fields[k2];
+            } else {
+              if (drawerKbAffectedRow) drawerKbAffectedRow.style.display = 'none';
+            }
+
+            // Remaining fields
+            if (fieldKeys.length > 2) {
+              var remaining = [];
+              for (var fIdx = 2; fIdx < fieldKeys.length; fIdx++) {
+                var fk = fieldKeys[fIdx];
+                remaining.push(fk + ': ' + kb.fields[fk]);
+              }
+              if (drawerKbExtraRow) drawerKbExtraRow.style.display = 'flex';
+              if (drawerKbExtraLabel) drawerKbExtraLabel.textContent = 'DETAILS:';
+              if (drawerKbExtraVal) drawerKbExtraVal.textContent = remaining.join(' | ');
+            } else {
+              if (drawerKbExtraRow) drawerKbExtraRow.style.display = 'none';
+            }
+          } else {
+            if (drawerKbPlatformsRow) drawerKbPlatformsRow.style.display = 'none';
+            if (drawerKbAffectedRow) drawerKbAffectedRow.style.display = 'none';
+            if (drawerKbExtraRow) drawerKbExtraRow.style.display = 'none';
+          }
+        } else {
+          if (drawerKbPlatformsRow) drawerKbPlatformsRow.style.display = 'none';
+          if (drawerKbAffectedRow) drawerKbAffectedRow.style.display = 'none';
+          if (drawerKbExtraRow) drawerKbExtraRow.style.display = 'none';
+        }
+      }
+
+      // Universal Forensic Intel Blocks (Investigation Tips, Attacker Behavior, Benign Causes)
+      if (drawerKbInvestigationBlock && drawerKbInvestigationList) {
+        if (kb.investigation_tips && kb.investigation_tips.length > 0) {
+          drawerKbInvestigationList.innerHTML = '';
+          kb.investigation_tips.forEach(function(tip) {
+            var li = document.createElement('li');
+            li.textContent = tip;
+            drawerKbInvestigationList.appendChild(li);
+          });
+          drawerKbInvestigationBlock.style.display = 'flex';
+        } else {
+          drawerKbInvestigationBlock.style.display = 'none';
+        }
+      }
+
+      if (drawerKbAttackerBlock && drawerKbAttackerList) {
+        if (kb.attacker_behavior && kb.attacker_behavior.length > 0) {
+          drawerKbAttackerList.innerHTML = '';
+          kb.attacker_behavior.forEach(function(att) {
+            var li = document.createElement('li');
+            li.textContent = att;
+            drawerKbAttackerList.appendChild(li);
+          });
+          drawerKbAttackerBlock.style.display = 'flex';
+        } else {
+          drawerKbAttackerBlock.style.display = 'none';
+        }
+      }
+
+      if (drawerKbBenignBlock && drawerKbBenignList) {
+        if (kb.benign_causes && kb.benign_causes.length > 0) {
+          drawerKbBenignList.innerHTML = '';
+          kb.benign_causes.forEach(function(ben) {
+            var li = document.createElement('li');
+            li.textContent = ben;
+            drawerKbBenignList.appendChild(li);
+          });
+          drawerKbBenignBlock.style.display = 'flex';
+        } else {
+          drawerKbBenignBlock.style.display = 'none';
+        }
       }
     } else {
-      // Check for private IP address (OPSEC safety guard)
-      var isPrivateIp = (type === 'ip') && (/^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|127\.)/.test(val));
-      if (isPrivateIp) {
+      if (drawerKbInvestigationBlock) drawerKbInvestigationBlock.style.display = 'none';
+      if (drawerKbAttackerBlock) drawerKbAttackerBlock.style.display = 'none';
+      if (drawerKbBenignBlock) drawerKbBenignBlock.style.display = 'none';
+      if (drawerKbAlsoRow) drawerKbAlsoRow.style.display = 'none';
+
+      // Check for IP address (OPSEC safety guard)
+      var isIp = (type === 'ip') || /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(val);
+      var isPrivateIp = isIp && (/^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|127\.)/.test(val));
+      if (isIp) {
         if (drawerKbSection) drawerKbSection.style.display = 'block';
         if (drawerKbBadge) {
-          drawerKbBadge.textContent = 'INTERNAL RFC 1918';
-          drawerKbBadge.className = 'drawer-kb-badge badge-internal';
+          drawerKbBadge.textContent = isPrivateIp ? 'INTERNAL RFC 1918' : 'PUBLIC WAN IP';
+          drawerKbBadge.className = isPrivateIp ? 'drawer-kb-badge badge-internal' : 'drawer-kb-badge badge-wan';
+        }
+        if (drawerKbScore) drawerKbScore.style.display = 'none';
+        if (drawerKbTactic) {
+          drawerKbTactic.style.display = 'inline-block';
+          drawerKbTactic.textContent = isPrivateIp ? 'PRIVATE INTRANET // OPSEC PROTECTED' : 'PUBLIC NETWORK ENDPOINT';
+        }
+        if (drawerKbTitle) drawerKbTitle.textContent = isPrivateIp ? ('RFC 1918 Private Intranet (' + val + ')') : ('Public Internet Endpoint (' + val + ')');
+        if (drawerKbSummary) drawerKbSummary.textContent = isPrivateIp
+          ? 'Internal private subnet IP. External threat intel queries are suppressed to protect investigative OPSEC and client data confidentiality.'
+          : 'Public WAN IP address. Queryable via public threat intelligence services.';
+        if (drawerKbPlatformsRow) {
+          drawerKbPlatformsRow.style.display = 'flex';
+          if (drawerKbPlatformsLabel) drawerKbPlatformsLabel.textContent = 'NETWORK SCOPE:';
+          if (drawerKbPlatforms) drawerKbPlatforms.textContent = isPrivateIp ? 'RFC 1918 Private Intranet' : 'Public IPv4/IPv6 Address';
+        }
+        if (drawerKbAffectedRow) {
+          drawerKbAffectedRow.style.display = 'flex';
+          if (drawerKbAffectedLabel) drawerKbAffectedLabel.textContent = 'OPSEC POLICY:';
+          if (drawerKbAffected) drawerKbAffected.textContent = isPrivateIp ? 'External threat queries suppressed for client confidentiality' : 'Open OSINT / external reputation query allowed';
+        }
+        if (drawerKbChannelRow) drawerKbChannelRow.style.display = 'none';
+        if (drawerKbExtraRow) drawerKbExtraRow.style.display = 'none';
+      } else if (isUnresolved) {
+        if (drawerKbSection) drawerKbSection.style.display = 'block';
+        if (drawerKbBadge) {
+          drawerKbBadge.textContent = 'UNRESOLVED';
+          drawerKbBadge.className = 'drawer-kb-badge badge-high';
         }
         if (drawerKbScore) drawerKbScore.style.display = 'none';
         if (drawerKbTactic) drawerKbTactic.style.display = 'none';
-        if (drawerKbTitle) drawerKbTitle.textContent = 'Private Intranet Endpoint';
-        if (drawerKbSummary) drawerKbSummary.textContent = 'Internal private subnet IP. External threat intel queries are suppressed to protect investigative OPSEC and client data confidentiality.';
+        if (drawerKbTitle) drawerKbTitle.textContent = val + ' (Uncataloged)';
+        if (drawerKbSummary) drawerKbSummary.textContent = 'This indicator was not identified in the local threat catalog or online intelligence APIs.';
         if (drawerKbPlatformsRow) drawerKbPlatformsRow.style.display = 'none';
         if (drawerKbChannelRow) drawerKbChannelRow.style.display = 'none';
         if (drawerKbAffectedRow) drawerKbAffectedRow.style.display = 'none';
@@ -3250,15 +3867,31 @@ and <code class="ioc cyber-ioc" data-ioc-type="ip" data-ioc-value="45.142.214.88
     }
 
     // Pivot Links
+    var isPrivIp = (type === 'ip') && (/^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|127\.)/.test(val) || (kb && kb.is_private));
     if (drawerSecLink) {
-      if (kb && kb.url) {
+      if (isPrivIp) {
+        drawerSecLink.style.display = 'none';
+      } else if (kb && (kb.type === 'custom' || kb.custom) && kb.pivots && kb.pivots.length > 0) {
+        drawerSecLink.href = kb.pivots[0].url;
+        drawerSecLink.textContent = kb.pivots[0].label || 'CASE REFERENCE ↗';
+        drawerSecLink.style.display = 'flex';
+        if (kb.pivots.length > 1 && drawerVtLink) {
+          drawerVtLink.href = kb.pivots[1].url;
+          drawerVtLink.textContent = kb.pivots[1].label || 'SECONDARY REFERENCE ↗';
+          drawerVtLink.style.display = 'flex';
+        }
+      } else if (kb && kb.url) {
         drawerSecLink.href = kb.url;
         if (kb.type === 'mitre') {
           drawerSecLink.textContent = 'MITRE ATT&CK FRAMEWORK ↗';
         } else if (kb.type === 'evtx') {
           drawerSecLink.textContent = 'MICROSOFT EVENT LOG DOCS ↗';
         } else if (kb.type === 'eventid') {
-          drawerSecLink.textContent = 'ULTIMATE WINDOWS SECURITY PIVOT ↗';
+          if (kb.url.indexOf('evtxparser.com') !== -1) {
+            drawerSecLink.textContent = 'EVTXPARSER.COM INTEL ↗';
+          } else {
+            drawerSecLink.textContent = 'SECURITY EVENT INTEL PIVOT ↗';
+          }
         } else if (kb.type === 'ghsa') {
           drawerSecLink.textContent = 'GITHUB SECURITY ADVISORY ↗';
         } else {
@@ -3277,10 +3910,21 @@ and <code class="ioc cyber-ioc" data-ioc-type="ip" data-ioc-value="45.142.214.88
         drawerSecLink.href = 'https://github.com/advisories/' + encodeURIComponent(val);
         drawerSecLink.textContent = 'GITHUB ADVISORY DATABASE ↗';
         drawerSecLink.style.display = 'flex';
+      } else if (type === 'eventid') {
+        var cleanEid = val.replace(/\D/g, '');
+        drawerSecLink.href = 'https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=' + encodeURIComponent(cleanEid);
+        drawerSecLink.textContent = 'ULTIMATE WINDOWS SECURITY PIVOT ↗';
+        drawerSecLink.style.display = 'flex';
+      } else if (type === 'evtx') {
+        drawerSecLink.href = 'https://learn.microsoft.com/en-us/search/?terms=' + encodeURIComponent(val);
+        drawerSecLink.textContent = 'MICROSOFT EVENT LOG DOCS ↗';
+        drawerSecLink.style.display = 'flex';
       } else if (type === 'ip') {
         drawerSecLink.href = 'https://www.abuseipdb.com/check/' + encodeURIComponent(val);
         drawerSecLink.textContent = 'ABUSEIPDB LOOKUP ↗';
         drawerSecLink.style.display = 'flex';
+      } else if (type === 'custom') {
+        drawerSecLink.style.display = 'none';
       } else {
         drawerSecLink.href = 'https://otx.alienvault.com/indicator/file/' + encodeURIComponent(val);
         drawerSecLink.textContent = 'ALIENVAULT OTX ↗';
@@ -3288,8 +3932,10 @@ and <code class="ioc cyber-ioc" data-ioc-type="ip" data-ioc-value="45.142.214.88
       }
     }
 
-    if (drawerVtLink) {
-      if (type === 'hash') {
+    if (drawerVtLink && !(kb && (kb.type === 'custom' || kb.custom) && kb.pivots && kb.pivots.length > 1)) {
+      if (isPrivIp) {
+        drawerVtLink.style.display = 'none';
+      } else if (type === 'hash') {
         drawerVtLink.href = 'https://www.virustotal.com/gui/file/' + encodeURIComponent(val);
         drawerVtLink.style.display = 'flex';
       } else if (type === 'ip') {
@@ -3307,6 +3953,9 @@ and <code class="ioc cyber-ioc" data-ioc-type="ip" data-ioc-value="45.142.214.88
     if (drawer) drawer.classList.remove('is-open');
   }
 
+  window.openCyberDrawer = openDrawer;
+  window.closeCyberDrawer = closeDrawer;
+
   if (drawerClose) drawerClose.addEventListener('click', closeDrawer);
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeDrawer();
@@ -3316,7 +3965,7 @@ and <code class="ioc cyber-ioc" data-ioc-type="ip" data-ioc-value="45.142.214.88
     drawerCopyBtn.addEventListener('click', function() {
       if (currentSelectedIoc && navigator.clipboard) {
         navigator.clipboard.writeText(currentSelectedIoc);
-        showToast('COPIED VALUE TO CLIPBOARD');
+        showToast(uiStrings.copied || 'COPIED VALUE TO CLIPBOARD');
       }
     });
   }
@@ -3364,15 +4013,17 @@ and <code class="ioc cyber-ioc" data-ioc-type="ip" data-ioc-value="45.142.214.88
     });
   });
 
-  // 7. Adaptive Table & Timeline Filter Bar (Strategy 1: Pills when <= 5, Select when > 5)
-  var docLang = (document.documentElement.lang || document.body.getAttribute('lang') || 'en').toLowerCase();
-  var isCzech = docLang.startsWith('cs') || docLang.startsWith('cz');
-
+  // 7. Adaptive Table & Timeline Filter Bar
   var i18n = {
-    placeholder: isCzech ? 'Filtrovat záznamy (např. IP, uživatel, proces)...' : 'Filter telemetry (e.g. IP, command, hash)...',
-    allLabel: isCzech ? 'Vše' : 'All',
-    allDropdown: isCzech ? 'Všechny kategorie' : 'All categories',
+    placeholder: (uiStrings && uiStrings.filter_placeholder) || (isCzech ? 'Filtrovat záznamy (např. IP, uživatel, proces)...' : 'Filter telemetry (e.g. IP, command, hash)...'),
+    allLabel: (uiStrings && uiStrings.all_label) || (isCzech ? 'Vše' : 'All'),
+    allDropdown: (uiStrings && uiStrings.all_categories) || (isCzech ? 'Všechny kategorie' : 'All categories'),
+    categoryPrefix: (uiStrings && uiStrings.category_label) || (isCzech ? 'Kategorie:' : 'Category:'),
+    noMatch: (uiStrings && uiStrings.no_match) || (isCzech ? 'Nenalezen žádný záznam' : 'No matching records'),
     showing: function(s, t) {
+      if (uiStrings && uiStrings.showing_records) {
+        return uiStrings.showing_records.replace('{count}', s).replace('{total}', t);
+      }
       return isCzech ? 'Zobrazeno ' + s + ' z ' + t : 'Showing ' + s + ' of ' + t;
     }
   };
@@ -3386,18 +4037,18 @@ and <code class="ioc cyber-ioc" data-ioc-type="ip" data-ioc-value="45.142.214.88
     if (rows.length < 4 && !isTimeline) return;
 
     var numCols = rows[0].children.length;
-    var bestColIdx = -1;
-    var bestCatCounts = null;
-    var fallbackColIdx = -1;
-    var fallbackCatCounts = null;
+    var scoredCols = [];
+    var categoryKeywords = ['phase', 'fáze', 'status', 'stav', 'threat', 'hrozba', 'severity', 'závažnost', 'category', 'kategorie', 'source', 'zdroj', 'host', 'log', 'channel', 'action', 'akce', 'type', 'typ'];
 
-    var scanOrder = isTimeline ? [1] : [];
-    for (var c = 0; c < numCols; c++) {
-      if (scanOrder.indexOf(c) === -1) scanOrder.push(c);
-    }
+    for (var col = 0; col < numCols; col++) {
+      var headerEl = table.querySelector('thead tr th:nth-child(' + (col + 1) + ')');
+      var headerText = headerEl ? headerEl.textContent.trim().toLowerCase() : '';
 
-    for (var i = 0; i < scanOrder.length; i++) {
-      var col = scanOrder[i];
+      // Skip timestamp headers from category grouping
+      if (headerText.indexOf('time') !== -1 || headerText.indexOf('čas') !== -1 || headerText.indexOf('datum') !== -1 || headerText.indexOf('date') !== -1) {
+        continue;
+      }
+
       var counts = {};
       var isValid = true;
       for (var r = 0; r < rows.length; r++) {
@@ -3409,125 +4060,162 @@ and <code class="ioc cyber-ioc" data-ioc-type="ip" data-ioc-value="45.142.214.88
       }
       if (!isValid) continue;
 
-      var numDistinct = Object.keys(counts).length;
-      if (numDistinct >= 2 && numDistinct <= 5) {
-        bestColIdx = col;
-        bestCatCounts = counts;
-        break;
-      } else if (numDistinct > 5 && numDistinct <= 12 && fallbackColIdx === -1) {
-        fallbackColIdx = col;
-        fallbackCatCounts = counts;
+      var uCats = Object.keys(counts);
+      if (uCats.length < 2) continue;
+
+      var score = 0;
+      // Bonus for semantic header names
+      for (var k = 0; k < categoryKeywords.length; k++) {
+        if (headerText.indexOf(categoryKeywords[k]) !== -1) {
+          score += 50;
+          break;
+        }
       }
+
+      // Bonus for recurring categories where multiple rows share the same value
+      if (uCats.length < rows.length) {
+        score += 30 * (1 - (uCats.length / rows.length));
+      }
+
+      // Bonus for ideal pill count (2 to 6 values)
+      if (uCats.length >= 2 && uCats.length <= 6) {
+        score += 25;
+      } else if (uCats.length <= 10) {
+        score += 15;
+      }
+
+      // Timeline preference for Phase / Threat Status
+      if (isTimeline && (headerText.indexOf('phase') !== -1 || headerText.indexOf('threat') !== -1 || headerText.indexOf('status') !== -1)) {
+        score += 40;
+      }
+
+      scoredCols.push({
+        col: col,
+        counts: counts,
+        uCats: uCats,
+        score: score,
+        header: headerEl ? headerEl.textContent.trim() : ''
+      });
     }
 
-    var selectedCol = bestColIdx !== -1 ? bestColIdx : fallbackColIdx;
-    var selectedCounts = bestColIdx !== -1 ? bestCatCounts : fallbackCatCounts;
-    var usePills = (bestColIdx !== -1);
+    scoredCols.sort(function(a, b) { return b.score - a.score; });
 
+    var best = scoredCols.length > 0 ? scoredCols[0] : null;
+    var catColIdx = best ? best.col : -1;
+    var catCounts = best ? best.counts : {};
+    var uniqueCats = best ? best.uCats : [];
+
+    var renderPills = best && uniqueCats.length >= 2 && uniqueCats.length <= 8;
+    var renderDropdown = best && !renderPills && uniqueCats.length > 8;
+
+    var colHeaderTitle = (best && best.header) ? best.header : '';
+    var categoryLabel = colHeaderTitle ? colHeaderTitle + ':' : i18n.categoryPrefix;
+
+    // Build Toolbar DOM matching .table-filter-toolbar CSS
     var toolbar = document.createElement('div');
     toolbar.className = 'table-filter-toolbar';
     toolbar.id = 'filter-toolbar-' + tableIdx;
+    toolbar.setAttribute('data-table-idx', tableIdx);
 
-    var searchBox = document.createElement('div');
-    searchBox.className = 'table-filter-search-box';
+    var mainRow = document.createElement('div');
+    mainRow.className = 'table-filter-main';
 
-    var searchIcon = document.createElement('span');
-    searchIcon.className = 'table-filter-icon';
-    searchIcon.textContent = '⌕';
-    searchBox.appendChild(searchIcon);
+    var searchWrap = document.createElement('div');
+    searchWrap.className = 'table-filter-search-wrap';
 
-    var searchInput = document.createElement('input');
-    searchInput.type = 'text';
-    searchInput.className = 'table-filter-input';
-    searchInput.placeholder = i18n.placeholder;
-    searchInput.setAttribute('aria-label', i18n.placeholder);
-    searchBox.appendChild(searchInput);
+    var icon = document.createElement('span');
+    icon.className = 'table-filter-icon';
+    icon.setAttribute('aria-hidden', 'true');
+    icon.textContent = '⌕';
+
+    var input = document.createElement('input');
+    input.type = 'search';
+    input.className = 'table-filter-input';
+    input.placeholder = i18n.placeholder;
+    input.setAttribute('aria-label', i18n.placeholder);
 
     var clearBtn = document.createElement('button');
     clearBtn.type = 'button';
     clearBtn.className = 'table-filter-clear';
+    clearBtn.setAttribute('aria-label', 'Clear filter');
+    clearBtn.title = 'Clear filter (Esc)';
     clearBtn.textContent = '×';
-    clearBtn.title = 'Clear search (Esc)';
     clearBtn.style.display = 'none';
-    searchBox.appendChild(clearBtn);
 
-    toolbar.appendChild(searchBox);
+    searchWrap.appendChild(icon);
+    searchWrap.appendChild(input);
+    searchWrap.appendChild(clearBtn);
+    mainRow.appendChild(searchWrap);
 
-    var categoryFilter = null;
-    var activeCategory = 'all';
+    var selectDropdown = null;
+    if (renderDropdown) {
+      selectDropdown = document.createElement('select');
+      selectDropdown.className = 'table-filter-select';
+      selectDropdown.setAttribute('aria-label', colHeaderTitle || i18n.allDropdown);
 
-    if (selectedCol !== -1 && selectedCounts) {
-      if (usePills) {
-        var pillsContainer = document.createElement('div');
-        pillsContainer.className = 'table-filter-pills';
+      var optAll = document.createElement('option');
+      optAll.value = '';
+      optAll.textContent = (colHeaderTitle ? colHeaderTitle + ': ' : '') + i18n.allDropdown + ' (' + rows.length + ')';
+      selectDropdown.appendChild(optAll);
 
-        var allPill = document.createElement('button');
-        allPill.type = 'button';
-        allPill.className = 'table-filter-pill is-active';
-        allPill.setAttribute('data-value', 'all');
-        allPill.innerHTML = i18n.allLabel + ' <span class="pill-count">' + rows.length + '</span>';
-        pillsContainer.appendChild(allPill);
+      uniqueCats.forEach(function(cat) {
+        var opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat + ' (' + catCounts[cat] + ')';
+        selectDropdown.appendChild(opt);
+      });
 
-        var cats = Object.keys(selectedCounts).sort();
-        cats.forEach(function(cat) {
-          var pill = document.createElement('button');
-          pill.type = 'button';
-          pill.className = 'table-filter-pill';
-          pill.setAttribute('data-value', cat);
-          pill.innerHTML = escapeHtml(cat) + ' <span class="pill-count">' + selectedCounts[cat] + '</span>';
-          pillsContainer.appendChild(pill);
-        });
-
-        pillsContainer.addEventListener('click', function(e) {
-          var btn = e.target.closest('.table-filter-pill');
-          if (!btn) return;
-          pillsContainer.querySelectorAll('.table-filter-pill').forEach(function(b) {
-            b.classList.remove('is-active');
-          });
-          btn.classList.add('is-active');
-          activeCategory = btn.getAttribute('data-value');
-          applyFilter();
-        });
-
-        toolbar.appendChild(pillsContainer);
-      } else {
-        var selectWrap = document.createElement('div');
-        selectWrap.className = 'table-filter-select-wrap';
-
-        var select = document.createElement('select');
-        select.className = 'table-filter-select';
-
-        var allOpt = document.createElement('option');
-        allOpt.value = 'all';
-        allOpt.textContent = i18n.allDropdown + ' (' + rows.length + ')';
-        select.appendChild(allOpt);
-
-        var cats = Object.keys(selectedCounts).sort();
-        cats.forEach(function(cat) {
-          var opt = document.createElement('option');
-          opt.value = cat;
-          opt.textContent = cat + ' (' + selectedCounts[cat] + ')';
-          select.appendChild(opt);
-        });
-
-        select.addEventListener('change', function() {
-          activeCategory = select.value;
-          applyFilter();
-        });
-
-        selectWrap.appendChild(select);
-        toolbar.appendChild(selectWrap);
-      }
+      mainRow.appendChild(selectDropdown);
     }
 
-    var countBadge = document.createElement('span');
-    countBadge.className = 'table-filter-count';
-    countBadge.textContent = i18n.showing(rows.length, rows.length);
-    toolbar.appendChild(countBadge);
+    var counter = document.createElement('span');
+    counter.className = 'table-filter-counter';
+    counter.textContent = i18n.showing(rows.length, rows.length);
+    mainRow.appendChild(counter);
 
-    table.parentNode.insertBefore(toolbar, table);
-    if (table.hasAttribute('data-section-idx')) {
-      var tSec = table.getAttribute('data-section-idx');
+    toolbar.appendChild(mainRow);
+
+    var pillBtns = [];
+    if (renderPills) {
+      var pillsRow = document.createElement('div');
+      pillsRow.className = 'table-filter-pills';
+
+      var pillsLabel = document.createElement('span');
+      pillsLabel.className = 'table-filter-pills-label';
+      pillsLabel.textContent = categoryLabel;
+      pillsRow.appendChild(pillsLabel);
+
+      var pillAll = document.createElement('button');
+      pillAll.type = 'button';
+      pillAll.className = 'filter-pill is-active';
+      pillAll.setAttribute('data-category', '');
+      pillAll.innerHTML = i18n.allLabel + ' <span class="pill-count">' + rows.length + '</span>';
+      pillsRow.appendChild(pillAll);
+      pillBtns.push(pillAll);
+
+      uniqueCats.forEach(function(cat) {
+        var pill = document.createElement('button');
+        pill.type = 'button';
+        pill.className = 'filter-pill';
+        pill.setAttribute('data-category', cat);
+        pill.innerHTML = escapeHtml(cat) + ' <span class="pill-count">' + catCounts[cat] + '</span>';
+        pillsRow.appendChild(pill);
+        pillBtns.push(pill);
+      });
+
+      toolbar.appendChild(pillsRow);
+    }
+
+    // Mount toolbar immediately above outermost table-wrapper (or table)
+    var mountTarget = table;
+    while (mountTarget.parentElement && mountTarget.parentElement.classList.contains('table-wrapper')) {
+      mountTarget = mountTarget.parentElement;
+    }
+    mountTarget.parentElement.insertBefore(toolbar, mountTarget);
+
+    var secSource = table.hasAttribute('data-section-idx') ? table : (mountTarget.hasAttribute('data-section-idx') ? mountTarget : null);
+    if (secSource) {
+      var tSec = secSource.getAttribute('data-section-idx');
       toolbar.setAttribute('data-section-idx', tSec);
       if (document.body.classList.contains('section-mode-active')) {
         if (parseInt(tSec, 10) !== currentSectionIdx) {
@@ -3536,59 +4224,92 @@ and <code class="ioc cyber-ioc" data-ioc-type="ip" data-ioc-value="45.142.214.88
       }
     }
 
+    // Filter Logic
+    var activeCategory = '';
+    var searchQuery = '';
+
+    function updateTimelineRails() {
+      if (!isTimeline) return;
+      var visible = rows.filter(function(r) { return !r.classList.contains('table-row-hidden'); });
+      rows.forEach(function(r) {
+        r.classList.remove('is-first-visible', 'is-last-visible');
+      });
+      if (visible.length > 0) {
+        visible[0].classList.add('is-first-visible');
+        visible[visible.length - 1].classList.add('is-last-visible');
+      }
+    }
+
     function applyFilter() {
-      var query = searchInput.value.trim().toLowerCase();
-      clearBtn.style.display = query.length > 0 ? 'inline-block' : 'none';
-
       var visibleCount = 0;
-      var firstVisible = null;
-      var lastVisible = null;
-
-      rows.forEach(function(tr) {
-        tr.classList.remove('is-first-visible', 'is-last-visible');
-        var textMatch = true;
-        if (query.length > 0) {
-          textMatch = tr.textContent.toLowerCase().indexOf(query) !== -1;
-        }
-
-        var catMatch = true;
-        if (selectedCol !== -1 && activeCategory !== 'all') {
-          var cell = tr.children[selectedCol];
-          var cellVal = cell ? cell.textContent.trim().replace(/\s+/g, ' ') : '';
-          catMatch = (cellVal === activeCategory);
+      rows.forEach(function(row) {
+        var textMatch = (searchQuery === '') || (row.textContent.toLowerCase().indexOf(searchQuery) !== -1);
+        var catMatch = (activeCategory === '');
+        if (!catMatch && catColIdx !== -1 && row.children[catColIdx]) {
+          var rowCat = row.children[catColIdx].textContent.trim().replace(/\s+/g, ' ');
+          catMatch = (rowCat === activeCategory);
         }
 
         if (textMatch && catMatch) {
-          tr.classList.remove('table-row-hidden');
+          row.classList.remove('table-row-hidden');
           visibleCount++;
-          if (!firstVisible) firstVisible = tr;
-          lastVisible = tr;
         } else {
-          tr.classList.add('table-row-hidden');
+          row.classList.add('table-row-hidden');
         }
       });
 
-      if (isTimeline) {
-        if (firstVisible) firstVisible.classList.add('is-first-visible');
-        if (lastVisible) lastVisible.classList.add('is-last-visible');
+      if (visibleCount === 0) {
+        counter.textContent = i18n.noMatch;
+        counter.classList.add('is-empty');
+      } else {
+        counter.textContent = i18n.showing(visibleCount, rows.length);
+        counter.classList.remove('is-empty');
       }
 
-      countBadge.textContent = i18n.showing(visibleCount, rows.length);
+      clearBtn.style.display = (searchQuery !== '' || activeCategory !== '') ? 'inline-block' : 'none';
+      updateTimelineRails();
     }
 
-    searchInput.addEventListener('input', applyFilter);
-    clearBtn.addEventListener('click', function() {
-      searchInput.value = '';
-      searchInput.focus();
+    input.addEventListener('input', function() {
+      searchQuery = this.value.trim().toLowerCase();
       applyFilter();
     });
 
-    searchInput.addEventListener('keydown', function(e) {
+    input.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') {
-        searchInput.value = '';
+        input.value = '';
+        searchQuery = '';
         applyFilter();
-        searchInput.blur();
       }
+    });
+
+    clearBtn.addEventListener('click', function() {
+      input.value = '';
+      searchQuery = '';
+      activeCategory = '';
+      if (selectDropdown) selectDropdown.value = '';
+      pillBtns.forEach(function(p) {
+        p.classList.remove('is-active');
+        if (p.getAttribute('data-category') === '') p.classList.add('is-active');
+      });
+      applyFilter();
+      input.focus();
+    });
+
+    if (selectDropdown) {
+      selectDropdown.addEventListener('change', function() {
+        activeCategory = this.value;
+        applyFilter();
+      });
+    }
+
+    pillBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        pillBtns.forEach(function(p) { p.classList.remove('is-active'); });
+        btn.classList.add('is-active');
+        activeCategory = btn.getAttribute('data-category');
+        applyFilter();
+      });
     });
   });
 
@@ -3600,6 +4321,830 @@ and <code class="ioc cyber-ioc" data-ioc-type="ip" data-ioc-value="45.142.214.88
   window.cyberUpdateStickyBreadcrumbs = updateStickyBreadcrumbs;
 
 })();
+</script>
+
+<script id="report-i18n" type="application/json">
+{
+  "code": "en",
+  "name": "English",
+  "meta": {
+    "toc_title": "Table of Contents",
+    "abstract_title": "Executive Summary",
+    "figure_label": "Figure",
+    "table_label": "Table",
+    "page_label": "Page",
+    "confidential_label": "TOP SECRET // TLP:AMBER",
+    "report_type": "FORENSIC CYBER INVESTIGATION REPORT",
+    "author_label": "Author:",
+    "date_label": "Investigation Date:",
+    "page_prefix": "Page ",
+    "page_of": " of ",
+    "section_tag": "§ SECTION",
+    "figure_prefix": "Figure ",
+    "examiner_label": "Lead Forensic Examiner:",
+    "hex_dump": "HEX DUMP",
+    "sys_log": "SYSTEM LOG"
+  },
+  "ui": {
+    "filter_placeholder": "Filter records (IP, user, command, EID)...",
+    "all_categories": "All Categories",
+    "showing_records": "Showing {count} of {total}",
+    "copied": "COPIED VALUE TO CLIPBOARD",
+    "back_to_top": "Back to top",
+    "print": "Print",
+    "offline_badge": "STANDALONE CYBER REPORT",
+    "close": "Close",
+    "chain_of_custody": "Evidence Chain of Custody",
+    "drawer_title": "INDICATOR KNOWLEDGE INSPECTOR",
+    "drawer_artifact_value": "Artifact Value",
+    "drawer_kb_title": "Knowledge Base Intelligence",
+    "drawer_attack_phase": "Attack Phase / Technique",
+    "drawer_external_links": "External Knowledge Links",
+    "drawer_actions": "Telemetry Actions",
+    "drawer_filter_btn": "⌕ FILTER REPORT BY THIS VALUE",
+    "drawer_copy_btn": "📋 COPY TO CLIPBOARD",
+    "drawer_unresolved_title": "TELEMETRY UNRESOLVED",
+    "drawer_unresolved_desc": "Could not automatically retrieve intelligence for this indicator. You can search official external resources directly below:",
+    "hud_threat": "THREAT // CRITICAL",
+    "hud_nav_prefix": "NAV //",
+    "view_mode_full": "≡ FULL",
+    "view_mode_sections": "◫ SECTIONS",
+    "stepper_prev": "◀ PREV",
+    "stepper_next": "NEXT ▶",
+    "mitre_matrix": "ATT&CK Technique Matrix",
+    "drawer_investigation_title": "Forensic Investigation Tips",
+    "drawer_attacker_title": "Attacker Behavior & Tradecraft",
+    "drawer_benign_title": "Benign / Normal Causes"
+  }
+}
+</script>
+<script id="cyber-kb-data" type="application/json">
+{
+  "%SystemRoot%\\System32\\Winevt\\Logs\\Security.evtx": {
+    "type": "evtx",
+    "id": "%SystemRoot%\\System32\\Winevt\\Logs\\Security.evtx",
+    "title": "Windows Event Log (%SystemRoot%\\System32\\Winevt\\Logs\\Security.evtx)",
+    "channel": "%SystemRoot%\\System32\\Winevt\\Logs\\Security",
+    "role": "Binary XML Windows Event Log repository.",
+    "url": "https://learn.microsoft.com/en-us/windows/win32/eventlog/event-logging"
+  },
+  "%SystemRoot%\\System32\\Winevt\\Logs\\Sysmon.evtx": {
+    "type": "evtx",
+    "id": "%SystemRoot%\\System32\\Winevt\\Logs\\Sysmon.evtx",
+    "title": "Windows Event Log (%SystemRoot%\\System32\\Winevt\\Logs\\Sysmon.evtx)",
+    "channel": "%SystemRoot%\\System32\\Winevt\\Logs\\Sysmon",
+    "role": "Binary XML Windows Event Log repository.",
+    "url": "https://learn.microsoft.com/en-us/windows/win32/eventlog/event-logging"
+  },
+  "4720": {
+    "type": "eventid",
+    "id": "4720",
+    "title": "Event ID 4720",
+    "channel": "Security",
+    "category": "Account Management",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A user account was created. Critical indicator for unauthorized persistence, rogue backdoor creation, or shadow admin accounts.",
+    "key_fields": [
+      "TargetUserName",
+      "TargetDomainName",
+      "SubjectUserName",
+      "SubjectDomainName",
+      "SamAccountName"
+    ],
+    "mitre": [
+      "T1136.001 (Create Account: Local Account)",
+      "T1136.002 (Create Account: Domain Account)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4720"
+  },
+  "PowerShell.evtx": {
+    "type": "evtx",
+    "id": "PowerShell.evtx",
+    "title": "Microsoft PowerShell Operational Log",
+    "channel": "Microsoft-Windows-PowerShell/Operational",
+    "path": "%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-PowerShell%4Operational.evtx",
+    "role": "Deep PowerShell execution log capturing de-obfuscated script blocks (EID 4104), interactive command invocation (EID 4103), and AMSI bypass attempts.",
+    "key_events": [
+      "4104 (ScriptBlock Logging)",
+      "4103 (Pipeline Execution)",
+      "4105 (Started Script)",
+      "4106 (Completed Script)"
+    ],
+    "retention": "Default 15MB. Highly recommended to increase to 100MB+.",
+    "url": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_logging_windows",
+    "summary": "Deep PowerShell execution log capturing de-obfuscated script blocks (EID 4104), interactive command invocation (EID 4103), and AMSI bypass attempts."
+  },
+  "EID 4728": {
+    "type": "eventid",
+    "id": "4728",
+    "title": "Event ID 4728",
+    "channel": "Security",
+    "category": "Account Management",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A member was added to a security-enabled global group (e.g. Domain Admins, Enterprise Admins). A premier privilege escalation indicator in Active Directory breaches.",
+    "key_fields": [
+      "MemberName",
+      "TargetGroupName",
+      "SubjectUserName",
+      "SubjectDomainName"
+    ],
+    "mitre": [
+      "T1098 (Account Manipulation)",
+      "T1078 (Valid Accounts)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4728"
+  },
+  "%SystemRoot%\\System32\\Winevt\\Logs\\PowerShell.evtx": {
+    "type": "evtx",
+    "id": "%SystemRoot%\\System32\\Winevt\\Logs\\PowerShell.evtx",
+    "title": "Windows Event Log (%SystemRoot%\\System32\\Winevt\\Logs\\PowerShell.evtx)",
+    "channel": "%SystemRoot%\\System32\\Winevt\\Logs\\PowerShell",
+    "role": "Binary XML Windows Event Log repository.",
+    "url": "https://learn.microsoft.com/en-us/windows/win32/eventlog/event-logging"
+  },
+  "EID 1102": {
+    "type": "eventid",
+    "id": "1102",
+    "title": "Event ID 1102",
+    "channel": "Security",
+    "category": "Log Clear / Anti-Forensics",
+    "severity": "CRITICAL AUDIT",
+    "summary": "Logged when the Security event log is cleared via wevtutil cl Security, PowerShell Clear-EventLog, or attacker scripts. Always treated as an active malicious tampering indicator.",
+    "key_fields": [
+      "SubjectUserName",
+      "SubjectDomainName",
+      "SubjectLogonId"
+    ],
+    "mitre": [
+      "T1070.001 (Clear Windows Event Logs)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=1102"
+  },
+  "Event ID 4720": {
+    "type": "eventid",
+    "id": "4720",
+    "title": "Event ID 4720",
+    "channel": "Security",
+    "category": "Account Management",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A user account was created. Critical indicator for unauthorized persistence, rogue backdoor creation, or shadow admin accounts.",
+    "key_fields": [
+      "TargetUserName",
+      "TargetDomainName",
+      "SubjectUserName",
+      "SubjectDomainName",
+      "SamAccountName"
+    ],
+    "mitre": [
+      "T1136.001 (Create Account: Local Account)",
+      "T1136.002 (Create Account: Domain Account)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4720"
+  },
+  "Event ID 4728": {
+    "type": "eventid",
+    "id": "4728",
+    "title": "Event ID 4728",
+    "channel": "Security",
+    "category": "Account Management",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A member was added to a security-enabled global group (e.g. Domain Admins, Enterprise Admins). A premier privilege escalation indicator in Active Directory breaches.",
+    "key_fields": [
+      "MemberName",
+      "TargetGroupName",
+      "SubjectUserName",
+      "SubjectDomainName"
+    ],
+    "mitre": [
+      "T1098 (Account Manipulation)",
+      "T1078 (Valid Accounts)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4728"
+  },
+  "Event ID 7045": {
+    "type": "eventid",
+    "id": "7045",
+    "title": "Event ID 7045",
+    "channel": "System",
+    "category": "System / Service Install",
+    "severity": "SYSTEM NOTICE",
+    "summary": "A new service was installed on the system (logged by Service Control Manager in System.evtx). Primary source for discovering backdoor persistence and remote execution services.",
+    "key_fields": [
+      "ServiceName",
+      "ImagePath",
+      "ServiceType",
+      "StartType",
+      "AccountName"
+    ],
+    "mitre": [
+      "T1543.003 (Create or Modify System Process: Windows Service)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=7045"
+  },
+  "Event ID 1102": {
+    "type": "eventid",
+    "id": "1102",
+    "title": "Event ID 1102",
+    "channel": "Security",
+    "category": "Log Clear / Anti-Forensics",
+    "severity": "CRITICAL AUDIT",
+    "summary": "Logged when the Security event log is cleared via wevtutil cl Security, PowerShell Clear-EventLog, or attacker scripts. Always treated as an active malicious tampering indicator.",
+    "key_fields": [
+      "SubjectUserName",
+      "SubjectDomainName",
+      "SubjectLogonId"
+    ],
+    "mitre": [
+      "T1070.001 (Clear Windows Event Logs)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=1102"
+  },
+  "4672": {
+    "type": "eventid",
+    "id": "4672",
+    "title": "Event ID 4672",
+    "channel": "Security",
+    "category": "Privilege Use",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Special administrative privileges assigned to a new logon session. Logged immediately following event 4624 when an account possessing sensitive rights logs in. Sensitive privileges include SeDebugPrivilege, SeTcbPrivilege, SeSecurityPrivilege, SeBackupPrivilege.",
+    "key_fields": [
+      "SubjectUserName",
+      "SubjectDomainName",
+      "PrivilegeList"
+    ],
+    "mitre": [
+      "T1078 (Valid Accounts)",
+      "T1068 (Exploitation for Privilege Escalation)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4672"
+  },
+  "EID 4688": {
+    "type": "eventid",
+    "id": "4688",
+    "title": "Event ID 4688",
+    "channel": "Security",
+    "category": "Detailed Tracking",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Tracks execution of all binaries. When CommandLine auditing policy is active, exposes full script execution arguments, PowerShell one-liners, and living-off-the-land commands.",
+    "key_fields": [
+      "NewProcessName",
+      "CommandLine",
+      "ParentProcessName",
+      "SubjectUserName",
+      "TokenElevationType"
+    ],
+    "mitre": [
+      "T1059 (Command and Scripting Interpreter)",
+      "T1105 (Ingress Tool Transfer)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4688"
+  },
+  "%SystemRoot%\\System32\\Winevt\\Logs\\System.evtx": {
+    "type": "evtx",
+    "id": "%SystemRoot%\\System32\\Winevt\\Logs\\System.evtx",
+    "title": "Windows Event Log (%SystemRoot%\\System32\\Winevt\\Logs\\System.evtx)",
+    "channel": "%SystemRoot%\\System32\\Winevt\\Logs\\System",
+    "role": "Binary XML Windows Event Log repository.",
+    "url": "https://learn.microsoft.com/en-us/windows/win32/eventlog/event-logging"
+  },
+  "7045": {
+    "type": "eventid",
+    "id": "7045",
+    "title": "Event ID 7045",
+    "channel": "System",
+    "category": "System / Service Install",
+    "severity": "SYSTEM NOTICE",
+    "summary": "A new service was installed on the system (logged by Service Control Manager in System.evtx). Primary source for discovering backdoor persistence and remote execution services.",
+    "key_fields": [
+      "ServiceName",
+      "ImagePath",
+      "ServiceType",
+      "StartType",
+      "AccountName"
+    ],
+    "mitre": [
+      "T1543.003 (Create or Modify System Process: Windows Service)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=7045"
+  },
+  "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8": {
+    "type": "hash",
+    "id": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
+    "title": "SHA-256 Artifact Hash",
+    "summary": "Cryptographic SHA-256 digest (64 characters).",
+    "algorithm": "SHA-256",
+    "length": "64 CHARS",
+    "url": "https://www.virustotal.com/gui/file/5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"
+  },
+  "CVE-2026-3184": {
+    "type": "cve",
+    "id": "CVE-2026-3184",
+    "title": "CVE-2026-3184: Perimeter VPN Remote Buffer Overflow (Zero-Day)",
+    "summary": "An unauthenticated remote heap buffer overflow in perimeter SSL VPN concentrators allows threat actors to execute arbitrary shellcode directly in active process memory via specifically crafted HTTP/S POST payloads, bypassing endpoint telemetry.",
+    "score": 9.8,
+    "severity": "CRITICAL",
+    "affected": [
+      "Perimeter Gateway SSL-VPN <= 14.2.8",
+      "VPN Concentrator Firmware <= 14.2.8"
+    ],
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-3184"
+  },
+  "4728": {
+    "type": "eventid",
+    "id": "4728",
+    "title": "Event ID 4728",
+    "channel": "Security",
+    "category": "Account Management",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A member was added to a security-enabled global group (e.g. Domain Admins, Enterprise Admins). A premier privilege escalation indicator in Active Directory breaches.",
+    "key_fields": [
+      "MemberName",
+      "TargetGroupName",
+      "SubjectUserName",
+      "SubjectDomainName"
+    ],
+    "mitre": [
+      "T1098 (Account Manipulation)",
+      "T1078 (Valid Accounts)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4728"
+  },
+  "EID 4720": {
+    "type": "eventid",
+    "id": "4720",
+    "title": "Event ID 4720",
+    "channel": "Security",
+    "category": "Account Management",
+    "severity": "AUDIT SUCCESS",
+    "summary": "A user account was created. Critical indicator for unauthorized persistence, rogue backdoor creation, or shadow admin accounts.",
+    "key_fields": [
+      "TargetUserName",
+      "TargetDomainName",
+      "SubjectUserName",
+      "SubjectDomainName",
+      "SamAccountName"
+    ],
+    "mitre": [
+      "T1136.001 (Create Account: Local Account)",
+      "T1136.002 (Create Account: Domain Account)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4720"
+  },
+  "EID 4624": {
+    "type": "eventid",
+    "id": "4624",
+    "title": "Event ID 4624",
+    "channel": "Security",
+    "category": "Logon / Authentication",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Records successful authentication sessions. The LogonType code discloses how authentication occurred: 2 (Interactive Console), 3 (Network / SMB / WMI), 5 (Service), 9 (NewCredentials / Pass-the-Hash / Mimikatz), 10 (RemoteInteractive / RDP).",
+    "key_fields": [
+      "LogonType",
+      "TargetUserName",
+      "TargetDomainName",
+      "IpAddress",
+      "WorkstationName",
+      "ProcessName",
+      "ElevatedToken"
+    ],
+    "mitre": [
+      "T1078 (Valid Accounts)",
+      "T1021.001 (Remote Desktop Protocol)",
+      "T1021.002 (SMB/Windows Admin Shares)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4624"
+  },
+  "45.142.214.88": {
+    "type": "ip",
+    "id": "45.142.214.88",
+    "title": "External Public IP (45.142.214.88)",
+    "summary": "Publicly routable Internet endpoint. Threat intelligence queries available below to verify IP reputation and abuse history.",
+    "scope": "EXTERNAL",
+    "subnet": "Public Internet (WAN)",
+    "opsec": "External reputation lookups permitted",
+    "version": "IPv4",
+    "severity": "PUBLIC WAN",
+    "url": "https://www.abuseipdb.com/check/45.142.214.88"
+  },
+  "10.0.4.15": {
+    "type": "ip",
+    "id": "10.0.4.15",
+    "title": "Private Intranet Endpoint (10.0.4.15)",
+    "summary": "Internal private subnet IP (RFC 1918). External threat intelligence queries are suppressed to protect client confidentiality and investigative OPSEC.",
+    "scope": "INTERNAL",
+    "subnet": "RFC 1918 (Private LAN)",
+    "opsec": "External threat queries suppressed (Confidential client subnet)",
+    "version": "IPv4",
+    "severity": "PROTECTED",
+    "url": "#"
+  },
+  "a3c5f891b24d78e3105cf4e819b7d206f4a38751e1293a5b67cd10f92b84e031": {
+    "type": "hash",
+    "id": "a3c5f891b24d78e3105cf4e819b7d206f4a38751e1293a5b67cd10f92b84e031",
+    "title": "SHA-256 Artifact Hash",
+    "summary": "Cryptographic SHA-256 digest (64 characters).",
+    "algorithm": "SHA-256",
+    "length": "64 CHARS",
+    "url": "https://www.virustotal.com/gui/file/a3c5f891b24d78e3105cf4e819b7d206f4a38751e1293a5b67cd10f92b84e031"
+  },
+  "1f2e3d4c5b6a7890123456789abcdef0123456789abcdef0123456789abcdef0": {
+    "type": "hash",
+    "id": "1f2e3d4c5b6a7890123456789abcdef0123456789abcdef0123456789abcdef0",
+    "title": "SHA-256 Artifact Hash",
+    "summary": "Cryptographic SHA-256 digest (64 characters).",
+    "algorithm": "SHA-256",
+    "length": "64 CHARS",
+    "url": "https://www.virustotal.com/gui/file/1f2e3d4c5b6a7890123456789abcdef0123456789abcdef0123456789abcdef0"
+  },
+  "EID 4672": {
+    "type": "eventid",
+    "id": "4672",
+    "title": "Event ID 4672",
+    "channel": "Security",
+    "category": "Privilege Use",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Special administrative privileges assigned to a new logon session. Logged immediately following event 4624 when an account possessing sensitive rights logs in. Sensitive privileges include SeDebugPrivilege, SeTcbPrivilege, SeSecurityPrivilege, SeBackupPrivilege.",
+    "key_fields": [
+      "SubjectUserName",
+      "SubjectDomainName",
+      "PrivilegeList"
+    ],
+    "mitre": [
+      "T1078 (Valid Accounts)",
+      "T1068 (Exploitation for Privilege Escalation)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4672"
+  },
+  "System.evtx": {
+    "type": "evtx",
+    "id": "System.evtx",
+    "title": "Windows System Event Log",
+    "channel": "System",
+    "path": "%SystemRoot%\\System32\\Winevt\\Logs\\System.evtx",
+    "role": "Contains events logged by Windows system components, service control manager, hardware changes, kernel drivers, and system startup/shutdown.",
+    "key_events": [
+      "7045 (Service Installed)",
+      "7036 (Service State Change)",
+      "104 (Log Cleared)",
+      "1074 (System Shutdown)",
+      "41 (Kernel Power / BSOD)"
+    ],
+    "retention": "Default 20MB. Circular overwrite policy.",
+    "url": "https://learn.microsoft.com/en-us/windows/win32/eventlog/system-event-log",
+    "summary": "Contains events logged by Windows system components, service control manager, hardware changes, kernel drivers, and system startup/shutdown."
+  },
+  "c8a14b3f8902d1e2e3f4a5b6c7d8e9f01a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d": {
+    "type": "hash",
+    "id": "c8a14b3f8902d1e2e3f4a5b6c7d8e9f01a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+    "title": "SHA-256 Artifact Hash",
+    "summary": "Cryptographic SHA-256 digest (64 characters).",
+    "algorithm": "SHA-256",
+    "length": "64 CHARS",
+    "url": "https://www.virustotal.com/gui/file/c8a14b3f8902d1e2e3f4a5b6c7d8e9f01a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d"
+  },
+  "GHSA-jfh8-c2jp-5v3q": {
+    "type": "ghsa",
+    "id": "GHSA-jfh8-c2jp-5v3q",
+    "title": "Remote code injection in Log4j",
+    "summary": "# Summary\n\nLog4j versions prior to 2.16.0 are subject to a remote code execution vulnerability via the ldap JNDI parser.\nAs per [Apache's Log4j security guide](https://logging.apache.org/log4j/2.x/security.html): Apache Log4j2 <=2.14.1 JNDI features used in configuration, log messages, and parameters do not protect aga...",
+    "severity": "CRITICAL",
+    "score": 10.0,
+    "cve": "CVE-2021-44228",
+    "url": "https://github.com/advisories/GHSA-jfh8-c2jp-5v3q"
+  },
+  "CVE-2024-21762": {
+    "type": "cve",
+    "id": "CVE-2024-21762",
+    "title": "CVE-2024-21762: Fortinet FortiOS / FortiProxy Out-of-Bounds Write",
+    "summary": "An out-of-bounds write in Fortinet FortiOS and FortiProxy allows an unauthenticated remote attacker to execute arbitrary code or commands via specifically crafted HTTP requests.",
+    "score": 9.6,
+    "severity": "CRITICAL",
+    "affected": [
+      "Fortinet FortiOS",
+      "Fortinet FortiProxy"
+    ],
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-21762"
+  },
+  "112233445566778899aabbccddeeff00": {
+    "type": "hash",
+    "id": "112233445566778899aabbccddeeff00",
+    "title": "MD5 Artifact Hash",
+    "summary": "Cryptographic MD5 digest (32 characters).",
+    "algorithm": "MD5",
+    "length": "32 CHARS",
+    "url": "https://www.virustotal.com/gui/file/112233445566778899aabbccddeeff00"
+  },
+  "445a6c12b9d834a9812f00a5d29e71ab": {
+    "type": "hash",
+    "id": "445a6c12b9d834a9812f00a5d29e71ab",
+    "title": "MD5 Artifact Hash",
+    "summary": "Cryptographic MD5 digest (32 characters).",
+    "algorithm": "MD5",
+    "length": "32 CHARS",
+    "url": "https://www.virustotal.com/gui/file/445a6c12b9d834a9812f00a5d29e71ab"
+  },
+  "d41d8cd98f00b204e9800998ecf8427e": {
+    "type": "hash",
+    "id": "d41d8cd98f00b204e9800998ecf8427e",
+    "title": "MD5 Artifact Hash",
+    "summary": "Cryptographic MD5 digest (32 characters).",
+    "algorithm": "MD5",
+    "length": "32 CHARS",
+    "url": "https://www.virustotal.com/gui/file/d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "194.26.29.114": {
+    "type": "ip",
+    "id": "194.26.29.114",
+    "title": "External Public IP (194.26.29.114)",
+    "summary": "Publicly routable Internet endpoint. Threat intelligence queries available below to verify IP reputation and abuse history.",
+    "scope": "EXTERNAL",
+    "subnet": "Public Internet (WAN)",
+    "opsec": "External reputation lookups permitted",
+    "version": "IPv4",
+    "severity": "PUBLIC WAN",
+    "url": "https://www.abuseipdb.com/check/194.26.29.114"
+  },
+  "EID 7045": {
+    "type": "eventid",
+    "id": "7045",
+    "title": "Event ID 7045",
+    "channel": "System",
+    "category": "System / Service Install",
+    "severity": "SYSTEM NOTICE",
+    "summary": "A new service was installed on the system (logged by Service Control Manager in System.evtx). Primary source for discovering backdoor persistence and remote execution services.",
+    "key_fields": [
+      "ServiceName",
+      "ImagePath",
+      "ServiceType",
+      "StartType",
+      "AccountName"
+    ],
+    "mitre": [
+      "T1543.003 (Create or Modify System Process: Windows Service)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=7045"
+  },
+  "192.168.1.105": {
+    "type": "ip",
+    "id": "192.168.1.105",
+    "title": "Private Intranet Endpoint (192.168.1.105)",
+    "summary": "Internal private subnet IP (RFC 1918). External threat intelligence queries are suppressed to protect client confidentiality and investigative OPSEC.",
+    "scope": "INTERNAL",
+    "subnet": "RFC 1918 (Private LAN)",
+    "opsec": "External threat queries suppressed (Confidential client subnet)",
+    "version": "IPv4",
+    "severity": "PROTECTED",
+    "url": "#"
+  },
+  "T1021.002": {
+    "type": "mitre",
+    "id": "T1021.002",
+    "name": "SMB/Windows Admin Shares",
+    "summary": "Adversaries may use Valid Accounts to interact with a remote network share using Server Message Block (SMB). The adversary may then perform actions as the logged-on user. SMB is a file, printer, and serial port sharing protocol for Windows machines on the same network or domain. Adversaries may use SMB to interact with...",
+    "tactics": [
+      "lateral movement"
+    ],
+    "platforms": [
+      "Windows"
+    ],
+    "url": "https://attack.mitre.org/techniques/T1021/002"
+  },
+  "Sysmon.evtx": {
+    "type": "evtx",
+    "id": "Sysmon.evtx",
+    "title": "Microsoft Sysmon Operational Telemetry Log",
+    "channel": "Microsoft-Windows-Sysmon/Operational",
+    "path": "%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-Sysmon%4Operational.evtx",
+    "role": "Premier endpoint telemetry sensor providing detailed process lineage, network sockets, raw disk access, process memory injection, and pipe/DNS activity.",
+    "key_events": [
+      "EID 1 (Process Create)",
+      "EID 3 (Network Connect)",
+      "EID 8 (CreateRemoteThread)",
+      "EID 10 (ProcessAccess)",
+      "EID 11 (FileCreate)",
+      "EID 22 (DNS Query)"
+    ],
+    "retention": "Typically configured to 64MB - 512MB by SOC engineering.",
+    "url": "https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon",
+    "summary": "Premier endpoint telemetry sensor providing detailed process lineage, network sockets, raw disk access, process memory injection, and pipe/DNS activity."
+  },
+  "T1071.001": {
+    "type": "mitre",
+    "id": "T1071.001",
+    "name": "Web Protocols",
+    "summary": "Adversaries may communicate using application layer protocols associated with web traffic to avoid detection/network filtering by blending in with existing traffic. Commands to the remote system, and often the results of those commands, will be embedded within the protocol traffic between the client and server. Protoco...",
+    "tactics": [
+      "command and control"
+    ],
+    "platforms": [
+      "ESXi",
+      "Linux",
+      "macOS",
+      "Network Devices",
+      "Windows"
+    ],
+    "url": "https://attack.mitre.org/techniques/T1071/001"
+  },
+  "Event ID 4624": {
+    "type": "eventid",
+    "id": "4624",
+    "title": "Event ID 4624",
+    "channel": "Security",
+    "category": "Logon / Authentication",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Records successful authentication sessions. The LogonType code discloses how authentication occurred: 2 (Interactive Console), 3 (Network / SMB / WMI), 5 (Service), 9 (NewCredentials / Pass-the-Hash / Mimikatz), 10 (RemoteInteractive / RDP).",
+    "key_fields": [
+      "LogonType",
+      "TargetUserName",
+      "TargetDomainName",
+      "IpAddress",
+      "WorkstationName",
+      "ProcessName",
+      "ElevatedToken"
+    ],
+    "mitre": [
+      "T1078 (Valid Accounts)",
+      "T1021.001 (Remote Desktop Protocol)",
+      "T1021.002 (SMB/Windows Admin Shares)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4624"
+  },
+  "4688": {
+    "type": "eventid",
+    "id": "4688",
+    "title": "Event ID 4688",
+    "channel": "Security",
+    "category": "Detailed Tracking",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Tracks execution of all binaries. When CommandLine auditing policy is active, exposes full script execution arguments, PowerShell one-liners, and living-off-the-land commands.",
+    "key_fields": [
+      "NewProcessName",
+      "CommandLine",
+      "ParentProcessName",
+      "SubjectUserName",
+      "TokenElevationType"
+    ],
+    "mitre": [
+      "T1059 (Command and Scripting Interpreter)",
+      "T1105 (Ingress Tool Transfer)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4688"
+  },
+  "7d8e9a2b4c1f0e3d5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f": {
+    "type": "hash",
+    "id": "7d8e9a2b4c1f0e3d5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f",
+    "title": "SHA-256 Artifact Hash",
+    "summary": "Cryptographic SHA-256 digest (64 characters).",
+    "algorithm": "SHA-256",
+    "length": "64 CHARS",
+    "url": "https://www.virustotal.com/gui/file/7d8e9a2b4c1f0e3d5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f"
+  },
+  "Event ID 4688": {
+    "type": "eventid",
+    "id": "4688",
+    "title": "Event ID 4688",
+    "channel": "Security",
+    "category": "Detailed Tracking",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Tracks execution of all binaries. When CommandLine auditing policy is active, exposes full script execution arguments, PowerShell one-liners, and living-off-the-land commands.",
+    "key_fields": [
+      "NewProcessName",
+      "CommandLine",
+      "ParentProcessName",
+      "SubjectUserName",
+      "TokenElevationType"
+    ],
+    "mitre": [
+      "T1059 (Command and Scripting Interpreter)",
+      "T1105 (Ingress Tool Transfer)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4688"
+  },
+  "9b2c3d4e5f6a7b8c12345678abcdef01": {
+    "type": "hash",
+    "id": "9b2c3d4e5f6a7b8c12345678abcdef01",
+    "title": "MD5 Artifact Hash",
+    "summary": "Cryptographic MD5 digest (32 characters).",
+    "algorithm": "MD5",
+    "length": "32 CHARS",
+    "url": "https://www.virustotal.com/gui/file/9b2c3d4e5f6a7b8c12345678abcdef01"
+  },
+  "T1059.001": {
+    "type": "mitre",
+    "id": "T1059.001",
+    "name": "PowerShell",
+    "summary": "Adversaries may abuse PowerShell commands and scripts for execution. PowerShell is a powerful interactive command-line interface and scripting environment included in the Windows operating system. Adversaries can use PowerShell to perform a number of actions, including discovery of information and execution of code. Ex...",
+    "tactics": [
+      "execution"
+    ],
+    "platforms": [
+      "Windows"
+    ],
+    "url": "https://attack.mitre.org/techniques/T1059/001"
+  },
+  "1102": {
+    "type": "eventid",
+    "id": "1102",
+    "title": "Event ID 1102",
+    "channel": "Security",
+    "category": "Log Clear / Anti-Forensics",
+    "severity": "CRITICAL AUDIT",
+    "summary": "Logged when the Security event log is cleared via wevtutil cl Security, PowerShell Clear-EventLog, or attacker scripts. Always treated as an active malicious tampering indicator.",
+    "key_fields": [
+      "SubjectUserName",
+      "SubjectDomainName",
+      "SubjectLogonId"
+    ],
+    "mitre": [
+      "T1070.001 (Clear Windows Event Logs)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=1102"
+  },
+  "8f14e45fceea167a5a36dedd4bea2543": {
+    "type": "hash",
+    "id": "8f14e45fceea167a5a36dedd4bea2543",
+    "title": "MD5 Artifact Hash",
+    "summary": "Cryptographic MD5 digest (32 characters).",
+    "algorithm": "MD5",
+    "length": "32 CHARS",
+    "url": "https://www.virustotal.com/gui/file/8f14e45fceea167a5a36dedd4bea2543"
+  },
+  "4624": {
+    "type": "eventid",
+    "id": "4624",
+    "title": "Event ID 4624",
+    "channel": "Security",
+    "category": "Logon / Authentication",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Records successful authentication sessions. The LogonType code discloses how authentication occurred: 2 (Interactive Console), 3 (Network / SMB / WMI), 5 (Service), 9 (NewCredentials / Pass-the-Hash / Mimikatz), 10 (RemoteInteractive / RDP).",
+    "key_fields": [
+      "LogonType",
+      "TargetUserName",
+      "TargetDomainName",
+      "IpAddress",
+      "WorkstationName",
+      "ProcessName",
+      "ElevatedToken"
+    ],
+    "mitre": [
+      "T1078 (Valid Accounts)",
+      "T1021.001 (Remote Desktop Protocol)",
+      "T1021.002 (SMB/Windows Admin Shares)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4624"
+  },
+  "Event ID 4672": {
+    "type": "eventid",
+    "id": "4672",
+    "title": "Event ID 4672",
+    "channel": "Security",
+    "category": "Privilege Use",
+    "severity": "AUDIT SUCCESS",
+    "summary": "Special administrative privileges assigned to a new logon session. Logged immediately following event 4624 when an account possessing sensitive rights logs in. Sensitive privileges include SeDebugPrivilege, SeTcbPrivilege, SeSecurityPrivilege, SeBackupPrivilege.",
+    "key_fields": [
+      "SubjectUserName",
+      "SubjectDomainName",
+      "PrivilegeList"
+    ],
+    "mitre": [
+      "T1078 (Valid Accounts)",
+      "T1068 (Exploitation for Privilege Escalation)"
+    ],
+    "url": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4672"
+  },
+  "Security.evtx": {
+    "type": "evtx",
+    "id": "Security.evtx",
+    "title": "Windows Security Event Log",
+    "channel": "Security",
+    "path": "%SystemRoot%\\System32\\Winevt\\Logs\\Security.evtx",
+    "role": "Primary forensic repository for authentication, user rights assignment, account management, audit policy changes, and object access.",
+    "key_events": [
+      "4624 (Logon)",
+      "4625 (Failed Logon)",
+      "4672 (Admin Privs)",
+      "4688 (Process Created)",
+      "4720 (User Created)",
+      "1102 (Log Cleared)"
+    ],
+    "retention": "Fixed maximum size (typically 20MB to 1GB in Enterprise). Wrap-around overwrite policy.",
+    "url": "https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/security-auditing-overview",
+    "summary": "Primary forensic repository for authentication, user rights assignment, account management, audit policy changes, and object access."
+  },
+  "T1003.001": {
+    "type": "mitre",
+    "id": "T1003.001",
+    "name": "LSASS Memory",
+    "summary": "Adversaries may attempt to access credential material stored in the process memory of the Local Security Authority Subsystem Service (LSASS). After a user logs on, the system generates and stores a variety of credential materials in LSASS process memory. These credential materials can be harvested by an administrative...",
+    "tactics": [
+      "credential access"
+    ],
+    "platforms": [
+      "Windows"
+    ],
+    "url": "https://attack.mitre.org/techniques/T1003/001"
+  }
+}
 </script>
 </body>
 </html>

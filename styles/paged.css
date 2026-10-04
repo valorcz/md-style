@@ -184,57 +184,9 @@ body {
   background-color: #0f172a15 !important;
 }
 
-/* --------------------------------------------------------------------------
-   6. Screen Preview Mode: Realistic Paper Sheets with Drop Shadows
-   -------------------------------------------------------------------------- */
-@media screen {
-  body {
-    background-color: #0f172a0f !important;
-    padding: 30px 0 !important;
-    min-height: 100vh;
-  }
-
-  .pagedjs_pages {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    gap: 32px;
-    margin: 0 auto;
-    max-width: none !important;
-  }
-
-  .pagedjs_page {
-    background: #ffffff !important;
-    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15),
-                0 8px 10px -6px rgba(15, 23, 42, 0.1);
-    border-radius: 2px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .pagedjs_page:hover {
-    box-shadow: 0 20px 30px -10px rgba(15, 23, 42, 0.2);
-  }
-}
-
-/* --------------------------------------------------------------------------
-   7. Print Adjustments for Paged.js
-   -------------------------------------------------------------------------- */
-@media print {
-  body {
-    background-color: #ffffff !important;
-    max-width: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: none !important;
-  }
-  .pagedjs_pages {
-    gap: 0 !important;
-  }
-  .pagedjs_page {
-    box-shadow: none !important;
-    border: none !important;
-  }
-}
+/* Note: Screen preview container styles and @media print adjustments for .pagedjs_pages
+   are maintained in templates/paged-header.html with data-pagedjs-ignore to prevent
+   the Paged.js polisher from stripping screen styles or forcing print styles at runtime. */
 
 /* --------------------------------------------------------------------------
    8. Suppress Accidental Blank Trailing Pages

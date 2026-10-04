@@ -62,7 +62,7 @@
   --code-inline-border: #cbd5e1;
 
   /* Layout dimensions */
-  --doc-max-width: 54rem;          /* ~864px: optimal 75-character measure */
+  --doc-max-width: 58rem;          /* ~928px: optimal balance for data-dense forensic tables */
 
   /* Running Header & Footer for Paged Media (Supplied by Python i18n Engine) */
   --page-header-left: var(--i18n-report-title, "OFFICIAL FORENSIC REPORT");
@@ -100,7 +100,7 @@ body {
   background-color: var(--color-paper);
   max-width: var(--doc-max-width);
   margin: 2.5rem auto;
-  padding: 3.5rem 4rem;
+  padding: 3.5rem 3.5rem;
   border: 1px solid var(--color-border);
   border-radius: 8px;
   box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05),
@@ -273,7 +273,9 @@ h5, h6 {
   content: var(--i18n-examiner);
   font-weight: 700;
   color: var(--color-text-muted);
-  width: 7.5rem;
+  min-width: 7.5rem;
+  margin-right: 0.5rem;
+  flex-shrink: 0;
   display: inline-block;
 }
 
@@ -281,7 +283,9 @@ h5, h6 {
   content: var(--i18n-date);
   font-weight: 700;
   color: var(--color-text-muted);
-  width: 7.5rem;
+  min-width: 7.5rem;
+  margin-right: 0.5rem;
+  flex-shrink: 0;
   display: inline-block;
 }
 
@@ -367,7 +371,7 @@ nav#TOC a:hover {
    7. Monospace & Inline Code Highlighting
    -------------------------------------------------------------------------- */
 /* Inline Code Badge - Engineered for Hashes, IPs, Registry Keys, Paths */
-code, kbd, samp {
+code:not(pre code), kbd, samp {
   font-family: var(--code-font);
   font-size: 0.86em;
   font-weight: 500;
@@ -378,24 +382,26 @@ code, kbd, samp {
   color: var(--code-inline-text);
   border: 1px solid var(--code-inline-border);
   border-radius: 4px;
-  /* Wrap long words cleanly without splitting standard terms mid-character */
+  /* Allow natural line wrapping at word/path boundaries without mid-word hyphenation */
   word-break: normal;
   overflow-wrap: break-word;
-  white-space: pre-wrap;
+  white-space: normal;
   transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
-/* Dedicated class for long hashes, keys, tokens & hex strings */
+/* Dedicated class for long hashes, keys, tokens & hex strings - wrap cleanly */
 code.hash,
 code.break-all,
 .hash,
 .break-all {
-  word-break: break-all;
-  overflow-wrap: anywhere;
+  white-space: normal !important;
+  word-break: break-all !important;
+  overflow-wrap: anywhere !important;
 }
 
 /* Dedicated badge for MITRE ATT&CK technique IDs (e.g. T1059.001) */
-code.mitre-pill {
+code.mitre-pill,
+.mitre-pill {
   font-family: var(--font-mono);
   font-size: 0.82em;
   font-weight: 600;
@@ -405,17 +411,42 @@ code.mitre-pill {
   border-radius: 4px;
   padding: 0.15em 0.5em;
   letter-spacing: 0.02em;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
 }
 
-code.mitre-pill:hover {
+code.mitre-pill:hover,
+.mitre-pill:hover {
   background-color: var(--color-accent-light);
   border-color: var(--color-accent);
 }
 
-/* Indicators of Compromise (IoC) & Hashes */
-.ioc {
+/* Indicators of Compromise (IoC), Windows Event IDs, EVTX & Pills - Atomic, never wrap */
+.ioc,
+.cyber-ioc,
+.eventid-pill,
+.evtx-pill,
+.custom-pill,
+.badge,
+.eid,
+code.nowrap,
+.nowrap {
   font-feature-settings: "liga" 0;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+}
+
+/* Timestamp ranges: allow wrapping between times/dates while keeping units intact */
+.timestamp-range,
+.timestamp-range *,
+td.timestamp-range,
+th.timestamp-range {
+  white-space: normal !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
 }
 
 /* Top Reading Progress Bar (Screen mode) */
@@ -754,7 +785,7 @@ table {
   font-variant-numeric: tabular-nums;
   border: 1px solid var(--color-border-dark);
   border-radius: 6px;
-  overflow: hidden;
+  overflow: visible;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
 }
 
@@ -780,7 +811,7 @@ th {
   letter-spacing: 0.08em;
   color: var(--color-text-muted);
   text-align: left;
-  padding: 0.65rem 1rem;
+  padding: 0.6rem 0.8rem;
   border-bottom: 2px solid var(--color-border);
   word-break: normal;
 }
@@ -795,7 +826,7 @@ th {
 }
 
 td {
-  padding: 0.7rem 1rem;
+  padding: 0.65rem 0.8rem;
   border-bottom: 1px solid var(--color-border);
   vertical-align: top;
   word-break: normal;
@@ -826,13 +857,29 @@ td.nowrap code {
   overflow-wrap: normal !important;
 }
 
+/* Timestamp ranges override nowrap */
+.timestamp-range,
+.timestamp-range *,
+th.timestamp-range,
+td.timestamp-range,
+th.timestamp-range code,
+td.timestamp-range code {
+  white-space: normal !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+}
+
 /* Timeline & Event Tables */
 .table-timeline th:first-child,
 .table-timeline td:first-child,
 table.timeline th:first-child,
 table.timeline td:first-child {
-  white-space: nowrap !important;
   width: 1%;
+}
+
+.table-timeline th:first-child:not(.timestamp-range),
+.table-timeline td:first-child:not(.timestamp-range) {
+  white-space: nowrap !important;
 }
 
 /* Seamless, borderless timeline table */
@@ -891,20 +938,28 @@ table.table-timeline,
 
 .table-timeline tbody td:first-child {
   position: relative;
-  padding-left: 2.25rem !important;
+  padding-left: 2rem !important;
   font-family: var(--font-mono);
   font-weight: 600;
   font-size: 0.82rem;
   font-variant-numeric: tabular-nums;
   color: var(--color-primary);
+}
+
+.table-timeline tbody td:first-child:not(.timestamp-range) {
   white-space: nowrap !important;
+}
+
+.table-timeline tbody td:first-child.timestamp-range {
+  white-space: normal !important;
+  word-break: keep-all !important;
 }
 
 /* Timeline vertical rail connector */
 .table-timeline tbody td:first-child::before {
   content: "";
   position: absolute;
-  left: 0.95rem;
+  left: 0.85rem;
   top: 0;
   bottom: 0;
   width: 2px;
@@ -915,7 +970,7 @@ table.table-timeline,
 .table-timeline tbody td:first-child::after {
   content: "";
   position: absolute;
-  left: calc(0.95rem - 3.5px);
+  left: calc(0.85rem - 3.5px);
   top: 1.25rem;
   width: 9px;
   height: 9px;
@@ -1120,7 +1175,7 @@ tr.table-row-hidden {
 
 .table-wrapper {
   width: 100%;
-  overflow-x: auto;
+  overflow: visible;
   margin: 1.8em 0 2.2em;
 }
 
@@ -1882,6 +1937,41 @@ section.footnotes li {
     background-color: #f8fafc !important;
   }
 
+  .ioc,
+  .cyber-ioc,
+  .mitre-pill,
+  .eventid-pill,
+  .evtx-pill,
+  .custom-pill,
+  .badge,
+  .eid,
+  code.nowrap,
+  .nowrap {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+
+  .timestamp-range,
+  .timestamp-range *,
+  th.timestamp-range,
+  td.timestamp-range,
+  th.timestamp-range code,
+  td.timestamp-range code {
+    white-space: normal !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+
+  code.hash,
+  code.break-all,
+  .hash,
+  .break-all {
+    white-space: normal !important;
+    word-break: break-all !important;
+    overflow-wrap: anywhere !important;
+  }
+
   .nowrap,
   .nowrap *,
   th.nowrap,
@@ -1889,7 +1979,7 @@ section.footnotes li {
   th.nowrap code,
   td.nowrap code {
     white-space: nowrap !important;
-    word-break: normal !important;
+    word-break: keep-all !important;
     overflow-wrap: normal !important;
   }
 

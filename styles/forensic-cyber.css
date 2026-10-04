@@ -993,7 +993,7 @@ div.finding .title,
 }
 
 /* General Inline Code & Preformatted */
-code {
+code:not(pre code) {
   font-family: var(--font-mono);
   font-size: 0.85em;
   background-color: var(--code-inline-bg);
@@ -1001,6 +1001,9 @@ code {
   border: 1px solid var(--color-border);
   padding: 0.15em 0.35em;
   border-radius: 3px;
+  word-break: normal;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 pre {
@@ -1019,8 +1022,8 @@ pre code {
   color: var(--color-text);
 }
 
-/* Hashes & IoCs with Click-to-Inspect Affordance */
-code.hash, .hash, code.ioc, .ioc, .cyber-ioc {
+/* IoCs, Pills & Identifiers - Never wrap across lines */
+code.ioc, .ioc, .cyber-ioc, .mitre-pill, .custom-pill, .eid, .eventid-pill, .evtx-pill {
   font-family: var(--font-mono);
   font-size: 0.8rem;
   background: var(--code-inline-bg);
@@ -1031,7 +1034,26 @@ code.hash, .hash, code.ioc, .ioc, .cyber-ioc {
   cursor: pointer;
   position: relative;
   transition: var(--cyber-transition);
-  word-break: break-all;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+}
+
+/* Timestamp ranges: allow wrapping between times/dates while keeping units intact */
+.timestamp-range,
+.timestamp-range *,
+td.timestamp-range,
+th.timestamp-range {
+  white-space: normal !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+}
+
+/* Hashes & explicit break-all tokens - Wrap cleanly */
+code.hash, .hash, code.break-all, .break-all, .drawer-val-box {
+  white-space: normal !important;
+  word-break: break-all !important;
+  overflow-wrap: anywhere !important;
 }
 
 code.hash:hover, .cyber-ioc:hover {
@@ -1051,8 +1073,12 @@ table {
   font-size: 0.86rem;
   border: 1px solid var(--color-border);
   border-radius: 4px;
-  overflow: hidden;
+  overflow: visible;
   background: var(--color-card-bg);
+}
+
+thead {
+  background: transparent;
 }
 
 thead th {
@@ -1064,7 +1090,7 @@ thead th {
   color: var(--color-text-muted);
   background: var(--color-hud-bg);
   border-bottom: 2px solid var(--color-border);
-  padding: 10px 14px;
+  padding: 8px 12px;
   text-align: left;
   position: sticky;
   top: 42px;
@@ -1076,7 +1102,7 @@ body.section-mode-active thead th {
 }
 
 tbody td {
-  padding: 10px 14px;
+  padding: 8px 12px;
   border-bottom: 1px solid var(--color-border-subtle);
   color: var(--color-text);
 }
@@ -1089,10 +1115,56 @@ tbody tr:hover {
   background: rgba(0, 240, 255, 0.03);
 }
 
-td.nowrap {
-  white-space: nowrap;
+td.nowrap,
+th.nowrap,
+.nowrap,
+.nowrap * {
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
   font-family: var(--font-mono);
   font-size: 0.8rem;
+}
+
+/* Timestamp ranges override nowrap */
+.timestamp-range,
+.timestamp-range *,
+td.timestamp-range,
+th.timestamp-range,
+td.timestamp-range *,
+th.timestamp-range * {
+  white-space: normal !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+}
+
+/* Responsive Table Wrapper */
+.table-wrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow: visible;
+  margin: 24px 0;
+}
+
+@media screen and (max-width: 768px) {
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+.table-wrapper table {
+  margin: 0;
+  width: 100%;
+}
+
+.table-filter-toolbar + .table-wrapper {
+  margin-top: 0 !important;
+}
+
+.table-filter-toolbar + .table-wrapper table {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
 }
 
 /* --- Chronological Timeline --- */
@@ -1108,16 +1180,24 @@ td.nowrap {
 /* Rail Line */
 .table-timeline tbody td:first-child {
   position: relative;
-  padding-left: 24px;
-  white-space: nowrap;
+  padding-left: 20px;
   font-family: var(--font-mono);
   font-size: 0.8rem;
+}
+
+.table-timeline tbody td:first-child:not(.timestamp-range) {
+  white-space: nowrap !important;
+}
+
+.table-timeline tbody td:first-child.timestamp-range {
+  white-space: normal !important;
+  word-break: keep-all !important;
 }
 
 .table-timeline tbody td:first-child::before {
   content: "";
   position: absolute;
-  left: 8px;
+  left: 7px;
   top: 0;
   bottom: 0;
   width: 2px;
@@ -1128,7 +1208,7 @@ td.nowrap {
 .table-timeline tbody td:first-child::after {
   content: "";
   position: absolute;
-  left: 4px;
+  left: 3px;
   top: 15px;
   width: 10px;
   height: 10px;
@@ -1827,7 +1907,51 @@ figcaption.mermaid-caption .figure-label {
 
   figure.mermaid-diagram,
   table,
+  .table-wrapper,
   .ai-insight-card {
     page-break-inside: avoid;
+  }
+
+  .table-wrapper {
+    overflow: visible !important;
+    margin: 16px 0 !important;
+    display: block !important;
+    max-width: none !important;
+  }
+
+  .ioc,
+  .cyber-ioc,
+  .mitre-pill,
+  .custom-pill,
+  .eid,
+  .eventid-pill,
+  .evtx-pill {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+
+  .timestamp-range,
+  .timestamp-range *,
+  td.timestamp-range,
+  th.timestamp-range {
+    white-space: normal !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+
+  code.hash,
+  .hash,
+  code.break-all,
+  .break-all {
+    white-space: normal !important;
+    word-break: break-all !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  th.nowrap,
+  td.nowrap {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
   }
 }

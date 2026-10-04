@@ -273,6 +273,41 @@ td.nowrap code {
   font-variant-numeric: tabular-nums;
 }
 
+/* Timestamp ranges override nowrap */
+.timestamp-range,
+.timestamp-range *,
+th.timestamp-range,
+td.timestamp-range,
+th.timestamp-range code,
+td.timestamp-range code {
+  white-space: normal !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+}
+
+/* Scrollable Responsive Table Wrapper */
+.table-wrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 1.5em 0 1.8em;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-wrapper table {
+  margin: 0;
+  width: 100%;
+}
+
+@media print {
+  .table-wrapper {
+    overflow: visible !important;
+    margin: 1.2em 0 1.5em !important;
+    display: block !important;
+    max-width: none !important;
+  }
+}
+
 /* --------------------------------------------------------------------------
    5. GitHub Alert Divs & Admonition Callout Boxes
    -------------------------------------------------------------------------- */
@@ -404,6 +439,19 @@ div.tip .title, div.success .title, div.finding .title {
    6. General Print Media Rules (@media print)
    -------------------------------------------------------------------------- */
 @media print {
+  /* Suppress screen-only interactive HUD elements */
+  .cyber-drawer,
+  .drawer-backdrop,
+  .hud-bar,
+  .theme-toggle,
+  .print-action-bar,
+  .reading-progress,
+  #report-toc-hud,
+  #toc-hud-toggle,
+  .screen-only {
+    display: none !important;
+  }
+
   html, body {
     background: transparent !important;
     max-width: none !important;
