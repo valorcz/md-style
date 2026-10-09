@@ -1,0 +1,19 @@
+{
+  "name": "md-style-viewer",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "vite build"
+  },
+  "dependencies": {
+    "beautiful-mermaid": "^1.1.3",
+    "mermaid": "^11.4.1",
+    "pagedjs": "^0.4.3"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^4.0.0",
+    "svelte": "^5.0.0",
+    "vite": "^5.4.0"
+  }
+}

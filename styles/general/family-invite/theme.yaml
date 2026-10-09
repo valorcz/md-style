@@ -1,0 +1,7 @@
+name: general/family-invite
+title: "Family Invitation Theme"
+extends: base
+stylesheets:
+  - family-invite.css
+features:
+  sticky_tables: false

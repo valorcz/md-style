@@ -16,6 +16,29 @@
     "section_tag": "§ ABSCHNITT",
     "figure_prefix": "Abbildung "
   },
+  "callouts": {
+    "note": "HINWEIS",
+    "info": "INFORMATION",
+    "tip": "TIPP",
+    "success": "ERFOLG",
+    "important": "WICHTIG",
+    "warning": "WARNUNG",
+    "caution": "VORSICHT",
+    "critical": "KRITISCH",
+    "danger": "GEFAHR",
+    "evidence": "BEWEIS",
+    "finding": "BEFUND",
+    "proposal": "VORSCHLAG"
+  },
+  "ballots": {
+    "prompt": "ABSTIMMUNG:",
+    "pro": "DAFÜR",
+    "against": "DAGEGEN",
+    "abstain": "ENTHALTUNG"
+  },
+  "toc": {
+    "title": "Inhaltsverzeichnis"
+  },
   "ui": {
     "filter_placeholder": "Einträge filtern...",
     "all_categories": "Alle Kategorien",
@@ -25,5 +48,21 @@
     "print": "Drucken",
     "offline_badge": "OFFLINE-BERICHT",
     "close": "Schließen"
+  },
+  "paged": {
+    "web_view": "Web-Ansicht",
+    "paged_preview": "Druckvorschau (Seiten)",
+    "page_counter": "Seite {page} von {pages}"
+  },
+  "svj": {
+    "assembly_invite": "EINLADUNG ZUR VERSAMMLUNG",
+    "ballot_title": "STIMMZETTEL (UMLAUFVERFAHREN)",
+    "committee_label": "Vorstand / Gesetzliches Organ",
+    "statute_notice": "Gemäß WEG-Bestimmungen"
+  },
+  "forensics": {
+    "classification": "VERTRAULICH // TLP:AMBER",
+    "unit": "Forensische Untersuchungseinheit",
+    "evidence_hash": "SHA-256 Beweismittel-Integrität"
   }
 }

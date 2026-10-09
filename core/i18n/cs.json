@@ -8,7 +8,7 @@
     "table_label": "Tabulka",
     "page_label": "Strana",
     "confidential_label": "DŮVĚRNÉ",
-    "report_type": "ZPRÁVA",
+    "report_type": "ZPRÁVA O VYŠETŘOVÁNÍ",
     "author_label": "Autor:",
     "date_label": "Datum:",
     "page_prefix": "Strana ",
@@ -16,14 +16,64 @@
     "section_tag": "§ SEKCE",
     "figure_prefix": "Obrázek "
   },
+  "callouts": {
+    "note": "POZNÁMKA",
+    "info": "INFORMACE",
+    "tip": "TIP",
+    "success": "ÚSPĚCH",
+    "important": "DŮLEŽITÉ",
+    "warning": "VAROVÁNÍ",
+    "caution": "POZOR",
+    "critical": "KRITICKÉ",
+    "danger": "NEBEZPEČÍ",
+    "evidence": "DŮKAZ",
+    "finding": "ZJIŠTĚNÍ",
+    "proposal": "NÁVRH VÝBORU"
+  },
+  "ballots": {
+    "prompt": "HLASOVÁNÍ:",
+    "pro": "PRO",
+    "against": "PROTI",
+    "abstain": "ZDRŽEL SE"
+  },
+  "toc": {
+    "title": "Obsah"
+  },
   "ui": {
-    "filter_placeholder": "Filtrovat záznamy...",
+    "filter_placeholder": "Filtrovat řádky tabulky...",
     "all_categories": "Všechny kategorie",
-    "showing_records": "Zobrazeno {count} z {total}",
-    "copied": "ZKOPÍROVÁNO DO SCHRÁNKY",
-    "back_to_top": "Zpět nahoru",
-    "print": "Tisk",
-    "offline_badge": "OFFLINE ZPRÁVA",
+    "rows_count": "{visible} / {total} řádků",
+    "copy": "Kopírovat",
+    "copied": "Zkopírováno do schránky",
+    "print": "Tisk / PDF",
+    "summary": "Shrnutí",
+    "attributes": "Vlastnosti",
+    "references": "Odkazy",
+    "provenance": "Původ dat",
+    "status": "Stav",
     "close": "Zavřít"
+  },
+  "badges": {
+    "statute": "ZÁKONNÉ USTANOVENÍ",
+    "winevent": "WINDOWS UDÁLOST",
+    "cve": "CVE ZRANITELNOST",
+    "asset": "PODNIKOVÉ AKTIVUM",
+    "discovered": "IDENTIFIKOVANÝ TOKEN"
+  },
+  "paged": {
+    "web_view": "Webové zobrazení",
+    "paged_preview": "Tiskový náhled (stránky)",
+    "page_counter": "Strana {page} z {pages}"
+  },
+  "svj": {
+    "assembly_invite": "POZVÁNKA NA SHROMÁŽDĚNÍ",
+    "ballot_title": "HLASOVACÍ LÍSTEK (PER ROLLAM)",
+    "committee_label": "Statutární orgán / Výbor SVJ",
+    "statute_notice": "Dle § 1207 z. č. 89/2012 Sb. (občanský zákoník)"
+  },
+  "forensics": {
+    "classification": "DŮVĚRNÉ // TLP:AMBER",
+    "unit": "Forenzní vyšetřovací jednotka",
+    "evidence_hash": "SHA-256 Integrita důkazu"
   }
 }

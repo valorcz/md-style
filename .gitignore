@@ -5,6 +5,7 @@ __pycache__/
 
 # Local Data Cache
 data/cache/
+viewer/node_modules/
 
 # Transient Build Artifacts
 output/
@@ -17,3 +18,4 @@ output/
 # Allow checked-in documentation examples
 !examples/*.html
 !examples/*.pdf
+

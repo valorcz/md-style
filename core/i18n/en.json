@@ -8,22 +8,72 @@
     "table_label": "Table",
     "page_label": "Page",
     "confidential_label": "CONFIDENTIAL",
-    "report_type": "REPORT",
+    "report_type": "INVESTIGATION REPORT",
     "author_label": "Author:",
     "date_label": "Date:",
     "page_prefix": "Page ",
     "page_of": " of ",
-    "section_tag": "§ SECTION",
+    "section_tag": "SECTION",
     "figure_prefix": "Figure "
   },
+  "callouts": {
+    "note": "NOTE",
+    "info": "INFO",
+    "tip": "TIP",
+    "success": "SUCCESS",
+    "important": "IMPORTANT",
+    "warning": "WARNING",
+    "caution": "CAUTION",
+    "critical": "CRITICAL",
+    "danger": "DANGER",
+    "evidence": "EVIDENCE",
+    "finding": "FINDING",
+    "proposal": "COMMITTEE PROPOSAL"
+  },
+  "ballots": {
+    "prompt": "VOTING:",
+    "pro": "IN FAVOR",
+    "against": "AGAINST",
+    "abstain": "ABSTAIN"
+  },
+  "toc": {
+    "title": "Table of Contents"
+  },
   "ui": {
-    "filter_placeholder": "Filter records...",
+    "filter_placeholder": "Filter table rows...",
     "all_categories": "All Categories",
-    "showing_records": "Showing {count} of {total}",
-    "copied": "COPIED TO CLIPBOARD",
-    "back_to_top": "Back to top",
-    "print": "Print",
-    "offline_badge": "OFFLINE REPORT",
+    "rows_count": "{visible} / {total} rows",
+    "copy": "Copy",
+    "copied": "Copied to clipboard",
+    "print": "Print / PDF",
+    "summary": "Summary",
+    "attributes": "Attributes",
+    "references": "References",
+    "provenance": "Provenance",
+    "status": "Status",
     "close": "Close"
+  },
+  "badges": {
+    "statute": "LEGAL STATUTE",
+    "winevent": "WIN EVENT",
+    "cve": "CVE ADVISORY",
+    "asset": "ENTERPRISE ASSET",
+    "discovered": "DISCOVERED TOKEN"
+  },
+  "paged": {
+    "web_view": "Web View",
+    "paged_preview": "Paged Print Preview",
+    "page_counter": "Page {page} of {pages}"
+  },
+  "svj": {
+    "assembly_invite": "ASSEMBLY INVITATION",
+    "ballot_title": "BALLOT VOTE (PER ROLLAM)",
+    "committee_label": "Executive Board / Statutory Body",
+    "statute_notice": "Pursuant to § 1207 of Civil Code No. 89/2012 Coll."
+  },
+  "forensics": {
+    "classification": "CONFIDENTIAL // TLP:AMBER",
+    "unit": "Forensic Investigation Unit",
+    "evidence_hash": "SHA-256 Evidence Integrity"
   }
 }

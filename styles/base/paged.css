@@ -1,0 +1,288 @@
+/* ==========================================================================
+   PAGED.JS UNIVERSAL LAYOUT ENGINE
+   Theme-agnostic implementation of W3C CSS Paged Media specifications:
+   - Dynamic running headers and footers driven by theme CSS variables
+   - Elevated stacking contexts (z-index) so footers never get obscured
+   - Fragmented table margin-bottom resets
+   - Screen preview simulation (A4 sheets with realistic drop shadows)
+   - Orphan/widow control and heading break protection
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Dynamic Heading Strings for Running Headers
+   -------------------------------------------------------------------------- */
+h1 {
+  string-set: section-title content(), heading-title content();
+}
+
+h2 {
+  string-set: section-title content();
+}
+
+/* --------------------------------------------------------------------------
+   2. W3C CSS Paged Media Base Rules
+   -------------------------------------------------------------------------- */
+@page {
+  size: A4 portrait;
+  margin: var(--page-margin, 18mm 14mm 22mm 14mm);
+
+  /* Running Header */
+  @top-left {
+    content: var(--page-header-left, none);
+    font-family: var(--page-header-font, var(--font-mono, monospace));
+    font-size: var(--page-header-size, 7.5pt);
+    font-weight: 700;
+    color: var(--page-header-color, #64748b);
+    border-bottom: var(--page-header-border, none);
+    padding-bottom: 4px;
+    vertical-align: bottom;
+  }
+
+  @top-center {
+    content: var(--page-header-center, none);
+    font-family: var(--page-header-font, var(--font-mono, monospace));
+    font-size: var(--page-header-size, 7.5pt);
+    font-weight: 700;
+    color: var(--page-header-color, #64748b);
+    border-bottom: var(--page-header-border, none);
+    padding-bottom: 4px;
+    vertical-align: bottom;
+  }
+
+  @top-right {
+    content: var(--page-header-right, string(section-title));
+    font-family: var(--page-header-font, var(--font-heading, serif));
+    font-size: var(--page-header-size, 7.5pt);
+    font-weight: 600;
+    color: var(--page-header-color, #0f172a);
+    border-bottom: var(--page-header-border, none);
+    padding-bottom: 4px;
+    vertical-align: bottom;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  /* Running Footer */
+  @bottom-left {
+    content: var(--page-footer-left, none);
+    font-family: var(--page-footer-font, var(--font-mono, monospace));
+    font-size: var(--page-footer-size, 7.5pt);
+    font-weight: 600;
+    color: var(--page-footer-color, #94a3b8);
+    border-top: var(--page-footer-border, none);
+    padding-top: 4px;
+    vertical-align: top;
+  }
+
+  @bottom-center {
+    content: var(--page-footer-center, none);
+    font-family: var(--page-footer-font, var(--font-mono, monospace));
+    font-size: var(--page-footer-size, 7.5pt);
+    font-weight: 600;
+    color: var(--page-footer-color, #94a3b8);
+    border-top: var(--page-footer-border, none);
+    padding-top: 4px;
+    vertical-align: top;
+  }
+
+  @bottom-right {
+    content: var(--page-footer-right, counter(page));
+    font-family: var(--page-footer-font, var(--font-mono, monospace));
+    font-size: var(--page-footer-size, 7.5pt);
+    font-weight: 600;
+    color: var(--page-footer-color, #475569);
+    border-top: var(--page-footer-border, none);
+    padding-top: 4px;
+    vertical-align: top;
+  }
+}
+
+/* Cover / First Page Rules */
+@page:first {
+  margin-top: 18mm;
+  @top-left { content: var(--page-first-header-left, none); border-bottom: var(--page-first-header-border, none); }
+  @top-center { content: var(--page-first-header-center, none); border-bottom: var(--page-first-header-border, none); }
+  @top-right { content: var(--page-first-header-right, none); border-bottom: var(--page-first-header-border, none); }
+  @bottom-left { content: var(--page-first-footer-left, none); border-top: var(--page-first-footer-border, none); }
+  @bottom-center { content: var(--page-first-footer-center, none); border-top: var(--page-first-footer-border, none); }
+  @bottom-right { content: var(--page-first-footer-right, none); border-top: var(--page-first-footer-border, none); }
+}
+
+/* --------------------------------------------------------------------------
+   3. Break Protection & Stacking Contexts (Structural Layout Fixes)
+   -------------------------------------------------------------------------- */
+/* Ensure margin boxes (headers & footers) always paint on top of overflowing content */
+.pagedjs_margin-bottom,
+.pagedjs_margin-top,
+.pagedjs_margin {
+  z-index: 10 !important;
+  position: relative !important;
+}
+
+/* Prevent fragmented tables from protruding into the footer margin box */
+table[data-split-to],
+tbody[data-split-to],
+.pagedjs_area table[data-split-to],
+.pagedjs_area tbody[data-split-to] {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Orphan, widow, heading and list item break protection across all themes */
+.pagedjs_page_content p {
+  orphans: 3;
+  widows: 3;
+}
+
+li,
+.pagedjs_page_content li {
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+}
+
+h1, h2, h3, h4, h5, h6,
+.pagedjs_page_content h1,
+.pagedjs_page_content h2,
+.pagedjs_page_content h3,
+.pagedjs_page_content h4,
+.pagedjs_page_content h5,
+.pagedjs_page_content h6,
+.agenda-heading {
+  break-after: avoid !important;
+  page-break-after: avoid !important;
+}
+
+/* Hashes (wrapped, break-all) vs Timestamps (nonwrapped) in Paged Media */
+.hash,
+code.hash,
+.break-all,
+td:has(code.hash) {
+  white-space: normal !important;
+  word-break: break-all !important;
+  overflow-wrap: anywhere !important;
+}
+
+.timestamp,
+.nowrap,
+time {
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------------------------------
+   4. Table Pagination Baseline
+   -------------------------------------------------------------------------- */
+table {
+  width: 100% !important;
+  page-break-inside: auto !important;
+  break-inside: auto !important;
+}
+
+tbody {
+  page-break-inside: auto !important;
+  break-inside: auto !important;
+}
+
+thead {
+  display: table-header-group !important;
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+  break-after: avoid !important;
+  page-break-after: avoid !important;
+}
+
+tr {
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+}
+
+th, td {
+  overflow-wrap: break-word;
+}
+
+.nowrap,
+.nowrap *,
+th.nowrap,
+td.nowrap,
+th.nowrap code,
+td.nowrap code {
+  white-space: nowrap !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------------------------------
+   5. DOM & Body Overrides for Paged.js Layout
+   -------------------------------------------------------------------------- */
+body.paged-view {
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   6. Screen Preview Mode: Realistic Paper Sheets with Drop Shadows
+   -------------------------------------------------------------------------- */
+@media screen {
+  body.paged-view {
+    background-color: #0f172a0f !important;
+    padding: 30px 0 !important;
+    min-height: 100vh;
+  }
+
+  .pagedjs_pages {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 32px;
+    margin: 0 auto;
+    max-width: none !important;
+  }
+
+  .pagedjs_page {
+    background: #ffffff !important;
+    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15),
+                0 8px 10px -6px rgba(15, 23, 42, 0.1);
+    border-radius: 2px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .pagedjs_page:hover {
+    box-shadow: 0 20px 30px -10px rgba(15, 23, 42, 0.2);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. Print Adjustments for Paged.js
+   -------------------------------------------------------------------------- */
+@media print {
+  body.paged-view {
+    background-color: #ffffff !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+  }
+  body.paged-view .pagedjs_pages {
+    gap: 0 !important;
+  }
+  body.paged-view .pagedjs_page {
+    box-shadow: none !important;
+    border: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. Suppress Accidental Blank Trailing Pages
+   -------------------------------------------------------------------------- */
+.pagedjs_page:empty,
+.pagedjs_page_content:empty {
+  display: none !important;
+}

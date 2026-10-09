@@ -1,0 +1,24 @@
+name: svj/base
+title: "SVJ Base Modern Theme"
+extends: base
+stylesheets:
+  - svj-base.css
+features:
+  sticky_tables: true
+  break_ranges: true
+  legal_inspector: true
+variables:
+  --accent: "#1e3a8a"
+paged:
+  margins:
+    top: 20mm
+    right: 15mm
+    bottom: 20mm
+    left: 15mm
+  headers:
+    left: "{meta.svj_name|doc_title}"
+    center: "{i18n.svj.assembly_invite}"
+    right: "{meta.assembly_date|date}"
+  footers:
+    left: "{i18n.svj.committee_label}"
+    center: "{i18n.svj.statute_notice}"

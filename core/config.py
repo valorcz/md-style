@@ -1,61 +1,53 @@
 """
 core/config.py
-Configuration constants and path resolution for the modular report pipeline.
+Configuration constants and path resolution for the pure-Python report pipeline.
+Adheres to standard OS cache directories (XDG on Linux) and static asset directories.
 """
 
 import os
+import sys
 from pathlib import Path
 
 # Base Directories
 CORE_DIR = Path(__file__).resolve().parent
 PROJECT_DIR = CORE_DIR.parent
-DATA_DIR = PROJECT_DIR / "data"
-CACHE_DIR = DATA_DIR / "cache"
+STATIC_DIR = PROJECT_DIR / "static"
+ICONS_DIR = STATIC_DIR / "icons"
 STYLES_DIR = PROJECT_DIR / "styles"
-TEMPLATES_DIR = PROJECT_DIR / "templates"
-FILTERS_DIR = PROJECT_DIR / "filters"
-VENDOR_DIR = PROJECT_DIR / "vendor"
+VIEWER_DIR = PROJECT_DIR / "viewer"
+MERMAID_SCRIPT = VIEWER_DIR / "scripts" / "render-diagram.mjs"
+
+# Platform-Standard User Cache Resolution
+def get_user_cache_dir() -> Path:
+    """Returns platform-standard user cache directory for md-style."""
+    if sys.platform == "win32":
+        base = os.environ.get("LOCALAPPDATA") or (Path.home() / "AppData" / "Local")
+        return Path(base) / "md-style" / "Cache"
+    elif sys.platform == "darwin":
+        return Path.home() / "Library" / "Caches" / "md-style"
+    else:
+        xdg = os.environ.get("XDG_CACHE_HOME")
+        base = Path(xdg) if xdg else (Path.home() / ".cache")
+        return base / "md-style"
+
+CACHE_DIR = get_user_cache_dir()
+FONTS_CACHE_DIR = CACHE_DIR / "fonts"
+INTEL_CACHE_DIR = CACHE_DIR / "intel"
 
 # Pre-compiled Knowledge Datasets
+DATA_DIR = PROJECT_DIR / "data"
 MITRE_DB_PATH = DATA_DIR / "mitre-attack.json"
 WIN_EVENTS_DB_PATH = DATA_DIR / "windows-events.json"
-WIN_EVENTS_CACHE_PATH = CACHE_DIR / "windows-events.json"
-CVE_CACHE_PATH = CACHE_DIR / "cve.json"
-GHSA_CACHE_PATH = CACHE_DIR / "ghsa.json"
-
-# Diagram Renderers
-MERMAID_BUNDLE = VENDOR_DIR / "beautiful-mermaid.bundle.mjs"
-
-# Interactive Templates
-TEMPLATES = {
-    "forensic": TEMPLATES_DIR / "forensic-interactive.html",
-    "forensic-cyber": TEMPLATES_DIR / "forensic-cyber-interactive.html",
-    "print-action": TEMPLATES_DIR / "print-action.html",
-    "paged-header": TEMPLATES_DIR / "paged-header.html"
-}
-
-# Style Metadata & Hierarchical Families
-STYLE_CATEGORIES = {
-    "forensic": [
-        "forensic/cyber (alias: forensic-cyber)",
-        "forensic/dossier (alias: forensic)"
-    ],
-    "svj": [
-        "svj/modern (alias: svj-modern)",
-        "svj/ballot (alias: svj-ballot)",
-        "svj/invitation (alias: svj-invitation)",
-        "svj/community (alias: svj-community)",
-        "svj/typewriter (alias: svj-typewriter)"
-    ],
-    "general": [
-        "school",
-        "announcement"
-    ]
-}
+WIN_EVENTS_CACHE_PATH = INTEL_CACHE_DIR / "windows-events.json"
+CVE_CACHE_PATH = INTEL_CACHE_DIR / "cve.json"
+GHSA_CACHE_PATH = INTEL_CACHE_DIR / "ghsa.json"
 
 def ensure_directories():
-    """Ensures data and cache directories exist."""
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    """Ensures static and user cache directories exist."""
+    STATIC_DIR.mkdir(parents=True, exist_ok=True)
+    ICONS_DIR.mkdir(parents=True, exist_ok=True)
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    FONTS_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    INTEL_CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 ensure_directories()

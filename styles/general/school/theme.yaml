@@ -1,0 +1,7 @@
+name: general/school
+title: "School Theme"
+extends: base
+stylesheets:
+  - school.css
+features:
+  sticky_tables: true

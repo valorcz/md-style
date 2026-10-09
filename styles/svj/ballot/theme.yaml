@@ -1,0 +1,8 @@
+name: svj/ballot
+title: "SVJ Hlasovací lístek (Per Rollam)"
+extends: svj/base
+stylesheets:
+  - ballot.css
+features:
+  sticky_tables: true
+  ballot_print: true

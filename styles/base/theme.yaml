@@ -1,0 +1,32 @@
+name: base
+title: "Universal Base Theme"
+extends: null
+stylesheets:
+  - fonts.css
+  - base.css
+features:
+  callouts: true
+  sticky_tables: true
+  break_ranges: true
+variables:
+  --font-sans: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+  --font-mono: "'JetBrains Mono', 'Fira Code', Menlo, Monaco, Consolas, monospace"
+paged:
+  size: A4
+  orientation: portrait
+  margins:
+    top: 22mm
+    right: 18mm
+    bottom: 22mm
+    left: 18mm
+  headers:
+    left: "{doc_title}"
+    center: ""
+    right: "string(heading)"
+  footers:
+    left: "{date}"
+    center: ""
+    right: "{page_counter}"
+  first_page:
+    show_header: false
+    show_footer: true

@@ -12,7 +12,8 @@ from typing import Dict, Any, Optional, List
 
 try:
     from babel import Locale
-    from babel.dates import format_datetime, format_date
+    from babel.dates import format_datetime as babel_format_datetime, format_date as babel_format_date
+    from babel.numbers import format_decimal as babel_format_decimal
     HAS_BABEL = True
 except ImportError:
     HAS_BABEL = False
@@ -29,18 +30,21 @@ def normalize_locale(lang: Optional[str]) -> str:
     clean = lang.strip().replace("_", "-")
     if clean.lower() in ("cz", "czech"):
         return "cs"
+    if clean.lower() in ("sk", "slovak"):
+        return "sk"
+    if clean.lower() in ("de", "german"):
+        return "de"
     if HAS_BABEL:
         try:
             loc = Locale.parse(clean, sep="-")
             return loc.language
         except Exception:
             pass
-    # Regex fallback
     m = re.match(r"^([a-zA-Z]{2})", clean)
     return m.group(1).lower() if m else "en"
 
 def deep_merge(base: Dict[str, Any], override: Dict[str, Any]) -> Dict[str, Any]:
-    """Recursively merges override dictionary into a copy of base dictionary."""
+    """Recursively merges override dictionary into base dictionary."""
     result = dict(base)
     for k, v in override.items():
         if k in result and isinstance(result[k], dict) and isinstance(v, dict):
@@ -57,163 +61,179 @@ def _load_json_file(path: Path) -> Dict[str, Any]:
             return {}
     return {}
 
-def resolve_style_family(style_name: Optional[str]) -> Optional[str]:
-    """Maps specific style variant names to their i18n family folder."""
-    if not style_name:
-        return None
-    s = style_name.lower()
-    if s.startswith("svj"):
-        return "svj"
-    if s == "forensic-cyber":
-        return "forensic-cyber"
-    if s == "forensic":
-        return "forensic"
-    if s == "school":
-        return "school"
-    if s == "announcement":
-        return "announcement"
-    return s
+class I18nCatalog:
+    """Provides translated strings with cascading fallbacks and Babel CLDR formatting."""
+
+    def __init__(
+        self,
+        lang: str = "en",
+        style_family: Optional[str] = None,
+        frontmatter: Optional[Dict[str, Any]] = None,
+        custom_file: Optional[Path] = None
+    ):
+        self.code = normalize_locale(lang)
+        self.catalog = self._resolve_catalog(self.code, style_family, frontmatter, custom_file)
+
+    def _resolve_catalog(
+        self,
+        lang: str,
+        style_family: Optional[str],
+        frontmatter: Optional[Dict[str, Any]],
+        custom_file: Optional[Path] = None
+    ) -> Dict[str, Any]:
+        # 1. Base English fallback
+        en_catalog = _load_json_file(I18N_CORE_DIR / "en.json")
+
+        # 2. Target language catalog
+        target_catalog = en_catalog
+        if lang != "en":
+            lang_file = I18N_CORE_DIR / f"{lang}.json"
+            if lang_file.is_file():
+                target_catalog = deep_merge(en_catalog, _load_json_file(lang_file))
+
+        # 3. Style-specific overrides
+        if style_family:
+            clean_family = style_family.split("/")[0].lower()
+            style_en = STYLES_I18N_DIR / clean_family / "en.json"
+            if style_en.is_file():
+                target_catalog = deep_merge(target_catalog, _load_json_file(style_en))
+            if lang != "en":
+                style_lang = STYLES_I18N_DIR / clean_family / f"{lang}.json"
+                if style_lang.is_file():
+                    target_catalog = deep_merge(target_catalog, _load_json_file(style_lang))
+
+        # 4. Custom external i18n file overlay (CLI --i18n)
+        if custom_file and Path(custom_file).is_file():
+            target_catalog = deep_merge(target_catalog, _load_json_file(Path(custom_file)))
+
+        # 5. Frontmatter document-level overrides
+        if frontmatter and "i18n" in frontmatter and isinstance(frontmatter["i18n"], dict):
+            target_catalog = deep_merge(target_catalog, frontmatter["i18n"])
+
+        return target_catalog
+
+    def t(self, key_path: str, default: Optional[str] = None, **kwargs) -> str:
+        """
+        Retrieves a translated string using dot-notation (e.g. 'callouts.note', 'ui.copy').
+        Interpolates kwargs if provided.
+        """
+        parts = key_path.strip().split(".")
+        curr: Any = self.catalog
+        for part in parts:
+            if isinstance(curr, dict) and part in curr:
+                curr = curr[part]
+            else:
+                curr = None
+                break
+
+        if curr is None or not isinstance(curr, str):
+            val = default if default is not None else parts[-1].upper()
+        else:
+            val = curr
+
+        if kwargs:
+            try:
+                return val.format(**kwargs)
+            except Exception:
+                return val
+        return val
+
+    def get(self, key_path: str, default: Optional[str] = None) -> Optional[str]:
+        """Safely retrieves a translated string or returns default if not found."""
+        parts = key_path.strip().split(".")
+        curr: Any = self.catalog
+        for part in parts:
+            if isinstance(curr, dict) and part in curr:
+                curr = curr[part]
+            else:
+                return default
+        return curr if isinstance(curr, str) else default
+
+    def export_ui_dict(self) -> Dict[str, Any]:
+        """Returns the UI dictionary for frontend injection."""
+        return self.export_full_dict()
+
+    def export_full_dict(self) -> Dict[str, Any]:
+        """Returns full catalog plus flattened dot-path keys and top-level ui keys for direct access in Svelte."""
+        res: Dict[str, Any] = dict(self.catalog)
+
+        # Include direct ui shortcuts (e.g. res["copy"] = res["ui"]["copy"])
+        ui_dict = self.catalog.get("ui", {})
+        if isinstance(ui_dict, dict):
+            for k, v in ui_dict.items():
+                if isinstance(v, str):
+                    res[k] = v
+
+        def _flatten(d: dict, prefix: str = ""):
+            for k, v in d.items():
+                p = f"{prefix}.{k}" if prefix else k
+                if isinstance(v, dict):
+                    _flatten(v, p)
+                elif isinstance(v, str):
+                    res[p] = v
+
+        _flatten(self.catalog)
+        return res
+
+    def export_css_variables(self) -> Dict[str, str]:
+        """Exports CSS custom properties for pseudo-elements and headers (e.g. --i18n-examiner)."""
+        vars_map: Dict[str, str] = {}
+
+        # Special top-level convenience mappings with fallbacks
+        convenience = [
+            (["forensics.examiner", "meta.examiner_label", "meta.author_label"], "--i18n-examiner"),
+            (["forensics.date", "meta.date_label"], "--i18n-date"),
+            (["forensics.report_title", "meta.report_type"], "--i18n-report-title"),
+            (["forensics.classification", "meta.confidential_label"], "--i18n-classification"),
+            (["meta.section_tag"], "--i18n-section-tag"),
+            (["meta.abstract_title"], "--i18n-abstract-title"),
+            (["meta.toc_title", "toc.title"], "--i18n-toc-title"),
+            (["meta.figure_prefix", "meta.figure_label"], "--i18n-figure-prefix"),
+            (["meta.page_prefix", "meta.page_label"], "--i18n-page-prefix"),
+            (["meta.page_of"], "--i18n-page-of"),
+        ]
+        for keys, css_var in convenience:
+            for k in keys:
+                val = self.get(k)
+                if val:
+                    vars_map[css_var] = f'"{val}"'
+                    break
+
+        def _walk(d: dict, prefix: str = ""):
+            for k, v in d.items():
+                full_k = f"{prefix}-{k}".lower() if prefix else k.lower()
+                clean_k = full_k.replace("_", "-")
+                if isinstance(v, dict):
+                    _walk(v, clean_k)
+                elif isinstance(v, str):
+                    css_name = f"--i18n-{clean_k}"
+                    if css_name not in vars_map:
+                        vars_map[css_name] = f'"{v}"'
+
+        _walk(self.catalog)
+        return vars_map
+
+    def format_date(self, dt, format: str = "medium") -> str:
+        if HAS_BABEL:
+            try:
+                return babel_format_date(dt, format=format, locale=self.code)
+            except Exception:
+                pass
+        return str(dt)
+
+    def format_datetime(self, dt, format: str = "medium") -> str:
+        if HAS_BABEL:
+            try:
+                return babel_format_datetime(dt, format=format, locale=self.code)
+            except Exception:
+                pass
+        return str(dt)
 
 def resolve_locale(
     lang: Optional[str] = "en",
     style_name: Optional[str] = None,
     frontmatter: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
-    """
-    Resolves the cascading locale catalog for the specified language and style.
-    Hierarchy:
-      1. Core en.json (universal fallback)
-      2. Core {lang}.json
-      3. Style {family}/en.json (style fallback)
-      4. Style {family}/{lang}.json (style specific)
-      5. Frontmatter overrides (document specific)
-    """
-    code = normalize_locale(lang)
-
-    # 1. Base core fallback
-    catalog = _load_json_file(I18N_CORE_DIR / "en.json")
-
-    # 2. Base core requested lang
-    if code != "en":
-        core_lang = _load_json_file(I18N_CORE_DIR / f"{code}.json")
-        catalog = deep_merge(catalog, core_lang)
-
-    # Style resolution with family cascading
-    family = resolve_style_family(style_name)
-    if family:
-        # Check if sub-style extends a major family (e.g. forensic-cyber extends forensic)
-        base_family = None
-        if family == "forensic-cyber" or (style_name and style_name.startswith("forensic/")):
-            base_family = "forensic"
-
-        # 3. Base family catalog if applicable
-        if base_family and base_family != family:
-            base_dir = STYLES_I18N_DIR / base_family
-            base_en = _load_json_file(base_dir / "en.json")
-            catalog = deep_merge(catalog, base_en)
-            if code != "en":
-                base_lang = _load_json_file(base_dir / f"{code}.json")
-                catalog = deep_merge(catalog, base_lang)
-
-        # 4. Specific style catalog
-        style_dir = STYLES_I18N_DIR / family
-        style_en = _load_json_file(style_dir / "en.json")
-        catalog = deep_merge(catalog, style_en)
-        if code != "en":
-            style_lang = _load_json_file(style_dir / f"{code}.json")
-            catalog = deep_merge(catalog, style_lang)
-
-    # 5. Frontmatter explicit overrides
-    if frontmatter:
-        meta_overrides = {}
-        # Classification
-        clf = frontmatter.get("classification") or frontmatter.get("confidentiality-label")
-        if clf:
-            meta_overrides["confidential_label"] = str(clf)
-        # Report type
-        rtype = frontmatter.get("report-type") or frontmatter.get("report-badge")
-        if rtype:
-            meta_overrides["report_type"] = str(rtype)
-        # Examiner / Author
-        author = frontmatter.get("examiner-label") or frontmatter.get("author-label")
-        if author:
-            meta_overrides["examiner_label"] = str(author)
-        # Date
-        dt_label = frontmatter.get("date-label")
-        if dt_label:
-            meta_overrides["date_label"] = str(dt_label)
-        # TOC & Abstract
-        if "toc-title" in frontmatter:
-            meta_overrides["toc_title"] = str(frontmatter["toc-title"])
-        if "abstract-title" in frontmatter:
-            meta_overrides["abstract_title"] = str(frontmatter["abstract-title"])
-
-        if meta_overrides:
-            catalog["meta"] = deep_merge(catalog.get("meta", {}), meta_overrides)
-
-    catalog["code"] = code
-    return catalog
-
-def generate_pandoc_metadata_args(catalog: Dict[str, Any]) -> List[str]:
-    """Generates CLI --metadata arguments for Pandoc AST localization."""
-    args = []
-    meta = catalog.get("meta", {})
-    code = catalog.get("code", "en")
-    
-    args.append(f"--metadata=lang:{code}")
-    if "toc_title" in meta:
-        args.append(f"--metadata=toc-title:{meta['toc_title']}")
-    if "abstract_title" in meta:
-        args.append(f"--metadata=abstract-title:{meta['abstract_title']}")
-    if "figure_label" in meta:
-        args.append(f"--metadata=figure-title:{meta['figure_label']}")
-    if "table_label" in meta:
-        args.append(f"--metadata=table-title:{meta['table_label']}")
-
-    return args
-
-def generate_css_custom_properties(catalog: Dict[str, Any]) -> str:
-    """Generates CSS custom properties matching or overriding legacy :root:lang(...) stylesheet rules."""
-    meta = catalog.get("meta", {})
-    code = catalog.get("code", "en")
-    lines = [
-        f":root, :root:lang({code}), html[lang^='{code}'] {{"
-    ]
-
-    STANDARD_ALIAS_MAP = {
-        "confidential_label": "--i18n-confidential",
-        "report_type": "--i18n-report-title",
-        "examiner_label": "--i18n-examiner",
-        "date_label": "--i18n-date",
-        "author_label": "--i18n-author",
-        "figure_label": "--i18n-figure",
-        "table_label": "--i18n-table",
-        "page_prefix": "--i18n-page-prefix",
-        "page_of": "--i18n-page-of",
-        "section_tag": "--i18n-section-tag",
-        "hex_dump": "--i18n-hex-dump",
-        "sys_log": "--i18n-sys-log",
-    }
-
-    emitted_vars = set()
-    for k, v in meta.items():
-        if k in STANDARD_ALIAS_MAP:
-            var_name = STANDARD_ALIAS_MAP[k]
-        elif k.startswith("--"):
-            var_name = k
-        else:
-            var_name = f"--{k.replace('_', '-')}"
-
-        if var_name not in emitted_vars:
-            lines.append(f'  {var_name}: "{v}";')
-            emitted_vars.add(var_name)
-
-    lines.append("}")
-    return "\n".join(lines)
-
-def list_supported_languages() -> List[str]:
-    """Lists languages available in core catalogs."""
-    langs = []
-    for f in I18N_CORE_DIR.glob("*.json"):
-        langs.append(f.stem)
-    return sorted(langs)
+    """Compatibility function returning raw dictionary."""
+    catalog = I18nCatalog(lang=lang or "en", style_family=style_name, frontmatter=frontmatter)
+    return catalog.catalog

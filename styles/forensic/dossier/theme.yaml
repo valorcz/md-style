@@ -1,0 +1,23 @@
+name: forensic/dossier
+title: "Forensic Investigation Dossier"
+extends: base
+stylesheets:
+  - ../components/dossier-header.css
+  - ../components/kpi-grid.css
+  - ../components/timeline.css
+  - forensic.css
+features:
+  interactive_viewer: true
+  sticky_tables: true
+  break_ranges: true
+  entity_inspector: true
+variables:
+  --bg-primary: "#ffffff"
+  --text-main: "#0f172a"
+  --accent: "#2563eb"
+paged:
+  headers:
+    center: "{classification}"
+  footers:
+    left: "{i18n.forensics.unit}"
+    center: "{date} • SHA-256: {fingerprint}"
