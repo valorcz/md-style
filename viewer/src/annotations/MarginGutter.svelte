@@ -14,29 +14,48 @@
   }
 
   let positionedCards: PositionedCard[] = [];
+  let gutterLeft: number = 0;
+  let isPositioned: boolean = false;
 
   async function calculatePositions() {
     await tick();
     const unresolved = annotations.filter(a => !a.resolved);
-    const root = document.querySelector('.report-content') || document.body;
+    const root = document.querySelector('.report-content') || document.querySelector('main') || document.body;
     const items: { annotation: DocumentAnnotation; desiredTop: number }[] = [];
 
+    // 1. Calculate dynamic horizontal gutter docking relative to document paper
+    if (root) {
+      const docRect = root.getBoundingClientRect();
+      const idealLeft = docRect.right + window.scrollX + 24;
+      const minRightSpace = window.innerWidth - 304; // 280px card + 24px viewport margin
+      
+      // If there is ample margin room, dock right outside the paper
+      // Otherwise keep anchored at the right viewport edge on desktop displays
+      if (idealLeft + 280 <= window.innerWidth - 16) {
+        gutterLeft = idealLeft;
+      } else {
+        gutterLeft = Math.max(16, minRightSpace);
+      }
+      isPositioned = true;
+    }
+
+    // 2. Calculate vertical card positions
     for (const ann of unresolved) {
       const range = deserializeRange(ann.range, root as HTMLElement);
       let top = 0;
       if (range) {
         const rect = range.getBoundingClientRect();
-        top = window.scrollY + rect.top - 40; // account for HUD
+        top = window.scrollY + rect.top;
       } else {
         // Fallback: estimate from blockIndex
         const blocks = root.querySelectorAll('p, li, h1, h2, h3, blockquote, tr');
         const blk = blocks[ann.range.blockIndex];
         if (blk) {
           const rect = blk.getBoundingClientRect();
-          top = window.scrollY + rect.top - 40;
+          top = window.scrollY + rect.top;
         }
       }
-      items.push({ annotation: ann, desiredTop: Math.max(0, top) });
+      items.push({ annotation: ann, desiredTop: Math.max(48, top) });
     }
 
     // Sort by desired vertical position
@@ -53,7 +72,7 @@
         annotation: item.annotation,
         top: finalTop
       });
-      currentY = finalTop + estimatedHeight + 8;
+      currentY = finalTop + estimatedHeight + 10;
     }
 
     positionedCards = result;
@@ -74,6 +93,10 @@
     calculatePositions();
   }
 
+  $: if (activeAnnotationId) {
+    calculatePositions();
+  }
+
   onMount(() => {
     calculatePositions();
     window.addEventListener('resize', calculatePositions);
@@ -83,7 +106,11 @@
   });
 </script>
 
-<aside class="margin-gutter" aria-label="Review margin comments">
+<aside
+  class="margin-gutter"
+  aria-label="Review margin comments"
+  style="left: {gutterLeft}px; opacity: {isPositioned ? 1 : 0};"
+>
   {#each positionedCards as item (item.annotation.id)}
     <div class="gutter-item" style="top: {item.top}px;">
       <AnnotationCard
@@ -101,11 +128,11 @@
 <style>
   .margin-gutter {
     position: absolute;
-    top: 40px;
-    right: 2rem;
+    top: 0;
     width: 280px;
     pointer-events: none;
     z-index: 1000;
+    transition: left 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease;
   }
 
   .gutter-item {
@@ -116,7 +143,7 @@
     transition: top 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  @media (max-width: 1280px) {
+  @media (max-width: 1200px) {
     .margin-gutter {
       display: none !important;
     }

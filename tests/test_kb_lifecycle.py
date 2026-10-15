@@ -148,4 +148,32 @@ def test_evtx_deduplication_and_alias_aggregation(tmp_path):
     assert "Sysmon.evtx" in sysmon.aliases
 
 
+def test_knowledge_pack_jsonld_serialization(tmp_path):
+    """Verifies that KnowledgePack outputs standard JSON-LD @context and @type."""
+    doc_path = tmp_path / "jsonld_report.md"
+    doc_path.write_text("# Case Note\nSystem affected by CVE-2024-21413.", encoding="utf-8")
+
+    mgr = KnowledgeLifecycleManager(doc_path)
+    pack = mgr.sync(doc_path.read_text(), allow_online=False)
+
+    pack_dict = pack.to_dict()
+
+    # 1. Root JSON-LD context and type
+    assert "@context" in pack_dict
+    assert pack_dict["@context"]["@vocab"] == "https://schema.org/"
+    assert pack_dict["@type"] == "Dataset"
+
+    # 2. Entity JSON-LD type
+    assert "CVE-2024-21413" in pack_dict["entities"]
+    cve_dict = pack_dict["entities"]["CVE-2024-21413"]
+    assert cve_dict["@type"] == "cve"
+
+    # 3. Clean round-trip deserialization
+    restored = KnowledgePack.from_dict(pack_dict)
+    assert "CVE-2024-21413" in restored.entities
+    assert restored.entities["CVE-2024-21413"].id == "CVE-2024-21413"
+    assert restored.document_id == pack.document_id
+
+
+
 

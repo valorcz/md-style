@@ -12,7 +12,7 @@ import mimetypes
 import json
 import html
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Union
 
 from core.themes import ResolvedTheme
 from core.kb.models import KnowledgePack
@@ -424,7 +424,8 @@ class AssetBundler:
         frontmatter: Optional[Dict[str, Any]] = None,
         raw_markdown: Optional[str] = None,
         meta_tags: Optional[Dict[str, str]] = None,
-        annotations: Optional[List[Dict[str, Any]]] = None
+        annotations: Optional[List[Dict[str, Any]]] = None,
+        interactive_viewer: Optional[bool] = None,
     ) -> str:
         """Assembles a completely self-contained offline HTML file with embedded fonts and i18n."""
         import hashlib
@@ -433,6 +434,21 @@ class AssetBundler:
         frontmatter = frontmatter or {}
         fingerprint = hashlib.sha256(html_fragment.encode("utf-8")).hexdigest()
         self.fingerprint = fingerprint
+
+        # Resolve interactive viewer setting
+        # Precedence: explicit arg > frontmatter > theme.features > True
+        if interactive_viewer is not None:
+            enable_interactive = interactive_viewer
+        elif frontmatter and ("interactive_viewer" in frontmatter or "viewer" in frontmatter):
+            val = frontmatter.get("interactive_viewer")
+            if val is None:
+                val = frontmatter.get("viewer")
+            if isinstance(val, str):
+                enable_interactive = val.strip().lower() not in ("false", "no", "off", "0", "disable", "disabled")
+            else:
+                enable_interactive = bool(val)
+        else:
+            enable_interactive = theme.features.get("interactive_viewer", True)
 
         # 1. Collect all CSS stylesheets and process through FontBundler
         css_blocks: List[str] = []
@@ -480,7 +496,6 @@ class AssetBundler:
                 css_blocks.append(f"/* Print Styles */\n{raw_print}")
 
         # Svelte viewer CSS
-        enable_interactive = theme.features.get("interactive_viewer", True)
         viewer_css_path = ASSETS_DIR / "viewer.bundle.css"
         if enable_interactive and viewer_css_path.is_file():
             try:
@@ -590,11 +605,13 @@ class AssetBundler:
 
         combined_css = "\n\n".join(css_blocks)
 
+        meta_tags_html = "\n" + "\n".join(f'  <meta name="{k}" content="{v}">' for k, v in meta_tags.items()) if meta_tags else ""
+
         full_html = f"""<!DOCTYPE html>
 <html lang="{lang}">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">{meta_tags_html}
   <meta name="doc-title" content="{title}">
   <meta name="doc-fingerprint" content="{fingerprint}">
   <title>{title}</title>
@@ -611,9 +628,120 @@ class AssetBundler:
 {source_markdown_block}
 {annotations_script_block}
 {print_templates_block}
-<div id="md-style-viewer-root"></div>
-{viewer_script_block}
+{f'<div id="md-style-viewer-root"></div>\n' if enable_interactive else ''}{viewer_script_block}
 </body>
 </html>
 """
         return full_html
+
+
+# ---------------------------------------------------------------------------
+# Bundled HTML Inspection & De-bundling Utilities
+# ---------------------------------------------------------------------------
+
+MD_STYLE_MARKERS = [
+    'id="md-style-source-markdown"',
+    'id="md-style-kb-data"',
+    'id="md-style-viewer-root"',
+    'id="md-style-annotations"',
+    'name="doc-fingerprint"',
+    'content="md-style'
+]
+
+
+def is_md_style_html(path_or_content: Union[Path, str]) -> bool:
+    """
+    Checks whether a file path or HTML string is an HTML report bundled by md-style.
+    Inspects content for distinctive md-style signatures.
+    """
+    content = ""
+    if isinstance(path_or_content, Path):
+        if not path_or_content.exists() or not path_or_content.is_file():
+            return False
+        try:
+            # Read first 128KB to check head and early markers
+            with open(path_or_content, "r", encoding="utf-8", errors="ignore") as f:
+                content = f.read(131072)
+        except Exception:
+            return False
+    else:
+        content = str(path_or_content)[:131072]
+
+    # Quick check in first 128KB
+    if any(m in content for m in MD_STYLE_MARKERS):
+        return True
+
+    # If file is larger, script tags are positioned near the end of body; check tail
+    if isinstance(path_or_content, Path):
+        try:
+            file_size = path_or_content.stat().st_size
+            if file_size > 131072:
+                with open(path_or_content, "r", encoding="utf-8", errors="ignore") as f:
+                    f.seek(max(0, file_size - 131072))
+                    tail = f.read()
+                    if any(m in tail for m in MD_STYLE_MARKERS):
+                        return True
+        except Exception:
+            pass
+
+    return False
+
+
+def extract_bundled_markdown(path_or_content: Union[Path, str]) -> Optional[str]:
+    """
+    Extracts the original Markdown source embedded inside an md-style bundled HTML report.
+    Returns None if the file is not an md-style bundle or if --no-embed-source was used.
+    """
+    content = ""
+    if isinstance(path_or_content, Path):
+        if not path_or_content.exists() or not path_or_content.is_file():
+            return None
+        try:
+            content = path_or_content.read_text(encoding="utf-8", errors="replace")
+        except Exception:
+            return None
+    else:
+        content = str(path_or_content)
+
+    match = re.search(
+        r'<script\s+id=["\']md-style-source-markdown["\']\s+type=["\']text/markdown["\']>\s*(.*?)\s*</script>',
+        content,
+        re.DOTALL
+    )
+    if not match:
+        return None
+
+    extracted = match.group(1)
+    # Unescape </script> tag
+    extracted = extracted.replace(r"<\/script>", "</script>")
+    return extracted.strip()
+
+
+def extract_bundled_knowledge_pack(path_or_content: Union[Path, str]) -> Optional[Dict[str, Any]]:
+    """
+    Extracts the Knowledge Pack JSON data embedded inside an md-style bundled HTML report.
+    Returns None if not found or if JSON parsing fails.
+    """
+    content = ""
+    if isinstance(path_or_content, Path):
+        if not path_or_content.exists() or not path_or_content.is_file():
+            return None
+        try:
+            content = path_or_content.read_text(encoding="utf-8", errors="replace")
+        except Exception:
+            return None
+    else:
+        content = str(path_or_content)
+
+    match = re.search(
+        r'<script\s+id=["\']md-style-kb-data["\']\s+type=["\']application/json["\']>\s*(.*?)\s*</script>',
+        content,
+        re.DOTALL
+    )
+    if not match:
+        return None
+
+    try:
+        return json.loads(match.group(1).strip())
+    except Exception:
+        return None

@@ -48,6 +48,8 @@ GHSA_CACHE_PATH = INTEL_CACHE_DIR / "ghsa.json"
 EVTX_CACHE_PATH = INTEL_CACHE_DIR / "evtx.json"
 IP_CACHE_PATH = INTEL_CACHE_DIR / "ip.json"
 HASH_CACHE_PATH = INTEL_CACHE_DIR / "hash.json"
+STATUTES_DB_PATH = DATA_DIR / "statutes.json"
+STATUTES_CACHE_PATH = INTEL_CACHE_DIR / "statutes.json"
 
 DEFAULT_MITRE_CWE_URL = "https://cwe.mitre.org/data/xml/cwec_latest.xml.zip"
 

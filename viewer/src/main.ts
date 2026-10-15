@@ -12,11 +12,13 @@ function initViewer() {
     return;
   }
 
-  // Create root container if absent (attached to documentElement so it is decoupled from body transforms)
+  // Create or relocate root container directly under documentElement (decoupled from body styles and transforms)
   let root = document.getElementById('md-style-viewer-root');
   if (!root) {
     root = document.createElement('div');
     root.id = 'md-style-viewer-root';
+    document.documentElement.appendChild(root);
+  } else if (root.parentElement !== document.documentElement) {
     document.documentElement.appendChild(root);
   }
 

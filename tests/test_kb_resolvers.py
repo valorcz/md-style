@@ -189,6 +189,47 @@ def test_entity_rich_fields_serialization():
     assert restored.relationships == ent.relationships
 
 
+def test_entity_widget_descriptor_serialization():
+    """Verifies that Entity.widgets serialization and roundtrip preserves widget specifications."""
+    from core.kb.models import Entity, WidgetDescriptor
+
+    gauge_widget = WidgetDescriptor(
+        widget_type="gauge",
+        title="CVSS Gauge",
+        tone="threat",
+        data={"score": 9.8, "severity": "CRITICAL", "vector": "CVSS:3.1/AV:N/AC:L"}
+    )
+    tactic_widget = WidgetDescriptor(
+        widget_type="tactical_box",
+        title="Adversary Playbook",
+        tone="threat",
+        items=["Command injection", "Privilege escalation"],
+        data={"code": "powershell.exe -enc ...", "codeLabel": "Observed Execution:"}
+    )
+
+    ent = Entity(
+        id="CVE-2024-38077",
+        domain="cyber",
+        type="cve",
+        label="CVE-2024-38077",
+        title="Windows RDLAC RCE",
+        widgets=[gauge_widget, tactic_widget]
+    )
+
+    payload = ent.to_dict()
+    assert "widgets" in payload
+    assert len(payload["widgets"]) == 2
+    assert payload["widgets"][0]["widget_type"] == "gauge"
+    assert payload["widgets"][0]["data"]["score"] == 9.8
+    assert payload["widgets"][1]["items"] == ["Command injection", "Privilege escalation"]
+
+    restored = Entity.from_dict(payload)
+    assert len(restored.widgets) == 2
+    assert isinstance(restored.widgets[0], WidgetDescriptor)
+    assert restored.widgets[0].widget_type == "gauge"
+    assert restored.widgets[1].items == ["Command injection", "Privilege escalation"]
+
+
 def test_cve_resolver_rich_metrics():
     """Verifies CveResolver produces rich metrics, affected software, and vector string."""
     resolver = CveResolver()

@@ -59,6 +59,8 @@ class ResolvedTheme:
     fonts: List[str]
     highlight_style: str = "one-dark"
     paged: Dict[str, Any] = field(default_factory=dict)
+    variable_sources: Dict[str, str] = field(default_factory=dict)
+    feature_sources: Dict[str, str] = field(default_factory=dict)
 
     def render_css_variables(self) -> str:
         """Renders CSS custom properties block."""
@@ -110,6 +112,22 @@ class ThemeResolver:
             except Exception as e:
                 Diagnostics.warn(f"Failed to load theme definition from {yaml_path}: {e}")
 
+    def get_theme_definition(self, name: str) -> Optional[ThemeDefinition]:
+        canonical = self.canonicalize_name(name)
+        if canonical not in self._themes:
+            direct_dir = self.styles_root / name
+            if (direct_dir / "theme.yaml").exists():
+                self.discover_themes()
+        return self._themes.get(self.canonicalize_name(name))
+
+    def list_all_theme_definitions(self) -> Dict[str, ThemeDefinition]:
+        """Returns unique ThemeDefinitions indexed by primary name."""
+        unique: Dict[str, ThemeDefinition] = {}
+        for k, v in self._themes.items():
+            if v.name not in unique:
+                unique[v.name] = v
+        return unique
+
     def resolve(self, requested_name: Optional[str] = None) -> ResolvedTheme:
         name = self.canonicalize_name(requested_name or "base")
         if name not in self._themes:
@@ -155,7 +173,9 @@ class ThemeResolver:
 
         # Merge properties
         merged_features: Dict[str, bool] = {}
+        feature_sources: Dict[str, str] = {}
         merged_variables: Dict[str, str] = {}
+        variable_sources: Dict[str, str] = {}
         merged_paged: Dict[str, Any] = {}
         merged_fonts: List[str] = []
         stylesheet_paths: List[Path] = []
@@ -163,8 +183,14 @@ class ThemeResolver:
         merged_highlight_style: str = "one-dark"
 
         for t in chain:
-            merged_features.update(t.features)
-            merged_variables.update(t.variables)
+            for fk, fv in t.features.items():
+                merged_features[fk] = fv
+                feature_sources[fk] = t.name
+
+            for vk, vv in t.variables.items():
+                merged_variables[vk] = vv
+                variable_sources[vk] = t.name
+
             merged_paged = _merge_dict(merged_paged, t.paged)
             if t.highlight_style:
                 merged_highlight_style = t.highlight_style
@@ -188,5 +214,7 @@ class ThemeResolver:
             variables=merged_variables,
             fonts=merged_fonts,
             highlight_style=merged_highlight_style,
-            paged=merged_paged
+            paged=merged_paged,
+            variable_sources=variable_sources,
+            feature_sources=feature_sources
         )

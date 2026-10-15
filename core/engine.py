@@ -18,7 +18,11 @@ from pathlib import Path
 from dataclasses import dataclass, field
 from typing import Optional, List, Dict, Any, Tuple
 
-from core.diagnostics import Colors, Diagnostics, PipelineTimer, DiagnosticMetrics
+from rich.table import Table
+from rich.panel import Panel
+from rich import box
+
+from core.diagnostics import Colors, Diagnostics, PipelineTimer, DiagnosticMetrics, stderr_console, stdout_console
 from core.diagrams import MermaidRenderer
 from core.kb import KnowledgeLifecycleManager, KnowledgePack
 from core.themes import ThemeResolver, ResolvedTheme
@@ -45,6 +49,9 @@ class PipelineConfig:
     print_mode: bool = False
     generate_pdf: bool = False
     pdf_engine: Optional[str] = None
+    generate_crate: bool = False
+    evidence_path: Optional[Path] = None
+    interactive_viewer: Optional[bool] = None
     enable_mermaid: bool = True
     auto_nowrap: bool = True
     allow_online: bool = True
@@ -113,6 +120,21 @@ class ReportEngine:
 
     def run(self) -> Path:
         self.timer.start("total")
+        use_status = not self.config.quiet and not self.config.verbose and getattr(stderr_console, "is_terminal", False)
+        status_ctx = stderr_console.status("[bold cyan]Stage 1/5: Document Ingestion & Validation...[/bold cyan]", spinner="dots") if use_status else None
+        if status_ctx:
+            status_ctx.start()
+
+        try:
+            return self._run_pipeline(status_ctx)
+        finally:
+            if status_ctx:
+                try:
+                    status_ctx.stop()
+                except Exception:
+                    pass
+
+    def _run_pipeline(self, status_ctx=None) -> Path:
         # ------------------------------------------------------------------
         # STAGE 1: Document Ingestion & Validation
         # ------------------------------------------------------------------
@@ -153,14 +175,23 @@ class ReportEngine:
         )
 
         # Determine target output path
+        is_crate = (
+            self.config.generate_crate
+            or (self.config.output_file and str(self.config.output_file).lower().endswith((".zip", ".crate.zip")))
+        )
         if not self.config.output_file:
-            ext = ".pdf" if self.config.generate_pdf else ".html"
+            if is_crate:
+                ext = ".crate.zip"
+            elif self.config.generate_pdf:
+                ext = ".pdf"
+            else:
+                ext = ".html"
             self.config.output_file = input_file.with_suffix(ext)
 
         target_html = (
-            self.config.output_file
-            if not self.config.generate_pdf
-            else self.config.output_file.with_suffix(".tmp.html")
+            self.config.output_file.with_suffix(".tmp.html")
+            if (self.config.generate_pdf or is_crate)
+            else self.config.output_file
         )
         target_html.parent.mkdir(parents=True, exist_ok=True)
         self.timer.stop("stage1")
@@ -173,6 +204,9 @@ class ReportEngine:
         # ------------------------------------------------------------------
         # STAGE 2: Knowledge Pack Ingestion, Lifecycle & Token Resolution
         # ------------------------------------------------------------------
+        if status_ctx:
+            status_ctx.update("[bold cyan]Stage 2/5: Synchronizing Knowledge Pack & Resolving Tokens...[/bold cyan]")
+
         self.timer.start("stage2")
         kb_manager = KnowledgeLifecycleManager(input_file, catalog=catalog)
         pack = kb_manager.sync(
@@ -188,20 +222,49 @@ class ReportEngine:
                 f"Stage 2: Knowledge Pack synchronized with {len(pack.entities)} entities ({self.timer.get('stage2'):.2f}s)"
             )
             if self.config.verbose:
-                by_type: Dict[str, List[str]] = {}
+                by_type: Dict[str, Dict[str, Any]] = {}
                 for e_id, e in pack.entities.items():
                     t = e.type or "entity"
-                    by_type.setdefault(t, []).append(e_id)
-                print(f"      ┌─ Knowledge Pack Breakdown ({len(pack.entities)} entities):")
-                for t, items in sorted(by_type.items()):
-                    sample = ", ".join(items[:5])
-                    extra = f" (+{len(items)-5} more)" if len(items) > 5 else ""
-                    print(f"      │  • {t.upper()} ({len(items)}): {sample}{extra}")
-                print(f"      └────────────────────────────────────────────")
+                    if t not in by_type:
+                        by_type[t] = {"domain": e.domain or "general", "items": []}
+                    by_type[t]["items"].append(e_id)
+
+                kb_table = Table(
+                    title=f"Knowledge Pack Inventory ({len(pack.entities)} entities)",
+                    box=box.ROUNDED,
+                    header_style="bold magenta",
+                    show_header=True
+                )
+                kb_table.add_column("Type", style="bold cyan", no_wrap=True)
+                kb_table.add_column("Domain", style="blue", no_wrap=True)
+                kb_table.add_column("Count", justify="right", style="bold yellow", no_wrap=True)
+                kb_table.add_column("Sample Identifiers", style="white")
+
+                def format_preview(val: str) -> str:
+                    if len(val) > 22:
+                        return f"{val[:8]}…{val[-6:]}"
+                    return val
+
+                for t, info in sorted(by_type.items()):
+                    items = info["items"]
+                    dom = info["domain"]
+                    sample_limit = 3 if any(len(x) > 16 for x in items[:4]) else 4
+                    samples = [f"`{format_preview(x)}`" for x in items[:sample_limit]]
+                    sample_str = ", ".join(samples)
+                    if len(items) > sample_limit:
+                        sample_str += f" [dim](+{len(items) - sample_limit} more)[/dim]"
+                    kb_table.add_row(t.upper(), dom, str(len(items)), sample_str)
+
+                stderr_console.print()
+                stderr_console.print(kb_table)
+                stderr_console.print()
 
         # ------------------------------------------------------------------
         # STAGE 3: Declarative Theme Resolution & Cascading
         # ------------------------------------------------------------------
+        if status_ctx:
+            status_ctx.update(f"[bold cyan]Stage 3/5: Resolving Theme ({style_param})...[/bold cyan]")
+
         self.timer.start("stage3")
         resolved_theme = self.theme_resolver.resolve(style_param)
         self.timer.stop("stage3")
@@ -217,6 +280,9 @@ class ReportEngine:
         # ------------------------------------------------------------------
         # STAGE 4: Pure-Python Markdown AST Compilation & Transforms
         # ------------------------------------------------------------------
+        if status_ctx:
+            status_ctx.update("[bold cyan]Stage 4/5: Compiling Markdown AST & Diagrams...[/bold cyan]")
+
         self.timer.start("stage4")
         parsed_levels = None
         if self.config.toc_levels:
@@ -271,6 +337,9 @@ class ReportEngine:
         # ------------------------------------------------------------------
         # STAGE 5: Self-Contained Output Bundling & Chromium PDF Export
         # ------------------------------------------------------------------
+        if status_ctx:
+            status_ctx.update("[bold cyan]Stage 5/5: Bundling Self-Contained Output...[/bold cyan]")
+
         self.timer.start("stage5")
         bundler = AssetBundler(input_file, allow_online=self.config.allow_online)
         complete_html = bundler.assemble(
@@ -284,7 +353,8 @@ class ReportEngine:
             print_mode=self.config.print_mode,
             frontmatter=frontmatter,
             raw_markdown=raw_content if self.config.embed_source else None,
-            meta_tags={"generator": "md-style v3.0 (pure-python)"}
+            meta_tags={"generator": "md-style v3.0 (pure-python)"},
+            interactive_viewer=self.config.interactive_viewer
         )
 
         with open(target_html, "w", encoding="utf-8") as f:
@@ -304,6 +374,38 @@ class ReportEngine:
             finally:
                 if target_html.is_file() and target_html != self.config.output_file:
                     target_html.unlink(missing_ok=True)
+        elif is_crate:
+            try:
+                from core.crate import ROCrateBuilder
+                crate_builder = ROCrateBuilder(
+                    title=doc_title,
+                    description=str(frontmatter.get("description") or frontmatter.get("abstract") or f"RO-Crate report archive for {doc_title}"),
+                    author=str(frontmatter.get("author") or frontmatter.get("examiner") or ""),
+                    date_published=str(frontmatter.get("date")) if frontmatter.get("date") else None
+                )
+                crate_builder.add_file(
+                    target_html,
+                    rel_path="report.html",
+                    name="Compiled Interactive Report",
+                    encoding_format="text/html",
+                    description="Self-contained compiled report with embedded theme and viewer"
+                )
+                crate_builder.add_file(
+                    input_file,
+                    rel_path="report.md",
+                    name="Markdown Source Document",
+                    encoding_format="text/markdown",
+                    description="Original authoring Markdown document with frontmatter"
+                )
+                if pack:
+                    crate_builder.add_knowledge_pack(pack, rel_path="report.kb.json")
+                if self.config.evidence_path:
+                    ev_path = Path(self.config.evidence_path)
+                    crate_builder.add_evidence_dir(ev_path, target_prefix="evidence")
+                crate_builder.build_zip(self.config.output_file)
+            finally:
+                if target_html.is_file() and target_html != self.config.output_file:
+                    target_html.unlink(missing_ok=True)
 
         self.timer.stop("stage5")
         if not self.config.quiet and self.config.verbose:
@@ -312,14 +414,104 @@ class ReportEngine:
             )
         total_time = self.timer.stop("total")
 
+        if status_ctx:
+            try:
+                status_ctx.stop()
+            except Exception:
+                pass
+            status_ctx = None
+
         if not self.config.quiet:
             if self.config.verbose:
                 self.print_timing_breakdown(total_time)
+            self.print_compilation_summary(
+                output_file=self.config.output_file,
+                total_time=total_time,
+                theme_name=resolved_theme.name,
+                pack=pack,
+                diagrams_count=self.metrics.diagrams_rendered,
+                is_pdf=self.config.generate_pdf,
+                is_crate=is_crate
+            )
             Diagnostics.success(
                 f"Report generated: {self.config.output_file.resolve()} (Total: {total_time:.2f}s)"
             )
 
         return self.config.output_file
+
+    def print_compilation_summary(
+        self,
+        output_file: Path,
+        total_time: float,
+        theme_name: str,
+        pack: Optional[KnowledgePack],
+        diagrams_count: int,
+        is_pdf: bool,
+        is_crate: bool
+    ) -> None:
+        """Renders an executive compilation dashboard card to stderr_console."""
+        if self.config.quiet:
+            return
+
+        file_size_str = "N/A"
+        sha256_short = ""
+        if output_file.is_file():
+            try:
+                sz = float(output_file.stat().st_size)
+                for unit in ['B', 'KB', 'MB', 'GB']:
+                    if sz < 1024.0:
+                        file_size_str = f"{sz:.1f} {unit}" if unit != 'B' else f"{int(sz)} B"
+                        break
+                    sz /= 1024.0
+                import hashlib
+                hasher = hashlib.sha256()
+                with open(output_file, "rb") as f:
+                    while chunk := f.read(65536):
+                        hasher.update(chunk)
+                full_digest = hasher.hexdigest()
+                sha256_short = f"{full_digest[:12]}…{full_digest[-12:]}"
+            except Exception:
+                pass
+
+        if is_crate:
+            format_badge = "[bold yellow]RO-Crate v1.1 Package (.crate.zip)[/bold yellow]"
+        elif is_pdf:
+            format_badge = "[bold red]Print PDF Document (.pdf)[/bold red]"
+        else:
+            format_badge = "[bold cyan]Self-Contained HTML Report (.html)[/bold cyan]"
+
+        grid = Table.grid(padding=(0, 2))
+        grid.add_column(style="bold yellow", justify="right")
+        grid.add_column()
+
+        grid.add_row("Output Target:", f"[bold white]{output_file.name}[/bold white]")
+        grid.add_row("Format:", format_badge)
+        grid.add_row("File Size:", f"[bold white]{file_size_str}[/bold white]")
+        grid.add_row("Theme Style:", f"[bold cyan]{theme_name}[/bold cyan]")
+
+        if pack and pack.entities:
+            by_type = {}
+            for e in pack.entities.values():
+                by_type[e.type] = by_type.get(e.type, 0) + 1
+            top_types = ", ".join(f"{k.upper()}: {v}" for k, v in sorted(by_type.items(), key=lambda x: -x[1])[:4])
+            grid.add_row("Knowledge Pack:", f"[bold green]{len(pack.entities)} entities[/bold green] [dim]({top_types})[/dim]")
+
+        if diagrams_count > 0:
+            grid.add_row("Diagrams:", f"[bold magenta]{diagrams_count} rendered[/bold magenta]")
+
+        grid.add_row("Compilation Time:", f"[bold green]{total_time:.2f}s[/bold green]")
+        if sha256_short:
+            grid.add_row("SHA-256 Digest:", f"[dim]{sha256_short}[/dim]")
+
+        panel = Panel(
+            grid,
+            title="[bold green]■ Compilation Summary[/bold green]",
+            subtitle=f"[dim]{output_file.resolve()}[/dim]",
+            box=box.ROUNDED,
+            border_style="green"
+        )
+        stderr_console.print()
+        stderr_console.print(panel)
 
     def get_stage_timings(self) -> Dict[str, float]:
         """Returns durations for all 5 pipeline stages and total elapsed time."""
@@ -339,15 +531,27 @@ class ReportEngine:
         s3 = self.timer.get("stage3")
         s4 = self.timer.get("stage4")
         s5 = self.timer.get("stage5")
-        print("", file=sys.stderr)
-        print(f"{Colors.BOLD}Pipeline Timing Breakdown:{Colors.RESET}", file=sys.stderr)
-        print(f"  • Stage 1 (Validation & Ingestion):     {s1:6.2f}s", file=sys.stderr)
-        print(f"  • Stage 2 (Knowledge Pack Sync):        {s2:6.2f}s", file=sys.stderr)
-        print(f"  • Stage 3 (Theme Resolution):           {s3:6.2f}s", file=sys.stderr)
-        print(f"  • Stage 4 (Markdown AST & Transforms):  {s4:6.2f}s", file=sys.stderr)
-        print(f"  • Stage 5 (Output Bundling & Export):   {s5:6.2f}s", file=sys.stderr)
-        print(f"  • Total Compilation Time:               {total_time:6.2f}s", file=sys.stderr)
-        print("", file=sys.stderr)
+
+        table = Table(
+            title="Pipeline Timing Breakdown:",
+            box=box.ROUNDED,
+            header_style="bold magenta",
+            show_header=True
+        )
+        table.add_column("Pipeline Stage", style="bold cyan")
+        table.add_column("Description", style="white")
+        table.add_column("Duration", justify="right", style="bold yellow")
+
+        table.add_row("Stage 1", "Stage 1 (Validation & Ingestion):", f"{s1:6.2f}s")
+        table.add_row("Stage 2", "Stage 2 (Knowledge Pack Sync):", f"{s2:6.2f}s")
+        table.add_row("Stage 3", "Stage 3 (Theme Resolution):", f"{s3:6.2f}s")
+        table.add_row("Stage 4", "Stage 4 (Markdown AST & Transforms):", f"{s4:6.2f}s")
+        table.add_row("Stage 5", "Stage 5 (Output Bundling & Export):", f"{s5:6.2f}s")
+        table.add_section()
+        table.add_row("Total", "Total Compilation Time:", f"{total_time:6.2f}s", style="bold green")
+
+        stderr_console.print()
+        stderr_console.print(table)
 
     def _compile_pdf(
         self,
@@ -399,21 +603,28 @@ class ReportEngine:
                 break
 
         if chosen_browser:
+            import tempfile
+            chrome_tmp = tempfile.mkdtemp(prefix="md-style-chrome-")
             Diagnostics.info(f"Generating fallback PDF via headless {chosen_browser}...")
             cmd = [
                 chosen_browser,
                 "--headless",
                 "--disable-gpu",
                 "--no-sandbox",
+                "--disable-dev-shm-usage",
+                f"--user-data-dir={chrome_tmp}",
                 "--run-all-compositor-stages-before-draw",
                 "--no-pdf-header-footer",
                 f"--print-to-pdf={dst_pdf.resolve()}",
                 f"file://{src_html.resolve()}"
             ]
-            res = subprocess.run(cmd, capture_output=True, text=True, check=False)
-            if res.returncode == 0 and dst_pdf.is_file() and dst_pdf.stat().st_size > 0:
-                return
-            Diagnostics.warn(f"Browser PDF failed: {res.stderr}")
+            try:
+                res = subprocess.run(cmd, capture_output=True, text=True, check=False)
+                if res.returncode == 0 and dst_pdf.is_file() and dst_pdf.stat().st_size > 0:
+                    return
+                Diagnostics.warn(f"Browser PDF failed: {res.stderr}")
+            finally:
+                shutil.rmtree(chrome_tmp, ignore_errors=True)
 
         if dst_pdf.is_file() and dst_pdf.stat().st_size == 0:
             dst_pdf.unlink(missing_ok=True)

@@ -29,6 +29,7 @@ from core.parser.transforms import (
     transform_entities,
     transform_kpi_grids,
 )
+from core.frontmatter import normalize_frontmatter
 from core.diagnostics import Diagnostics
 
 LANG_ALIASES: Dict[str, str] = {
@@ -143,7 +144,7 @@ class MarkdownParser:
                 try:
                     loaded = yaml.safe_load(fm_raw)
                     if isinstance(loaded, dict):
-                        meta = loaded
+                        meta = normalize_frontmatter(loaded)
                 except Exception as e:
                     Diagnostics.warn(f"Failed to parse frontmatter: {e}")
         return cleaned_src, meta

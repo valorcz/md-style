@@ -68,17 +68,27 @@
     }
   }
 
+  function getDockLeft(): number {
+    const root = document.querySelector('.report-content') || document.querySelector('main') || document.body;
+    if (root) {
+      const docRect = root.getBoundingClientRect();
+      const idealLeft = docRect.right + 24;
+      if (idealLeft + 280 <= window.innerWidth - 16) {
+        return idealLeft;
+      }
+    }
+    return Math.max(16, window.innerWidth - 304);
+  }
+
   $: popoverTop = isComposing && isDesktop
     ? Math.max(48, Math.min(window.innerHeight - 340, position.y))
     : (position.y > 90 ? position.y - 46 : position.y + 26);
 
   $: popoverLeft = isComposing && isDesktop
-    ? 'auto'
+    ? `${getDockLeft()}px`
     : `${Math.max(16, Math.min(window.innerWidth - 440, position.x - 200))}px`;
 
-  $: popoverRight = isComposing && isDesktop
-    ? '2rem'
-    : 'auto';
+  $: popoverRight = 'auto';
 
   $: popoverWidth = isComposing && isDesktop
     ? '280px'

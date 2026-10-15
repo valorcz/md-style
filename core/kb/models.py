@@ -32,6 +32,42 @@ class Provenance:
         )
 
 @dataclass
+class WidgetDescriptor:
+    widget_type: str  # e.g. "gauge", "tactical_box", "rank_badge", "attributes_grid", "code_snippet"
+    title: str = ""
+    tone: str = "neutral"  # "threat", "defense", "telemetry", "info", "neutral"
+    data: Dict[str, Any] = field(default_factory=dict)
+    items: List[str] = field(default_factory=list)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "WidgetDescriptor":
+        return cls(
+            widget_type=str(data.get("widget_type", "attributes_grid")),
+            title=str(data.get("title", "")),
+            tone=str(data.get("tone", "neutral")),
+            data=dict(data.get("data", {})),
+            items=list(data.get("items", []))
+        )
+
+DEFAULT_JSONLD_CONTEXT: Dict[str, Any] = {
+    "@vocab": "https://schema.org/",
+    "id": "@id",
+    "type": "@type",
+    "entities": "@graph",
+    "cve": "https://cve.mitre.org/schema/",
+    "statute": "https://schema.org/Legislation",
+    "ico": "https://schema.org/Organization",
+    "iban": "https://schema.org/BankOrCreditUnion",
+    "provenance": "http://www.w3.org/ns/prov#wasDerivedFrom",
+    "fetched_at": "http://www.w3.org/ns/prov#generatedAtTime",
+    "relationships": "https://schema.org/mentions"
+}
+
+
+@dataclass
 class Entity:
     id: str
     domain: str  # e.g. "cyber", "internal", "legal", "infrastructure"
@@ -49,9 +85,11 @@ class Entity:
     references: List[Dict[str, str]] = field(default_factory=list)
     provenance: Optional[Provenance] = None
     aliases: List[str] = field(default_factory=list)
+    widgets: List[WidgetDescriptor] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         res = {
+            "@type": self.type,
             "id": self.id,
             "domain": self.domain,
             "type": self.type,
@@ -67,6 +105,7 @@ class Entity:
             "relationships": self.relationships,
             "references": self.references,
             "aliases": self.aliases,
+            "widgets": [w.to_dict() if hasattr(w, "to_dict") else w for w in self.widgets],
         }
         if self.provenance:
             res["provenance"] = self.provenance.to_dict()
@@ -92,7 +131,8 @@ class Entity:
             relationships=list(data.get("relationships", [])),
             references=list(data.get("references", [])),
             provenance=prov,
-            aliases=list(data.get("aliases", []))
+            aliases=list(data.get("aliases", [])),
+            widgets=[WidgetDescriptor.from_dict(w) if isinstance(w, dict) else w for w in data.get("widgets", [])]
         )
 
 @dataclass
@@ -105,6 +145,8 @@ class KnowledgePack:
 
     def to_dict(self) -> Dict[str, Any]:
         return {
+            "@context": DEFAULT_JSONLD_CONTEXT,
+            "@type": "Dataset",
             "version": self.version,
             "document_id": self.document_id,
             "generated_at": self.generated_at,

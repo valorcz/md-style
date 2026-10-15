@@ -33,30 +33,38 @@ class Colors:
 if not sys.stdout.isatty():
     Colors.disable()
 
+from rich.console import Console
+
+# Unified rich stderr console for diagnostics
+stderr_console = Console(stderr=True, highlight=False)
+stdout_console = Console(highlight=False)
+
+
 class Diagnostics:
     verbose: bool = False
     debug: bool = False
+    console: Console = stderr_console
 
     @classmethod
     def info(cls, msg: str):
-        print(f"{Colors.BLUE}[INFO]{Colors.RESET} {msg}", file=sys.stderr)
+        cls.console.print(f"[bold cyan][INFO][/bold cyan] {msg}")
 
     @classmethod
     def success(cls, msg: str):
-        print(f"{Colors.GREEN}[SUCCESS]{Colors.RESET} {Colors.BOLD}{msg}{Colors.RESET}", file=sys.stderr)
+        cls.console.print(f"[bold green][SUCCESS][/bold green] [bold]{msg}[/bold]")
 
     @classmethod
     def warn(cls, msg: str):
-        print(f"{Colors.YELLOW}[WARNING]{Colors.RESET} {msg}", file=sys.stderr)
+        cls.console.print(f"[bold yellow][WARNING][/bold yellow] {msg}")
 
     @classmethod
     def error(cls, msg: str):
-        print(f"{Colors.RED}[ERROR]{Colors.RESET} {msg}", file=sys.stderr)
+        cls.console.print(f"[bold red][ERROR][/bold red] {msg}")
 
     @classmethod
     def debug_log(cls, msg: str):
         if cls.debug or cls.verbose:
-            print(f"{Colors.GRAY}[DEBUG]{Colors.RESET} {msg}", file=sys.stderr)
+            cls.console.print(f"[dim]{msg}[/dim]")
 
 logger = Diagnostics
 

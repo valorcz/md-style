@@ -164,11 +164,16 @@ class EvtxResolver(BaseResolver):
         if is_bare and low in GENERIC_EVTX_STOPWORDS:
             return False
 
+        if t.startswith("§") or t.startswith("čl."):
+            return False
+
         if EVTX_FILE_REGEX.fullmatch(t):
             return True
-        if low in self._lookup:
+        if low in self._lookup and not low.isdigit():
             return True
         clean = re.sub(r"[^a-z0-9]", "", low)
+        if clean.isdigit():
+            return False
         if clean in self._lookup:
             return True
         _, filename, stem = normalize_evtx_token(t)
