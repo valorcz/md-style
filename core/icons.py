@@ -19,9 +19,10 @@ ICON_CACHE_DIR = CACHE_DIR / "icons"
 class IconService:
     """Provides vector SVG icons loaded from disk or CDN cache."""
 
-    def __init__(self, icons_dir: Path = ICONS_DIR, cache_dir: Path = ICON_CACHE_DIR):
+    def __init__(self, icons_dir: Path = ICONS_DIR, cache_dir: Path = ICON_CACHE_DIR, allow_online: bool = True):
         self.icons_dir = icons_dir
         self.cache_dir = cache_dir
+        self.allow_online = allow_online
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self._memory_cache: Dict[str, str] = {}
 
@@ -59,20 +60,21 @@ class IconService:
                 pass
 
         # 3. Remote fallback from GitHub Primer Octicons
-        remote_url = f"https://raw.githubusercontent.com/primer/octicons/main/icons/{clean_name}-16.svg"
-        try:
-            req = urllib.request.Request(
-                remote_url,
-                headers={"User-Agent": "Antigravity-Tooling/2.0 (Icon Loader)"}
-            )
-            with urllib.request.urlopen(req, timeout=3) as resp:
-                downloaded_svg = resp.read().decode("utf-8")
-            if downloaded_svg and "<svg" in downloaded_svg:
-                cache_path.write_text(downloaded_svg, encoding="utf-8")
-                self._memory_cache[clean_name] = downloaded_svg
-                return self._format_svg(downloaded_svg, extra_classes)
-        except Exception:
-            pass
+        if self.allow_online:
+            remote_url = f"https://raw.githubusercontent.com/primer/octicons/main/icons/{clean_name}-16.svg"
+            try:
+                req = urllib.request.Request(
+                    remote_url,
+                    headers={"User-Agent": "Antigravity-Tooling/2.0 (Icon Loader)"}
+                )
+                with urllib.request.urlopen(req, timeout=3) as resp:
+                    downloaded_svg = resp.read().decode("utf-8")
+                if downloaded_svg and "<svg" in downloaded_svg:
+                    cache_path.write_text(downloaded_svg, encoding="utf-8")
+                    self._memory_cache[clean_name] = downloaded_svg
+                    return self._format_svg(downloaded_svg, extra_classes)
+            except Exception:
+                pass
 
         # 4. Minimal generic fallback if completely offline and missing
         fallback = '<svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><circle cx="8" cy="8" r="7"/></svg>'

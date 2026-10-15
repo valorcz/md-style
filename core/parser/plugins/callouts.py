@@ -79,7 +79,7 @@ def build_callout_open(alert_type: str, custom_title: Optional[str], catalog: I1
     )
 
 def transform_blockquote_callouts(tokens: List[Token], catalog: I18nCatalog, icon_service: IconService) -> List[Token]:
-    """Scans token stream and rewrites alert blockquotes to styled callout divs."""
+    """Scans token stream and rewrites alert blockquotes to styled callout divs, preserving all inline markdown."""
     out: List[Token] = []
     i = 0
     n = len(tokens)
@@ -91,47 +91,106 @@ def transform_blockquote_callouts(tokens: List[Token], catalog: I18nCatalog, ico
                 inline_tok = tokens[i+2]
                 content = inline_tok.content.strip()
                 first_line = content.split("\n")[0].strip()
+                children = list(inline_tok.children or [])
+
                 m = CALLOUT_REGEX.match(first_line)
+                m_leg = None
+                alert_type = None
+                custom_title = None
+
                 if m:
                     alert_type = m.group(1).lower()
                     custom_title = m.group(2)
+                elif len(children) >= 4 and children[1].type == "strong_open":
+                    # Only convert single-keyword legacy callouts: > **NOTE**: or > **WARNING**:
+                    # Multi-word lead tags (e.g. > **CRITICAL FINDING**:) remain clean signature blockquotes
+                    tag_candidate = children[2].content.strip().lower()
+                    if tag_candidate in {"note", "warning", "tip", "caution", "important", "critical", "danger"} and len(children) > 4:
+                        colon_check = children[4].content if len(children) > 4 else ""
+                        if re.match(r"^\s*:\s*", colon_check):
+                            alert_type = tag_candidate
+                            m_leg = True
+                            custom_title = None
 
+                if alert_type:
                     c_open = Token("html_block", "", 0)
                     c_open.content = build_callout_open(alert_type, custom_title, catalog, icon_service)
                     out.append(c_open)
 
-                    # Adjust or strip the [!TYPE] marker line from the first paragraph
-                    remaining_text = "\n".join(content.split("\n")[1:]).strip()
-                    if remaining_text:
+                    # Adjust children and content while preserving all rich inline tokens
+                    if m_leg:
+                        # Strip bold marker and colon
+                        colon_tok = children[4]
+                        colon_tok.content = re.sub(r"^\s*:\s*", "", colon_tok.content)
+                        inline_tok.children = children[4:]
+                        inline_tok.content = re.sub(r"^\s*(?:\*\*|__)[^*_]+(?:\*\*|__)\s*:\s*", "", inline_tok.content)
                         out.append(tokens[i+1]) # paragraph_open
-                        new_inline = Token("inline", "", 0)
-                        new_inline.content = remaining_text
-                        text_tok = Token("text", "", 0)
-                        text_tok.content = remaining_text
-                        new_inline.children = [text_tok]
-                        out.append(new_inline)
+                        out.append(inline_tok)
                         out.append(tokens[i+3]) # paragraph_close
                         i += 4
-                    else:
-                        i += 4
+                    elif m:
+                        # Find first softbreak in children
+                        softbreak_idx = None
+                        for idx, ch in enumerate(children):
+                            if ch.type == "softbreak":
+                                softbreak_idx = idx
+                                break
+
+                        if softbreak_idx is not None:
+                            # Alert header on line 1, remaining lines in paragraph are body text
+                            remaining_children = children[softbreak_idx + 1:]
+                            remaining_content = "\n".join(content.split("\n")[1:]).strip()
+                            if remaining_children:
+                                out.append(tokens[i+1]) # paragraph_open
+                                inline_tok.children = remaining_children
+                                inline_tok.content = remaining_content
+                                out.append(inline_tok)
+                                out.append(tokens[i+3]) # paragraph_close
+                            i += 4
+                        else:
+                            # Single line alert: > [!NOTE] Custom Title
+                            if children:
+                                children[0].content = re.sub(r"^\s*\[![A-Za-z]+\]\s*", "", children[0].content)
+                                inline_tok.content = re.sub(r"^\s*\[![A-Za-z]+\]\s*", "", inline_tok.content)
+                                if custom_title and custom_title.strip():
+                                    title_escaped = re.escape(custom_title.strip())
+                                    inline_tok.content = re.sub(rf"^\s*{title_escaped}\s*", "", inline_tok.content).strip()
+                                    children[0].content = re.sub(rf"^\s*{title_escaped}\s*", "", children[0].content).strip()
+                                    children = [c for c in children if c.content or c.type != "text"]
+
+                                if inline_tok.content:
+                                    out.append(tokens[i+1]) # paragraph_open
+                                    inline_tok.children = children
+                                    out.append(inline_tok)
+                                    out.append(tokens[i+3]) # paragraph_close
+                            i += 4
 
                     # Collect remaining inner tokens until matching blockquote_close
+                    inner_tokens: List[Token] = []
                     depth = 1
                     while i < n and depth > 0:
                         inner = tokens[i]
                         if inner.type == "blockquote_open":
                             depth += 1
+                            inner_tokens.append(inner)
                         elif inner.type == "blockquote_close":
                             depth -= 1
                             if depth == 0:
-                                c_close = Token("html_block", "", 0)
-                                ballot_html = render_ballot_block(catalog) if alert_type == "proposal" else ""
-                                c_close.content = f"  </div>\n{ballot_html}</div>\n"
-                                out.append(c_close)
                                 i += 1
                                 break
-                        out.append(inner)
+                            inner_tokens.append(inner)
+                        else:
+                            inner_tokens.append(inner)
                         i += 1
+
+                    if inner_tokens:
+                        transformed_inner = transform_blockquote_callouts(inner_tokens, catalog, icon_service)
+                        out.extend(transformed_inner)
+
+                    c_close = Token("html_block", "", 0)
+                    ballot_html = render_ballot_block(catalog) if alert_type == "proposal" else ""
+                    c_close.content = f"  </div>\n{ballot_html}</div>\n"
+                    out.append(c_close)
                     continue
 
         out.append(tok)

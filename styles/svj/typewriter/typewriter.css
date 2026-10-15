@@ -348,14 +348,5 @@ tbody tr:nth-child(even) {
    -------------------------------------------------------------------------- */
 @page:first {
   margin-top: 18mm;
-  @top-left { content: none; border-bottom: none; }
-  @top-right { content: none; border-bottom: none; }
-  @bottom-left { content: none; border-top: none; }
-  @bottom-right { content: none; border-top: none; }
-}
-
-.pagedjs_first_page .pagedjs_margin-box {
-  display: none !important;
-  visibility: hidden !important;
 }
 

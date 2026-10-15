@@ -48,15 +48,28 @@
     "print": "Print / PDF",
     "summary": "Summary",
     "attributes": "Attributes",
+    "metrics": "Metrics & Vectors",
+    "classification": "Classification & TTPs",
+    "details": "Technical Details",
+    "relationships": "Related Entities",
     "references": "References",
     "provenance": "Provenance",
     "status": "Status",
-    "close": "Close"
+    "close": "Close",
+    "knowledge_inspector": "Knowledge Base & Inspector",
+    "all_entities": "All Entities",
+    "download_md": "Download .md",
+    "paginating": "Paginating A4 sheets...",
+    "web_view": "Web View",
+    "paper_view": "Paper View"
   },
   "badges": {
     "statute": "LEGAL STATUTE",
     "winevent": "WIN EVENT",
+    "evtx": "LOG CHANNEL",
     "cve": "CVE ADVISORY",
+    "ghsa": "GHSA ADVISORY",
+    "mitre": "MITRE ATT&CK",
     "asset": "ENTERPRISE ASSET",
     "discovered": "DISCOVERED TOKEN"
   },
@@ -74,6 +87,11 @@
   "forensics": {
     "classification": "CONFIDENTIAL // TLP:AMBER",
     "unit": "Forensic Investigation Unit",
-    "evidence_hash": "SHA-256 Evidence Integrity"
+    "evidence_hash": "SHA-256 Evidence Integrity",
+    "examiner": "Examiner:",
+    "lead_examiner": "Lead Examiner:",
+    "date": "Date:",
+    "case_id": "Case ID:",
+    "report_title": "FORENSIC INVESTIGATION REPORT"
   }
 }

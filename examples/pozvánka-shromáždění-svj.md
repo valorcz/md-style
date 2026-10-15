@@ -19,7 +19,7 @@ Výbor Společenství vlastníků jednotek domu Jabloňová 24 svolává v soul
 
 ## Program shromáždění
 
-::: {#toc}
+::: {#toc section="Detaily jednání"}
 :::
 
 **Za výbor SVJ Jabloňová 24, Praha**  

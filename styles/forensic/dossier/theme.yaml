@@ -4,7 +4,6 @@ extends: base
 stylesheets:
   - ../components/dossier-header.css
   - ../components/kpi-grid.css
-  - ../components/timeline.css
   - forensic.css
 features:
   interactive_viewer: true
@@ -15,6 +14,8 @@ variables:
   --bg-primary: "#ffffff"
   --text-main: "#0f172a"
   --accent: "#2563eb"
+  --page-header-border: "1px solid #cbd5e1"
+  --page-footer-border: "1px solid #e2e8f0"
 paged:
   headers:
     center: "{classification}"

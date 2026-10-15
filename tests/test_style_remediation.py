@@ -178,3 +178,32 @@ def test_cli_embed_source_flag():
 
     args_enabled = parser.parse_args(["input.md", "--embed-source"])
     assert args_enabled.embed_source is True
+
+def test_dossier_header_abstract_markdown():
+    """Verifies that markdown inside frontmatter abstract and subtitle is rendered to HTML, not left as raw text."""
+    from core.parser import MarkdownParser
+
+    cfg = PipelineConfig(
+        input_file=Path("/tmp/fake.md"),
+        output_file=Path("/tmp/fake.html"),
+        style="forensic/cyber",
+        quiet=True
+    )
+    engine = ReportEngine(cfg)
+    parser = MarkdownParser(lang="en")
+    cat = I18nCatalog("en")
+
+    fm = {
+        "title": "Forensic Investigation Report",
+        "subtitle": "Target: `DC-CORP-01` primary domain controller",
+        "abstract": "Compromise detected on **DC-CORP-01**. Lateral movement via `WmiPrvSE.exe` and `Event ID 4624`."
+    }
+
+    header_html = engine._build_dossier_header(fm, fm["title"], cat, parser=parser)
+    # Subtitle has `DC-CORP-01` rendered as <code>DC-CORP-01</code>
+    assert "<code>DC-CORP-01</code>" in header_html
+    # Abstract has **DC-CORP-01** rendered as <strong> and `WmiPrvSE.exe` as <code>
+    assert "<strong>DC-CORP-01</strong>" in header_html
+    assert "<code>WmiPrvSE.exe</code>" in header_html
+
+

@@ -29,24 +29,30 @@
 
 #title-block-header h1.title {
   font-family: var(--font-heading);
-  font-size: 2.15rem;
+  font-size: 2.25rem;
   font-weight: 800;
   color: var(--color-text-heading, var(--color-primary));
-  margin-top: 0.2em;
-  margin-bottom: 0.35em;
-  border-bottom: none;
-  padding-bottom: 0;
-  line-height: 1.22;
+  margin-top: 0.25em;
+  margin-bottom: 0.4em;
+  border-bottom: none !important;
+  padding-bottom: 0 !important;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+#title-block-header h1.title::after {
+  display: none !important;
 }
 
 #title-block-header .subtitle {
   font-family: var(--font-heading);
-  font-size: 1.05rem;
+  font-size: 1.15rem;
   color: var(--color-text-muted);
   margin-top: 0;
   margin-bottom: 1.25rem;
   font-weight: 400;
   line-height: 1.4;
+  letter-spacing: -0.01em;
 }
 
 #title-block-header .metadata-grid {

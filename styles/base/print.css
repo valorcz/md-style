@@ -54,7 +54,17 @@ div.warning,
 div.tip,
 div.important,
 div.caution,
-div.critical {
+div.critical,
+.callout,
+.admonition,
+figure,
+.signature-block,
+.signature-line,
+.signature-row,
+.committee-signature,
+.sign-off,
+.kpi-card,
+.kpi-grid {
   break-inside: avoid !important;
   page-break-inside: avoid !important;
 }

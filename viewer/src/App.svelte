@@ -3,16 +3,25 @@
   import InspectorDrawer from './InspectorDrawer.svelte';
   import HudRibbon from './HudRibbon.svelte';
   import TableToolbar from './TableToolbar.svelte';
+  import AnnotationPopover from './annotations/AnnotationPopover.svelte';
+  import MarginGutter from './annotations/MarginGutter.svelte';
+  import { annotationStore } from './annotations/store';
+  import { serializeRange } from './annotations/dom-anchor';
 
   export let title: string = '';
   export let enableHud: boolean = true;
   export let enableInspector: boolean = true;
   export let enableTableFilters: boolean = true;
 
+  let selectionPopoverPos: { x: number; y: number } | null = null;
+  let activeSelectedQuote: string = '';
+  let activeSelectedRange: Range | null = null;
+
   let knowledgeData: Record<string, any> = {};
   let i18nData: Record<string, string> = {};
   let selectedEntity: any = null;
   let isDrawerOpen: boolean = false;
+  let drawerTab: 'kb' | 'comments' = 'kb';
   let hasSourceMarkdown: boolean = false;
   let sourceMarkdownText: string = '';
 
@@ -61,9 +70,23 @@
     URL.revokeObjectURL(url);
   }
 
-  function handleToggleInspector() {
-    isDrawerOpen = !isDrawerOpen;
-    if (isDrawerOpen && !selectedEntity) {
+  function handleToggleInspector(tab?: 'kb' | 'comments' | CustomEvent<'kb' | 'comments'>) {
+    const targetTab = typeof tab === 'string' ? tab : tab?.detail;
+    if (targetTab) {
+      if (isDrawerOpen && drawerTab === targetTab) {
+        isDrawerOpen = false;
+      } else {
+        drawerTab = targetTab;
+        if (targetTab === 'comments') {
+          selectedEntity = null;
+        }
+        isDrawerOpen = true;
+      }
+    } else {
+      isDrawerOpen = !isDrawerOpen;
+    }
+    document.body.classList.toggle('inspector-open', isDrawerOpen);
+    if (isDrawerOpen && !selectedEntity && drawerTab === 'kb') {
       selectedEntity = null;
     }
   }
@@ -86,7 +109,6 @@
 
     if (entity) {
       selectedEntity = entity;
-      isDrawerOpen = true;
     } else {
       selectedEntity = {
         id: token,
@@ -97,8 +119,10 @@
         badge: i18nData.discovered || 'DISCOVERED TOKEN',
         summary: 'Entity referenced in report text.'
       };
-      isDrawerOpen = true;
     }
+    drawerTab = 'kb';
+    isDrawerOpen = true;
+    document.body.classList.add('inspector-open');
   }
 
   function setupTableToolbars() {
@@ -200,67 +224,63 @@
   }
 
   import { Previewer } from 'pagedjs';
+  import { registerUnifiedHandlers, getEmbeddedPrintTemplates } from './paged/paged-handlers';
 
   let isPagedMode: boolean = false;
   let isPaginating: boolean = false;
-  let pagedPreviewer: any = null;
-
-  async function activatePagedMode() {
-    if (isPaginating) return;
-    const contentEl = document.querySelector('.report-content');
-    if (!contentEl) return;
-
-    isPaginating = true;
-    document.body.classList.add('paged-view');
-
-    let pagedRoot = document.getElementById('md-style-paged-root');
-    if (!pagedRoot) {
-      pagedRoot = document.createElement('div');
-      pagedRoot.id = 'md-style-paged-root';
-      document.body.appendChild(pagedRoot);
-    }
-    pagedRoot.style.display = 'block';
-    pagedRoot.innerHTML = '';
-    (contentEl as HTMLElement).style.display = 'none';
-
-    try {
-      pagedPreviewer = new Previewer();
-      const inlineStyles = Array.from(document.querySelectorAll('style:not([data-pagedjs-inserted-styles], [data-pagedjs-ignore])'))
-        .map(el => {
-          const obj: Record<string, string> = {};
-          obj[window.location.href] = el.textContent || '';
-          return obj;
-        });
-      await pagedPreviewer.preview(contentEl.innerHTML, inlineStyles, pagedRoot);
-      document.documentElement.dataset.pagedReady = 'true';
-    } catch (err) {
-      console.warn('[Viewer] Paged.js preview error:', err);
-    } finally {
-      isPaginating = false;
-    }
-  }
-
-  function deactivatePagedMode() {
-    document.body.classList.remove('paged-view');
-    delete document.documentElement.dataset.pagedReady;
-    const pagedRoot = document.getElementById('md-style-paged-root');
-    if (pagedRoot) {
-      pagedRoot.style.display = 'none';
-      pagedRoot.innerHTML = '';
-    }
-    document.querySelectorAll('[data-pagedjs-inserted-styles]').forEach(el => el.remove());
-    const contentEl = document.querySelector('.report-content') as HTMLElement;
-    if (contentEl) {
-      contentEl.style.display = '';
-    }
-  }
+  let hasRenderedPaged: boolean = false;
 
   async function handleTogglePaged() {
     isPagedMode = !isPagedMode;
+
     if (isPagedMode) {
-      await activatePagedMode();
+      document.body.classList.add('paged-view');
+
+      if (!hasRenderedPaged) {
+        isPaginating = true;
+        registerUnifiedHandlers();
+
+        let root = document.getElementById('md-style-paged-root');
+        if (!root) {
+          root = document.createElement('div');
+          root.id = 'md-style-paged-root';
+          document.body.appendChild(root);
+        }
+
+        const contentEl =
+          document.querySelector('.report-container') ||
+          document.querySelector('main:not(#md-style-paged-root)') ||
+          document.querySelector('.report-content');
+
+        if (contentEl) {
+          const clone = contentEl.cloneNode(true) as HTMLElement;
+
+          try {
+            const templates = getEmbeddedPrintTemplates();
+            const previewer = new Previewer();
+
+            const inlinePageStyles: Record<string, string> = {};
+            if (templates) {
+              const top = templates.marginTop ? `${templates.marginTop}in` : '22mm';
+              const right = templates.marginRight ? `${templates.marginRight}in` : '18mm';
+              const bottom = templates.marginBottom ? `${templates.marginBottom}in` : '22mm';
+              const left = templates.marginLeft ? `${templates.marginLeft}in` : '18mm';
+              inlinePageStyles['md-style-page-geom'] = `@page { size: A4; margin: ${top} ${right} ${bottom} ${left}; }`;
+            }
+
+            await previewer.preview(clone, [inlinePageStyles], root);
+            hasRenderedPaged = true;
+          } catch (err) {
+            console.error('[Paged] Pagination failed:', err);
+          } finally {
+            isPaginating = false;
+          }
+        } else {
+          isPaginating = false;
+        }
+      }
     } else {
-      deactivatePagedMode();
+      document.body.classList.remove('paged-view');
     }
   }
 
@@ -274,7 +294,58 @@
       handleTogglePaged();
     }
 
+    annotationStore.init();
+
+    const handleSelectionChange = () => {
+      const sel = window.getSelection();
+      if (!sel || sel.isCollapsed || !sel.toString().trim()) {
+        const popover = document.querySelector('.annotation-popover');
+        if (popover && (popover.contains(document.activeElement) || popover.querySelector('.popover-composer'))) {
+          return;
+        }
+        selectionPopoverPos = null;
+        activeSelectedRange = null;
+        activeSelectedQuote = '';
+        return;
+      }
+
+      // Check if selection is within report content
+      const root = document.querySelector('.report-content') || document.querySelector('main');
+      if (!root) return;
+
+      const range = sel.getRangeAt(0);
+      if (!root.contains(range.commonAncestorContainer)) return;
+
+      const rect = range.getBoundingClientRect();
+      activeSelectedRange = range;
+      activeSelectedQuote = sel.toString().trim();
+      selectionPopoverPos = {
+        x: rect.right + 12,
+        y: rect.top
+      };
+    };
+
+    document.addEventListener('selectionchange', handleSelectionChange);
+
     const clickHandler = (e: MouseEvent) => {
+      // Disambiguate: if text is currently highlighted by the user, do not open inspectable entity drawer
+      const sel = window.getSelection();
+      if (sel && sel.toString().trim().length > 0) return;
+
+      // Handle clicking an annotation mark
+      const annMark = (e.target as HTMLElement)?.closest('.md-annotation-mark') as HTMLElement;
+      if (annMark) {
+        const annId = annMark.getAttribute('data-ann-id');
+        if (annId) {
+          annotationStore.setActive(annId);
+          selectedEntity = null;
+          drawerTab = 'comments';
+          isDrawerOpen = true;
+          document.body.classList.add('inspector-open');
+          return;
+        }
+      }
+
       const target = (e.target as HTMLElement)?.closest('.inspectable') as HTMLElement;
       if (target) {
         e.preventDefault();
@@ -287,29 +358,84 @@
 
     return () => {
       document.removeEventListener('click', clickHandler);
+      document.removeEventListener('selectionchange', handleSelectionChange);
     };
   });
+
+  function handleCreateAnnotation(event: CustomEvent<any>) {
+    if (!activeSelectedRange) return;
+    const selector = serializeRange(activeSelectedRange);
+    if (!selector) return;
+
+    annotationStore.addAnnotation({
+      category: event.detail.category,
+      text: event.detail.text,
+      author: event.detail.author,
+      range: selector
+    });
+
+    window.getSelection()?.removeAllRanges();
+    selectionPopoverPos = null;
+    activeSelectedRange = null;
+    activeSelectedQuote = '';
+  }
 </script>
+
+{#if isPaginating}
+  <div class="paged-loading-overlay">
+    <div class="paged-loading-spinner"></div>
+    <span>{i18nData['paginating'] || 'Paginating A4 sheets...'}</span>
+  </div>
+{/if}
 
 {#if enableHud}
   <HudRibbon
     {title}
     i18n={i18nData}
     {isPagedMode}
+    isInspectorOpen={isDrawerOpen}
+    activeDrawerTab={drawerTab}
     entityCount={Object.keys(knowledgeData).length}
+    commentCount={$annotationStore.annotations.length}
+    educativeMode={$annotationStore.educativeMode}
     on:togglePaged={handleTogglePaged}
     on:toggleInspector={handleToggleInspector}
+    on:toggleEducativeMode={() => annotationStore.toggleEducativeMode()}
+  />
+{/if}
+
+{#if $annotationStore.educativeMode && !isPagedMode}
+  <MarginGutter
+    annotations={$annotationStore.annotations}
+    activeAnnotationId={$annotationStore.activeAnnotationId}
+  />
+{/if}
+
+{#if selectionPopoverPos && activeSelectedQuote}
+  <AnnotationPopover
+    position={selectionPopoverPos}
+    quoteText={activeSelectedQuote}
+    on:create={handleCreateAnnotation}
+    on:cancel={() => {
+      selectionPopoverPos = null;
+      activeSelectedQuote = '';
+      activeSelectedRange = null;
+    }}
   />
 {/if}
 
 {#if enableInspector}
   <InspectorDrawer
     bind:entity={selectedEntity}
+    bind:activeTab={drawerTab}
     isOpen={isDrawerOpen}
     i18n={i18nData}
     allEntities={knowledgeData}
     {hasSourceMarkdown}
-    onClose={() => (isDrawerOpen = false)}
+    onClose={() => {
+      isDrawerOpen = false;
+      document.body.classList.remove('inspector-open');
+    }}
     onSelectEntity={(e) => (selectedEntity = e)}
     onDownloadSource={handleDownloadSource}
   />

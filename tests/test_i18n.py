@@ -57,5 +57,5 @@ def test_i18n_export_css_variables():
     assert "--i18n-examiner" in vars_map
     assert "--i18n-date" in vars_map
     assert "--i18n-report-title" in vars_map
-    assert vars_map["--i18n-examiner"] == '"Autor:"'
+    assert vars_map["--i18n-examiner"] == '"Vyšetřovatel:"'
 

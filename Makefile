@@ -1,4 +1,4 @@
-.PHONY: help install install-viewer build-viewer build test samples samples-pdf clean all
+.PHONY: help install install-viewer build-viewer build test test-e2e samples samples-pdf clean all
 
 help:
 	@echo "md-style v3 Build System"
@@ -7,6 +7,7 @@ help:
 	@echo "  make build-viewer    - Recompile Svelte 5 interactive viewer bundle (with Mermaid)"
 	@echo "  make build           - Build viewer assets and Python environment"
 	@echo "  make test            - Run pytest suite"
+	@echo "  make test-e2e        - Run Playwright E2E headless browser test suite"
 	@echo "  make samples         - Compile all example reports to output/ (HTML)"
 	@echo "  make samples-pdf     - Compile sample reports to output/ (PDF via Chromium)"
 	@echo "  make clean           - Clean output, cache, and transient build artifacts"
@@ -26,6 +27,10 @@ build: build-viewer
 test:
 	uv run pytest -v
 
+test-e2e:
+	uv run pytest tests/e2e/ -v
+
+
 samples:
 	@mkdir -p output
 	uv run md-style examples/sample-forensic-cyber.md -s forensic/cyber -o output/sample-forensic-cyber.html
@@ -39,6 +44,7 @@ samples-pdf: samples
 	uv run md-style examples/sample-forensic-cyber.md -s forensic/cyber -p -o output/sample-forensic-cyber.pdf
 	uv run md-style examples/sample-forensic-report.md -s forensic/dossier -p -o output/sample-forensic-report.pdf
 	uv run md-style "examples/pozvánka-shromáždění-svj.md" -s svj/invitation -p -o output/pozvanka-svj.pdf
+	uv run md-style examples/school-report-sample.md -s general/school -p -o output/school-report.pdf
 
 clean:
 	rm -rf output/ .pytest_cache/ viewer/dist/

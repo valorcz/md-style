@@ -264,33 +264,6 @@ tbody tr:nth-child(even) {
 @media print {
   @page {
     margin: 20mm 15mm 20mm 15mm;
-    @top-left {
-      content: var(--page-header-left);
-      font-family: var(--font-heading);
-      font-size: 7.5pt;
-      font-weight: 700;
-      color: #64748b;
-      letter-spacing: 0.05em;
-    }
-    @top-right {
-      content: var(--page-header-right);
-      font-family: var(--font-heading);
-      font-size: 7.5pt;
-      color: #64748b;
-    }
-    @bottom-left {
-      content: var(--page-footer-left);
-      font-family: var(--font-body);
-      font-size: 7.5pt;
-      color: #94a3b8;
-    }
-    @bottom-right {
-      content: var(--page-footer-right);
-      font-family: var(--font-body);
-      font-size: 7.5pt;
-      color: #475569;
-      font-weight: 600;
-    }
   }
 
   header#title-block-header::before {

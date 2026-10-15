@@ -4,6 +4,8 @@
    All themes inherit these primitives and override custom variables/components.
    ========================================================================== */
 
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
 /* --------------------------------------------------------------------------
    1. Design Token Fallbacks
    -------------------------------------------------------------------------- */
@@ -555,29 +557,43 @@ div.tip .title, div.success .title, div.finding .title {
 /* --------------------------------------------------------------------------
    Diagrams & Vector Figures
    -------------------------------------------------------------------------- */
-figure.mermaid-diagram {
+figure.mermaid-diagram,
+figure.d2-diagram {
   margin: 2rem 0;
   text-align: center;
   max-width: 100%;
 }
 
-figure.mermaid-diagram .mermaid-svg-wrapper {
+figure.mermaid-diagram .mermaid-svg-wrapper,
+figure.d2-diagram .d2-svg-wrapper {
   overflow-x: auto;
   max-width: 100%;
   display: flex;
   justify-content: center;
 }
 
-figure.mermaid-diagram svg {
+figure.mermaid-diagram svg,
+figure.d2-diagram svg {
   max-width: 100%;
   height: auto;
 }
 
-figcaption.mermaid-caption {
+figcaption.mermaid-caption,
+figcaption.d2-caption {
   font-size: 0.85rem;
   color: var(--color-text-muted);
   margin-top: 0.5rem;
   font-style: italic;
+}
+
+figure.d2-diagram.d2-fallback pre.d2-code {
+  text-align: left;
+  background: var(--color-surface, #f8fafc);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 6px;
+  padding: 1rem;
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 /* Timestamps (nowrap) vs Hashes (break-all) */
@@ -601,4 +617,156 @@ td:has(code.hash) {
   word-break: break-all !important;
   overflow-wrap: anywhere !important;
   font-family: var(--font-mono, monospace);
+}
+
+/* Prevent duplicate title badges & metadata labels when semantic HTML is rendered */
+#title-block-header:has(.report-badge)::before,
+header#title-block-header:has(.report-badge)::before {
+  display: none !important;
+}
+
+#title-block-header:has(.meta-label) p.author::before,
+header#title-block-header:has(.meta-label) p.author::before,
+#title-block-header:has(.meta-label) p.date::before,
+header#title-block-header:has(.meta-label) p.date::before {
+  display: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   Inspectable Entity Micro-Interactions & Hover Affordances
+   -------------------------------------------------------------------------- */
+.inspectable {
+  cursor: pointer !important;
+  border-bottom: 1.5px dotted var(--inspectable-accent, #38bdf8);
+  text-underline-offset: 3px;
+  border-radius: 2px;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+  position: relative;
+  display: inline-block;
+}
+
+.inspectable:hover,
+.inspectable:focus-visible {
+  background: var(--inspectable-hover-bg, rgba(56, 189, 248, 0.15));
+  box-shadow: 0 0 8px var(--inspectable-glow, rgba(56, 189, 248, 0.25));
+  outline: none;
+}
+
+/* Severity-specific affordances */
+.inspectable-critical {
+  --inspectable-accent: #ef4444;
+  --inspectable-hover-bg: rgba(239, 68, 68, 0.18);
+  --inspectable-glow: rgba(239, 68, 68, 0.35);
+}
+
+.inspectable-high {
+  --inspectable-accent: #f97316;
+  --inspectable-hover-bg: rgba(249, 115, 22, 0.18);
+  --inspectable-glow: rgba(249, 115, 22, 0.35);
+}
+
+.inspectable-medium {
+  --inspectable-accent: #eab308;
+  --inspectable-hover-bg: rgba(234, 179, 8, 0.18);
+  --inspectable-glow: rgba(234, 179, 8, 0.35);
+}
+
+.inspectable-info {
+  --inspectable-accent: #38bdf8;
+  --inspectable-hover-bg: rgba(56, 189, 248, 0.15);
+  --inspectable-glow: rgba(56, 189, 248, 0.25);
+}
+
+/* --------------------------------------------------------------------------
+   Non-Modal Docked Inspector Layout Shift (Desktop)
+   Shift the reading content to the left when the inspector is open so the
+   reading width is never squeezed, while keeping body untransformed so
+   position:fixed/sticky HUD and Inspector remain rock-solid.
+   -------------------------------------------------------------------------- */
+@media screen and (min-width: 1300px) {
+  .report-content,
+  main,
+  .document-container {
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  body.inspector-open .report-content,
+  body.inspector-open main,
+  body.inspector-open .document-container {
+    transform: translateX(-160px);
+  }
+}
+
+/* ==========================================================================
+   ANNOTATIONS & REVIEW MODE STYLES
+   CSS Custom Highlight API pseudo-elements and fallback .md-annotation-mark tags
+   ========================================================================== */
+
+/* CSS Custom Highlight API Pseudo-Elements */
+::highlight(md-ann-feedback) {
+  background-color: rgba(2, 132, 199, 0.18);
+  text-decoration: underline dashed #0284c7 2px;
+  text-underline-offset: 3px;
+}
+
+::highlight(md-ann-correction) {
+  background-color: rgba(244, 63, 94, 0.2);
+  text-decoration: underline wavy #f43f5e 2px;
+  text-underline-offset: 3px;
+}
+
+::highlight(md-ann-insight) {
+  background-color: rgba(245, 158, 11, 0.22);
+  text-decoration: underline dotted #f59e0b 2px;
+  text-underline-offset: 3px;
+}
+
+::highlight(md-ann-commendation) {
+  background-color: rgba(16, 185, 129, 0.2);
+  text-decoration: underline solid #10b981 2px;
+  text-underline-offset: 3px;
+}
+
+::highlight(md-ann-question) {
+  background-color: rgba(168, 85, 247, 0.2);
+  text-decoration: underline dotted #a855f7 2px;
+  text-underline-offset: 3px;
+}
+
+/* Fallback DOM Mark Tags (when CSS Highlight API is unsupported) */
+mark.md-annotation-mark {
+  background-color: transparent;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+mark.md-annotation-mark.category-feedback {
+  background-color: rgba(2, 132, 199, 0.18);
+  text-decoration: underline dashed #0284c7 2px;
+  text-underline-offset: 3px;
+}
+
+mark.md-annotation-mark.category-correction {
+  background-color: rgba(244, 63, 94, 0.2);
+  text-decoration: underline wavy #f43f5e 2px;
+  text-underline-offset: 3px;
+}
+
+mark.md-annotation-mark.category-insight {
+  background-color: rgba(245, 158, 11, 0.22);
+  text-decoration: underline dotted #f59e0b 2px;
+  text-underline-offset: 3px;
+}
+
+mark.md-annotation-mark.category-commendation {
+  background-color: rgba(16, 185, 129, 0.2);
+  text-decoration: underline solid #10b981 2px;
+  text-underline-offset: 3px;
+}
+
+mark.md-annotation-mark.category-question {
+  background-color: rgba(168, 85, 247, 0.2);
+  text-decoration: underline dotted #a855f7 2px;
+  text-underline-offset: 3px;
 }

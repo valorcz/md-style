@@ -217,35 +217,20 @@ h5, h6 {
   text-align: left;
 }
 
-#title-block-header::before {
-  content: var(--i18n-report-title);
-  display: inline-block;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: var(--color-accent-dark);
-  background-color: var(--color-accent-light);
-  padding: 0.3em 0.8em;
-  border-radius: 4px;
-  margin-bottom: 1rem;
-  text-transform: uppercase;
-}
-
 #title-block-header h1.title {
   font-size: 2.25rem;
   font-weight: 800;
   color: var(--color-primary);
   margin-top: 0.25em;
   margin-bottom: 0.4em;
-  border-bottom: none;
-  padding-bottom: 0;
+  border-bottom: none !important;
+  padding-bottom: 0 !important;
   line-height: 1.2;
   text-wrap: balance;
 }
 
 #title-block-header h1.title::after {
-  display: none;
+  display: none !important;
 }
 
 #title-block-header .subtitle {
@@ -267,26 +252,6 @@ h5, h6 {
   margin: 0.35em 0;
   display: flex;
   align-items: center;
-}
-
-#title-block-header p.author::before {
-  content: var(--i18n-examiner);
-  font-weight: 700;
-  color: var(--color-text-muted);
-  min-width: 7.5rem;
-  margin-right: 0.5rem;
-  flex-shrink: 0;
-  display: inline-block;
-}
-
-#title-block-header p.date::before {
-  content: var(--i18n-date);
-  font-weight: 700;
-  color: var(--color-text-muted);
-  min-width: 7.5rem;
-  margin-right: 0.5rem;
-  flex-shrink: 0;
-  display: inline-block;
 }
 
 /* Executive Abstract / Case Summary */
@@ -316,7 +281,9 @@ h5, h6 {
 /* --------------------------------------------------------------------------
    6. Table of Contents (TOC)
    -------------------------------------------------------------------------- */
-nav#TOC {
+nav#TOC,
+nav#toc,
+nav.table-of-contents {
   background-color: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: 6px;
@@ -325,9 +292,11 @@ nav#TOC {
 }
 
 nav#TOC h2,
-nav#TOC #toc-title {
+nav#TOC #toc-title,
+nav#toc .toc-title,
+nav.table-of-contents .toc-title {
   font-family: var(--font-heading);
-  font-size: 1rem;
+  font-size: 0.85rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -336,35 +305,49 @@ nav#TOC #toc-title {
   margin-bottom: 0.85rem;
   padding-left: 0;
   border-left: none;
+  border-bottom: none;
 }
 
-nav#TOC ul {
+nav#TOC ul,
+nav#toc ul,
+nav.table-of-contents ul {
   list-style: none;
   padding-left: 0;
   margin: 0;
 }
 
-nav#TOC ul ul {
+nav#TOC ul ul,
+nav#toc li.toc-level-3,
+nav.table-of-contents li.toc-level-3 {
   padding-left: 1.35rem;
   margin: 0.25rem 0;
   border-left: 1px dashed var(--color-border-dark);
 }
 
-nav#TOC li {
+nav#TOC li,
+nav#toc li,
+nav.table-of-contents li {
   margin: 0.35rem 0;
   font-size: 0.92rem;
   line-height: 1.4;
+  position: relative;
 }
 
-nav#TOC a {
+nav#TOC a,
+nav#toc a,
+nav.table-of-contents a {
   color: var(--color-primary-light);
   text-decoration: none;
-  transition: color 0.15s ease;
+  border-bottom: 1px dotted var(--color-border-dark);
+  transition: color 0.15s ease, border-color 0.15s ease;
 }
 
-nav#TOC a:hover {
+nav#TOC a:hover,
+nav#toc a:hover,
+nav.table-of-contents a:hover {
   color: var(--color-accent);
-  text-decoration: underline;
+  border-bottom: 1px solid var(--color-accent);
+  text-decoration: none;
 }
 
 /* --------------------------------------------------------------------------
@@ -617,17 +600,23 @@ pre:not(.sourceCode) {
 
 /* Console Title Bar with Terminal Indicator Dots */
 div.sourceCode::before,
-pre:not(.sourceCode)::before {
-  content: "";
-  display: block;
-  height: 28px;
-  background-color: var(--code-header-bg);
-  border-bottom: 1px solid var(--code-border);
+pre:not(.sourceCode)::before,
+pre.highlight-code::before {
+  content: "" !important;
+  display: block !important;
+  height: 28px !important;
+  background-color: var(--code-header-bg) !important;
+  border-bottom: 1px solid var(--code-border) !important;
   /* 3 console dots: Red, Amber, Green */
   background-image: radial-gradient(circle at 14px 14px, #ef4444 4.5px, transparent 5px),
                     radial-gradient(circle at 28px 14px, #f59e0b 4.5px, transparent 5px),
-                    radial-gradient(circle at 42px 14px, #10b981 4.5px, transparent 5px);
-  background-repeat: no-repeat;
+                    radial-gradient(circle at 42px 14px, #10b981 4.5px, transparent 5px) !important;
+  background-repeat: no-repeat !important;
+  position: static !important;
+}
+
+pre.highlight-code {
+  padding-top: 0 !important;
 }
 
 /* Code content within container */
@@ -690,7 +679,10 @@ div.sourceCode:has(pre.log)::after, pre.log::after,
 div.sourceCode:has(code.log)::after { content: var(--i18n-sys-log); }
 
 div.sourceCode::after,
-pre[class*="language-"]::after {
+pre[class*="language-"]::after,
+pre.highlight-code::after {
+  content: attr(data-lang);
+  text-transform: uppercase;
   position: absolute;
   top: 5px;
   right: 12px;
@@ -1559,12 +1551,14 @@ ul:not(.task-list):not(.kpi-grid) > li > ul > li > ul > li::before {
 /* --- Ordered Lists: Monospace Two-Digit Sequence with Step Flow Rail --- */
 ol:not(.task-list) {
   list-style: none;
+  counter-reset: forensic-ol;
   padding-left: 0;
   margin: 1.25em 0 1.6em;
   position: relative;
 }
 
 ol:not(.task-list) > li {
+  counter-increment: forensic-ol;
   position: relative;
   padding-left: 2.75rem;
   padding-bottom: 1.1em;
@@ -1592,7 +1586,7 @@ ol:not(.task-list) > li:last-child::before {
 
 /* Two-digit Monospace Numeral Badge */
 ol:not(.task-list) > li::after {
-  content: counter(list-item, decimal-leading-zero);
+  content: counter(forensic-ol, decimal-leading-zero);
   position: absolute;
   left: 0;
   top: 0.1em;
@@ -1608,7 +1602,7 @@ ol:not(.task-list) > li::after {
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
   color: var(--color-accent);
-  background-color: var(--color-bg);
+  background-color: var(--color-paper, #ffffff);
   border: 1px solid var(--color-border-dark);
   border-radius: 4px;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
@@ -1676,6 +1670,11 @@ ul.task-list li input[type="checkbox"] {
 /* Reset for TOC and Footnotes */
 nav#TOC ul,
 nav#TOC ol,
+nav#toc ul,
+nav#toc ol,
+nav.table-of-contents ul,
+nav.table-of-contents ol,
+.toc-list,
 .footnotes ul,
 .footnotes ol,
 section.footnotes ul,
@@ -1687,6 +1686,12 @@ section.footnotes ol {
 
 nav#TOC li::before,
 nav#TOC li::after,
+nav#toc li::before,
+nav#toc li::after,
+nav.table-of-contents li::before,
+nav.table-of-contents li::after,
+.toc-item::before,
+.toc-item::after,
 .footnotes li::before,
 .footnotes li::after,
 section.footnotes li::before,
@@ -1809,9 +1814,6 @@ section.footnotes li {
     border-bottom: 2px solid #0f172a;
   }
 
-  #title-block-header::before {
-    border: 1px solid #cbd5e1;
-  }
 
   #title-block-header h1.title {
     font-size: 1.85rem;

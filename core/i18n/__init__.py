@@ -185,6 +185,8 @@ class I18nCatalog:
             (["forensics.date", "meta.date_label"], "--i18n-date"),
             (["forensics.report_title", "meta.report_type"], "--i18n-report-title"),
             (["forensics.classification", "meta.confidential_label"], "--i18n-classification"),
+            (["forensics.classification", "meta.confidential_label"], "--i18n-confidential"),
+            (["forensics.unit"], "--i18n-unit"),
             (["meta.section_tag"], "--i18n-section-tag"),
             (["meta.abstract_title"], "--i18n-abstract-title"),
             (["meta.toc_title", "toc.title"], "--i18n-toc-title"),

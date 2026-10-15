@@ -55,11 +55,13 @@ class EntityAnnotator:
 
             sev_class = f" inspectable-{ent.severity.lower()}" if ent.severity in ["CRITICAL", "HIGH", "MEDIUM"] else ""
             escaped_text = html.escape(raw_matched)
+            tooltip = html.escape(f"Inspect {ent.type.upper()}: {ent.title or ent.label or ent.id}")
             return (
                 f'<span class="inspectable{sev_class}" '
                 f'data-type="{html.escape(ent.type)}" '
                 f'data-token="{html.escape(ent.id)}" '
                 f'data-domain="{html.escape(ent.domain)}" '
+                f'title="{tooltip}" '
                 f'tabindex="0">{escaped_text}</span>'
             )
 
@@ -72,11 +74,13 @@ class EntityAnnotator:
 
         sev_class = f" inspectable-{ent.severity.lower()}" if ent.severity in ["CRITICAL", "HIGH", "MEDIUM"] else ""
         escaped_code = html.escape(code_text)
+        tooltip = html.escape(f"Inspect {ent.type.upper()}: {ent.title or ent.label or ent.id}")
         return (
             f'<code class="inspectable{sev_class}" '
             f'data-type="{html.escape(ent.type)}" '
             f'data-token="{html.escape(ent.id)}" '
             f'data-domain="{html.escape(ent.domain)}" '
+            f'title="{tooltip}" '
             f'tabindex="0">{escaped_code}</code>'
         )
 

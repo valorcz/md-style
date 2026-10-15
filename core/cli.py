@@ -12,9 +12,10 @@ from pathlib import Path
 from typing import Optional
 
 from core.diagnostics import Colors, Diagnostics
-from core.engine import ReportEngine, PipelineConfig
+from core.engine import ReportEngine, PipelineConfig, validate_input_file
 from core.themes import ThemeResolver
 from core.kb import KnowledgeLifecycleManager
+from core.kb.sync import sync_all_catalogs
 
 def check_prerequisites(generate_pdf: bool = False, enable_mermaid: bool = True) -> None:
     """Verifies optional system tools for PDF export."""
@@ -47,7 +48,7 @@ Examples:
     parser.add_argument("input", nargs="?", default=None, help="Source Markdown document")
     parser.add_argument("output", nargs="?", default=None, help="Target HTML/PDF file")
     parser.add_argument("-o", "--output", dest="output_opt", help="Target HTML/PDF file")
-    parser.add_argument("-s", "--style", help="Style name or theme (e.g. forensic/cyber, svj/invitation)")
+    parser.add_argument("-s", "--style", default="forensic", help="Style name or theme (default: forensic)")
     parser.add_argument("-t", "--title", help="Override document title")
     parser.add_argument("-l", "--lang", help="Override document language (e.g. cs, en, sk, de)")
 
@@ -87,6 +88,11 @@ Examples:
     # Diagnostics & Utilities
     parser.add_argument("--list-styles", action="store_true", help="List all available built-in document styles")
     parser.add_argument("--kb-status", action="store_true", help="Display Knowledge Pack entity counts and provenance")
+    parser.add_argument(
+        "--kb-sync",
+        action="store_true",
+        help="Synchronize authoritative offline knowledge base catalogs (MITRE ATT&CK, Windows Events, EVTX channels)"
+    )
     parser.add_argument("-v", "--verbose", action="store_true", help="Verbose debug output")
     parser.add_argument("-q", "--quiet", action="store_true", help="Quiet output (errors only)")
 
@@ -139,13 +145,23 @@ def main():
         list_available_styles()
         sys.exit(0)
 
+    if args.kb_sync:
+        results = sync_all_catalogs(verbose=not args.quiet)
+        print(f"\n{Colors.BOLD}{Colors.GREEN}Knowledge base catalogs synchronized successfully:{Colors.RESET}")
+        for name, count in results.items():
+            print(f"  • {Colors.CYAN}{name}{Colors.RESET}: {count} records")
+        print()
+        sys.exit(0)
+
     if not args.input:
         parser.print_help()
         sys.exit(1)
 
     input_path = Path(args.input)
-    if not input_path.exists():
-        Diagnostics.error(f"Input file not found: {input_path}")
+    try:
+        validate_input_file(input_path)
+    except (FileNotFoundError, ValueError) as e:
+        Diagnostics.error(str(e))
         sys.exit(1)
 
     if args.kb_status:

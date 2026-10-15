@@ -48,15 +48,28 @@
     "print": "Tisk / PDF",
     "summary": "Shrnutí",
     "attributes": "Vlastnosti",
+    "metrics": "Metriky a skóre",
+    "classification": "Klasifikace a TTP",
+    "details": "Technické detaily",
+    "relationships": "Související entity",
     "references": "Odkazy",
     "provenance": "Původ dat",
     "status": "Stav",
-    "close": "Zavřít"
+    "close": "Zavřít",
+    "knowledge_inspector": "Znalostní báze a inspektor",
+    "all_entities": "Všechny entity",
+    "download_md": "Stáhnout .md",
+    "paginating": "Stránkování listů A4...",
+    "web_view": "Webové zobrazení",
+    "paper_view": "Stránkové zobrazení (A4)"
   },
   "badges": {
     "statute": "ZÁKONNÉ USTANOVENÍ",
     "winevent": "WINDOWS UDÁLOST",
+    "evtx": "KANÁL UDÁLOSTÍ",
     "cve": "CVE ZRANITELNOST",
+    "ghsa": "GHSA ZPRÁVA",
+    "mitre": "MITRE ATT&CK",
     "asset": "PODNIKOVÉ AKTIVUM",
     "discovered": "IDENTIFIKOVANÝ TOKEN"
   },
@@ -74,6 +87,11 @@
   "forensics": {
     "classification": "DŮVĚRNÉ // TLP:AMBER",
     "unit": "Forenzní vyšetřovací jednotka",
-    "evidence_hash": "SHA-256 Integrita důkazu"
+    "evidence_hash": "SHA-256 Integrita důkazu",
+    "examiner": "Vyšetřovatel:",
+    "lead_examiner": "Vedoucí vyšetřovatel:",
+    "date": "Datum:",
+    "case_id": "Případ:",
+    "report_title": "ZPRÁVA Z FORENZNÍHO VYŠETŘOVÁNÍ"
   }
 }

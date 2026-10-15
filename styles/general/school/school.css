@@ -269,35 +269,6 @@ tbody tr:nth-child(even) {
 @media print {
   @page {
     margin: 20mm 15mm 20mm 15mm;
-    @top-left {
-      content: var(--page-header-left);
-      font-family: var(--font-heading);
-      font-size: 8pt;
-      color: #64748b;
-      border-bottom: 0.5pt solid #cbd5e1;
-      padding-bottom: 2mm;
-    }
-    @top-right {
-      content: var(--page-header-right);
-      font-family: var(--font-heading);
-      font-size: 8pt;
-      color: #64748b;
-      border-bottom: 0.5pt solid #cbd5e1;
-      padding-bottom: 2mm;
-    }
-    @bottom-left {
-      content: var(--page-footer-left);
-      font-family: var(--font-body);
-      font-size: 8pt;
-      color: #94a3b8;
-    }
-    @bottom-right {
-      content: var(--page-footer-right);
-      font-family: var(--font-body);
-      font-size: 8pt;
-      color: #1e3a8a;
-      font-weight: 600;
-    }
   }
 
   th {

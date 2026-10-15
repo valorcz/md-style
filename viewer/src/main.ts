@@ -1,18 +1,23 @@
 import App from './App.svelte';
 import { mount } from 'svelte';
 
+let hasInitialized = false;
+
 function initViewer() {
+  if (hasInitialized) return;
+  hasInitialized = true;
+
   // If in print mode or paged media, do not mount interactive overlays
   if (window.matchMedia && window.matchMedia('print').matches) {
     return;
   }
 
-  // Create root container if absent
+  // Create root container if absent (attached to documentElement so it is decoupled from body transforms)
   let root = document.getElementById('md-style-viewer-root');
   if (!root) {
     root = document.createElement('div');
     root.id = 'md-style-viewer-root';
-    document.body.prepend(root);
+    document.documentElement.appendChild(root);
   }
 
   const metaTitle = document.querySelector('meta[name="doc-title"]')?.getAttribute('content') || document.title;

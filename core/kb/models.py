@@ -35,13 +35,17 @@ class Provenance:
 class Entity:
     id: str
     domain: str  # e.g. "cyber", "internal", "legal", "infrastructure"
-    type: str    # e.g. "cve", "asset", "winevent", "mitre", "statute", "hash"
+    type: str    # e.g. "cve", "ghsa", "winevent", "evtx", "mitre", "statute", "asset", "hash"
     label: str
     title: str
     severity: str = "INFO"  # "CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO"
     badge: str = ""
     summary: str = ""
     attributes: Dict[str, Any] = field(default_factory=dict)
+    metrics: Dict[str, Any] = field(default_factory=dict)
+    classification: Dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, Any] = field(default_factory=dict)
+    relationships: List[Dict[str, str]] = field(default_factory=list)
     references: List[Dict[str, str]] = field(default_factory=list)
     provenance: Optional[Provenance] = None
     aliases: List[str] = field(default_factory=list)
@@ -57,6 +61,10 @@ class Entity:
             "badge": self.badge,
             "summary": self.summary,
             "attributes": self.attributes,
+            "metrics": self.metrics,
+            "classification": self.classification,
+            "details": self.details,
+            "relationships": self.relationships,
             "references": self.references,
             "aliases": self.aliases,
         }
@@ -78,6 +86,10 @@ class Entity:
             badge=str(data.get("badge", "")),
             summary=str(data.get("summary", "")),
             attributes=dict(data.get("attributes", {})),
+            metrics=dict(data.get("metrics", {})),
+            classification=dict(data.get("classification", {})),
+            details=dict(data.get("details", {})),
+            relationships=list(data.get("relationships", [])),
             references=list(data.get("references", [])),
             provenance=prov,
             aliases=list(data.get("aliases", []))

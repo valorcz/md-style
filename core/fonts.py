@@ -27,8 +27,9 @@ FONT_URL_REGEX = re.compile(r'url\([\'"]?(https?://[^\'")]+|\.?[^\'")\s]+\.(?:wo
 class FontBundler:
     """Expands CSS font imports and inlines binary fonts as base64 WOFF2 data URIs."""
 
-    def __init__(self, cache_dir: Path = FONTS_CACHE_DIR):
+    def __init__(self, cache_dir: Path = FONTS_CACHE_DIR, allow_online: bool = True):
         self.cache_dir = cache_dir
+        self.allow_online = allow_online
         self.css_cache_dir = cache_dir / "css"
         self.file_cache_dir = cache_dir / "files"
         self.css_cache_dir.mkdir(parents=True, exist_ok=True)
@@ -46,6 +47,9 @@ class FontBundler:
                 return cached_css.read_text(encoding="utf-8")
             except Exception:
                 pass
+
+        if not self.allow_online:
+            return None
 
         try:
             req = urllib.request.Request(
@@ -72,6 +76,9 @@ class FontBundler:
                 return cached_file.read_bytes()
             except Exception:
                 pass
+
+        if not self.allow_online:
+            return None
 
         try:
             req = urllib.request.Request(
@@ -100,6 +107,8 @@ class FontBundler:
                 if fetched:
                     # Recursively resolve any nested imports
                     return self.inline_imports(fetched, base_dir)
+                if not self.allow_online:
+                    return f"/* Offline: skipped import {target} */"
                 return f"/* Failed to import {target} */"
             else:
                 # Local relative CSS file
@@ -147,6 +156,10 @@ class FontBundler:
             if binary_data:
                 b64_str = base64.b64encode(binary_data).decode("ascii")
                 return f'url("data:{mime};base64,{b64_str}")'
+
+            # If remote font failed or offline, avoid leaving WAN url in output
+            if url.startswith("http://") or url.startswith("https://"):
+                return 'local("")'
 
             # If failed, leave original url
             return match.group(0)

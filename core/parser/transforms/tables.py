@@ -25,6 +25,14 @@ TIMESTAMP_RE = re.compile(
 # Cryptographic hash pattern (MD5=32, SHA-1=40, SHA-256=64 hex chars)
 HEX_HASH_RE = re.compile(r"\b([a-fA-F0-9]{32,64})\b")
 
+TIMELINE_KEYWORDS = [
+    "timeline", "časová osa", "casova osa", "chronolog", "chronology", "průběh incidentu"
+]
+
+def is_timeline_heading(text: str) -> bool:
+    clean = text.lower().strip()
+    return any(kw in clean for kw in TIMELINE_KEYWORDS)
+
 def format_time_ranges(text: str) -> str:
     """Wraps datetime ranges in <span class='time-range timestamp nowrap'> with break opportunities (<wbr>)."""
     def _repl(m):
@@ -43,19 +51,34 @@ def is_hash_text(text: str) -> bool:
     return bool(len(clean) in (32, 40, 64) and HEX_HASH_RE.fullmatch(clean))
 
 def transform_tables(tokens: List[Token]) -> List[Token]:
-    """Wraps tables in .table-wrapper and injects classes for timestamps and cryptographic hashes."""
+    """Wraps tables in .table-wrapper and injects classes for timelines, timestamps and cryptographic hashes."""
     out: List[Token] = []
     i = 0
     n = len(tokens)
     in_table_cell = False
     current_td_idx = None
+    preceding_heading = ""
 
     while i < n:
         tok = tokens[i]
+
+        if tok.type == "heading_open":
+            if i + 1 < n and tokens[i+1].type == "inline":
+                preceding_heading = tokens[i+1].content.strip()
+            out.append(tok)
+            i += 1
+            continue
+
         if tok.type == "table_open":
             wrapper_open = Token("html_block", "", 0)
             wrapper_open.content = '<div class="table-wrapper">\n'
             out.append(wrapper_open)
+
+            tok.attrs = tok.attrs or {}
+            existing_class = tok.attrs.get("class", "")
+            if is_timeline_heading(preceding_heading):
+                tok.attrs["class"] = f"{existing_class} table-timeline".strip()
+
             out.append(tok)
             i += 1
             continue

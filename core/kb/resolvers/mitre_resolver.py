@@ -1,89 +1,54 @@
 """
 core/kb/resolvers/mitre_resolver.py
 Resolver for MITRE ATT&CK techniques, tactics, and sub-techniques (e.g. T1003, T1003.001).
+Loads authoritative technique metadata directly from data/mitre-attack.json (SSOT).
 """
 
 import re
-from typing import Optional, List
+import json
+from pathlib import Path
+from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 
 from core.kb.resolvers.base import BaseResolver
 from core.kb.models import Entity, Provenance
+from core.config import MITRE_DB_PATH, INTEL_CACHE_DIR
+from core.i18n import I18nCatalog
+from core.diagnostics import Diagnostics
 
 MITRE_TECHNIQUE_RE = re.compile(r"\b(T\d{4}(?:\.\d{3})?)\b")
 
-# Well-known MITRE ATT&CK techniques catalog
-TECHNIQUES_CATALOG = {
-    "T1003": {
-        "title": "OS Credential Dumping",
-        "tactic": "Credential Access",
-        "summary": "Adversaries may attempt to dump credentials to obtain account login and credential material.",
-        "url": "https://attack.mitre.org/techniques/T1003/"
-    },
-    "T1003.001": {
-        "title": "OS Credential Dumping: LSASS Memory",
-        "tactic": "Credential Access",
-        "summary": "Adversaries may attempt to access credential material stored in the process memory of the Local Security Authority Subsystem Service (LSASS).",
-        "url": "https://attack.mitre.org/techniques/T1003/001/"
-    },
-    "T1003.002": {
-        "title": "OS Credential Dumping: Security Account Manager",
-        "tactic": "Credential Access",
-        "summary": "Adversaries may attempt to extract credential material from the Security Account Manager (SAM) database.",
-        "url": "https://attack.mitre.org/techniques/T1003/002/"
-    },
-    "T1003.006": {
-        "title": "OS Credential Dumping: DCSync",
-        "tactic": "Credential Access",
-        "summary": "Adversaries may simulate the behavior of a Domain Controller via directory replication services (DRS) to retrieve password hashes.",
-        "url": "https://attack.mitre.org/techniques/T1003/006/"
-    },
-    "T1059": {
-        "title": "Command and Scripting Interpreter",
-        "tactic": "Execution",
-        "summary": "Adversaries may abuse command and script interpreters to execute commands, scripts, or binaries.",
-        "url": "https://attack.mitre.org/techniques/T1059/"
-    },
-    "T1059.001": {
-        "title": "Command and Scripting Interpreter: PowerShell",
-        "tactic": "Execution",
-        "summary": "Adversaries may abuse PowerShell commands and scripts for execution and evasion.",
-        "url": "https://attack.mitre.org/techniques/T1059/001/"
-    },
-    "T1078": {
-        "title": "Valid Accounts",
-        "tactic": "Defense Evasion / Initial Access",
-        "summary": "Adversaries may obtain and abuse credentials of existing accounts as a means of gaining initial access, persistence, or privilege escalation.",
-        "url": "https://attack.mitre.org/techniques/T1078/"
-    },
-    "T1562": {
-        "title": "Impair Defenses",
-        "tactic": "Defense Evasion",
-        "summary": "Adversaries may maliciously modify system components to hinder defensive visibility or security controls.",
-        "url": "https://attack.mitre.org/techniques/T1562/"
-    },
-    "T1562.001": {
-        "title": "Impair Defenses: Disable or Modify Tools",
-        "tactic": "Defense Evasion",
-        "summary": "Adversaries may modify or disable security software (such as Windows Defender or EDR sensors) to avoid detection.",
-        "url": "https://attack.mitre.org/techniques/T1562/001/"
-    },
-    "T1070": {
-        "title": "Indicator Removal",
-        "tactic": "Defense Evasion",
-        "summary": "Adversaries may delete or alter event logs, audit records, or security system configurations.",
-        "url": "https://attack.mitre.org/techniques/T1070/"
-    },
-    "T1070.001": {
-        "title": "Indicator Removal: Clear Windows Event Logs",
-        "tactic": "Defense Evasion",
-        "summary": "Adversaries may clear Windows Event Logs using wevtutil or PowerShell to cover their tracks.",
-        "url": "https://attack.mitre.org/techniques/T1070/001/"
-    }
-}
 
 class MitreResolver(BaseResolver):
     name = "mitre"
+
+    def __init__(
+        self,
+        db_path: Optional[Path] = None,
+        catalog: Optional[I18nCatalog] = None
+    ):
+        cache_path = INTEL_CACHE_DIR / "mitre-attack.json"
+        if db_path is not None:
+            self.db_path = db_path
+        elif cache_path.exists():
+            self.db_path = cache_path
+        else:
+            self.db_path = MITRE_DB_PATH
+
+        self.catalog = catalog or I18nCatalog("en")
+        self.db: Dict[str, Dict[str, Any]] = {}
+        self._load_db()
+
+    def _load_db(self) -> None:
+        if not self.db_path.exists():
+            return
+
+        try:
+            with open(self.db_path, "r", encoding="utf-8") as f:
+                self.db = json.load(f)
+        except Exception as e:
+            Diagnostics.debug_log(f"Failed to read MITRE ATT&CK database: {e}")
+            self.db = {}
 
     def can_handle(self, token: str) -> bool:
         return bool(MITRE_TECHNIQUE_RE.fullmatch(token.strip()))
@@ -93,49 +58,91 @@ class MitreResolver(BaseResolver):
 
     def resolve(self, token: str, allow_online: bool = True, force_refresh: bool = False) -> Optional[Entity]:
         tid = token.strip().upper()
-        info = TECHNIQUES_CATALOG.get(tid)
+        unresolved = False
 
-        if not info and "." in tid:
+        if tid in self.db:
+            info = self.db[tid]
+        elif "." in tid:
             parent_id = tid.split(".")[0]
-            if parent_id in TECHNIQUES_CATALOG:
-                parent = TECHNIQUES_CATALOG[parent_id]
+            if parent_id in self.db:
+                parent = self.db[parent_id]
                 info = {
-                    "title": f"{parent['title']} (Sub-technique {tid})",
-                    "tactic": parent["tactic"],
-                    "summary": f"Sub-technique under {parent['title']}.",
+                    "id": tid,
+                    "title": f"{parent.get('title', 'Unknown')} (Sub-technique {tid})",
+                    "tactic": parent.get("tactic", "Adversary TTP"),
+                    "summary": f"Sub-technique under {parent.get('title', parent_id)}.",
+                    "platforms": parent.get("platforms", []),
                     "url": f"https://attack.mitre.org/techniques/{tid.replace('.', '/')}/"
                 }
-
-        if not info:
+            else:
+                unresolved = True
+                info = {
+                    "id": tid,
+                    "title": f"ATT&CK Technique {tid}",
+                    "tactic": "Adversary TTP",
+                    "summary": "Adversary tactic or technique cataloged in MITRE ATT&CK framework.",
+                    "platforms": [],
+                    "url": f"https://attack.mitre.org/techniques/{tid.replace('.', '/')}/"
+                }
+        else:
+            unresolved = True
             info = {
+                "id": tid,
                 "title": f"ATT&CK Technique {tid}",
                 "tactic": "Adversary TTP",
                 "summary": "Adversary tactic or technique cataloged in MITRE ATT&CK framework.",
-                "url": f"https://attack.mitre.org/techniques/{tid.replace('.', '/')}/"
+                "platforms": [],
+                "url": f"https://attack.mitre.org/techniques/{tid}/"
             }
 
         prov = Provenance(
             source="catalog:mitre-attack",
             fetched_at=datetime.now(timezone.utc).isoformat(),
-            status="resolved",
+            status="unresolved" if unresolved else "resolved",
             manual_override=False
         )
+
+        relationships = []
+        if "." in tid:
+            parent_id = tid.split(".")[0]
+            relationships.append({"target": parent_id, "type": "mitre", "relation": "subtechnique_of"})
+
+        tactic = info.get("tactic", "Adversary TTP")
+        classification = {
+            "tactics": [t.strip() for t in tactic.split("/") if t.strip()],
+            "framework": "MITRE ATT&CK Enterprise Matrix"
+        }
+
+        details = {
+            "Technique Identifier": tid,
+            "Primary Tactic": tactic,
+            "Detection & Defense Guidance": info.get("summary", "")
+        }
+        if info.get("platforms"):
+            details["Platforms"] = ", ".join(info["platforms"])
+
+        badge_prefix = self.catalog.t("badges.mitre", default="MITRE")
+        badge = f"{badge_prefix} {tactic.upper()}" if tactic else badge_prefix
 
         return Entity(
             id=tid,
             domain="cyber",
             type="mitre",
             label=tid,
-            title=f"{tid}: {info['title']}",
+            title=f"{tid}: {info.get('title', tid)}",
             severity="HIGH",
-            badge=f"MITRE {info['tactic'].upper()}",
-            summary=info["summary"],
+            badge=badge,
+            summary=info.get("summary", ""),
             attributes={
                 "Framework": "MITRE ATT&CK",
-                "Tactic": info["tactic"],
+                "Tactic": tactic,
                 "Technique ID": tid
             },
-            references=[{"title": "MITRE ATT&CK Matrix", "url": info["url"]}],
+            metrics={"matrix_version": "v14", "scope": "Enterprise ATT&CK"},
+            classification=classification,
+            details=details,
+            relationships=relationships,
+            references=[{"title": "MITRE ATT&CK Matrix", "url": info.get("url", f"https://attack.mitre.org/techniques/{tid}/")}],
             provenance=prov,
             aliases=[tid]
         )

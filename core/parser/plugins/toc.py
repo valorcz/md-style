@@ -141,18 +141,23 @@ def inline_toc(
     while i < n:
         tok = tokens[i]
 
-        # Check for paragraph containing [[TOC]] or [TOC]
+        # Check for paragraph containing [[TOC...]], [TOC...], {{#toc...}}, or {{toc...}}
         if tok.type == "paragraph_open":
             if i + 2 < n and tokens[i+1].type == "inline" and tokens[i+2].type == "paragraph_close":
                 text = tokens[i+1].content.strip()
-                if text in {"[[TOC]]", "[TOC]"}:
+                m_toc = re.match(r"^(?:\[\[TOC\b|\[TOC\b|\{\{#?toc\b)(.*)(?:\]\]|\]|\}\})$", text, re.IGNORECASE)
+                if m_toc or text.upper() in {"[[TOC]]", "[TOC]", "{{#TOC}}", "{{TOC}}"}:
                     placeholder_found = True
+                    raw_attrs = m_toc.group(1).strip() if m_toc else ""
+                    parsed_attrs = parse_toc_attributes("", raw_attrs)
                     rendered = render_toc_html(
                         toc_items,
                         catalog=catalog,
                         max_depth=max_depth,
-                        levels=levels,
-                        style_family=style_family
+                        levels=parsed_attrs.get("levels", levels),
+                        style_family=style_family,
+                        section=parsed_attrs.get("section"),
+                        title_override=parsed_attrs.get("title")
                     )
                     if rendered:
                         toc_tok = Token("html_block", "", 0)

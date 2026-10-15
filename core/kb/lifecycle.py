@@ -3,6 +3,7 @@ core/kb/lifecycle.py
 Knowledge Pack lifecycle manager: source hashing, entity provenance, and refresh orchestration.
 """
 
+import re
 import hashlib
 import json
 from pathlib import Path
@@ -111,6 +112,13 @@ class KnowledgeLifecycleManager:
         if resolvers_filter:
             active_resolvers = [r for r in self.resolvers if r.name in resolvers_filter]
 
+        # On force refresh, clear non-overridden entities to rebuild cleanly and purge old/duplicate IDs
+        if refresh_mode == "force":
+            self.pack.entities = {
+                eid: ent for eid, ent in self.pack.entities.items()
+                if ent.provenance and ent.provenance.manual_override
+            }
+
         # 1. Ingest local structured sources (Excel, CSV, JSON)
         sources_updated = False
         new_digests: Dict[str, str] = {}
@@ -170,12 +178,22 @@ class KnowledgeLifecycleManager:
                 if existing_ent and existing_ent.provenance and existing_ent.provenance.manual_override:
                     continue
 
+                is_hollow = (
+                    existing_ent is not None
+                    and (
+                        (existing_ent.provenance and existing_ent.provenance.status == "unresolved")
+                        or (not existing_ent.details and not existing_ent.metrics and not existing_ent.attributes)
+                    )
+                )
+
                 if refresh_mode == "force":
                     tokens_to_resolve.add(c)
                 elif not has_existing or c not in self.pack.entities:
                     tokens_to_resolve.add(c)
+                elif is_hollow:
+                    # Auto-refresh hollow entity stubs or previously unresolved tokens
+                    tokens_to_resolve.add(c)
                 elif refresh_mode == "incremental":
-                    # If unresolved in previous run, try again
                     if existing_ent and existing_ent.provenance and existing_ent.provenance.status == "unresolved":
                         tokens_to_resolve.add(c)
 
@@ -190,11 +208,126 @@ class KnowledgeLifecycleManager:
                         force_refresh=(refresh_mode == "force")
                     )
                     if ent:
-                        self.pack.entities[ent.id] = ent
+                        existing = self.pack.entities.get(ent.id)
+                        if existing:
+                            # Merge aliases into existing canonical entity
+                            for a in [token, *ent.aliases]:
+                                if a and a not in existing.aliases:
+                                    existing.aliases.append(a)
+                            # If existing was unresolved and new is resolved, upgrade it
+                            if existing.provenance and existing.provenance.status == "unresolved" and ent.provenance and ent.provenance.status == "resolved":
+                                self.pack.entities[ent.id] = ent
+                        else:
+                            if token not in ent.aliases:
+                                ent.aliases.append(token)
+                            self.pack.entities[ent.id] = ent
                         entities_resolved += 1
                     break
 
-        if entities_resolved > 0 or sources_updated or not has_existing:
+        # 3. Transitive Graph Closure (Bounded Expansion: Max Depth = 1)
+        # Discovers connected entities (e.g. CVE from GHSA, MITRE from Event, parent techniques)
+        # and resolves them into first-class entities with bidirectional relationship linking.
+        transitive_resolved = 0
+        MAX_ENTITIES_BUDGET = 100
+
+        # Collect outgoing candidate targets from current entities
+        expansion_queue: List[Tuple[str, str, str]] = []  # (target_token, source_entity_id, relation_type)
+        for parent_id, parent_ent in list(self.pack.entities.items()):
+            # A. GHSA associated CVE and CWEs
+            if parent_ent.type == "ghsa":
+                cve_target = parent_ent.attributes.get("CVE") or parent_ent.details.get("Associated CVE")
+                if cve_target and cve_target.upper().startswith("CVE-"):
+                    expansion_queue.append((cve_target.strip().upper(), parent_id, "corresponds_to"))
+                for rel in parent_ent.relationships:
+                    if rel.get("type") == "cve" and rel.get("target"):
+                        expansion_queue.append((rel["target"].strip().upper(), parent_id, rel.get("relation", "corresponds_to")))
+
+                # Extract CWEs from GHSA details
+                cwe_raw = parent_ent.details.get("CWE Identifiers", "")
+                for cwe_match in re.findall(r"\b(CWE-\d{1,5})\b", str(cwe_raw), re.I):
+                    expansion_queue.append((cwe_match.strip().upper(), parent_id, "categorized_as"))
+
+            # B. CVE associated CWEs
+            elif parent_ent.type == "cve":
+                cwes = parent_ent.classification.get("cwes", [])
+                for cwe in cwes:
+                    if isinstance(cwe, str) and cwe.upper().startswith("CWE-"):
+                        expansion_queue.append((cwe.strip().upper(), parent_id, "categorized_as"))
+                for rel in parent_ent.relationships:
+                    if rel.get("type") == "cwe" and rel.get("target"):
+                        expansion_queue.append((rel["target"].strip().upper(), parent_id, rel.get("relation", "categorized_as")))
+
+            # C. Windows Event detected MITRE technique or logged_in EVTX channel
+            elif parent_ent.type == "winevent":
+                for rel in parent_ent.relationships:
+                    t = rel.get("target")
+                    if t and (rel.get("type") in ["mitre", "evtx"] or t.startswith("T") or t.endswith(".evtx")):
+                        expansion_queue.append((t.strip(), parent_id, rel.get("relation", "related")))
+
+            # D. MITRE sub-technique parent technique
+            elif parent_ent.type == "mitre":
+                for rel in parent_ent.relationships:
+                    t = rel.get("target")
+                    if t and rel.get("relation") == "subtechnique_of":
+                        expansion_queue.append((t.strip(), parent_id, "subtechnique_of"))
+
+
+        # Process expansion queue
+        for target_token, source_id, rel_type in expansion_queue:
+            if len(self.pack.entities) >= MAX_ENTITIES_BUDGET:
+                break
+
+            # If already resolved and not hollow, ensure bidirectional relationship exists
+            existing_target = self.pack.entities.get(target_token)
+            if existing_target and refresh_mode != "force":
+                # Add back-reference if absent
+                if not any(r.get("target") == source_id for r in existing_target.relationships):
+                    source_ent = self.pack.entities.get(source_id)
+                    s_type = source_ent.type if source_ent else "entity"
+                    existing_target.relationships.append({
+                        "target": source_id,
+                        "type": s_type,
+                        "relation": "referenced_by"
+                    })
+                continue
+
+            # Attempt to resolve using active resolvers
+            for resolver in active_resolvers:
+                if resolver.can_handle(target_token):
+                    ent = resolver.resolve(
+                        target_token,
+                        allow_online=allow_online,
+                        force_refresh=(refresh_mode == "force")
+                    )
+                    if ent:
+                        if existing_target:
+                            # Preserve prior relationships
+                            for er in existing_target.relationships:
+                                if not any(r.get("target") == er.get("target") for r in ent.relationships):
+                                    ent.relationships.append(er)
+                        # Tag provenance as transitively discovered
+                        ent.provenance = Provenance(
+                            source=f"transitive:{source_id}",
+                            fetched_at=datetime.now(timezone.utc).isoformat(),
+                            status="resolved",
+                            details={"discovered_via": source_id, "relation": rel_type}
+                        )
+                        # Establish bidirectional relationship link back to parent
+                        source_ent = self.pack.entities.get(source_id)
+                        s_type = source_ent.type if source_ent else "entity"
+                        if not any(r.get("target") == source_id for r in ent.relationships):
+                            ent.relationships.append({
+                                "target": source_id,
+                                "type": s_type,
+                                "relation": "referenced_by"
+                            })
+
+                        self.pack.entities[ent.id] = ent
+                        transitive_resolved += 1
+                        Diagnostics.debug_log(f"Transitive closure resolved {ent.id} via {source_id}")
+                    break
+
+        if entities_resolved > 0 or transitive_resolved > 0 or sources_updated or not has_existing:
             self.save_pack()
 
         return self.pack

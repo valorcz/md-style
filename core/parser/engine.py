@@ -21,11 +21,13 @@ from core.kb.models import KnowledgePack
 from core.i18n import I18nCatalog
 from core.icons import IconService
 from core.diagrams.mermaid import MermaidRenderer
-from core.parser.plugins import pandoc_divs_plugin, callouts_plugin, inline_toc, mermaid_plugin
+from core.diagrams.d2 import D2Renderer
+from core.parser.plugins import pandoc_divs_plugin, callouts_plugin, inline_toc, mermaid_plugin, d2_plugin
 from core.parser.transforms import (
     transform_tables,
     transform_headings_and_extract_toc,
     transform_entities,
+    transform_kpi_grids,
 )
 from core.diagnostics import Diagnostics
 
@@ -96,6 +98,7 @@ class MarkdownParser:
         self.enable_mermaid = enable_mermaid
         self.theme_name = theme_name
         self.mermaid_renderer = MermaidRenderer() if enable_mermaid else None
+        self.d2_renderer = D2Renderer()
 
         self.md = (
             MarkdownIt("gfm-like", {
@@ -120,6 +123,13 @@ class MarkdownParser:
                 theme=self.theme_name,
                 lang=self.lang,
             )
+
+        self.md.use(
+            d2_plugin,
+            renderer=self.d2_renderer,
+            theme=self.theme_name,
+            lang=self.lang,
+        )
 
     def parse_frontmatter(self, src: str) -> Tuple[str, Dict[str, Any]]:
         """Extracts YAML frontmatter if present and returns (clean_markdown, metadata)."""
@@ -159,6 +169,9 @@ class MarkdownParser:
 
         # 2. Run Table transform (<wbr> in timestamp ranges, wrappers, alignments)
         tokens = transform_tables(tokens)
+
+        # 2b. Run KPI Grid & Executive Summary transform (.kpi-grid -> .kpi-card)
+        tokens = transform_kpi_grids(tokens, self.md)
 
         # 3. Run Headings and TOC transform (anchors & slugification)
         tokens, toc = transform_headings_and_extract_toc(tokens)

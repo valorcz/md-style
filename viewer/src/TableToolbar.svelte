@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import Icon from './components/Icon.svelte';
 
   export let tableElement: HTMLTableElement;
   export let i18n: Record<string, string> = {};
@@ -117,7 +118,7 @@
       </div>
     {/if}
     <div class="search-box">
-      <span class="search-icon">🔍</span>
+      <span class="search-icon"><Icon name="search" size={13} /></span>
       <input
         type="text"
         placeholder={i18n['ui.filter_placeholder'] || 'Filter table records...'}
@@ -126,7 +127,9 @@
         aria-label="Filter rows"
       />
       {#if query}
-        <button class="clear-btn" on:click={clearQuery} title="Clear filter">✕</button>
+        <button class="clear-btn" on:click={clearQuery} title="Clear filter" aria-label="Clear filter">
+          <Icon name="x" size={12} />
+        </button>
       {/if}
     </div>
   </div>

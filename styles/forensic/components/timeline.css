@@ -24,39 +24,43 @@ ol:not(.task-list):not(.agenda-toc-list) > li:last-child {
 }
 
 /* Vertical Step Flow Rail (Continuous line between items) */
-ol:not(.task-list):not(.agenda-toc-list) > li::after {
+ol:not(.task-list):not(.agenda-toc-list) > li::before {
   content: "";
   position: absolute;
   left: 0.95rem;
-  top: 1.8rem;
-  bottom: -0.2rem;
+  top: 1.55rem;
+  bottom: 0;
   width: 2px;
   background-color: var(--color-border);
 }
 
-ol:not(.task-list):not(.agenda-toc-list) > li:last-child::after {
+ol:not(.task-list):not(.agenda-toc-list) > li:last-child::before {
   display: none;
 }
 
 /* Two-Digit Counter Badge */
-ol:not(.task-list):not(.agenda-toc-list) > li::before {
+ol:not(.task-list):not(.agenda-toc-list) > li::after {
   content: counter(list-item, decimal-leading-zero);
   position: absolute;
   left: 0;
-  top: 0.15rem;
-  width: 1.9rem;
-  height: 1.35rem;
-  font-family: var(--font-mono, monospace);
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--color-accent);
-  background-color: var(--color-badge-bg, rgba(6, 182, 212, 0.1));
-  border: 1px solid var(--color-accent);
-  border-radius: 3px;
-  display: flex;
+  top: 0.1em;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  z-index: 1;
+  min-width: 1.9rem;
+  height: 1.45rem;
+  padding: 0 0.25rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.76rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: var(--color-accent);
+  background-color: var(--color-paper, #ffffff);
+  border: 1px solid var(--color-border-dark, var(--color-border));
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  z-index: 2;
 }
 
 /* Sub-lists under numbered steps: indent cleanly and cancel badges */
