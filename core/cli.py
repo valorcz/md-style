@@ -58,7 +58,7 @@ Examples:
     parser.add_argument("-l", "--lang", help="Override document language (e.g. cs, en, sk, de)")
 
     # TOC
-    parser.add_argument("--toc", action="store_true", default=True, help="Enable Table of Contents (default: True)")
+    parser.add_argument("--toc", dest="toc", action="store_true", default=None, help="Enable Table of Contents")
     parser.add_argument("--no-toc", dest="toc", action="store_false", help="Disable Table of Contents")
     parser.add_argument("--toc-depth", type=int, default=3, help="TOC heading depth (default: 3)")
     parser.add_argument("--toc-levels", default=None, help="Comma-separated heading levels for TOC (e.g. '2' or '2,3')")

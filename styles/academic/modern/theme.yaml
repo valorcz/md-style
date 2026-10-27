@@ -1,0 +1,10 @@
+# ==============================================================================
+# md-style Theme Definition: academic/modern
+# Tech Modern Handout for university lectures (FI MUNI).
+# ==============================================================================
+name: academic/modern
+title: "Academic Lecture - Tech Modern"
+extends: academic/lecture
+
+stylesheets:
+  - modern.css

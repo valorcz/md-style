@@ -66,7 +66,12 @@ def build_callout_open(alert_type: str, custom_title: Optional[str], catalog: I1
 
     icon_svg = icon_service.get_svg(icon_name)
     default_title = catalog.t(f"callouts.{alert_type}", default=alert_type.upper())
-    display_title = custom_title.strip() if custom_title else default_title
+    if custom_title:
+        # Strip potential markdown formatting (bold, italic, code) or trailing colon
+        clean_title = re.sub(r"^[`*_]{1,3}(.*?)[`*_]{1,3}:?$", r"\1", custom_title.strip()).rstrip(":").strip()
+        display_title = clean_title if clean_title else default_title
+    else:
+        display_title = default_title
 
     css_classes = f"callout callout-{alert_class} {alert_class}"
     return (
@@ -129,16 +134,16 @@ def transform_blockquote_callouts(tokens: List[Token], catalog: I18nCatalog, ico
                         out.append(tokens[i+3]) # paragraph_close
                         i += 4
                     elif m:
-                        # Find first softbreak in children
-                        softbreak_idx = None
+                        # Find first break (softbreak or hardbreak) in children
+                        break_idx = None
                         for idx, ch in enumerate(children):
-                            if ch.type == "softbreak":
-                                softbreak_idx = idx
+                            if ch.type in ("softbreak", "hardbreak"):
+                                break_idx = idx
                                 break
 
-                        if softbreak_idx is not None:
+                        if break_idx is not None:
                             # Alert header on line 1, remaining lines in paragraph are body text
-                            remaining_children = children[softbreak_idx + 1:]
+                            remaining_children = children[break_idx + 1:]
                             remaining_content = "\n".join(content.split("\n")[1:]).strip()
                             if remaining_children:
                                 out.append(tokens[i+1]) # paragraph_open

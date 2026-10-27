@@ -32,6 +32,8 @@ KNOWN_FEATURES: Set[str] = {
     "table_nowrap",
     "legal_inspector",
     "ballot_print",
+    "auto_toc",
+    "toc",
 }
 
 KNOWN_PAPER_SIZES: Set[str] = {

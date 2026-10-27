@@ -1,4 +1,8 @@
-#!/usr/bin/env sh
-# md-to-report.sh - POSIX wrapper forwarding to native uv CLI entrypoint
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-exec uv run --project "$SCRIPT_DIR" md-to-report "$@"
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Use the actual path of the script, regardless of the symlinks
+SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
+PROJECT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
+
+exec uv run --project "$PROJECT_DIR" md-to-report "$@"

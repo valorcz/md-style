@@ -151,3 +151,14 @@ def test_standard_blockquote_with_nested_callout():
     assert '<blockquote>' in html_out
     assert 'callout-warning' in html_out
     assert 'Watch out' in html_out
+
+def test_callout_hardbreak_and_bold_header_cleaning():
+    """Verifies that headers with markdown bold formatting and hard line breaks do not duplicate in body."""
+    p = MarkdownParser()
+    src = "> [!NOTE] **Methodology Overview:**  \n> First paragraph of callout content."
+    html_out, _, _ = p.render(src)
+    assert 'class="callout callout-note note"' in html_out
+    assert '<span class="callout-title">Methodology Overview</span>' in html_out
+    assert '**Methodology Overview:**' not in html_out
+    assert '<strong>Methodology Overview:</strong>' not in html_out
+    assert '<p>First paragraph of callout content.</p>' in html_out

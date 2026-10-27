@@ -11,8 +11,9 @@ import base64
 import mimetypes
 import json
 import html
+import hashlib
 from pathlib import Path
-from typing import List, Dict, Any, Optional, Union
+from typing import List, Dict, Any, Optional, Union, Tuple
 
 from core.themes import ResolvedTheme
 from core.kb.models import KnowledgePack
@@ -20,6 +21,7 @@ from core.fonts import FontBundler
 from core.icons import IconService
 from core.i18n import I18nCatalog
 from core.diagnostics import Diagnostics
+from core.svg import SVGProcessor
 
 ASSETS_DIR = Path(__file__).parent / "assets"
 
@@ -58,21 +60,117 @@ class AssetBundler:
             Diagnostics.warn(f"Failed to base64-encode {file_path}: {e}")
             return None
 
+    def resolve_asset_path(self, src: str) -> Tuple[Optional[Path], List[Path]]:
+        """
+        Resolves a local image/asset path using multi-root search:
+        1. doc_dir / src
+        2. doc_dir.parent / src
+        3. cwd / src
+        Returns (resolved_path, candidate_paths_checked)
+        """
+        clean_src = src.split("?")[0].split("#")[0].strip()
+        if Path(clean_src).is_absolute():
+            p = Path(clean_src)
+            return (p if p.is_file() else None, [p])
+
+        candidates = [
+            (self.doc_dir / clean_src).resolve(),
+            (self.doc_dir.parent / clean_src).resolve(),
+            (Path.cwd() / clean_src).resolve(),
+        ]
+        
+        unique_candidates: List[Path] = []
+        for c in candidates:
+            if c not in unique_candidates:
+                unique_candidates.append(c)
+
+        for candidate in unique_candidates:
+            if candidate.is_file():
+                return candidate, unique_candidates
+
+        return None, unique_candidates
+
     def inline_images(self, html_content: str) -> str:
-        """Finds local img src attributes and replaces them with base64 data URIs."""
+        """
+        Finds local img tags and:
+        - Inlines vector SVGs directly into the DOM as sanitized, font-bundled <svg> elements.
+        - Inlines bitmap images (PNG, JPG, WebP) as base64 data URIs in <img src="...">.
+        - Resolves relative asset paths across doc_dir, parent dir, and cwd.
+        - Emits build-time warnings for missing or unresolvable assets.
+        """
+        svg_processor = SVGProcessor(allow_online=self.allow_online)
+        svg_index = 0
+
         def _repl(match: re.Match) -> str:
+            nonlocal svg_index
+            full_img_tag = match.group(0)
             prefix = match.group(1)
             src = match.group(2)
             suffix = match.group(3)
 
             if src.startswith("data:") or src.startswith("http://") or src.startswith("https://"):
-                return match.group(0)
+                return full_img_tag
 
-            img_path = (self.doc_dir / src).resolve() if not Path(src).is_absolute() else Path(src)
+            img_path, candidates = self.resolve_asset_path(src)
+            if not img_path:
+                checked_str = "\n".join(f"    - {c}" for c in candidates)
+                Diagnostics.warn(
+                    f"Referenced image '{src}' could not be resolved on disk.\n"
+                    f"  Checked locations:\n{checked_str}"
+                )
+                return full_img_tag
+
+            # Check if this is an SVG vector graphic for DOM inlining
+            if img_path.suffix.lower() == ".svg":
+                try:
+                    svg_raw = img_path.read_text(encoding="utf-8")
+                    svg_index += 1
+                    file_hash = hashlib.sha256(str(img_path).encode("utf-8")).hexdigest()[:6]
+                    scope_id = f"fig_svg_{svg_index}_{file_hash}"
+
+                    processed_svg, ok = svg_processor.process(
+                        svg_raw,
+                        prefix=f"pfx_{scope_id}",
+                        scope_id=scope_id,
+                        source_label=src
+                    )
+
+                    if ok:
+                        # Process SVG styles with FontBundler to download & inline Google Fonts / local fonts
+                        def _bundle_svg_fonts(sm: re.Match) -> str:
+                            stag_open, s_body, stag_close = sm.groups()
+                            b_css = self.font_bundler.process_css(s_body, img_path.parent)
+                            return f"{stag_open}{b_css}{stag_close}"
+
+                        processed_svg = re.compile(
+                            r"(<style\b[^>]*>)(.*?)(</style>)",
+                            re.DOTALL | re.IGNORECASE
+                        ).sub(_bundle_svg_fonts, processed_svg)
+
+                        # Transfer explicit width or style attributes from <img> to inlined wrapper
+                        img_style_m = re.search(r'style=["\']([^"\']+)["\']', full_img_tag, re.IGNORECASE)
+                        img_width_m = re.search(r'width=["\']([^"\']+)["\']', full_img_tag, re.IGNORECASE)
+
+                        wrapper_styles = []
+                        if img_width_m:
+                            w_val = img_width_m.group(1).strip()
+                            w_css = f"{w_val}px" if w_val.isdigit() else w_val
+                            wrapper_styles.append(f"max-width: {w_css};")
+                        if img_style_m:
+                            wrapper_styles.append(img_style_m.group(1).strip())
+
+                        style_attr = f' style="{" ".join(wrapper_styles)}"' if wrapper_styles else ""
+                        return f'<div class="svg-inlined-wrapper"{style_attr}>{processed_svg}</div>'
+                    else:
+                        Diagnostics.warn(f"Failed to process SVG '{src}' for DOM inlining; falling back to base64 <img>.")
+                except Exception as ex:
+                    Diagnostics.warn(f"Error reading/processing SVG '{img_path}': {ex}")
+
+            # Non-SVG or SVG fallback: base64 data URI in <img> tag
             data_uri = self.encode_file_base64(img_path)
             if data_uri:
                 return f'{prefix}src="{data_uri}"{suffix}'
-            return match.group(0)
+            return full_img_tag
 
         img_pattern = re.compile(r'(<img\b[^>]*\b)src=["\']([^"\']+)["\']([^>]*>)', re.IGNORECASE)
         return img_pattern.sub(_repl, html_content)

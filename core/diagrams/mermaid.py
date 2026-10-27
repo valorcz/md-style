@@ -14,21 +14,11 @@ import json
 from typing import Dict, Any, Tuple, Optional
 from ..diagnostics import logger
 from ..config import VIEWER_DIR, MERMAID_SCRIPT
-
-FIGURE_LABELS = {
-    "en": "Figure",
-    "cs": "Obrázek",
-    "cz": "Obrázek",
-    "sk": "Obrázok",
-    "de": "Abbildung",
-    "fr": "Figure",
-    "es": "Figura",
-    "it": "Figura",
-    "pl": "Rysunek",
-}
+from .figures import FigureManager, FIGURE_LABELS
 
 class MermaidRenderer:
-    def __init__(self):
+    def __init__(self, figure_manager: Optional[FigureManager] = None):
+        self.figure_manager = figure_manager
         self.figure_count = 0
         self._runtime: Optional[str] = None
         self._detect_runtime()
@@ -88,8 +78,15 @@ class MermaidRenderer:
         Attempts build-time compilation via beautiful-mermaid; falls back to client container.
         Returns: (rendered_html, is_fallback)
         """
-        self.figure_count += 1
-        caption_html = self.format_caption(caption, lang, self.figure_count)
+        if self.figure_manager:
+            self.figure_count = self.figure_manager.next_number()
+            caption_html = self.figure_manager.format_caption(
+                caption, lang, count=self.figure_count, caption_class="mermaid-caption"
+            )
+        else:
+            self.figure_count += 1
+            caption_html = self.format_caption(caption, lang, self.figure_count)
+
         id_str = f' id="{html.escape(id_attr)}"' if id_attr else ""
         diagram_ref = f"'{id_attr}'" if id_attr else f"Figure {self.figure_count}"
         line_ref = f" (line {line_no})" if line_no else ""

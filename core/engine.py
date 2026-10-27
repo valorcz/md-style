@@ -39,7 +39,7 @@ class PipelineConfig:
     style: Optional[str] = None
     title: Optional[str] = None
     lang: Optional[str] = None
-    toc: bool = True
+    toc: Optional[bool] = None
     toc_depth: int = 3
     number_sections: bool = False
     embed_resources: bool = True
@@ -291,13 +291,30 @@ class ReportEngine:
             except Exception:
                 parsed_levels = None
 
+        # Resolve TOC configuration
+        # Precedence: CLI explicit flag > frontmatter 'toc' > theme.features ('auto_toc' or 'toc') > True
+        theme_toc = resolved_theme.features.get("auto_toc")
+        if theme_toc is None:
+            theme_toc = resolved_theme.features.get("toc", True)
+
+        fm_toc = frontmatter.get("toc")
+        if self.config.toc is not None:
+            resolved_enable_toc = self.config.toc
+        elif fm_toc is not None:
+            if isinstance(fm_toc, str):
+                resolved_enable_toc = fm_toc.strip().lower() not in ("false", "no", "off", "0", "disable", "disabled")
+            else:
+                resolved_enable_toc = bool(fm_toc)
+        else:
+            resolved_enable_toc = bool(theme_toc)
+
         icon_service = IconService(allow_online=self.config.allow_online)
         parser = MarkdownParser(
             lang=doc_lang,
             catalog=catalog,
             icon_service=icon_service,
             highlight_style=resolved_theme.highlight_style,
-            enable_toc=self.config.toc,
+            enable_toc=resolved_enable_toc,
             toc_depth=self.config.toc_depth,
             toc_levels=parsed_levels,
             style_family=style_param,
@@ -317,11 +334,7 @@ class ReportEngine:
             )
             html_fragment = f"{dossier_block}\n{html_fragment}"
 
-        total_diagrams = 0
-        if parser.mermaid_renderer:
-            total_diagrams += parser.mermaid_renderer.figure_count
-        if parser.d2_renderer:
-            total_diagrams += parser.d2_renderer.figure_count
+        total_diagrams = parser.figure_manager.count if hasattr(parser, "figure_manager") else 0
         self.metrics.diagrams_rendered = total_diagrams
         if not self.config.quiet:
             if self.config.verbose:
@@ -662,6 +675,7 @@ class ReportEngine:
         )
         if style_val:
             is_forensic = "forensic" in style_val.lower()
+            is_academic = "academic" in style_val.lower() or "lecture" in style_val.lower() or "teaching" in style_val.lower()
         else:
             is_forensic = (
                 bool(fm.get("examiner"))
@@ -669,17 +683,26 @@ class ReportEngine:
                 or "forensic" in str(title).lower()
                 or "forenzní" in str(title).lower()
             )
+            is_academic = bool(fm.get("course") or fm.get("lecture"))
 
         report_badge = fm.get("report_badge") or fm.get("report-badge") or fm.get("classification")
-        if not report_badge and is_forensic:
+        if not report_badge and fm.get("course"):
+            course_val = str(fm.get("course"))
+            lecture_num = fm.get("lecture")
+            if lecture_num:
+                report_badge = f"{course_val} // Lecture {lecture_num}"
+            else:
+                report_badge = course_val
+        elif not report_badge and is_forensic:
             report_badge = (
                 catalog.get("forensics.report_title")
                 or catalog.get("meta.report_type")
                 or "DIGITAL FORENSIC INVESTIGATION REPORT"
             )
         subtitle = fm.get("subtitle", "")
-        author = fm.get("author") or fm.get("examiner", "")
+        author = fm.get("author") or fm.get("examiner", "") or fm.get("instructor", "")
         date = fm.get("date", "")
+        term = fm.get("term") or fm.get("semester", "")
         case_id = fm.get("case_id") or fm.get("case", "")
         abstract = fm.get("abstract", "")
 
@@ -719,6 +742,9 @@ class ReportEngine:
         if date:
             date_label = (catalog.get("forensics.date") if is_forensic else None) or catalog.get("meta.date_label") or "Date:"
             meta_items.append(f'<p class="date"><span class="meta-label">{html.escape(date_label)}</span> {html.escape(str(date))}</p>')
+        if term:
+            term_label = catalog.get("meta.term_label") or "Term:"
+            meta_items.append(f'<p class="term"><span class="meta-label">{html.escape(term_label)}</span> {html.escape(str(term))}</p>')
         if case_id:
             case_label = catalog.get("forensics.case_id") or catalog.get("meta.case_label") or "Case ID:"
             meta_items.append(f'<p class="case-id"><span class="meta-label">{html.escape(case_label)}</span> {html.escape(str(case_id))}</p>')
@@ -731,7 +757,8 @@ class ReportEngine:
 
         if abstract:
             lines.append('  <div class="abstract">')
-            lines.append(f'    <div class="abstract-title">{catalog.get("meta.abstract_title", "EXECUTIVE SUMMARY")}</div>')
+            default_abs_title = "LECTURE OVERVIEW" if is_academic else "EXECUTIVE SUMMARY"
+            lines.append(f'    <div class="abstract-title">{catalog.get("meta.abstract_title", default_abs_title)}</div>')
             if parser:
                 rendered_abs, _, _ = parser.render(str(abstract), knowledge_pack=knowledge_pack)
                 lines.append(f'    <div class="abstract-body">{rendered_abs.strip()}</div>')

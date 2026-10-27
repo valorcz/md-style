@@ -8,6 +8,7 @@ from .callouts import callouts_plugin
 from .toc import toc_plugin, inline_toc, render_toc_html
 from .mermaid import mermaid_plugin
 from .d2 import d2_plugin
+from .figures import figures_plugin
 
 __all__ = [
     "pandoc_divs_plugin",
@@ -17,4 +18,5 @@ __all__ = [
     "render_toc_html",
     "mermaid_plugin",
     "d2_plugin",
+    "figures_plugin",
 ]

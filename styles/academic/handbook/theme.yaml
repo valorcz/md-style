@@ -1,0 +1,10 @@
+# ==============================================================================
+# md-style Theme Definition: academic/handbook
+# Compact Technical Dev Handbook & Lab Guide (FI MUNI).
+# ==============================================================================
+name: academic/handbook
+title: "Academic Lecture - Dev Handbook"
+extends: academic/lecture
+
+stylesheets:
+  - handbook.css

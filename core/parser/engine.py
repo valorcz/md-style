@@ -22,7 +22,8 @@ from core.i18n import I18nCatalog
 from core.icons import IconService
 from core.diagrams.mermaid import MermaidRenderer
 from core.diagrams.d2 import D2Renderer
-from core.parser.plugins import pandoc_divs_plugin, callouts_plugin, inline_toc, mermaid_plugin, d2_plugin
+from core.diagrams.figures import FigureManager
+from core.parser.plugins import pandoc_divs_plugin, callouts_plugin, inline_toc, mermaid_plugin, d2_plugin, figures_plugin
 from core.parser.transforms import (
     transform_tables,
     transform_headings_and_extract_toc,
@@ -98,8 +99,9 @@ class MarkdownParser:
         self.style_family = style_family
         self.enable_mermaid = enable_mermaid
         self.theme_name = theme_name
-        self.mermaid_renderer = MermaidRenderer() if enable_mermaid else None
-        self.d2_renderer = D2Renderer()
+        self.figure_manager = FigureManager(lang=self.lang)
+        self.mermaid_renderer = MermaidRenderer(figure_manager=self.figure_manager) if enable_mermaid else None
+        self.d2_renderer = D2Renderer(figure_manager=self.figure_manager)
 
         self.md = (
             MarkdownIt("gfm-like", {
@@ -113,6 +115,7 @@ class MarkdownParser:
             .use(attrs_plugin, spans=True)
             .use(pandoc_divs_plugin)
             .use(callouts_plugin, catalog=self.catalog, icon_service=self.icon_service)
+            .use(figures_plugin, figure_manager=self.figure_manager, lang=self.lang)
             .enable("table")
             .enable("strikethrough")
         )

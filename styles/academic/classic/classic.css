@@ -1,0 +1,143 @@
+/* ==============================================================================
+   ACADEMIC / CLASSIC (md-style Sub-Theme)
+   Formal University Syllabus with solid MUNI badges, carets, and header strips.
+   Extends: academic/lecture
+   ============================================================================== */
+
+/* 1. Unordered Lists with Academic Chevrons */
+ul {
+  list-style: none !important;
+  padding-left: 0 !important;
+  margin-top: 0;
+  margin-bottom: 1.25em;
+}
+
+ul > li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 0.45em;
+  line-height: var(--line-height-body, 1.68);
+}
+
+ul > li::before {
+  content: "›";
+  position: absolute;
+  left: 0.15rem;
+  top: -0.05em;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-secondary, #1e3a8a);
+  line-height: 1;
+}
+
+/* Nested Unordered Lists */
+ul > li > ul {
+  margin-top: 0.35em;
+  margin-bottom: 0.35em;
+}
+
+ul > li > ul > li::before {
+  content: "–";
+  color: var(--color-text-muted, #475569);
+  font-size: 1rem;
+}
+
+/* 2. Ordered Lists with Solid Brand Badges */
+ol {
+  list-style: none !important;
+  counter-reset: classic-counter;
+  padding-left: 0 !important;
+  margin-top: 0;
+  margin-bottom: 1.25em;
+}
+
+ol > li {
+  counter-increment: classic-counter;
+  position: relative;
+  padding-left: 2.3rem;
+  margin-bottom: 0.65em;
+  line-height: var(--line-height-body, 1.68);
+}
+
+ol > li::before {
+  content: counter(classic-counter);
+  position: absolute;
+  left: 0;
+  top: 0.15em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.45rem;
+  height: 1.45rem;
+  border-radius: 9999px;
+  font-family: var(--font-sans, "Inter", sans-serif);
+  font-size: 0.76rem;
+  font-weight: 700;
+  background-color: var(--color-muni-blue, #0000dc);
+  color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 220, 0.25);
+  box-sizing: border-box;
+}
+
+/* Nested Ordered Lists */
+ol > li > ol {
+  list-style: lower-roman !important;
+  padding-left: 1.5rem !important;
+  margin-top: 0.4em;
+  margin-bottom: 0.4em;
+  counter-reset: none;
+}
+
+ol > li > ol > li {
+  padding-left: 0;
+  counter-increment: none;
+}
+
+ol > li > ol > li::before {
+  content: none !important;
+}
+
+/* 3. Callouts with Integrated Header Strip */
+.callout {
+  padding: 0;
+  overflow: hidden;
+  border-radius: 6px;
+  border-width: 1px 1px 1px 4px;
+}
+
+.callout-header {
+  margin: 0;
+  padding: 0.9rem 1.65rem;
+  background-color: rgba(11, 27, 61, 0.04);
+  border-bottom: 1px solid var(--color-border, #e2e8f0);
+}
+
+.callout-content {
+  padding: 1.25rem 1.65rem;
+}
+
+.callout.callout-note .callout-header {
+  background-color: rgba(0, 0, 220, 0.05);
+}
+
+.callout.callout-warning .callout-header {
+  background-color: rgba(245, 158, 11, 0.08);
+}
+
+.callout.callout-important .callout-header {
+  background-color: rgba(11, 27, 61, 0.06);
+}
+
+.callout.callout-tip .callout-header {
+  background-color: rgba(242, 212, 92, 0.15);
+}
+
+/* Teacher Notes in Classic */
+details.teacher-notes > ul,
+details.teacher-notes > ol {
+  padding-left: 2rem !important;
+}
+
+details.teacher-notes ul > li > ul {
+  padding-left: 1.5rem !important;
+}

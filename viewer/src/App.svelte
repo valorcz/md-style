@@ -3,6 +3,8 @@
   import InspectorDrawer from './InspectorDrawer.svelte';
   import HudRibbon from './HudRibbon.svelte';
   import TableToolbar from './TableToolbar.svelte';
+  import FigureToolbar from './components/FigureToolbar.svelte';
+  import FigureLightbox from './components/FigureLightbox.svelte';
   import AnnotationPopover from './annotations/AnnotationPopover.svelte';
   import MarginGutter from './annotations/MarginGutter.svelte';
   import { annotationStore } from './annotations/store';
@@ -24,6 +26,7 @@
   let drawerTab: 'kb' | 'comments' = 'kb';
   let hasSourceMarkdown: boolean = false;
   let sourceMarkdownText: string = '';
+  let activeLightboxFigure: { svgElement: SVGElement; title: string; id: string } | null = null;
 
   function loadKnowledgeData() {
     const scriptEl = document.getElementById('md-style-kb-data');
@@ -151,6 +154,34 @@
         props: {
           tableElement: table as HTMLTableElement,
           i18n: i18nData
+        }
+      });
+    });
+  }
+
+  function setupFigureToolbars() {
+    const figures = document.querySelectorAll<HTMLElement>(
+      'figure.figure-container, figure.svg-figure, figure.mermaid-diagram, figure.d2-diagram'
+    );
+
+    figures.forEach(figure => {
+      if (figure.querySelector('.figure-toolbar-mount')) return;
+      const svgEl = figure.querySelector('svg');
+      if (!svgEl) return;
+
+      figure.style.position = 'relative';
+      const container = document.createElement('div');
+      container.className = 'figure-toolbar-mount';
+      figure.appendChild(container);
+
+      mount(FigureToolbar, {
+        target: container,
+        props: {
+          figureElement: figure,
+          i18n: i18nData,
+          onOpenLightbox: (detail: { svgElement: SVGElement; title: string; id: string }) => {
+            activeLightboxFigure = detail;
+          }
         }
       });
     });
@@ -288,7 +319,9 @@
     loadKnowledgeData();
     loadI18nData();
     checkSourceMarkdown();
-    setupMermaidDiagrams();
+    setupMermaidDiagrams().then(() => {
+      setupFigureToolbars();
+    });
 
     if (window.location.hash.includes('paged') || document.body.classList.contains('paged-preview')) {
       handleTogglePaged();
@@ -355,6 +388,7 @@
 
     document.addEventListener('click', clickHandler);
     setupTableToolbars();
+    setupFigureToolbars();
 
     return () => {
       document.removeEventListener('click', clickHandler);
@@ -440,3 +474,12 @@
     onDownloadSource={handleDownloadSource}
   />
 {/if}
+
+<FigureLightbox
+  isOpen={activeLightboxFigure !== null}
+  svgElement={activeLightboxFigure?.svgElement || null}
+  title={activeLightboxFigure?.title || ''}
+  id={activeLightboxFigure?.id || ''}
+  i18n={i18nData}
+  onClose={() => { activeLightboxFigure = null; }}
+/>

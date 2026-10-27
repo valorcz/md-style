@@ -33,6 +33,15 @@ STYLE_NAME_ALIASES = {
     "school": "general/school",
     "family-invite": "general/family-invite",
     "base": "base",
+    "academic/lecture": "academic/lecture",
+    "academic/modern": "academic/modern",
+    "academic/classic": "academic/classic",
+    "academic/handbook": "academic/handbook",
+    "academic": "academic/lecture",
+    "lecture": "academic/lecture",
+    "teaching": "academic/lecture",
+    "fi-muni": "academic/lecture",
+    "muni": "academic/lecture",
 }
 
 @dataclass
