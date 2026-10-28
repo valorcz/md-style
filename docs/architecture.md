@@ -1,145 +1,151 @@
-# System Architecture
+# System Architecture — `md-style` v3.0
 
-The `md-style` toolchain is a modular document processing engine designed to transform Markdown source files into self-contained, publication-grade HTML5 reports and PDF documents.
+The `md-style` toolchain is a pure-Python, publication-grade document generation and knowledge packaging system. It compiles standard Markdown source documents into:
+1. **Self-Contained Interactive HTML Reports** with reactive Svelte 5 overlays, slide-over knowledge inspector drawers, inline indicator pills, figure lightboxes, and collaborative margin review comments.
+2. **Pixel-Perfect PDF Documents** adhering to W3C `@media print` and Paged.js page geometry specifications via Chromium headless printing or Bun CDP bridge.
+3. **Standard RO-Crate Research Object Packages (`.crate.zip`)** compliant with RO-Crate v1.1 and JSON-LD schema metadata for reproducible forensic audits.
 
 ---
 
-## 1. High-Level System Architecture
+## 1. Fundamental Architectural Invariants
 
-The processing architecture consists of a Python orchestration layer (`core/`), native CLI runners powered by [`uv`](https://github.com/astral-sh/uv), Pandoc multi-pass AST filters written in Lua, and a standalone client-side delivery runtime.
+1. **Zero Pandoc Dependency (Pure Python v3)**:
+   * The pipeline does **NOT** invoke `pandoc` or external binary document compilers.
+   * Markdown AST parsing is handled by `markdown-it-py` with custom pure-Python plugins (`core/parser/`).
+   * Templating is powered by Jinja2 and Rich.
+2. **100% Offline Air-Gap Safety**:
+   * All entity resolvers (`core/kb/resolvers/`) function safely in an offline air-gapped environment using local Single Source of Truth (SSOT) databases (`data/statutes.json`, `data/cve.json`, etc.) and local caches.
+   * Any dynamic web scraping (e.g. *Zákony pro lidi*, NVD, AbuseIPDB) is strictly gated behind `allow_online: bool = False` or `--offline`.
+3. **Single-File Self-Contained Output**:
+   * The bundled `.html` is 100% standalone and portable.
+   * All fonts (`core/fonts.py`), CSS stylesheets, SVG diagrams, and JSON metadata are inlined into the HTML. Opening the file with `file://` in any browser with networking disabled renders flawlessly.
+4. **Source Reversibility**:
+   * Bundled HTML reports contain the original Markdown source inside `<script type="text/markdown" id="md-style-source-markdown">` and the Knowledge Pack inside `<script type="application/json" id="md-style-kb-data">`.
+   * CLI tools (`md-style preview`, `md-style inspect`) can de-bundle and preview HTML files directly.
+
+---
+
+## 2. High-Level Pipeline Architecture
+
+The document compiler runs a sequential 5-stage pipeline managed by [`core/pipeline/`](file:///home/valor/Devel/personal/md-style/core/pipeline/):
 
 ```mermaid
-flowchart TD
-    MD["Markdown Document<br/><code>document.md</code> + YAML Frontmatter"] --> CLI["CLI Runner<br/><code>uv run md-to-report</code> / <code>./md-to-report.sh</code>"]
-    CLI --> CFG["PipelineConfig & Diagnostics<br/><code>core/config.py</code> | <code>core/cli.py</code>"]
-    CFG --> S1["Stage 1: Pre-Compilation<br/>Static Mermaid SVG Renderer (bun/node)"]
-    S1 --> S2["Stage 2: Threat & Case Intelligence<br/>Async Discovery & Knowledge Manifest"]
-    
-    subgraph S2_Subsystem ["Intelligence Providers"]
-        WIN["Windows Events (1,450 EIDs)"]
-        EVTX["EVTX Log Channels"]
-        VULN["CVE / GHSA APIs"]
-        MITRE["MITRE ATT&CK Taxonomy"]
-        NET["IPv4 / IPv6 Subnet Inspector"]
-        CASE["Custom YAML/JSON Knowledge"]
-    end
-    S2 --- S2_Subsystem
-    
-    S2 --> S3["Stage 3: Pandoc AST Compilation<br/>Multi-Pass Lua Filters"]
-    S3 --> S4["Stage 4: Standalone HTML Assembly<br/>CSS Bundler + Base64 Fonts + Interactive Drawer"]
-    
-    S4 --> HTML["Continuous HTML5 Report<br/>Interactive Slide-Over Inspector"]
-    S4 --> PAGED["Paged.js Print Preview<br/>W3C CSS Paged Media Sheets"]
-    PAGED --> PDF["Publication PDF Export<br/>Chromium / Firefox Headless"]
+flowchart LR
+    STAGE1["Stage 1\nIngestion &\nDiagrams"]
+    STAGE2["Stage 2\nKnowledge Pack\nSync (core/kb/)"]
+    STAGE3["Stage 3\nTheme Cascade\n(theme.yaml)"]
+    STAGE4["Stage 4\nMarkdown AST\n(markdown-it-py)"]
+    STAGE5["Stage 5\nBundling, Crate\n& PDF Export"]
+
+    STAGE1 --> STAGE2 --> STAGE3 --> STAGE4 --> STAGE5
 ```
 
----
+### Stage 1: Ingestion & Diagram Rendering
+* **Objective**: Input normalization, YAML frontmatter validation, locale resolution, and static vector diagram compilation.
+* **Component**: [`core/pipeline/stages/ingestion.py`](file:///home/valor/Devel/personal/md-style/core/pipeline/stages/ingestion.py)
+* **Actions**:
+  * Normalizes nested container blocks (e.g. `::: {.kpi-grid}`, `> [!NOTE]`).
+  * Parses frontmatter (`core/frontmatter.py`) and resolves document language (`cs`, `en`, `sk`, `de`).
+  * Renders Mermaid diagrams to optimized vector SVGs via `beautiful-mermaid` and D2 diagrams via `d2` CLI.
+  * Assigns unified sequential figure numbers across all diagram types (`FigureManager`).
 
-## 2. The 4-Stage Pipeline
+### Stage 2: Knowledge Pack Synchronization
+* **Objective**: Discover indicators, resolve forensic and legal context, and synchronize case metadata.
+* **Component**: [`core/pipeline/stages/knowledge.py`](file:///home/valor/Devel/personal/md-style/core/pipeline/stages/knowledge.py)
+* **Actions**:
+  * Scans prose and code tokens for security indicators (CVEs, CWEs, MITRE ATT&CK, Windows Event IDs, EVTX channels, hashes, IPv4/IPv6 addresses) and civic indicators (Statutes, IČO, IBAN).
+  * Enriches indicators against offline SSOT catalogs (`data/`) or local caches.
+  * Ingests case-specific custom knowledge from `./knowledge/` or `-k / --knowledge`.
+  * Computes SHA-256 integrity digests for all resolved knowledge entities.
 
-Every document processed by `md-style` transitions through four distinct execution stages managed by [`core/engine.py`](file:///home/valor/Devel/personal/md-style/core/engine.py):
+### Stage 3: Theme Resolution & Cascade
+* **Objective**: Resolve declarative theme inheritance, typography tokens, and Paged.js page geometry.
+* **Component**: [`core/pipeline/stages/theme.py`](file:///home/valor/Devel/personal/md-style/core/pipeline/stages/theme.py)
+* **Actions**:
+  * Resolves inheritance chain from `base` down to the leaf theme (`styles/**/theme.yaml`).
+  * Merges CSS custom properties (`--color-accent`, `--font-sans`, `--doc-max-width`).
+  * Extracts Paged.js margins, paper sizes (A4, Letter), and running header/footer rules.
+  * Configures feature flags (`interactive_viewer`, `callouts`, `sticky_tables`).
 
-### Stage 1: Pre-Compilation & Diagram Rendering
-- **Objective**: Ensure 100% offline self-containment for diagrams and visual assets before Pandoc touches the document.
-- **Implementation**: [`core/diagrams/mermaid.py`](file:///home/valor/Devel/personal/md-style/core/diagrams/mermaid.py) scans the Markdown source for ```` ```mermaid ```` code blocks.
-- **Execution**: Invokes `@mermaid-js/mermaid-cli` (`mmdc`) via `bun` or `node`.
-- **Output**: Each diagram is rendered to an isolated, optimized SVG file. The Markdown source block is replaced with an embedded image reference (`![](...)`).
-- **Caching**: Diagram source hashes are tracked to bypass re-rendering unchanged diagrams.
+### Stage 4: Markdown AST Compilation
+* **Objective**: Transform Markdown tokens into semantic, accessible HTML markup.
+* **Component**: [`core/pipeline/stages/compilation.py`](file:///home/valor/Devel/personal/md-style/core/pipeline/stages/compilation.py)
+* **Actions**:
+  * Compiles Markdown via `markdown-it-py` plugins (`core/parser/plugins/`).
+  * Wraps indicators in interactive pill tags (`<span class="inspectable" data-entity-id="...">`).
+  * Formats GitHub-style alert callouts (`> [!NOTE]`, `> [!WARNING]`).
+  * Wraps responsive data tables with search and column sorting controls.
+  * Synthesizes automated Tables of Contents and dossier header blocks.
 
-### Stage 2: Threat & Case Intelligence Resolution
-- **Objective**: Identify all security indicators, event identifiers, log channels, and custom entities in the document and resolve their enriched metadata.
-- **Implementation**: [`core/inspector.py`](file:///home/valor/Devel/personal/md-style/core/inspector.py) orchestrates an array of specialized enrichers:
-  - `WindowsEventsEnricher`: Matches numeric and prefixed Event IDs (`EID 5001`, `Event ID 4624`, compound lists `EID 21/23`).
-  - `EvtxEnricher`: Resolves `.evtx` channels and common forensic shorthand (`Defender.evtx`, `TerminalServices.evtx`).
-  - `CveEnricher`: Queries National Vulnerability Database (NVD) / Mitre for CVE metadata.
-  - `GhsaEnricher`: Queries GitHub Security Advisory GraphQL database.
-  - `MitreEnricher`: Maps MITRE ATT&CK technique IDs (e.g. `T1562.001`).
-  - `NetworkEnricher`: Classifies IPv4/IPv6 addresses, isolates RFC 1918 private subnets, and enforces OPSEC policies.
-  - `CustomKnowledgeEnricher`: Ingests case-specific YAML/JSON definitions from `knowledge/` or `kb/`.
-- **Manifest Serialization**: Resolves threat intelligence in parallel, writes a temporary JSON manifest (`knowledge-manifest.json`), and tracks verified vs. unresolved indicators.
-
-### Stage 3: Pandoc AST Multi-Pass Compilation
-- **Objective**: Parse the Markdown syntax into Pandoc's Abstract Syntax Tree (AST), transform indicators into interactive HTML pills, and render structural elements.
-- **Implementation**: Executed via `pandoc` using specialized Lua filters (e.g. [`styles/forensic-cyber.lua`](file:///home/valor/Devel/personal/md-style/styles/forensic-cyber.lua), [`styles/svj/ballot.lua`](file:///home/valor/Devel/personal/md-style/styles/svj/ballot.lua)).
-- **Multi-Pass Execution Guarantee**: To prevent race conditions where filters encounter inline code before loading metadata manifests, filters use multi-pass tables:
-  ```lua
-  return {
-    { Meta = Meta },                                                  -- Pass 1: Load manifests & frontmatter
-    { Code = Code, Inlines = Inlines, BlockQuote = BlockQuote },       -- Pass 2: Tag indicators & callouts
-    { Pandoc = Pandoc }                                               -- Pass 3: Inject KB scripts & finalize
-  }
-  ```
-- **Prose Punctuation Stripping**: Isolates leading and trailing punctuation (e.g., `(Event ID 5001)`) so pills are tagged cleanly without breaking surrounding sentences.
-
-### Stage 4: Standalone Assembly & Post-Processing
-- **Objective**: Package the document into a single, zero-dependency HTML file that can be archived, emailed, or opened offline.
-- **Implementation**:
-  - **CSS Bundling**: Inlines the base stylesheet (`styles/base.css`), theme stylesheet (`styles/<family>/<theme>.css`), and print layout (`styles/paged.css`).
-  - **Base64 Font Inlining**: Inlines local web fonts (`styles/fonts.css`) including *Roboto Slab*, *Merriweather*, and *JetBrains Mono*.
-  - **Localization Injection**: Injects localized CSS custom properties into `:root` and serializes the merged i18n dictionary into `<script id="report-i18n" type="application/json">`.
-  - **Threat Knowledge Serialization**: Injects all resolved indicator metadata into `<script id="cyber-kb-data" type="application/json">`.
-  - **Client-Side Runtime**: Appends the interactive slide-over inspector drawer template ([`templates/forensic-cyber-interactive.html`](file:///home/valor/Devel/personal/md-style/templates/forensic-cyber-interactive.html)).
-
----
-
-## 3. Native Python CLI Layer via `uv`
-
-The toolchain is built with Python 3.10+ and managed via [`uv`](https://docs.astral.sh/uv/) for high-speed dependency resolution and deterministic execution.
-
-### Entrypoints
-The package defines console scripts in [`pyproject.toml`](file:///home/valor/Devel/personal/md-style/pyproject.toml):
-```toml
-[project.scripts]
-md-to-report = "core.cli:main"
-md-style = "core.cli:main"
-```
-
-### Backwards-Compatible POSIX Wrapper
-The repository root contains [`md-to-report.sh`](file:///home/valor/Devel/personal/md-style/md-to-report.sh), a lightweight two-line POSIX shell script forwarding all invocations to `uv run md-to-report "$@"`. This preserves existing CI/CD pipelines, shell aliases, and automated build scripts without requiring manual environment activation.
-
-### CLI Diagnostics & Inspection
-The CLI provides rich terminal output via [`core/diagnostics.py`](file:///home/valor/Devel/personal/md-style/core/diagnostics.py):
-- `--inspect`: Dry-run mode that parses frontmatter, catalogs threat indicators, loads custom knowledge, and displays a summary table without invoking Pandoc.
-- `--list-styles`: Discovers and prints all available theme stylesheets and style families.
-- Build Warnings: Warns if indicators cannot be verified offline with actionable guidance.
+### Stage 5: Bundling, RO-Crate Packaging & PDF Export
+* **Objective**: Package the deliverable as a standalone HTML file, RO-Crate 1.1 archive, or vector PDF.
+* **Component**: [`core/pipeline/stages/export.py`](file:///home/valor/Devel/personal/md-style/core/pipeline/stages/export.py)
+* **Actions**:
+  * **HTML Bundling**: [`core/bundler/`](file:///home/valor/Devel/personal/md-style/core/bundler/) inlines all CSS stylesheets, base64 WOFF2 fonts (`core/fonts.py`), and sanitized vector SVGs (`core/svg/processor.py`).
+  * Injects Svelte 5 interactive viewer bundle (`core/assets/viewer.bundle.js`).
+  * Embeds raw source Markdown and Knowledge Pack JSON scripts for source reversibility.
+  * **RO-Crate Packaging**: Generates compliant RO-Crate 1.1 `.crate.zip` with `ro-crate-metadata.json` and digital evidence files.
+  * **PDF Export**: Generates vector print PDFs matching W3C `@media print` via Chromium CDP bridge (`viewer/scripts/print-pdf.mjs`).
 
 ---
 
-## 4. Hierarchical Style Families
-
-Styles are organized into logical domain families that share base CSS, Lua filters, and localization catalogs:
+## 3. Directory Layout & Module Responsibilities
 
 ```text
-styles/
-├── base.css                      # Universal typography, margins, and resets
-├── fonts.css                     # Embedded base64 font definitions
-├── paged.css                     # W3C CSS Paged Media print rules & polyfill framing
-├── forensic/                     # Forensic & Cyber Security family
-│   ├── base.css                  # Shared forensic typography & evidence styling
-│   ├── dossier.css               # Classic physical forensic investigation layout
-│   ├── cyber.css                 # Dark HUD, threat indicator pills, inspector drawer
-│   ├── forensic.lua              # Evidence chain of custody & timeline filter
-│   └── cyber.lua                 # Cyber IoC pill extractor & callout filter
-└── svj/                          # Homeowners Association (SVJ) family
-    ├── base.css                  # Shared Czech legal typography & notices
-    ├── modern.css                # Clean corporate assembly invitation
-    ├── community.css             # Friendly neighborhood bulletin
-    ├── typewriter.css            # Archival monospaced legal notice
-    ├── ballot.css                # Voting ballot & quorum layouts
-    └── ballot.lua                # Per-proposal voting ballot generator
+md-style/
+├── core/                         # Core Python toolchain
+│   ├── assets/                   # Pre-compiled viewer bundle (JS & CSS)
+│   ├── bundler/                  # AssetResolver, HtmlDocumentBuilder, CdpTemplateBuilder
+│   ├── cli.py                    # Main CLI entrypoint (build_parser, routing)
+│   ├── config.py                 # System paths, cache defaults, environment config
+│   ├── crate.py                  # RO-Crate 1.1 packaging and cryptographic verification
+│   ├── diagnostics.py            # Rich terminal tables, logging, pipeline timers
+│   ├── diagrams/                 # Mermaid and D2 diagram rendering bridges
+│   ├── fonts.py                  # Offline font cache and WOFF2 base64 inliner
+│   ├── i18n/                     # Layered catalog localization engine
+│   ├── kb/                       # Knowledge Pack lifecycle, models, and indicator resolvers
+│   ├── parser/                   # Pure-Python Markdown parser (markdown-it-py plugins)
+│   ├── pipeline/                 # 5-stage ReportEngine and PipelineBuilder
+│   │   ├── stages/               # Ingestion, Knowledge, Theme, Compilation, Export
+│   │   ├── context.py            # PipelineConfig and PipelineContext
+│   │   └── reporter.py           # Rich compilation summary cards
+│   ├── svg/                      # SVGProcessor (sanitization, namespacing, CSS scoping)
+│   ├── theme_tools/              # ThemeLinter, ThemeInspector, ThemeScaffolder
+│   └── themes.py                 # Cascading ThemeResolver
+├── data/                         # Offline SSOT catalogs (statutes, CVE, CWE, MITRE, EVTX)
+├── styles/                       # Declarative theme suites (theme.yaml + CSS)
+│   ├── base/                     # Universal root theme (fonts, paged base, reset)
+│   ├── academic/                 # University teaching, lectures, handbook (FI MUNI)
+│   ├── forensic/                 # DFIR investigation styles (cyber, dossier)
+│   ├── svj/                      # Condominium / HOA styles (base, invitation, ballot)
+│   └── general/                  # Announcement, school, family-invite
+├── viewer/                       # Svelte 5 interactive viewer application
+│   ├── src/
+│   │   ├── annotations/          # Collaborative comments, DOM anchors, CriticMarkup export
+│   │   ├── components/           # FigureToolbar, FigureLightbox, Icon widgets
+│   │   ├── drawer/               # Slide-over InspectorDrawer modular sub-components
+│   │   ├── inspector/            # Domain cards (CVE, WinEvent, EVTX, IP, Statute)
+│   │   ├── App.svelte            # Root viewer client
+│   │   └── HudRibbon.svelte      # Sticky HUD ribbon with progress & mode switcher
+│   └── package.json              # Bundled via Vite / Bun
+└── tests/                        # 260+ Pytest tests (unit, offline, print, e2e)
 ```
-
-### Backward Compatibility Aliases
-The CLI and frontmatter parser support both hierarchical paths and legacy dash-delimited names:
-- `-s forensic/cyber` $\equiv$ `-s forensic-cyber`
-- `-s forensic/dossier` $\equiv$ `-s forensic`
-- `-s svj/modern` $\equiv$ `-s svj-modern`
-- `-s svj/ballot` $\equiv$ `-s svj-ballot`
 
 ---
 
-## 5. Security & OPSEC Principles
+## 4. Interactive Viewer Architecture (Svelte 5)
 
-1. **Zero Runtime Web Requests**: The compiled HTML report contains all scripts, stylesheets, fonts, and data inline. When opened in an isolated network or forensic air-gap, it makes zero network connections.
-2. **Private Network Protection**: RFC 1918 and loopback IP addresses strictly suppress external threat queries (VirusTotal, AbuseIPDB) to prevent accidental data leaks during customer investigations.
-3. **Deterministic Caching**: Dynamic intelligence lookups (Microsoft Learn, Ultimate Windows Security) are cached in `data/cache/` to ensure builds remain reproducible and fast even when offline.
+The interactive viewer client is inlined into bundled HTML reports and mounts cleanly to `#md-style-viewer-root`:
+
+1. **HUD Ribbon (`HudRibbon.svelte`)**:
+   * Sticky top bar showing reading progress, active document section, Dark/Light mode toggle, and Reader vs. Educative mode.
+2. **Knowledge Inspector Drawer (`viewer/src/drawer/`)**:
+   * Slide-over drawer opening when clicking any `.inspectable` indicator pill or HUD button.
+   * Search and category filter pills (`EntitySearchFilter.svelte`).
+   * Rich entity cards with CVSS v3.1 gauges, MITRE technique tactics, ARES company data, SPAYD QR payment codes, and offline legal statute text.
+3. **Figure Lightbox Modal (`FigureLightbox.svelte`)**:
+   * Interactive modal with zoom & pan, high-res SVG export, and full-screen view for all Mermaid, D2, and inlined SVGs.
+4. **Collaborative Margin Comments (`viewer/src/annotations/`)**:
+   * Google Docs-style text selection popover to add comments and review notes.
+   * Auto-anchored to text nodes with surrounding prefix/suffix context for resilient re-hydration.
+   * Export to updated standalone HTML bundle or source Markdown with CriticMarkup notes.

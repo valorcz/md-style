@@ -1,6 +1,6 @@
-# Documentation Index
+# Documentation Index — `md-style` v3.0
 
-Welcome to the technical documentation for **`md-style`**, an enterprise-grade document publishing toolchain that turns Markdown source files into standalone, publication-quality HTML5 reports and PDF documents with interactive cyber threat intelligence, multi-tier localization, and W3C paged media layouts.
+Welcome to the technical documentation for **`md-style`**, a pure-Python, publication-grade document generation and knowledge packaging toolkit. `md-style` compiles Markdown into standalone, interactive HTML reports, pixel-perfect PDF publications matching W3C `@media print` standards, and compliant RO-Crate 1.1 research object archives.
 
 ---
 
@@ -10,28 +10,30 @@ The documentation is organized into focused, modular manuals:
 
 | Guide | Description | Target Audience |
 | :--- | :--- | :--- |
-| **[System Architecture](architecture.md)** | Deep dive into the 4-stage processing pipeline, native Python CLI via `uv`, multi-pass Pandoc AST filters, and hierarchical style families. | Developers, System Integrators |
-| **[Threat Intelligence & Knowledge Base](knowledge-base.md)** | Definitive manual for Global Threat Intelligence (Windows Event IDs, EVTX logs, CVE/GHSA, MITRE ATT&CK, IPs) and Case-Specific Custom Knowledge Bases (YAML/JSON schemas, regex matching, slide-over drawer UI, and OPSEC rules). | Incident Responders, Forensic Authors, Security Analysts |
-| **[Style & Layout Development](style-development.md)** | Guide for creating, styling, and testing custom CSS themes. Covers design tokens, Paged.js page layouts, Gecko/Firefox multi-column fragmentation fixes, and automated headless testing. | Designers, Theme Developers |
-| **[Localization & Internationalization](localization.md)** | Comprehensive reference for the 3-tier cascading i18n framework (`core` $\to$ `style` $\to$ `frontmatter`), CLDR/Babel language tag normalization, and polyglot delivery to Pandoc, CSS, and client-side JavaScript. | Translators, Localization Engineers |
+| **[System Architecture](architecture.md)** | Deep dive into the pure-Python 5-stage pipeline (`core/pipeline/`), AST compilation via `markdown-it-py`, Svelte 5 viewer integration, and zero-Pandoc invariants. | Core Developers, System Integrators |
+| **[Threat Intelligence & Knowledge Base](knowledge-base.md)** | Manual for Global Threat Intelligence (CVE/GHSA, MITRE ATT&CK, Windows Event IDs, EVTX logs, network IPs, Statutes, IČO, IBAN) and Case-Specific Knowledge Packs (YAML/JSON schemas, drawer UI, OPSEC rules). | Incident Responders, Forensic Authors, Legal/Civic Analysts |
+| **[Style & Layout Development](style-development.md)** | Comprehensive guide for declarative theme inheritance (`theme.yaml`), CSS design tokens, Paged.js page geometry, print layouts, and the CLI Theme Inspector/Linter tools. | Designers, Theme Authors |
+| **[Localization & Internationalization](localization.md)** | Reference for the 3-tier cascading i18n framework (`core` $\to$ `style` $\to$ `frontmatter`), CLDR language tag normalization, and polyglot delivery to Jinja2, CSS, and the client-side viewer. | Translators, Localization Engineers |
 
 ---
 
 ## 🚀 Quick Navigation by Persona
 
 ### For Forensic Analysts & Report Authors
-- **Writing Reports**: Learn how to write Markdown with automatic indicator extraction in [Threat Intelligence & Knowledge Base](knowledge-base.md#indicator-syntax--prose-formatting).
+- **Writing Reports**: Learn how to format Markdown with automatic indicator extraction in [Threat Intelligence & Knowledge Base](knowledge-base.md#indicator-syntax--prose-formatting).
 - **Custom Case Knowledge**: Document case-specific service accounts, domain assets, or internal IPs using YAML files in [Custom Knowledge Base](knowledge-base.md#custom-case-knowledge-base-yaml--json).
 - **Network Indicator OPSEC**: Understand how private RFC 1918 addresses are shielded from external OSINT leaks in [Network Indicators & OPSEC](knowledge-base.md#network-indicators--opsec-rules).
 - **Frontmatter Metadata**: Configure authors, classifications, dates, and language overrides in [Localization](localization.md#tier-3-document-frontmatter-layer).
+- **Terminal Inspection**: Inspect extracted indicators and tokens with `md-style inspect report.md`.
 
 ### For Theme Authors & Designers
-- **Theme Architecture**: Understand how themes are structured and inherit from base styles in [Style Development](style-development.md#css-architecture--design-token-conventions).
+- **Theme Architecture**: Understand declarative cascading inheritance (`theme.yaml`) in [Style Development](style-development.md#css-architecture--design-token-conventions).
+- **Theme Tools**: Scaffold, inspect, and lint themes with `md-style theme list`, `md-style theme inspect <name>`, and `md-style theme lint`.
 - **Paged Media & Printing**: Master W3C `@page` rules, running headers/footers, and table pagination across printed sheets in [Paged Media & Paged.js](style-development.md#paged-media--pagedjs-print-fidelity).
 - **Consuming Localized Strings**: Use CSS custom properties generated by the i18n engine (`var(--i18n-...)`) in [Localization in Stylesheets](localization.md#css-custom-properties-injection).
-- **Verifying Layouts**: Run the headless dual-browser layout verification harness in [Automated Verification](style-development.md#headless-automated-verification-harness).
 
 ### For Core Toolchain Developers
-- **Pipeline Stages**: Trace document execution through Stage 1 (Mermaid SVG rendering) to Stage 4 (Standalone bundle assembly) in [4-Stage Pipeline](architecture.md#the-4-stage-pipeline).
-- **Adding New Providers**: Implement new online/offline intelligence lookups in [Extending Intelligence Providers](knowledge-base.md#adding-new-threat-providers).
-- **Pandoc Multi-Pass Filtering**: Understand Lua filter lifecycle order (`Meta` $\to$ `Code`/`Inlines` $\to$ `Pandoc`) in [Multi-Pass AST Processing](architecture.md#multi-pass-ast-filter-architecture).
+- **Pipeline Stages**: Trace document execution through Stage 1 (Ingestion & Diagrams) to Stage 5 (Bundling, Crate & PDF Export) in [5-Stage Pipeline](architecture.md#2-high-level-pipeline-architecture).
+- **Adding New Indicator Resolvers**: Implement new local/offline intelligence lookups in [Extending Intelligence Resolvers](knowledge-base.md#adding-new-threat-providers).
+- **Pure-Python AST Plugins**: Understand custom `markdown-it-py` plugins and renderers in [System Architecture](architecture.md#stage-4-markdown-ast-compilation).
+- **RO-Crate 1.1 Packaging**: Package forensic evidence, data files, and metadata with `md-style --crate`.
