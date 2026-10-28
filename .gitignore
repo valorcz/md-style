@@ -6,6 +6,7 @@ __pycache__/
 # Local Data Cache
 data/cache/
 viewer/node_modules/
+.agents/
 
 # Transient Build Artifacts
 output/

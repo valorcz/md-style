@@ -247,7 +247,7 @@ When using `-s forensic/cyber`, `md-style` enriches security telemetry:
 ```yaml
 ---
 title: "Forenzní analýza kybernetického incidentu"
-subtitle: "Incident IR-2026-0920: EnterpriseCorp Active Directory"
+subtitle: "Incident IR-2026-0920: Enterprise Active Directory Compromise"
 author: "Forenzní analytik"
 date: "2026-09-21"
 lang: cs
