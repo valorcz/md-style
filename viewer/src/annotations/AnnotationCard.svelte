@@ -39,15 +39,37 @@
     dispatch('update', { id: annotation.id, text: editText.trim(), category: editCategory });
     isEditing = false;
   }
+
+  function handleCardClick() {
+    if (isEditing) return;
+    dispatch('select', annotation.id);
+  }
+
+  function handleCardKeyDown(e: KeyboardEvent) {
+    if (isEditing) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'BUTTON' || target.tagName === 'TEXTAREA' || target.tagName === 'A') {
+        return;
+      }
+      e.preventDefault();
+      dispatch('select', annotation.id);
+    }
+  }
 </script>
 
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <div
   class="annotation-card category-{annotation.category}"
   class:active={isActive}
   class:resolved={annotation.resolved}
   class:compact={compact}
-  on:click={() => dispatch('select', annotation.id)}
+  on:click={handleCardClick}
+  on:keydown={handleCardKeyDown}
   role="article"
+  tabindex="0"
 >
   <!-- Card Header -->
   <div class="card-header">
@@ -111,7 +133,7 @@
       {/if}
     </div>
   {:else}
-    <div class="card-edit-box" on:click|stopPropagation>
+    <div class="card-edit-box">
       <textarea class="edit-textarea" bind:value={editText} rows="2"></textarea>
       <div class="edit-actions">
         <button class="btn-sm-cancel" on:click={() => (isEditing = false)}>Cancel</button>
@@ -451,14 +473,14 @@
     color: #f1f5f9;
   }
 
-  :global([data-theme="dark"]) .card-text.markdown-body pre,
-  :global(body.dark-theme) .card-text.markdown-body pre {
+  :global([data-theme="dark"] .card-text.markdown-body pre),
+  :global(body.dark-theme .card-text.markdown-body pre) {
     background: rgba(0, 0, 0, 0.5);
     border-color: rgba(255, 255, 255, 0.1);
   }
 
-  :global([data-theme="dark"]) .card-text.markdown-body code,
-  :global(body.dark-theme) .card-text.markdown-body code {
+  :global([data-theme="dark"] .card-text.markdown-body code),
+  :global(body.dark-theme .card-text.markdown-body code) {
     background: rgba(255, 255, 255, 0.1);
     color: #38bdf8;
   }

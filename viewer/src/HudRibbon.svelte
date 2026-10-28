@@ -12,7 +12,6 @@
   export let commentCount: number = 0;
   export let educativeMode: boolean = true;
   export let onTogglePaged: (() => void) | undefined = undefined;
-  export let onToggleInspector: (() => void) | undefined = undefined;
 
   const dispatch = createEventDispatcher();
   let progress: number = 0;
