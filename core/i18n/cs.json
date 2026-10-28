@@ -1,0 +1,97 @@
+{
+  "code": "cs",
+  "name": "Čeština",
+  "meta": {
+    "toc_title": "Obsah",
+    "abstract_title": "Shrnutí zjištění",
+    "figure_label": "Obrázek",
+    "table_label": "Tabulka",
+    "page_label": "Strana",
+    "confidential_label": "DŮVĚRNÉ",
+    "report_type": "ZPRÁVA O VYŠETŘOVÁNÍ",
+    "author_label": "Autor:",
+    "date_label": "Datum:",
+    "page_prefix": "Strana ",
+    "page_of": " z ",
+    "section_tag": "§ SEKCE",
+    "figure_prefix": "Obrázek "
+  },
+  "callouts": {
+    "note": "POZNÁMKA",
+    "info": "INFORMACE",
+    "tip": "TIP",
+    "success": "ÚSPĚCH",
+    "important": "DŮLEŽITÉ",
+    "warning": "VAROVÁNÍ",
+    "caution": "POZOR",
+    "critical": "KRITICKÉ",
+    "danger": "NEBEZPEČÍ",
+    "evidence": "DŮKAZ",
+    "finding": "ZJIŠTĚNÍ",
+    "proposal": "NÁVRH VÝBORU"
+  },
+  "ballots": {
+    "prompt": "HLASOVÁNÍ:",
+    "pro": "PRO",
+    "against": "PROTI",
+    "abstain": "ZDRŽEL SE"
+  },
+  "toc": {
+    "title": "Obsah"
+  },
+  "ui": {
+    "filter_placeholder": "Filtrovat řádky tabulky...",
+    "all_categories": "Všechny kategorie",
+    "rows_count": "{visible} / {total} řádků",
+    "copy": "Kopírovat",
+    "copied": "Zkopírováno do schránky",
+    "print": "Tisk / PDF",
+    "summary": "Shrnutí",
+    "attributes": "Vlastnosti",
+    "metrics": "Metriky a skóre",
+    "classification": "Klasifikace a TTP",
+    "details": "Technické detaily",
+    "relationships": "Související entity",
+    "references": "Odkazy",
+    "provenance": "Původ dat",
+    "status": "Stav",
+    "close": "Zavřít",
+    "knowledge_inspector": "Znalostní báze a inspektor",
+    "all_entities": "Všechny entity",
+    "download_md": "Stáhnout .md",
+    "paginating": "Stránkování listů A4...",
+    "web_view": "Webové zobrazení",
+    "paper_view": "Stránkové zobrazení (A4)"
+  },
+  "badges": {
+    "statute": "ZÁKONNÉ USTANOVENÍ",
+    "winevent": "WINDOWS UDÁLOST",
+    "evtx": "KANÁL UDÁLOSTÍ",
+    "cve": "CVE ZRANITELNOST",
+    "ghsa": "GHSA ZPRÁVA",
+    "mitre": "MITRE ATT&CK",
+    "asset": "PODNIKOVÉ AKTIVUM",
+    "discovered": "IDENTIFIKOVANÝ TOKEN"
+  },
+  "paged": {
+    "web_view": "Webové zobrazení",
+    "paged_preview": "Tiskový náhled (stránky)",
+    "page_counter": "Strana {page} z {pages}"
+  },
+  "svj": {
+    "assembly_invite": "POZVÁNKA NA SHROMÁŽDĚNÍ",
+    "ballot_title": "HLASOVACÍ LÍSTEK (PER ROLLAM)",
+    "committee_label": "Statutární orgán / Výbor SVJ",
+    "statute_notice": "Dle § 1207 z. č. 89/2012 Sb. (občanský zákoník)"
+  },
+  "forensics": {
+    "classification": "DŮVĚRNÉ // TLP:AMBER",
+    "unit": "Forenzní vyšetřovací jednotka",
+    "evidence_hash": "SHA-256 Integrita důkazu",
+    "examiner": "Vyšetřovatel:",
+    "lead_examiner": "Vedoucí vyšetřovatel:",
+    "date": "Datum:",
+    "case_id": "Případ:",
+    "report_title": "ZPRÁVA Z FORENZNÍHO VYŠETŘOVÁNÍ"
+  }
+}

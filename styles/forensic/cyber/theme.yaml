@@ -1,0 +1,29 @@
+name: forensic/cyber
+title: "Forensic Cyber Dark Dossier"
+extends: base
+stylesheets:
+  - ../components/dossier-header.css
+  - ../components/kpi-grid.css
+  - ../components/timeline.css
+  - cyber.css
+features:
+  interactive_viewer: true
+  sticky_tables: true
+  break_ranges: true
+  entity_inspector: true
+  dark_hud: true
+variables:
+  --bg-primary: "#070b12"
+  --text-main: "#e2e8f0"
+  --accent: "#06b6d4"
+  --accent-cyan: "#06b6d4"
+  --page-header-border: "1px solid rgba(6, 182, 212, 0.4)"
+  --page-footer-border: "1px solid rgba(6, 182, 212, 0.25)"
+paged:
+  margins:
+    top: 25mm
+    bottom: 25mm
+  headers:
+    center: "{classification|TLP:AMBER // CONFIDENTIAL}"
+  footers:
+    left: "{i18n.forensics.unit} // CYBER DFIR"

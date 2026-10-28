@@ -1,0 +1,854 @@
+/* ==========================================================================
+   BASE DOCUMENT STYLESHEET (md-style Core)
+   Shared foundational reset, typography, responsive container, and print engine.
+   All themes inherit these primitives and override custom variables/components.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+/* --------------------------------------------------------------------------
+   1. Design Token Fallbacks
+   -------------------------------------------------------------------------- */
+:root {
+  /* Typography Fallbacks */
+  --font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "Cascadia Code", "Fira Code", Menlo, Monaco, Consolas, monospace;
+
+  /* Color Palette Fallbacks */
+  --color-primary: #0f172a;
+  --color-secondary: #475569;
+  --color-accent: #2563eb;
+  --color-bg: #f8fafc;
+  --color-paper: #ffffff;
+  --color-text: #1e293b;
+  --color-text-muted: #64748b;
+  --color-border: #e2e8f0;
+  --color-border-dark: #cbd5e1;
+
+  /* Layout dimensions */
+  --doc-max-width: 52rem; /* ~832px */
+  --line-height-body: 1.65;
+  --line-height-heading: 1.25;
+
+  /* Global i18n string fallbacks */
+  --i18n-page-prefix: "Page ";
+  --i18n-page-of: " of ";
+}
+
+/* --------------------------------------------------------------------------
+   2. Resets & Document Container
+   -------------------------------------------------------------------------- */
+html {
+  font-size: 100%;
+  box-sizing: border-box;
+  background-color: var(--color-bg);
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: var(--line-height-body);
+  color: var(--color-text);
+  background-color: var(--color-paper);
+  max-width: var(--doc-max-width);
+  margin: 2.5rem auto;
+  padding: 3rem 3.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05),
+              0 10px 15px -3px rgba(15, 23, 42, 0.05);
+}
+
+/* --------------------------------------------------------------------------
+   3. Typography & Flow Elements
+   -------------------------------------------------------------------------- */
+p {
+  margin-top: 0;
+  margin-bottom: 1.2em;
+}
+
+strong, b {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+em, i {
+  font-style: italic;
+}
+
+small {
+  font-size: 0.85em;
+  color: var(--color-text-muted);
+}
+
+hr {
+  height: 0;
+  border: 0;
+  border-top: 1px solid var(--color-border);
+  margin: 2rem 0;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--color-primary);
+  line-height: var(--line-height-heading);
+  margin-top: 1.8em;
+  margin-bottom: 0.6em;
+  font-weight: 700;
+  break-after: avoid !important;
+  page-break-after: avoid !important;
+}
+
+h1 {
+  font-size: 1.85rem;
+  margin-top: 0.5em;
+  margin-bottom: 0.6em;
+}
+
+h2 {
+  font-size: 1.35rem;
+  margin-top: 1.6em;
+  margin-bottom: 0.5em;
+}
+
+h3 {
+  font-size: 1.15rem;
+  margin-top: 1.4em;
+  margin-bottom: 0.4em;
+}
+
+h4 { font-size: 1.05rem; }
+h5, h6 { font-size: 0.95rem; }
+
+/* Lists */
+ul, ol {
+  margin-top: 0;
+  margin-bottom: 1.25em;
+  padding-left: 1.6em;
+}
+
+li {
+  margin-bottom: 0.35em;
+  line-height: var(--line-height-body);
+}
+
+li > p {
+  margin-bottom: 0.4em;
+}
+
+/* Blockquotes */
+blockquote {
+  margin: 1.5em 0;
+  padding: 0.8em 1.2em;
+  background-color: var(--color-bg);
+  border-left: 4px solid var(--color-accent);
+  color: var(--color-secondary);
+  font-style: italic;
+}
+
+blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+/* Links */
+a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* Code & Preformatted */
+code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background-color: #f1f5f9;
+  padding: 0.15em 0.35em;
+  border-radius: 4px;
+  border: 1px solid var(--color-border);
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+/* Dedicated class for long hashes, keys, tokens & hex strings */
+code.hash,
+code.break-all,
+.hash,
+.break-all {
+  word-break: break-all;
+  overflow-wrap: anywhere;
+}
+
+pre {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background-color: #0f172a;
+  color: #f8fafc;
+  padding: 1rem 1.25rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  line-height: 1.5;
+  margin: 1.5em 0;
+}
+
+pre.highlight-code {
+  position: relative;
+  padding-top: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+pre.highlight-code::before {
+  content: attr(data-lang);
+  position: absolute;
+  top: 0.45rem;
+  right: 0.85rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748b;
+  font-family: var(--font-mono);
+  user-select: none;
+}
+
+pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+/* --------------------------------------------------------------------------
+   Table of Contents
+   -------------------------------------------------------------------------- */
+nav.table-of-contents {
+  margin: 1.5rem 0 2rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+nav.table-of-contents .toc-title {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 0.75rem;
+}
+
+nav.table-of-contents ul.toc-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+nav.table-of-contents li.toc-item {
+  margin: 0.35rem 0;
+  line-height: 1.4;
+}
+
+nav.table-of-contents li.toc-level-2 {
+  padding-left: 0.5rem;
+}
+
+nav.table-of-contents li.toc-level-3 {
+  padding-left: 1.5rem;
+  font-size: 0.9em;
+}
+
+nav.table-of-contents a {
+  color: var(--color-text);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+nav.table-of-contents a:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+/* --------------------------------------------------------------------------
+   4. Table Formatting & Fragmentation Engine
+   -------------------------------------------------------------------------- */
+table {
+  width: 100%;
+  max-width: 100%;
+  border-collapse: collapse;
+  margin: 1.5em 0 1.8em;
+  font-size: 0.9em;
+  line-height: 1.5;
+  overflow: visible !important;
+  page-break-inside: auto !important;
+  break-inside: auto !important;
+}
+
+thead {
+  display: table-header-group !important;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+  break-after: avoid !important;
+  page-break-after: avoid !important;
+}
+
+tbody {
+  page-break-inside: auto !important;
+  break-inside: auto !important;
+}
+
+tr {
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+}
+
+th {
+  font-weight: 600;
+  text-align: left;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--color-border-dark);
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+td {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  vertical-align: top;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+.nowrap,
+.nowrap *,
+th.nowrap,
+td.nowrap,
+th.nowrap code,
+td.nowrap code {
+  white-space: nowrap !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Timestamp ranges override nowrap */
+.timestamp-range,
+.timestamp-range *,
+th.timestamp-range,
+td.timestamp-range,
+th.timestamp-range code,
+td.timestamp-range code {
+  white-space: normal !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+}
+
+/* Scrollable Responsive Table Wrapper */
+.table-wrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 1.5em 0 1.8em;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-wrapper table {
+  margin: 0;
+  width: 100%;
+}
+
+@media print {
+  .table-wrapper {
+    overflow: visible !important;
+    margin: 1.2em 0 1.5em !important;
+    display: block !important;
+    max-width: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. GitHub Alert Divs & Admonition Callout Boxes
+   -------------------------------------------------------------------------- */
+div.callout,
+div.warning, div.note, div.tip, div.important, div.caution,
+div.critical, div.evidence, div.finding {
+  margin: 1.5em 0;
+  padding: 1rem 1.25rem;
+  border-radius: 6px;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-left-width: 4px;
+  background-color: #f8fafc;
+  color: var(--color-text, #1e293b);
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+div.callout p {
+  color: var(--color-text, #1e293b);
+  line-height: 1.6;
+}
+
+div.callout p:last-child {
+  margin-bottom: 0;
+}
+
+div.callout strong {
+  color: var(--color-primary, #0f172a);
+}
+
+div.callout .title,
+div.warning .title, div.note .title, div.tip .title,
+div.important .title, div.caution .title, div.critical .title {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.5em;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+div.callout .title p,
+div.warning .title p, div.note .title p, div.tip .title p,
+div.important .title p, div.caution .title p, div.critical .title p {
+  margin: 0;
+  color: inherit;
+}
+
+.callout-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.15em;
+  height: 1.15em;
+  flex-shrink: 0;
+}
+
+.callout-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+/* Inline Primer Octicons */
+.octicon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: -0.15em;
+  line-height: 1;
+}
+
+.octicon svg {
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+}
+
+/* Callout Variants */
+div.note, div.info, div.evidence {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+  border-left-color: #0284c7;
+}
+div.note .title, div.info .title, div.evidence .title {
+  color: #0369a1;
+}
+
+div.warning, div.caution, div.anomaly {
+  background-color: #fffdf5;
+  border-color: #fef08a;
+  border-left-color: #d97706;
+}
+div.warning .title, div.caution .title, div.anomaly .title {
+  color: #b45309;
+}
+
+div.critical, div.danger, div.threat {
+  background-color: #fef8f8;
+  border-color: #fecdd3;
+  border-left-color: #dc2626;
+}
+div.critical .title, div.danger .title, div.threat .title {
+  color: #b91c1c;
+}
+
+div.important {
+  background-color: #faf8ff;
+  border-color: #e9d5ff;
+  border-left-color: #7c3aed;
+}
+div.important .title {
+  color: #6d28d9;
+}
+
+div.tip, div.success, div.finding {
+  background-color: #f6fcf8;
+  border-color: #bbf7d0;
+  border-left-color: #059669;
+}
+div.tip .title, div.success .title, div.finding .title {
+  color: #047857;
+}
+
+/* --------------------------------------------------------------------------
+   6. General Print Media Rules (@media print)
+   -------------------------------------------------------------------------- */
+@media print {
+  /* Suppress screen-only interactive HUD elements */
+  .cyber-drawer,
+  .drawer-backdrop,
+  .hud-bar,
+  .theme-toggle,
+  .print-action-bar,
+  .reading-progress,
+  #report-toc-hud,
+  #toc-hud-toggle,
+  .screen-only {
+    display: none !important;
+  }
+
+  html, body {
+    background: transparent !important;
+    max-width: none !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    font-size: 9.5pt !important;
+    color: #000000 !important;
+  }
+
+  a {
+    color: inherit !important;
+    text-decoration: underline !important;
+  }
+
+  table {
+    border: 1px solid #0f172a !important;
+    font-size: 8.5pt !important;
+  }
+
+  th {
+    background-color: #0f172a !important;
+    color: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Diagrams & Vector Figures
+   -------------------------------------------------------------------------- */
+figure.figure-container,
+figure.svg-figure,
+figure.image-figure,
+figure.mermaid-diagram,
+figure.d2-diagram {
+  margin: 2.5rem 0;
+  text-align: center;
+  width: 100%;
+  max-width: 100%;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+figure.figure-container .svg-container,
+figure.figure-container .image-container,
+figure.mermaid-diagram .mermaid-svg-wrapper,
+figure.d2-diagram .d2-svg-wrapper {
+  overflow-x: auto;
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+figure.figure-container .svg-inlined-wrapper {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+figure.figure-container .svg-container svg,
+figure.figure-container .svg-inlined-wrapper svg,
+figure.mermaid-diagram .mermaid-svg-wrapper svg,
+figure.d2-diagram .d2-svg-wrapper svg {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+figure.figure-container img,
+img {
+  max-width: 100%;
+  height: auto;
+  display: inline-block;
+}
+
+/* Sizing Utilities for Figures via Markdown Attributes: {.small}, {.medium}, {.wide}, {.breakout} */
+figure.figure-container.small .svg-inlined-wrapper,
+figure.figure-container.small img,
+figure.figure-container.small .svg-container svg,
+figure.figure-container.small .svg-inlined-wrapper svg {
+  max-width: 380px !important;
+}
+
+figure.figure-container.medium .svg-inlined-wrapper,
+figure.figure-container.medium img,
+figure.figure-container.medium .svg-container svg,
+figure.figure-container.medium .svg-inlined-wrapper svg {
+  max-width: 620px !important;
+}
+
+figure.figure-container.large .svg-inlined-wrapper,
+figure.figure-container.large img,
+figure.figure-container.large .svg-container svg,
+figure.figure-container.large .svg-inlined-wrapper svg {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+/* Breakout / wide figure: expands beyond normal prose column */
+figure.figure-container.wide,
+figure.figure-container.breakout {
+  width: min(100vw - 3rem, 68rem);
+  max-width: min(100vw - 3rem, 68rem);
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+@media print {
+  figure.figure-container.wide,
+  figure.figure-container.breakout {
+    width: 100% !important;
+    max-width: 100% !important;
+    left: auto !important;
+    transform: none !important;
+  }
+}
+
+figcaption.figure-caption,
+figcaption.svg-caption,
+figcaption.mermaid-caption,
+figcaption.d2-caption {
+  font-size: 0.85rem;
+  color: var(--color-text-muted, #64748b);
+  margin-top: 0.5rem;
+  font-style: italic;
+  text-align: center;
+}
+
+figcaption .figure-label {
+  font-weight: 600;
+  font-style: normal;
+  color: var(--color-text-primary, #0f172a);
+}
+
+figure.d2-diagram.d2-fallback pre.d2-code {
+  text-align: left;
+  background: var(--color-surface, #f8fafc);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 6px;
+  padding: 1rem;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* Timestamps (nowrap) vs Hashes (break-all) */
+.timestamp,
+.nowrap,
+time,
+[data-type="timestamp"] {
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.hash,
+code.hash,
+.break-all,
+[data-type="hash"],
+td.hash,
+td:has(code.hash) {
+  white-space: normal !important;
+  word-break: break-all !important;
+  overflow-wrap: anywhere !important;
+  font-family: var(--font-mono, monospace);
+}
+
+/* Prevent duplicate title badges & metadata labels when semantic HTML is rendered */
+#title-block-header:has(.report-badge)::before,
+header#title-block-header:has(.report-badge)::before {
+  display: none !important;
+}
+
+#title-block-header:has(.meta-label) p.author::before,
+header#title-block-header:has(.meta-label) p.author::before,
+#title-block-header:has(.meta-label) p.date::before,
+header#title-block-header:has(.meta-label) p.date::before {
+  display: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   Inspectable Entity Micro-Interactions & Hover Affordances
+   -------------------------------------------------------------------------- */
+.inspectable {
+  cursor: pointer !important;
+  border-bottom: 1.5px dotted var(--inspectable-accent, #38bdf8);
+  text-underline-offset: 3px;
+  border-radius: 2px;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+  position: relative;
+  display: inline-block;
+}
+
+.inspectable:hover,
+.inspectable:focus-visible {
+  background: var(--inspectable-hover-bg, rgba(56, 189, 248, 0.15));
+  box-shadow: 0 0 8px var(--inspectable-glow, rgba(56, 189, 248, 0.25));
+  outline: none;
+}
+
+/* Severity-specific affordances */
+.inspectable-critical {
+  --inspectable-accent: #ef4444;
+  --inspectable-hover-bg: rgba(239, 68, 68, 0.18);
+  --inspectable-glow: rgba(239, 68, 68, 0.35);
+}
+
+.inspectable-high {
+  --inspectable-accent: #f97316;
+  --inspectable-hover-bg: rgba(249, 115, 22, 0.18);
+  --inspectable-glow: rgba(249, 115, 22, 0.35);
+}
+
+.inspectable-medium {
+  --inspectable-accent: #eab308;
+  --inspectable-hover-bg: rgba(234, 179, 8, 0.18);
+  --inspectable-glow: rgba(234, 179, 8, 0.35);
+}
+
+.inspectable-info {
+  --inspectable-accent: #38bdf8;
+  --inspectable-hover-bg: rgba(56, 189, 248, 0.15);
+  --inspectable-glow: rgba(56, 189, 248, 0.25);
+}
+
+/* --------------------------------------------------------------------------
+   Non-Modal Docked Inspector Layout Shift (Desktop)
+   Shift the reading content to the left when the inspector is open so the
+   reading width is never squeezed, while keeping body untransformed so
+   position:fixed/sticky HUD and Inspector remain rock-solid.
+   -------------------------------------------------------------------------- */
+@media screen and (min-width: 1300px) {
+  .report-content,
+  main,
+  .document-container {
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  body.inspector-open .report-content,
+  body.inspector-open main,
+  body.inspector-open .document-container {
+    transform: translateX(-160px);
+  }
+}
+
+/* ==========================================================================
+   ANNOTATIONS & REVIEW MODE STYLES
+   CSS Custom Highlight API pseudo-elements and fallback .md-annotation-mark tags
+   ========================================================================== */
+
+/* CSS Custom Highlight API Pseudo-Elements */
+::highlight(md-ann-feedback) {
+  background-color: rgba(2, 132, 199, 0.18);
+  text-decoration: underline dashed #0284c7 2px;
+  text-underline-offset: 3px;
+}
+
+::highlight(md-ann-correction) {
+  background-color: rgba(244, 63, 94, 0.2);
+  text-decoration: underline wavy #f43f5e 2px;
+  text-underline-offset: 3px;
+}
+
+::highlight(md-ann-insight) {
+  background-color: rgba(245, 158, 11, 0.22);
+  text-decoration: underline dotted #f59e0b 2px;
+  text-underline-offset: 3px;
+}
+
+::highlight(md-ann-commendation) {
+  background-color: rgba(16, 185, 129, 0.2);
+  text-decoration: underline solid #10b981 2px;
+  text-underline-offset: 3px;
+}
+
+::highlight(md-ann-question) {
+  background-color: rgba(168, 85, 247, 0.2);
+  text-decoration: underline dotted #a855f7 2px;
+  text-underline-offset: 3px;
+}
+
+/* Fallback DOM Mark Tags (when CSS Highlight API is unsupported) */
+mark.md-annotation-mark {
+  background-color: transparent;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+mark.md-annotation-mark.category-feedback {
+  background-color: rgba(2, 132, 199, 0.18);
+  text-decoration: underline dashed #0284c7 2px;
+  text-underline-offset: 3px;
+}
+
+mark.md-annotation-mark.category-correction {
+  background-color: rgba(244, 63, 94, 0.2);
+  text-decoration: underline wavy #f43f5e 2px;
+  text-underline-offset: 3px;
+}
+
+mark.md-annotation-mark.category-insight {
+  background-color: rgba(245, 158, 11, 0.22);
+  text-decoration: underline dotted #f59e0b 2px;
+  text-underline-offset: 3px;
+}
+
+mark.md-annotation-mark.category-commendation {
+  background-color: rgba(16, 185, 129, 0.2);
+  text-decoration: underline solid #10b981 2px;
+  text-underline-offset: 3px;
+}
+
+mark.md-annotation-mark.category-question {
+  background-color: rgba(168, 85, 247, 0.2);
+  text-decoration: underline dotted #a855f7 2px;
+  text-underline-offset: 3px;
+}

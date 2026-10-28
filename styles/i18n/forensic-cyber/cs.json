@@ -1,0 +1,34 @@
+{
+  "meta": {
+    "report_type": "ZPRÁVA Z KYBERNETICKÉHO BEZPEČNOSTNÍHO VYŠETŘOVÁNÍ",
+    "examiner_label": "Vedoucí forenzní vyšetřovatel:",
+    "date_label": "Datum vyšetřování:",
+    "confidential_label": "DŮVĚRNÉ // TLP:AMBER"
+  },
+  "ui": {
+    "drawer_title": "INSPEKTOR KYBERNETICKÝCH INDIKÁTORŮ",
+    "drawer_artifact_value": "Hodnota artefaktu",
+    "drawer_kb_title": "Znalostní báze a detekce",
+    "drawer_attack_phase": "Fáze útoku / Technika",
+    "drawer_external_links": "Odkazy do znalostních bází",
+    "drawer_actions": "Forenzní akce s artefaktem",
+    "drawer_filter_btn": "⌕ FILTROVAT ZPRÁVU PODLE TÉTO HODNOTY",
+    "drawer_copy_btn": "📋 KOPÍROVAT DO SCHRÁNKY",
+    "drawer_unresolved_title": "TELEMETRIE NEBYLA AUTOMATICKY OVĚŘENA",
+    "drawer_unresolved_desc": "Pro tento indikátor se nepodařilo automaticky stáhnout popis. Níže můžete prověřit externí oficiální zdroje:",
+    "hud_threat": "HROZBA // KRITICKÁ",
+    "hud_nav_prefix": "NAV //",
+    "view_mode_full": "≡ CELÝ DOKUMENT",
+    "view_mode_sections": "◫ SEKCE",
+    "stepper_prev": "◀ PŘEDCHOZÍ",
+    "stepper_next": "DALŠÍ ▶",
+    "filter_placeholder": "Filtrovat záznamy (IP, uživatel, příkaz, EID)...",
+    "offline_badge": "AUTONOMNÍ KYBERNETICKÁ ZPRÁVA",
+    "mitre_matrix": "Matice technik MITRE ATT&CK",
+    "chain_of_custody": "Předávací protokol důkazního materiálu",
+    "drawer_investigation_title": "Forenzní vyšetřování a tipy",
+    "drawer_attacker_title": "Chování útočníka",
+    "drawer_benign_title": "Běžné / Neškodné příčiny",
+    "copied": "HODNOTA ZKOPÍROVÁNA DO SCHRÁNKY"
+  }
+}

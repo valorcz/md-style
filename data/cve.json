@@ -1,0 +1,117 @@
+{
+  "CVE-2024-21762": {
+    "id": "CVE-2024-21762",
+    "title": "Fortinet FortiOS / FortiProxy: Out-of-bounds Write Remote Code Execution",
+    "summary": "An out-of-bounds write vulnerability [CWE-787] in Fortinet FortiOS and FortiProxy SSL-VPN allows an unauthenticated remote attacker to execute arbitrary code or commands via specifically crafted HTTP requests.",
+    "cvss": 9.6,
+    "severity": "CRITICAL",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "attack_vector": "NETWORK",
+    "attack_complexity": "LOW",
+    "privileges_required": "NONE",
+    "user_interaction": "NONE",
+    "scope": "UNCHANGED",
+    "cwe": "CWE-787",
+    "cwe_title": "Out-of-bounds Write",
+    "affected": [
+      "Fortinet FortiOS (7.4.0–7.4.2, 7.2.0–7.2.6, 7.0.0–7.0.13)",
+      "Fortinet FortiProxy (7.4.0–7.4.2, 7.2.0–7.2.8)"
+    ],
+    "affected_vendors": ["Fortinet"],
+    "affected_products": ["FortiOS", "FortiProxy"],
+    "cpes": [
+      "cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*",
+      "cpe:2.3:a:fortinet:fortiproxy:*:*:*:*:*:*:*:*"
+    ],
+    "solutions": [
+      "Upgrade to FortiOS version 7.4.3, 7.2.7, 7.0.14 or later. Disable SSL-VPN as temporary workaround."
+    ],
+    "references": [
+      {
+        "title": "Fortinet PSIRT Advisory FG-IR-24-015",
+        "url": "https://www.fortiguard.com/psirt/FG-IR-24-015"
+      },
+      {
+        "title": "CISA Known Exploited Vulnerabilities Catalog",
+        "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+      },
+      {
+        "title": "NVD Vulnerability Detail",
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-21762"
+      }
+    ]
+  },
+  "CVE-2021-44228": {
+    "id": "CVE-2021-44228",
+    "title": "Apache Log4j: Remote Code Execution via JNDI Lookup (Log4Shell)",
+    "summary": "Apache Log4j2 versions 2.0-beta9 through 2.15.0 (excluding security releases 2.12.2, 2.12.3, and 2.3.1) JNDI features used in configuration, log messages, and parameters do not protect against attacker-controlled LDAP and other JNDI related endpoints. An attacker who can control log messages or log message parameters can execute arbitrary code loaded from LDAP servers when message lookup substitution is enabled.",
+    "cvss": 10.0,
+    "severity": "CRITICAL",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+    "attack_vector": "NETWORK",
+    "attack_complexity": "LOW",
+    "privileges_required": "NONE",
+    "user_interaction": "NONE",
+    "scope": "CHANGED",
+    "cwe": "CWE-502",
+    "cwe_title": "Deserialization of Untrusted Data",
+    "affected": [
+      "Apache Log4j (2.0-beta9–2.14.1)"
+    ],
+    "affected_vendors": ["Apache Software Foundation"],
+    "affected_products": ["Log4j"],
+    "cpes": [
+      "cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*"
+    ],
+    "solutions": [
+      "Upgrade to Log4j 2.17.1 (Java 8), 2.12.4 (Java 7), or 2.3.2 (Java 6) or remove JndiLookup class."
+    ],
+    "references": [
+      {
+        "title": "Apache Log4j Security Vulnerabilities",
+        "url": "https://logging.apache.org/log4j/2.x/security.html"
+      },
+      {
+        "title": "CISA Log4j Guidance",
+        "url": "https://www.cisa.gov/news-events/alerts/2021/12/10/apache-releases-log4j-version-2150-address-critical-rce-vulnerability"
+      },
+      {
+        "title": "NVD Vulnerability Detail",
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-44228"
+      }
+    ]
+  },
+  "CVE-2023-34362": {
+    "id": "CVE-2023-34362",
+    "title": "Progress MOVEit Transfer: SQL Injection Remote Code Execution",
+    "summary": "In Progress MOVEit Transfer before 2021.0.6 (13.0.6), 2021.1.4 (13.1.4), 2022.0.4 (14.0.4), 2022.1.5 (14.1.5), and 2023.0.1 (15.0.1), a SQL injection vulnerability in the MOVEit Transfer web application could allow an unauthenticated attacker to gain unauthorized access to the database.",
+    "cvss": 9.8,
+    "severity": "CRITICAL",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "attack_vector": "NETWORK",
+    "attack_complexity": "LOW",
+    "privileges_required": "NONE",
+    "user_interaction": "NONE",
+    "scope": "UNCHANGED",
+    "cwe": "CWE-89",
+    "cwe_title": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')",
+    "affected": [
+      "Progress MOVEit Transfer (13.0.0–13.0.5, 13.1.0–13.1.3, 14.0.0–14.0.3, 14.1.0–14.1.4, 15.0.0)"
+    ],
+    "affected_vendors": ["Progress Software"],
+    "affected_products": ["MOVEit Transfer"],
+    "solutions": [
+      "Apply vendor security patch immediately and review IIS logs for unauthorized ASPX drops."
+    ],
+    "references": [
+      {
+        "title": "MOVEit Transfer Critical Vulnerability Notice",
+        "url": "https://community.progress.com/s/article/MOVEit-Transfer-Critical-Vulnerability-31May2023"
+      },
+      {
+        "title": "NVD Vulnerability Detail",
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-34362"
+      }
+    ]
+  }
+}

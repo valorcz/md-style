@@ -1,0 +1,7 @@
+name: general/announcement
+title: "Announcement Theme"
+extends: base
+stylesheets:
+  - announcement.css
+features:
+  sticky_tables: false

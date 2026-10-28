@@ -1,0 +1,76 @@
+# ==============================================================================
+# md-style Theme Definition: academic/lecture
+# Designed for university teaching, lecture handouts, and educational materials.
+# Primary Visual Identity: Faculty of Informatics, Masaryk University (FI MUNI).
+# ==============================================================================
+name: academic/lecture
+title: "Academic Lecture & Teaching Materials"
+extends: base
+
+# Cascading stylesheets injected for this theme
+stylesheets:
+  - lecture.css
+
+# Feature toggles
+features:
+  interactive_viewer: true
+  sticky_tables: true
+  break_ranges: true
+  callouts: true
+  auto_toc: false
+
+# Declarative CSS custom properties
+variables:
+  # Typography: High-legibility Serif body with crisp Modern Sans headings
+  --font-serif: "'Source Serif 4', 'Merriweather', 'Georgia', serif"
+  --font-sans: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+  --font-mono: "'JetBrains Mono', 'Fira Code', Menlo, Monaco, Consolas, monospace"
+  --font-heading: var(--font-sans)
+  --font-body: var(--font-serif)
+  --line-height-body: "1.68"
+  --doc-max-width: "52rem"
+
+  # FI MUNI Brand Identity Palette
+  --color-muni-blue: "#0000dc"
+  --color-muni-navy: "#0b1b3d"
+  --color-fi-saffron: "#f2d45c"
+  --color-fi-saffron-light: "#fef9e7"
+  --color-primary: "#0b1b3d"
+  --color-secondary: "#1e3a8a"
+  --color-accent: "#0000dc"
+  --color-highlight: "#f2d45c"
+  --color-bg: "#f8fafc"
+  --color-paper: "#ffffff"
+  --color-text: "#0f172a"
+  --color-text-muted: "#475569"
+  --color-border: "#e2e8f0"
+  --color-border-dark: "#cbd5e1"
+
+  # Minimal Header & Footer for Paged Print
+  --page-header-border: "1px solid #e2e8f0"
+  --page-footer-border: "1px solid #e2e8f0"
+  --page-header-size: "8pt"
+  --page-footer-size: "8pt"
+  --page-header-color: "#64748b"
+  --page-footer-color: "#64748b"
+
+# Paged.js page geometry & print configuration
+paged:
+  size: A4
+  orientation: portrait
+  margins:
+    top: 22mm
+    right: 18mm
+    bottom: 22mm
+    left: 18mm
+  headers:
+    left: "{doc_title}"
+    center: ""
+    right: "{meta.course|meta.year|date}"
+  footers:
+    left: "{meta.institution|Faculty of Informatics, Masaryk University}"
+    center: ""
+    right: "{page_counter}"
+  first_page:
+    show_header: false
+    show_footer: true

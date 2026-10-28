@@ -1,0 +1,68 @@
+{
+  "code": "sk",
+  "name": "Slovenčina",
+  "meta": {
+    "toc_title": "Obsah",
+    "abstract_title": "Zhrnutie zistení",
+    "figure_label": "Obrázok",
+    "table_label": "Tabuľka",
+    "page_label": "Strana",
+    "confidential_label": "DÔVERNÉ",
+    "report_type": "SPRÁVA",
+    "author_label": "Autor:",
+    "date_label": "Dátum:",
+    "page_prefix": "Strana ",
+    "page_of": " z ",
+    "section_tag": "§ SEKCIA",
+    "figure_prefix": "Obrázok "
+  },
+  "callouts": {
+    "note": "POZNÁMKA",
+    "info": "INFORMÁCIA",
+    "tip": "TIP",
+    "success": "ÚSPECH",
+    "important": "DÔLEŽITÉ",
+    "warning": "VAROVANIE",
+    "caution": "POZOR",
+    "critical": "KRITICKÉ",
+    "danger": "NEBEZPEČENSTVO",
+    "evidence": "DÔKAZ",
+    "finding": "ZISTENIE",
+    "proposal": "NÁVRH VÝBORU"
+  },
+  "ballots": {
+    "prompt": "HLASOVANIE:",
+    "pro": "ZA",
+    "against": "PROTI",
+    "abstain": "ZDRŽAL SA"
+  },
+  "toc": {
+    "title": "Obsah"
+  },
+  "ui": {
+    "filter_placeholder": "Filtrovať záznamy...",
+    "all_categories": "Všetky kategórie",
+    "showing_records": "Zobrazené {count} z {total}",
+    "copied": "SKOPÍROVANÉ DO SCHRÁNKY",
+    "back_to_top": "Späť hore",
+    "print": "Tlačiť",
+    "offline_badge": "OFFLINE SPRÁVA",
+    "close": "Zavrieť"
+  },
+  "paged": {
+    "web_view": "Webové zobrazenie",
+    "paged_preview": "Tlačový náhľad (strany)",
+    "page_counter": "Strana {page} z {pages}"
+  },
+  "svj": {
+    "assembly_invite": "POZVÁNSKA NA ZHROMAŽDENIE",
+    "ballot_title": "HLASOVACÍ LÍSTOK (PER ROLLAM)",
+    "committee_label": "Štatutárny orgán / Výbor SVJ",
+    "statute_notice": "Podľa zákona o vlastníctve bytov a nebytových priestorov"
+  },
+  "forensics": {
+    "classification": "DÔVERNÉ // TLP:AMBER",
+    "unit": "Forenzná vyšetrovacia jednotka",
+    "evidence_hash": "SHA-256 Integrita dôkazu"
+  }
+}

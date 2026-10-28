@@ -1,0 +1,26 @@
+{
+  "76543210": {
+    "name": "Společenství vlastníků jednotek domu Jabloňová 24, Praha",
+    "legal_form": "145",
+    "seat": "Jabloňová 1420/24, 106 00 Praha 10 – Záběhlice",
+    "created": "2010-04-12",
+    "status": "Aktivní",
+    "cz_nace": "68.32"
+  },
+  "00006947": {
+    "name": "Ministerstvo financí České republiky",
+    "legal_form": "325",
+    "seat": "Letenská 525/15, Malá Strana, 118 10 Praha 1",
+    "created": "1993-01-01",
+    "status": "Aktivní",
+    "cz_nace": "84.11"
+  },
+  "26168685": {
+    "name": "Seznam.cz, a.s.",
+    "legal_form": "121",
+    "seat": "Radlická 3294/10, Smíchov, 150 00 Praha 5",
+    "created": "2000-03-31",
+    "status": "Aktivní",
+    "cz_nace": "63.12"
+  }
+}

@@ -1,0 +1,352 @@
+/* ==========================================================================
+   SVJ TYPEWRITER / RETRO THEME (Retro styl psacího stroje Consul / Robotron)
+   Authentic pre-1989 Czechoslovak municipal & housing cooperative aesthetic,
+   harmonized with the original SVJ palette (Deep Slate, Ocean Teal, Brick Red).
+   ========================================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+
+:root {
+  /* Typewriter Typography */
+  --font-heading: "Courier Prime", "Courier New", "Liberation Mono", "DejaVu Sans Mono", Courier, monospace;
+  --font-body: "Courier Prime", "Courier New", "Liberation Mono", "DejaVu Sans Mono", Courier, monospace;
+  --font-mono: "Courier Prime", "Courier New", monospace;
+
+  /* Palette: Original SVJ colors rendered as typewriter ribbon & stamps */
+  --color-primary: #1e293b;          /* Black/Charcoal typewriter ink */
+  --color-secondary: #2b8a9e;        /* Ocean Teal ink (official department header) */
+  --color-accent: #d97706;           /* Amber ribbon */
+  --color-proposal: #991b1b;         /* Red typewriter ribbon for motions */
+  --color-proposal-bg: #fffbf5;      /* Aged typing paper tint */
+  --color-text: #0f172a;             /* High density carbon ink */
+  --color-text-muted: #475569;
+  --color-border: #94a3b8;           /* Dotted ribbon line */
+  --color-paper: #ffffff;
+  --color-screen-bg: #f5f0e6;        /* Faded manila archive paper on screen */
+
+  /* Layout dimensions */
+  --doc-max-width: 50rem;
+  --line-height-body: 1.55;
+
+  /* Running Header/Footer Overrides for Paged Media */
+  --page-margin: 20mm 16mm 20mm 16mm;
+  --page-header-left: none;
+  --page-header-right: string(heading-title);
+  --page-header-border: none;
+  --page-header-font: var(--font-heading);
+  --page-header-size: 8pt;
+  --page-header-color: #64748b;
+  --page-footer-left: none;
+  --page-footer-right: "- " counter(page) " -";
+  --page-footer-border: none;
+  --page-footer-font: var(--font-heading);
+  --page-footer-size: 8.5pt;
+  --page-footer-color: var(--color-primary);
+  --page-first-footer-left: none;
+  --page-first-footer-right: none;
+  --page-first-footer-border: none;
+}
+
+/* --------------------------------------------------------------------------
+   Global Document Setup: Typewriter Mechanical Rhythm
+   -------------------------------------------------------------------------- */
+body {
+  font-family: var(--font-body);
+  color: var(--color-text);
+  line-height: var(--line-height-body);
+  letter-spacing: 0.02em;
+  font-size: 10.5pt;
+  background-color: var(--color-screen-bg);
+}
+
+@media print {
+  body {
+    background-color: #ffffff !important;
+  }
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+/* --------------------------------------------------------------------------
+   Page 1: Official Header & Pre-1989 Style Memo Layout
+   -------------------------------------------------------------------------- */
+h1 {
+  font-family: var(--font-heading);
+  color: var(--color-primary);
+  font-size: 1.45rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-align: center;
+  margin-top: 0.5rem;
+  margin-bottom: 1.2rem;
+  padding: 0.75rem 0;
+  border-top: 2px solid var(--color-primary);
+  border-bottom: 2px solid var(--color-primary);
+}
+
+/* Top administrative sender block */
+p:first-of-type {
+  font-size: 0.95rem;
+  color: var(--color-text);
+  line-height: 1.4;
+  margin-bottom: 1.5rem;
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--color-secondary);
+}
+
+/* --------------------------------------------------------------------------
+   Meeting Details Grid (Termín a místo konání)
+   -------------------------------------------------------------------------- */
+.meeting-key-info {
+  margin: 1.5rem 0;
+  border: 1.5px solid var(--color-primary);
+  background: #ffffff;
+  padding: 0.75rem 1rem;
+}
+
+.meeting-key-info > ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.meeting-key-info > ul > li {
+  padding: 0.5rem;
+  border-right: 1px dashed var(--color-border);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.meeting-key-info > ul > li:last-child {
+  border-right: none;
+}
+
+.meeting-key-info > ul > li strong:first-child {
+  display: block;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-secondary);
+  margin-bottom: 0.25rem;
+}
+
+/* --------------------------------------------------------------------------
+   Agenda Table of Contents (Page 1)
+   -------------------------------------------------------------------------- */
+.agenda-toc-container {
+  margin: 1.5rem 0 2rem;
+  padding: 1rem 1.25rem;
+  border: 1.5px dashed var(--color-border);
+  background: #ffffff;
+}
+
+.agenda-toc-container ol {
+  margin: 0;
+  padding-left: 1.6rem;
+}
+
+.agenda-toc-container li {
+  margin: 0.35rem 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.agenda-toc-container li::marker {
+  color: var(--color-secondary);
+  font-weight: 700;
+}
+
+.agenda-toc-container a {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.agenda-toc-container a:hover {
+  text-decoration: underline;
+  color: var(--color-secondary);
+}
+
+/* --------------------------------------------------------------------------
+   Headings & Page Breaks
+   -------------------------------------------------------------------------- */
+h2 {
+  font-family: var(--font-heading);
+  color: var(--color-secondary);
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px dashed var(--color-secondary);
+  padding-bottom: 0.25rem;
+}
+
+/* Page 2 Break */
+#detaily-jednání,
+#detaily-jednani,
+h2#detaily-jednání,
+h2#detaily-jednani {
+  break-before: page !important;
+  page-break-before: always !important;
+  margin-top: 0 !important;
+  padding-top: 0.5rem !important;
+}
+
+/* Agenda Headings */
+h3.agenda-heading {
+  font-family: var(--font-heading);
+  color: var(--color-primary);
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 1.8rem;
+  margin-bottom: 0.5rem;
+  break-after: avoid !important;
+  page-break-after: avoid !important;
+}
+
+.agenda-num {
+  color: var(--color-secondary);
+  font-weight: 700;
+  margin-right: 0.35rem;
+}
+
+/* --------------------------------------------------------------------------
+   Proposal Callout: Red Typewriter Ribbon Lever Activated
+   -------------------------------------------------------------------------- */
+.proposal-callout {
+  margin: 1.25rem 0 1.5rem;
+  padding: 0.85rem 1.15rem;
+  background-color: var(--color-proposal-bg);
+  border: 1.5px solid var(--color-proposal);
+  box-shadow: 2px 2px 0px rgba(153, 27, 27, 0.2);
+}
+
+.proposal-label {
+  display: inline-block;
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-proposal);
+  margin-bottom: 0.35rem;
+}
+
+.proposal-label::before {
+  content: "/// ";
+}
+.proposal-label::after {
+  content: " ///";
+}
+
+.proposal-content {
+  display: block;
+  font-size: 0.95rem;
+  color: #7f1d1d;
+  line-height: 1.5;
+}
+
+.proposal-content strong {
+  color: #450a0a;
+  text-decoration: underline;
+}
+
+/* Hide ballot by default in typewriter mode */
+.proposal-ballot {
+  display: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   Data Tables: Typewriter Monospaced Grid
+   -------------------------------------------------------------------------- */
+table {
+  width: 100% !important;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  border: 1.5px solid var(--color-primary);
+  background: #ffffff;
+}
+
+thead {
+  background-color: #f1f5f9;
+  border-bottom: 1.5px solid var(--color-primary);
+}
+
+th {
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-primary);
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  border-right: 1px solid var(--color-border);
+}
+
+th:last-child {
+  border-right: none;
+}
+
+td {
+  padding: 0.55rem 0.75rem;
+  border-top: 1px dashed var(--color-border);
+  border-right: 1px solid var(--color-border);
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+td:last-child {
+  border-right: none;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #fafaf9;
+}
+
+/* --------------------------------------------------------------------------
+   Sign-off & Official Stamp Box
+   -------------------------------------------------------------------------- */
+.committee-signature,
+.sign-off {
+  display: block;
+  margin-top: 2rem;
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-primary);
+}
+
+.committee-signature::after,
+.sign-off::after {
+  content: "\A[ MÍSTO PRO ÚŘEDNÍ RAZÍTKO A PODPISY ]\A................................................";
+  white-space: pre-wrap;
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-border);
+  margin-top: 0.75rem;
+  letter-spacing: 0.08em;
+}
+
+/* --------------------------------------------------------------------------
+   Page 1 Suppression
+   -------------------------------------------------------------------------- */
+@page:first {
+  margin-top: 18mm;
+}
+

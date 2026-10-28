@@ -1,0 +1,34 @@
+{
+  "meta": {
+    "report_type": "FORENSIC CYBER INVESTIGATION REPORT",
+    "examiner_label": "Lead Forensic Examiner:",
+    "date_label": "Investigation Date:",
+    "confidential_label": "CONFIDENTIAL // TLP:AMBER"
+  },
+  "ui": {
+    "drawer_title": "INDICATOR KNOWLEDGE INSPECTOR",
+    "drawer_artifact_value": "Artifact Value",
+    "drawer_kb_title": "Knowledge Base Intelligence",
+    "drawer_attack_phase": "Attack Phase / Technique",
+    "drawer_external_links": "External Knowledge Links",
+    "drawer_actions": "Telemetry Actions",
+    "drawer_filter_btn": "⌕ FILTER REPORT BY THIS VALUE",
+    "drawer_copy_btn": "📋 COPY TO CLIPBOARD",
+    "drawer_unresolved_title": "TELEMETRY UNRESOLVED",
+    "drawer_unresolved_desc": "Could not automatically retrieve intelligence for this indicator. You can search official external resources directly below:",
+    "hud_threat": "THREAT // CRITICAL",
+    "hud_nav_prefix": "NAV //",
+    "view_mode_full": "≡ FULL",
+    "view_mode_sections": "◫ SECTIONS",
+    "stepper_prev": "◀ PREV",
+    "stepper_next": "NEXT ▶",
+    "filter_placeholder": "Filter records (IP, user, command, EID)...",
+    "offline_badge": "STANDALONE CYBER REPORT",
+    "mitre_matrix": "ATT&CK Technique Matrix",
+    "chain_of_custody": "Evidence Chain of Custody",
+    "drawer_investigation_title": "Forensic Investigation Tips",
+    "drawer_attacker_title": "Attacker Behavior & Tradecraft",
+    "drawer_benign_title": "Benign / Normal Causes",
+    "copied": "COPIED VALUE TO CLIPBOARD"
+  }
+}

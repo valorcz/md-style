@@ -1,0 +1,13 @@
+{
+  "meta": {
+    "report_type": "OFICIÁLNA FORENZNÁ SPRÁVA",
+    "examiner_label": "Digitálny forenzný analytik:",
+    "confidential_label": "DÔVERNÉ",
+    "hex_dump": "HEX VÝPIS",
+    "sys_log": "SYSTÉMOVÝ PROTOKOL"
+  },
+  "ui": {
+    "filter_placeholder": "Hľadať v artefaktoch, časovej osi, účtoch...",
+    "chain_of_custody": "Protokol o odovzdaní dôkazného materiálu"
+  }
+}

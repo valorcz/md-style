@@ -1,0 +1,3972 @@
+{
+  "@context": {
+    "@vocab": "https://schema.org/",
+    "id": "@id",
+    "type": "@type",
+    "entities": "@graph",
+    "cve": "https://cve.mitre.org/schema/",
+    "statute": "https://schema.org/Legislation",
+    "ico": "https://schema.org/Organization",
+    "iban": "https://schema.org/BankOrCreditUnion",
+    "provenance": "http://www.w3.org/ns/prov#wasDerivedFrom",
+    "fetched_at": "http://www.w3.org/ns/prov#generatedAtTime",
+    "relationships": "https://schema.org/mentions"
+  },
+  "@type": "Dataset",
+  "version": "1.0",
+  "document_id": "sample-forensic-cyber",
+  "generated_at": "2026-10-27T17:26:40.791846+00:00",
+  "sources_digest": {},
+  "entities": {
+    "Event-1102": {
+      "@type": "winevent",
+      "id": "Event-1102",
+      "domain": "cyber",
+      "type": "winevent",
+      "label": "Event ID 1102",
+      "title": "Event ID 1102: The audit log was cleared",
+      "severity": "CRITICAL",
+      "badge": "WIN EVENT 1102",
+      "summary": "Security event 1102 is written when the Security log is cleared, naming the account that did it. Rare in normal operations and a classic anti-forensics sign.",
+      "attributes": {
+        "Event Log Channel": "Security",
+        "Investigation Tips": "Identify the session: SubjectLogonId and SubjectUserName, then look in forwarded logs or on domain controllers for the logon (4624, 4768/4769, 4776) that created it. | Check System event 104 at the same time — several logs cleared together points to a script or tool. | Search process creation (4688, Sysmon 1) and PowerShell 4104 around the timestamp for `wevtutil`, `Clear-EventLog` or `ClearLog` calls to identify the executing process. | Compare the host's forwarded events with what remains locally to see exactly what was wiped.",
+        "Audit Category": "Windows Security Auditing",
+        "Key Event Fields": "SubjectUserName (Account that cleared the log.), SubjectDomainName (Domain or computer name of that account.), SubjectUserSid (SID of the account that cleared the log; stable even if the account is renamed.), SubjectLogonId (Logon session that performed the clear. Pivot to the 4624 with the same TargetLogonId on forwarded or other logs to find where the session came from.)",
+        "Attacker Behavior": "Covering tracks after intrusion with `wevtutil cl Security`, PowerShell `Clear-EventLog` or `Remove-EventLog`, or Event Viewer's Clear Log action. | Ransomware and wipers clearing all event logs just before or after encryption. | Clearing the log on a single server after lateral movement, while leaving other hosts intact."
+      },
+      "metrics": {
+        "event_id": 1102
+      },
+      "classification": {
+        "channel": "Security",
+        "category": "Windows Security Auditing",
+        "log_type": "Windows Event Log"
+      },
+      "details": {
+        "Event Log Channel": "Security",
+        "Investigation Tips": "Identify the session: SubjectLogonId and SubjectUserName, then look in forwarded logs or on domain controllers for the logon (4624, 4768/4769, 4776) that created it. | Check System event 104 at the same time — several logs cleared together points to a script or tool. | Search process creation (4688, Sysmon 1) and PowerShell 4104 around the timestamp for `wevtutil`, `Clear-EventLog` or `ClearLog` calls to identify the executing process. | Compare the host's forwarded events with what remains locally to see exactly what was wiped.",
+        "Audit Category": "Windows Security Auditing",
+        "Key Event Fields": "SubjectUserName (Account that cleared the log.), SubjectDomainName (Domain or computer name of that account.), SubjectUserSid (SID of the account that cleared the log; stable even if the account is renamed.), SubjectLogonId (Logon session that performed the clear. Pivot to the 4624 with the same TargetLogonId on forwarded or other logs to find where the session came from.)",
+        "Attacker Behavior": "Covering tracks after intrusion with `wevtutil cl Security`, PowerShell `Clear-EventLog` or `Remove-EventLog`, or Event Viewer's Clear Log action. | Ransomware and wipers clearing all event logs just before or after encryption. | Clearing the log on a single server after lateral movement, while leaving other hosts intact."
+      },
+      "relationships": [
+        {
+          "target": "Security.evtx",
+          "type": "evtx",
+          "relation": "logged_in_channel"
+        },
+        {
+          "target": "T1685.005",
+          "type": "mitre",
+          "relation": "detects_technique"
+        }
+      ],
+      "references": [
+        {
+          "title": "Event Encyclopedia Reference",
+          "url": "https://www.evtxparser.com/en/events/security/1102"
+        }
+      ],
+      "aliases": [
+        "Event ID 1102",
+        "EID 1102",
+        "Event 1102",
+        "1102"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:windows-events",
+        "fetched_at": "2026-10-10T11:32:33.679608+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "Sysmon.evtx": {
+      "@type": "evtx",
+      "id": "Sysmon.evtx",
+      "domain": "cyber",
+      "type": "evtx",
+      "label": "Sysmon.evtx",
+      "title": "Microsoft Sysmon Operational Telemetry Log",
+      "severity": "INFO",
+      "badge": "LOG CHANNEL",
+      "summary": "Premier endpoint telemetry sensor providing detailed process lineage, network sockets, raw disk access, process memory injection, and pipe/DNS activity.",
+      "attributes": {
+        "Channel Path": "%SystemRoot%\\System32\\Winevt\\Logs\\Sysmon.evtx",
+        "Channel Name": "Microsoft-Windows-Sysmon/Operational",
+        "Provider": "Microsoft-Windows-Sysmon/Operational",
+        "Audit Recommendation": "Deploy a comprehensive community Sysmon configuration (SwiftOnSecurity or Olaf Hartong modular config).",
+        "Retention": "Typically configured to 64MB - 1GB by SOC engineering."
+      },
+      "metrics": {
+        "default_format": "Binary XML (.evtx)",
+        "log_scope": "Operating System"
+      },
+      "classification": {
+        "channel": "Microsoft-Windows-Sysmon/Operational",
+        "mitre_tactics": [
+          "Execution",
+          "Persistence",
+          "Privilege Escalation",
+          "Defense Evasion",
+          "Command and Control"
+        ],
+        "log_type": "Windows Event Log"
+      },
+      "details": {
+        "Channel Path": "%SystemRoot%\\System32\\Winevt\\Logs\\Sysmon.evtx",
+        "Logging Channel": "Microsoft-Windows-Sysmon/Operational",
+        "Forensic Role": "Premier endpoint telemetry sensor providing detailed process lineage, network sockets, raw disk access, process memory injection, and pipe/DNS activity.",
+        "Key Event IDs": "1 (Process Create), 2 (File creation time changed), 3 (Network Connection), 7 (Image Loaded), 8 (CreateRemoteThread), 10 (ProcessAccess), 11 (FileCreate), 12/13/14 (Registry Events), 22 (DNS Query)",
+        "Audit Policy": "Deploy a comprehensive community Sysmon configuration (SwiftOnSecurity or Olaf Hartong modular config).",
+        "Retention Policy": "Typically configured to 64MB - 1GB by SOC engineering."
+      },
+      "relationships": [
+        {
+          "target": "Event-1",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-2",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-3",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-7",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-8",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-10",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-11",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-12",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-22",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Execution",
+          "type": "mitre",
+          "relation": "monitors_tactic"
+        },
+        {
+          "target": "Persistence",
+          "type": "mitre",
+          "relation": "monitors_tactic"
+        },
+        {
+          "target": "Privilege Escalation",
+          "type": "mitre",
+          "relation": "monitors_tactic"
+        },
+        {
+          "target": "Defense Evasion",
+          "type": "mitre",
+          "relation": "monitors_tactic"
+        },
+        {
+          "target": "Command and Control",
+          "type": "mitre",
+          "relation": "monitors_tactic"
+        }
+      ],
+      "references": [
+        {
+          "title": "Microsoft Documentation",
+          "url": "https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon"
+        }
+      ],
+      "aliases": [
+        "%SystemRoot%\\System32\\Winevt\\Logs\\Sysmon.evtx",
+        "%SystemRoot%/System32/Winevt/Logs/Sysmon.evtx",
+        "Microsoft-Windows-Sysmon/Operational",
+        "System32/Winevt/Logs/Sysmon.evtx",
+        "System32\\Winevt\\Logs\\Sysmon.evtx",
+        "Sysmon.evtx",
+        "Sysmon"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:windows-events",
+        "fetched_at": "2026-10-10T11:32:33.679739+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "Event-7045": {
+      "@type": "winevent",
+      "id": "Event-7045",
+      "domain": "cyber",
+      "type": "winevent",
+      "label": "Event ID 7045",
+      "title": "Event ID 7045: A service was installed in the system",
+      "severity": "INFO",
+      "badge": "WIN EVENT 7045",
+      "summary": "A new service was installed on the system (logged by Service Control Manager in System.evtx). Primary source for discovering backdoor persistence and remote execution services.",
+      "attributes": {
+        "Event Log Channel": "System",
+        "Investigation Tips": "Review every 7045 on the timeline; the volume is low enough to read them all. | Check `ImagePath` location, signature and hash; retrieve the binary if it still exists. | Correlate with 4624 type 3 and 5145 (ADMIN$ / IPC$ `svcctl`) just before on the same host to identify the source. | Follow with 7036 (running/stopped), 7009 or 7000 (start failures) to see whether it ran and for how long.",
+        "Audit Category": "System / Service Install",
+        "Key Event Fields": "ServiceName, ImagePath, ServiceType, StartType, AccountName",
+        "Attacker Behavior": "Remote execution with PsExec, Impacket `psexec.py` / `smbexec.py`, Metasploit or Cobalt Strike `jump psexec`: short-lived services with random names or `cmd.exe /c` in `ImagePath`. | Persistence via a new auto-start service pointing to a dropped payload. | Loading a vulnerable signed driver (BYOVD) to disable EDR, visible as a new kernel mode driver."
+      },
+      "metrics": {
+        "event_id": 7045
+      },
+      "classification": {
+        "channel": "System",
+        "category": "System / Service Install",
+        "log_type": "Windows Event Log"
+      },
+      "details": {
+        "Event Log Channel": "System",
+        "Investigation Tips": "Review every 7045 on the timeline; the volume is low enough to read them all. | Check `ImagePath` location, signature and hash; retrieve the binary if it still exists. | Correlate with 4624 type 3 and 5145 (ADMIN$ / IPC$ `svcctl`) just before on the same host to identify the source. | Follow with 7036 (running/stopped), 7009 or 7000 (start failures) to see whether it ran and for how long.",
+        "Audit Category": "System / Service Install",
+        "Key Event Fields": "ServiceName, ImagePath, ServiceType, StartType, AccountName",
+        "Attacker Behavior": "Remote execution with PsExec, Impacket `psexec.py` / `smbexec.py`, Metasploit or Cobalt Strike `jump psexec`: short-lived services with random names or `cmd.exe /c` in `ImagePath`. | Persistence via a new auto-start service pointing to a dropped payload. | Loading a vulnerable signed driver (BYOVD) to disable EDR, visible as a new kernel mode driver."
+      },
+      "relationships": [
+        {
+          "target": "System.evtx",
+          "type": "evtx",
+          "relation": "logged_in_channel"
+        },
+        {
+          "target": "T1543.003",
+          "type": "mitre",
+          "relation": "detects_technique"
+        }
+      ],
+      "references": [
+        {
+          "title": "Event Encyclopedia Reference",
+          "url": "https://www.evtxparser.com/en/events/system/7045"
+        }
+      ],
+      "aliases": [
+        "Event ID 7045",
+        "EID 7045",
+        "Event 7045",
+        "7045"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:windows-events",
+        "fetched_at": "2026-10-10T11:32:33.680034+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "Event-4672": {
+      "@type": "winevent",
+      "id": "Event-4672",
+      "domain": "cyber",
+      "type": "winevent",
+      "label": "Event ID 4672",
+      "title": "Event ID 4672: Special privileges assigned to new logon",
+      "severity": "INFO",
+      "badge": "WIN EVENT 4672",
+      "summary": "Special administrative privileges assigned to a new logon session. Logged immediately following event 4624 when an account possessing sensitive rights logs in. Sensitive privileges include SeDebugPrivilege, SeTcbPrivilege, SeSecurityPrivilege, SeBackupPrivilege.",
+      "attributes": {
+        "Event Log Channel": "Security",
+        "Investigation Tips": "Join 4672 to 4624 on logon ID to get LogonType and source IP for each privileged logon. | Baseline which human accounts get 4672 on each server; alert on new ones. | An account that should be a standard user getting `SeDebugPrivilege` means its group memberships changed — check 4732/4728/4756.",
+        "Audit Category": "Privilege Use",
+        "Key Event Fields": "SubjectUserName, SubjectDomainName, PrivilegeList",
+        "Attacker Behavior": "Use of a stolen admin account — a 4624 + 4672 pair for that account from a host or IP it does not normally use. | Newly created or newly promoted accounts (4720, 4732, 4728) suddenly receiving special privileges. | Lateral movement with admin credentials produces 4624 type 3 plus 4672 on every target."
+      },
+      "metrics": {
+        "event_id": 4672
+      },
+      "classification": {
+        "channel": "Security",
+        "category": "Privilege Use",
+        "log_type": "Windows Event Log"
+      },
+      "details": {
+        "Event Log Channel": "Security",
+        "Investigation Tips": "Join 4672 to 4624 on logon ID to get LogonType and source IP for each privileged logon. | Baseline which human accounts get 4672 on each server; alert on new ones. | An account that should be a standard user getting `SeDebugPrivilege` means its group memberships changed — check 4732/4728/4756.",
+        "Audit Category": "Privilege Use",
+        "Key Event Fields": "SubjectUserName, SubjectDomainName, PrivilegeList",
+        "Attacker Behavior": "Use of a stolen admin account — a 4624 + 4672 pair for that account from a host or IP it does not normally use. | Newly created or newly promoted accounts (4720, 4732, 4728) suddenly receiving special privileges. | Lateral movement with admin credentials produces 4624 type 3 plus 4672 on every target."
+      },
+      "relationships": [
+        {
+          "target": "Security.evtx",
+          "type": "evtx",
+          "relation": "logged_in_channel"
+        },
+        {
+          "target": "T1078",
+          "type": "mitre",
+          "relation": "detects_technique"
+        },
+        {
+          "target": "T1068",
+          "type": "mitre",
+          "relation": "detects_technique"
+        }
+      ],
+      "references": [
+        {
+          "title": "Event Encyclopedia Reference",
+          "url": "https://www.evtxparser.com/en/events/security/4672"
+        }
+      ],
+      "aliases": [
+        "Event ID 4672",
+        "EID 4672",
+        "Event 4672",
+        "4672"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:windows-events",
+        "fetched_at": "2026-10-10T11:32:33.680071+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "T1071.001": {
+      "@type": "mitre",
+      "id": "T1071.001",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1071.001",
+      "title": "T1071.001: Web Protocols",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK COMMAND AND CONTROL",
+      "summary": "Adversaries may communicate using application layer protocols associated with web traffic to avoid detection/network filtering by blending in with existing traffic. Commands to the remote system, and often the results of those commands, will be embedded within the protocol traffic between the client and server. Protocols such as HTTP/S an...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Command And Control",
+        "Technique ID": "T1071.001"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Command And Control"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1071.001",
+        "Primary Tactic": "Command And Control",
+        "Detection & Defense Guidance": "Adversaries may communicate using application layer protocols associated with web traffic to avoid detection/network filtering by blending in with existing traffic. Commands to the remote system, and often the results of those commands, will be embedded within the protocol traffic between the client and server. Protocols such as HTTP/S an...",
+        "Platforms": "ESXi, Linux, macOS, Network Devices, Windows"
+      },
+      "relationships": [
+        {
+          "target": "T1071",
+          "type": "mitre",
+          "relation": "subtechnique_of"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1071/001"
+        }
+      ],
+      "aliases": [
+        "T1071.001"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:mitre-attack",
+        "fetched_at": "2026-10-10T11:32:33.680099+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "CVE-2026-3184": {
+      "@type": "cve",
+      "id": "CVE-2026-3184",
+      "domain": "cyber",
+      "type": "cve",
+      "label": "CVE-2026-3184",
+      "title": "Util-linux: util-linux: access control bypass due to improper hostname canonicalization",
+      "severity": "LOW",
+      "badge": "CVSS 3.7",
+      "summary": "A flaw was found in util-linux. Improper hostname canonicalization in the `login(1)` utility, when invoked with the `-h` option, can modify the supplied remote hostname before setting `PAM_RHOST`. A remote attacker could exploit this by providing a specially crafted hostname, potentially bypassing host-based Pluggable Authentication Modules (PAM) access control rules that rely on fully qualified domain names. This could lead to unauthorized access.",
+      "attributes": {
+        "CVSS Score": "3.7 (LOW)",
+        "Attack Vector": "Network / Remote",
+        "Attack Complexity": "HIGH",
+        "Privileges Required": "NONE",
+        "User Interaction": "NONE",
+        "Weakness": "CWE-289: Authentication Bypass by Alternate Name",
+        "Affected Software": "Red Hat Red Hat Hardened Images (2.42-7.1.hum1–*), Red Hat Red Hat Enterprise Linux 10"
+      },
+      "metrics": {
+        "cvss_score": 3.7,
+        "cvss_vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N",
+        "attack_vector": "NETWORK",
+        "attack_complexity": "HIGH",
+        "privileges_required": "NONE",
+        "user_interaction": "NONE"
+      },
+      "classification": {
+        "cwes": [
+          "CWE-289"
+        ],
+        "vendors": [
+          "Red Hat"
+        ],
+        "products": [
+          "Red Hat Enterprise Linux 8",
+          "Red Hat OpenShift Container Platform 4",
+          "Red Hat Enterprise Linux 7",
+          "Red Hat Enterprise Linux 10",
+          "Red Hat Enterprise Linux 9",
+          "Red Hat Hardened Images"
+        ],
+        "cpes": [
+          "cpe:/a:redhat:hummingbird:1",
+          "cpe:/a:redhat:openshift:4",
+          "cpe:/o:redhat:enterprise_linux:10",
+          "cpe:/o:redhat:enterprise_linux:7",
+          "cpe:/o:redhat:enterprise_linux:8",
+          "cpe:/o:redhat:enterprise_linux:9",
+          "cpe:2.3:a:red_hat:red_hat_hardened_images:*:*:*:*:*:*:*",
+          "cpe:2.3:a:red_hat:red_hat_openshift_container_platform_4:*:*:*:*:*:*:*",
+          "cpe:2.3:o:red_hat:red_hat_enterprise_linux_10:*:*:*:*:*:*:*",
+          "cpe:2.3:o:red_hat:red_hat_enterprise_linux_7:*:*:*:*:*:*:*",
+          "cpe:2.3:o:red_hat:red_hat_enterprise_linux_8:*:*:*:*:*:*:*",
+          "cpe:2.3:o:red_hat:red_hat_enterprise_linux_9:*:*:*:*:*:*:*"
+        ]
+      },
+      "details": {
+        "Vulnerability ID": "CVE-2026-3184",
+        "CVSS Score": "3.7 (LOW)",
+        "CVSS Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N",
+        "Attack Vector": "NETWORK",
+        "Weakness (CWE)": "CWE-289 (Authentication Bypass by Alternate Name)",
+        "Affected Software": "Red Hat Red Hat Hardened Images (2.42-7.1.hum1–*) | Red Hat Red Hat Enterprise Linux 10 | Red Hat Red Hat Enterprise Linux 7 | Red Hat Red Hat Enterprise Linux 8 | Red Hat Red Hat Enterprise Linux 9 | Red Hat Red Hat OpenShift Container Platform 4 | Red Hat Red Hat OpenShift Container Platform 4",
+        "CPE Identifiers": "cpe:/a:redhat:hummingbird:1, cpe:/a:redhat:openshift:4, cpe:/o:redhat:enterprise_linux:10, cpe:/o:redhat:enterprise_linux:7"
+      },
+      "relationships": [
+        {
+          "target": "CWE-289",
+          "type": "cwe",
+          "relation": "categorized_as"
+        }
+      ],
+      "references": [
+        {
+          "title": "RHSA-2026:7180",
+          "url": "https://access.redhat.com/errata/RHSA-2026:7180"
+        },
+        {
+          "title": "Security Advisory",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-3184"
+        },
+        {
+          "title": "RHBZ#2442570",
+          "url": "https://bugzilla.redhat.com/show_bug.cgi?id=2442570"
+        },
+        {
+          "title": "NVD Vulnerability Detail",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-3184"
+        }
+      ],
+      "aliases": [
+        "CVE-2026-3184"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "registry:circl-cve",
+        "fetched_at": "2026-10-10T11:32:33.839928+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "192.168.1.105": {
+      "@type": "ip",
+      "id": "192.168.1.105",
+      "domain": "cyber",
+      "type": "ip",
+      "label": "192.168.1.105",
+      "title": "192.168.1.105 (RFC 1918 Private)",
+      "severity": "INFO",
+      "badge": "INTERNAL RFC 1918",
+      "summary": "RFC 1918 Private network endpoint.",
+      "attributes": {
+        "Network Scope": "RFC 1918 Private",
+        "Organization": "Internal Infrastructure",
+        "ASN": "N/A (Private)",
+        "Location": "Local / Private",
+        "Ports": "N/A"
+      },
+      "metrics": {
+        "ip_version": 4,
+        "is_private": true,
+        "open_ports_count": 0,
+        "vulns_count": 0
+      },
+      "classification": {
+        "scope": "RFC 1918 Private",
+        "is_private": true,
+        "asn": "N/A (Private)",
+        "org": "Internal Infrastructure"
+      },
+      "details": {
+        "IP Address": "192.168.1.105",
+        "Network Scope": "Internal Intranet Private Network (RFC 1918 / RFC 4193)",
+        "Organization": "Internal Infrastructure",
+        "Autonomous System (ASN)": "N/A (Private)",
+        "Internet Service Provider": "Private Intranet",
+        "Geographic Location": "Local / Private",
+        "Reverse DNS (PTR)": "None resolved",
+        "Open Ports": "None scanned",
+        "Known Vulnerabilities": "None reported"
+      },
+      "relationships": [],
+      "references": [],
+      "aliases": [
+        "192.168.1.105"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "heuristic:ipaddress",
+        "fetched_at": "2026-10-10T11:32:33.844606+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "CVE-2024-21762": {
+      "@type": "cve",
+      "id": "CVE-2024-21762",
+      "domain": "cyber",
+      "type": "cve",
+      "label": "CVE-2024-21762",
+      "title": "Fortinet FortiProxy: Execute unauthorized code or commands",
+      "severity": "CRITICAL",
+      "badge": "CVSS 9.6",
+      "summary": "A out-of-bounds write in Fortinet FortiOS versions 7.4.0 through 7.4.2, 7.2.0 through 7.2.6, 7.0.0 through 7.0.13, 6.4.0 through 6.4.14, 6.2.0 through 6.2.15, 6.0.0 through 6.0.17, FortiProxy versions 7.4.0 through 7.4.2, 7.2.0 through 7.2.8, 7.0.0 through 7.0.14, 2.0.0 through 2.0.13, 1.2.0 through 1.2.13, 1.1.0 through 1.1.6, 1.0.0 through 1.0.7 allows attacker to execute unauthorized code or commands via specifically crafted requests",
+      "attributes": {
+        "CVSS Score": "9.6 (CRITICAL)",
+        "Attack Vector": "Network / Remote",
+        "Attack Complexity": "LOW",
+        "Privileges Required": "NONE",
+        "User Interaction": "NONE",
+        "Weakness": "CWE-787: Execute unauthorized code or commands",
+        "Affected Software": "Fortinet FortiProxy (7.4.0–7.4.2, 7.2.0–7.2.8, 7.0.0–7.0.14), Fortinet FortiOS (7.4.0–7.4.2, 7.2.0–7.2.6, 7.0.0–7.0.13)"
+      },
+      "metrics": {
+        "cvss_score": 9.6,
+        "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H/E:H/RL:W/RC:C",
+        "attack_vector": "NETWORK",
+        "attack_complexity": "LOW",
+        "privileges_required": "NONE",
+        "user_interaction": "NONE"
+      },
+      "classification": {
+        "cwes": [
+          "CWE-787"
+        ],
+        "vendors": [
+          "Fortinet"
+        ],
+        "products": [
+          "FortiProxy",
+          "FortiOS"
+        ],
+        "cpes": [
+          "cpe:2.3:a:fortinet:fortiproxy:*:*:*:*:*:*:*",
+          "cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*"
+        ]
+      },
+      "details": {
+        "Vulnerability ID": "CVE-2024-21762",
+        "CVSS Score": "9.6 (CRITICAL)",
+        "CVSS Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H/E:H/RL:W/RC:C",
+        "Attack Vector": "NETWORK",
+        "Weakness (CWE)": "CWE-787 (Execute unauthorized code or commands)",
+        "Affected Software": "Fortinet FortiProxy (7.4.0–7.4.2, 7.2.0–7.2.8, 7.0.0–7.0.14) | Fortinet FortiOS (7.4.0–7.4.2, 7.2.0–7.2.6, 7.0.0–7.0.13)",
+        "CPE Identifiers": "cpe:2.3:a:fortinet:fortiproxy:*:*:*:*:*:*:*, cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*",
+        "Remediation Guidance": "Please upgrade to FortiProxy version 7.4.3 or above \nPlease upgrade to FortiProxy version 7.2.9 or above \nPlease upgrade to FortiProxy version 7.0.15 or above \nPlease upgrade to FortiProxy version 2.0.14 or above \nPlease upgrade to FortiOS version 7.6.0 or above \nPlease upgrade to FortiOS version 7.4.3 or above \nPlease upgrade to FortiOS version 7.2.7 or above \nPlease upgrade to FortiOS version 7.0.14 or above \nPlease upgrade to FortiOS version 6.4.15 or above \nPlease upgrade to FortiOS version 6.2.16 or above"
+      },
+      "relationships": [
+        {
+          "target": "CWE-787",
+          "type": "cwe",
+          "relation": "categorized_as"
+        }
+      ],
+      "references": [
+        {
+          "title": "https://fortiguard.com/psirt/FG-IR-24-015",
+          "url": "https://fortiguard.com/psirt/FG-IR-24-015"
+        },
+        {
+          "title": "NVD Vulnerability Detail",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-21762"
+        }
+      ],
+      "aliases": [
+        "CVE-2024-21762"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "registry:circl-cve",
+        "fetched_at": "2026-10-10T11:32:33.946769+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "112233445566778899aabbccddeeff00": {
+      "@type": "hash",
+      "id": "112233445566778899aabbccddeeff00",
+      "domain": "cyber",
+      "type": "hash",
+      "label": "112233445566778899aabbccddeeff00",
+      "title": "MD5 Digest: 112233445566...eeff00",
+      "severity": "INFO",
+      "badge": "MD5 HASH",
+      "summary": "128-bit MD5 cryptographic file hash. Status: Cryptographically Broken (Vulnerable to Pre-image & Collision Attacks).",
+      "attributes": {
+        "Algorithm": "MD5",
+        "Length": "128 bits",
+        "Detection": "N/A",
+        "Type": "Cryptographic Digest"
+      },
+      "metrics": {
+        "bit_length": 128,
+        "malicious_engines": 0,
+        "total_engines": 0
+      },
+      "classification": {
+        "algorithm": "MD5",
+        "file_type": "Cryptographic Digest",
+        "threat_label": ""
+      },
+      "details": {
+        "Hash Value": "112233445566778899aabbccddeeff00",
+        "Algorithm": "MD5",
+        "Bit Length": "128 bits",
+        "Security Status": "Cryptographically Broken (Vulnerable to Pre-image & Collision Attacks)",
+        "Recommended Use": "Legacy Checksum Verification Only",
+        "Detection Ratio": "Unchecked",
+        "File Type Classification": "Cryptographic Digest",
+        "Identified Threat Label": "None assigned"
+      },
+      "relationships": [],
+      "references": [
+        {
+          "title": "VirusTotal Intelligence",
+          "url": "https://www.virustotal.com/gui/file/112233445566778899aabbccddeeff00"
+        },
+        {
+          "title": "MalwareBazaar Sample Search",
+          "url": "https://bazaar.abuse.ch/sample/112233445566778899aabbccddeeff00/"
+        },
+        {
+          "title": "Hybrid Analysis Sandbox",
+          "url": "https://www.hybrid-analysis.com/search?query=112233445566778899aabbccddeeff00"
+        }
+      ],
+      "aliases": [
+        "112233445566778899aabbccddeeff00",
+        "112233445566778899AABBCCDDEEFF00",
+        "112233445566...eeff00"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:cryptographic",
+        "fetched_at": "2026-10-10T11:32:33.947429+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "9b2c3d4e5f6a7b8c12345678abcdef01": {
+      "@type": "hash",
+      "id": "9b2c3d4e5f6a7b8c12345678abcdef01",
+      "domain": "cyber",
+      "type": "hash",
+      "label": "9b2c3d4e5f6a7b8c12345678abcdef01",
+      "title": "MD5 Digest: 9b2c3d4e5f6a...cdef01",
+      "severity": "INFO",
+      "badge": "MD5 HASH",
+      "summary": "128-bit MD5 cryptographic file hash. Status: Cryptographically Broken (Vulnerable to Pre-image & Collision Attacks).",
+      "attributes": {
+        "Algorithm": "MD5",
+        "Length": "128 bits",
+        "Detection": "N/A",
+        "Type": "Cryptographic Digest"
+      },
+      "metrics": {
+        "bit_length": 128,
+        "malicious_engines": 0,
+        "total_engines": 0
+      },
+      "classification": {
+        "algorithm": "MD5",
+        "file_type": "Cryptographic Digest",
+        "threat_label": ""
+      },
+      "details": {
+        "Hash Value": "9b2c3d4e5f6a7b8c12345678abcdef01",
+        "Algorithm": "MD5",
+        "Bit Length": "128 bits",
+        "Security Status": "Cryptographically Broken (Vulnerable to Pre-image & Collision Attacks)",
+        "Recommended Use": "Legacy Checksum Verification Only",
+        "Detection Ratio": "Unchecked",
+        "File Type Classification": "Cryptographic Digest",
+        "Identified Threat Label": "None assigned"
+      },
+      "relationships": [],
+      "references": [
+        {
+          "title": "VirusTotal Intelligence",
+          "url": "https://www.virustotal.com/gui/file/9b2c3d4e5f6a7b8c12345678abcdef01"
+        },
+        {
+          "title": "MalwareBazaar Sample Search",
+          "url": "https://bazaar.abuse.ch/sample/9b2c3d4e5f6a7b8c12345678abcdef01/"
+        },
+        {
+          "title": "Hybrid Analysis Sandbox",
+          "url": "https://www.hybrid-analysis.com/search?query=9b2c3d4e5f6a7b8c12345678abcdef01"
+        }
+      ],
+      "aliases": [
+        "9b2c3d4e5f6a7b8c12345678abcdef01",
+        "9B2C3D4E5F6A7B8C12345678ABCDEF01",
+        "9b2c3d4e5f6a...cdef01"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:cryptographic",
+        "fetched_at": "2026-10-10T11:32:33.947640+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "Event-4728": {
+      "@type": "winevent",
+      "id": "Event-4728",
+      "domain": "cyber",
+      "type": "winevent",
+      "label": "Event ID 4728",
+      "title": "Event ID 4728: A member was added to a security-enabled global group",
+      "severity": "INFO",
+      "badge": "WIN EVENT 4728",
+      "summary": "A member was added to a security-enabled global group (e.g. Domain Admins, Enterprise Admins). A premier privilege escalation indicator in Active Directory breaches.",
+      "attributes": {
+        "Event Log Channel": "Security",
+        "Investigation Tips": "Alert on additions to privileged groups by SID and verify each against an approved change. | Check whether the member was created recently (4720) and what it did next (4624, 4672, 4769). | Pivot on SubjectLogonId and the DC's 4624 events to find the host the change was made from. | Look for a later 4729 removing the same member — brief membership is a common way to avoid detection.",
+        "Audit Category": "Account Management",
+        "Key Event Fields": "MemberName, TargetGroupName, SubjectUserName, SubjectDomainName",
+        "Attacker Behavior": "Privilege escalation or persistence by adding a controlled account to Domain Admins or another privileged global group. | Adding a newly created account (4720) to a privileged group within minutes of its creation. | Adding accounts to groups that hold delegated rights on AD objects, Group Policy or servers, which is quieter than Domain Admins."
+      },
+      "metrics": {
+        "event_id": 4728
+      },
+      "classification": {
+        "channel": "Security",
+        "category": "Account Management",
+        "log_type": "Windows Event Log"
+      },
+      "details": {
+        "Event Log Channel": "Security",
+        "Investigation Tips": "Alert on additions to privileged groups by SID and verify each against an approved change. | Check whether the member was created recently (4720) and what it did next (4624, 4672, 4769). | Pivot on SubjectLogonId and the DC's 4624 events to find the host the change was made from. | Look for a later 4729 removing the same member — brief membership is a common way to avoid detection.",
+        "Audit Category": "Account Management",
+        "Key Event Fields": "MemberName, TargetGroupName, SubjectUserName, SubjectDomainName",
+        "Attacker Behavior": "Privilege escalation or persistence by adding a controlled account to Domain Admins or another privileged global group. | Adding a newly created account (4720) to a privileged group within minutes of its creation. | Adding accounts to groups that hold delegated rights on AD objects, Group Policy or servers, which is quieter than Domain Admins."
+      },
+      "relationships": [
+        {
+          "target": "Security.evtx",
+          "type": "evtx",
+          "relation": "logged_in_channel"
+        },
+        {
+          "target": "T1098",
+          "type": "mitre",
+          "relation": "detects_technique"
+        },
+        {
+          "target": "T1078",
+          "type": "mitre",
+          "relation": "detects_technique"
+        }
+      ],
+      "references": [
+        {
+          "title": "Event Encyclopedia Reference",
+          "url": "https://www.evtxparser.com/en/events/security/4728"
+        }
+      ],
+      "aliases": [
+        "Event ID 4728",
+        "EID 4728",
+        "Event 4728",
+        "4728"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:windows-events",
+        "fetched_at": "2026-10-10T11:32:33.947678+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "PowerShell.evtx": {
+      "@type": "evtx",
+      "id": "PowerShell.evtx",
+      "domain": "cyber",
+      "type": "evtx",
+      "label": "PowerShell.evtx",
+      "title": "Microsoft PowerShell Operational Log",
+      "severity": "INFO",
+      "badge": "LOG CHANNEL",
+      "summary": "Deep PowerShell execution log capturing de-obfuscated script blocks (EID 4104), interactive command invocation (EID 4103), and AMSI bypass attempts.",
+      "attributes": {
+        "Channel Path": "%SystemRoot%\\System32\\Winevt\\Logs\\PowerShell.evtx",
+        "Channel Name": "Microsoft-Windows-PowerShell/Operational",
+        "Provider": "Microsoft-Windows-PowerShell/Operational",
+        "Audit Recommendation": "Enforce Group Policy for PowerShell Script Block Logging, Module Logging, and Transcription.",
+        "Retention": "Default 15MB. Highly recommended to increase to 256MB+."
+      },
+      "metrics": {
+        "default_format": "Binary XML (.evtx)",
+        "log_scope": "Operating System"
+      },
+      "classification": {
+        "channel": "Microsoft-Windows-PowerShell/Operational",
+        "mitre_tactics": [
+          "Execution",
+          "Defense Evasion"
+        ],
+        "log_type": "Windows Event Log"
+      },
+      "details": {
+        "Channel Path": "%SystemRoot%\\System32\\Winevt\\Logs\\PowerShell.evtx",
+        "Logging Channel": "Microsoft-Windows-PowerShell/Operational",
+        "Forensic Role": "Deep PowerShell execution log capturing de-obfuscated script blocks (EID 4104), interactive command invocation (EID 4103), and AMSI bypass attempts.",
+        "Key Event IDs": "4104 (ScriptBlock Logging), 4103 (Pipeline Execution), 4105 (Started Script), 4106 (Completed Script)",
+        "Audit Policy": "Enforce Group Policy for PowerShell Script Block Logging, Module Logging, and Transcription.",
+        "Retention Policy": "Default 15MB. Highly recommended to increase to 256MB+."
+      },
+      "relationships": [
+        {
+          "target": "Event-4104",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-4103",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-4105",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-4106",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Execution",
+          "type": "mitre",
+          "relation": "monitors_tactic"
+        },
+        {
+          "target": "Defense Evasion",
+          "type": "mitre",
+          "relation": "monitors_tactic"
+        }
+      ],
+      "references": [
+        {
+          "title": "Microsoft Documentation",
+          "url": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_logging_windows"
+        }
+      ],
+      "aliases": [
+        "%SystemRoot%\\System32\\Winevt\\Logs\\PowerShell.evtx",
+        "%SystemRoot%/System32/Winevt/Logs/PowerShell.evtx",
+        "Microsoft-Windows-PowerShell/Operational",
+        "System32/Winevt/Logs/PowerShell.evtx",
+        "System32\\Winevt\\Logs\\PowerShell.evtx",
+        "PowerShell.evtx",
+        "PowerShell"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:windows-events",
+        "fetched_at": "2026-10-10T11:32:33.947831+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "T1059.001": {
+      "@type": "mitre",
+      "id": "T1059.001",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1059.001",
+      "title": "T1059.001: PowerShell",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK EXECUTION",
+      "summary": "Adversaries may abuse PowerShell commands and scripts for execution. PowerShell is a powerful interactive command-line interface and scripting environment included in the Windows operating system. Adversaries can use PowerShell to perform a number of actions, including discovery of information and execution of code. Examples include the <...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Execution",
+        "Technique ID": "T1059.001"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Execution"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1059.001",
+        "Primary Tactic": "Execution",
+        "Detection & Defense Guidance": "Adversaries may abuse PowerShell commands and scripts for execution. PowerShell is a powerful interactive command-line interface and scripting environment included in the Windows operating system. Adversaries can use PowerShell to perform a number of actions, including discovery of information and execution of code. Examples include the <...",
+        "Platforms": "Windows"
+      },
+      "relationships": [
+        {
+          "target": "T1059",
+          "type": "mitre",
+          "relation": "subtechnique_of"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1059/001"
+        }
+      ],
+      "aliases": [
+        "T1059.001"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:mitre-attack",
+        "fetched_at": "2026-10-10T11:32:33.947939+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "Security.evtx": {
+      "@type": "evtx",
+      "id": "Security.evtx",
+      "domain": "cyber",
+      "type": "evtx",
+      "label": "Security.evtx",
+      "title": "Windows Security Event Log",
+      "severity": "INFO",
+      "badge": "LOG CHANNEL",
+      "summary": "Primary forensic repository for authentication, user rights assignment, account management, audit policy changes, process creation (EID 4688), and object access auditing.",
+      "attributes": {
+        "Channel Path": "%SystemRoot%\\System32\\Winevt\\Logs\\Security.evtx",
+        "Channel Name": "Security",
+        "Provider": "Security",
+        "Audit Recommendation": "Enable Audit Process Creation (with CommandLine auditing), Audit Logon, Audit Account Management, and Audit Special Logon.",
+        "Retention": "Fixed maximum size (typically 128MB to 2GB in Enterprise). Wrap-around overwrite policy."
+      },
+      "metrics": {
+        "default_format": "Binary XML (.evtx)",
+        "log_scope": "Operating System"
+      },
+      "classification": {
+        "channel": "Security",
+        "mitre_tactics": [
+          "Initial Access",
+          "Privilege Escalation",
+          "Credential Access",
+          "Defense Evasion"
+        ],
+        "log_type": "Windows Event Log"
+      },
+      "details": {
+        "Channel Path": "%SystemRoot%\\System32\\Winevt\\Logs\\Security.evtx",
+        "Logging Channel": "Security",
+        "Forensic Role": "Primary forensic repository for authentication, user rights assignment, account management, audit policy changes, process creation (EID 4688), and object access auditing.",
+        "Key Event IDs": "4624 (Logon), 4625 (Failed Logon), 4672 (Admin Privs), 4688 (Process Created), 4720 (User Created), 4726 (User Deleted), 4728 (Member Added to Global Group), 4738 (User Account Modified), 1102 (Log Cleared)",
+        "Audit Policy": "Enable Audit Process Creation (with CommandLine auditing), Audit Logon, Audit Account Management, and Audit Special Logon.",
+        "Retention Policy": "Fixed maximum size (typically 128MB to 2GB in Enterprise). Wrap-around overwrite policy."
+      },
+      "relationships": [
+        {
+          "target": "Event-4624",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-4625",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-4672",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-4688",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-4720",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-4726",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-4728",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-4738",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-1102",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Initial Access",
+          "type": "mitre",
+          "relation": "monitors_tactic"
+        },
+        {
+          "target": "Privilege Escalation",
+          "type": "mitre",
+          "relation": "monitors_tactic"
+        },
+        {
+          "target": "Credential Access",
+          "type": "mitre",
+          "relation": "monitors_tactic"
+        },
+        {
+          "target": "Defense Evasion",
+          "type": "mitre",
+          "relation": "monitors_tactic"
+        }
+      ],
+      "references": [
+        {
+          "title": "Microsoft Documentation",
+          "url": "https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/windows-security-log"
+        }
+      ],
+      "aliases": [
+        "%SystemRoot%/System32/Winevt/Logs/Security.evtx",
+        "%SystemRoot%\\System32\\Winevt\\Logs\\Security.evtx",
+        "System32/Winevt/Logs/Security.evtx",
+        "System32\\Winevt\\Logs\\Security.evtx",
+        "Security.evtx"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:Event-4688",
+        "fetched_at": "2026-10-10T11:32:34.713136+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "Event-4688",
+          "relation": "logged_in_channel"
+        }
+      }
+    },
+    "T1021.002": {
+      "@type": "mitre",
+      "id": "T1021.002",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1021.002",
+      "title": "T1021.002: SMB/Windows Admin Shares",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK LATERAL MOVEMENT",
+      "summary": "Adversaries may use Valid Accounts to interact with a remote network share using Server Message Block (SMB). The adversary may then perform actions as the logged-on user. SMB is a file, printer, and serial port sharing protocol for Windows machines on the same network or domain. Adversaries may use SMB to interact with file shares, allowi...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Lateral Movement",
+        "Technique ID": "T1021.002"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Lateral Movement"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1021.002",
+        "Primary Tactic": "Lateral Movement",
+        "Detection & Defense Guidance": "Adversaries may use Valid Accounts to interact with a remote network share using Server Message Block (SMB). The adversary may then perform actions as the logged-on user. SMB is a file, printer, and serial port sharing protocol for Windows machines on the same network or domain. Adversaries may use SMB to interact with file shares, allowi...",
+        "Platforms": "Windows"
+      },
+      "relationships": [
+        {
+          "target": "T1021",
+          "type": "mitre",
+          "relation": "subtechnique_of"
+        },
+        {
+          "target": "Event-4624",
+          "type": "winevent",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1021/002"
+        }
+      ],
+      "aliases": [
+        "T1021.002"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:Event-4624",
+        "fetched_at": "2026-10-10T11:32:34.713004+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "Event-4624",
+          "relation": "detects_technique"
+        }
+      }
+    },
+    "Event-4720": {
+      "@type": "winevent",
+      "id": "Event-4720",
+      "domain": "cyber",
+      "type": "winevent",
+      "label": "Event ID 4720",
+      "title": "Event ID 4720: A user account was created",
+      "severity": "INFO",
+      "badge": "WIN EVENT 4720",
+      "summary": "A user account was created. Critical indicator for unauthorized persistence, rogue backdoor creation, or shadow admin accounts.",
+      "attributes": {
+        "Event Log Channel": "Security",
+        "Investigation Tips": "Check whether SubjectUserName is an expected provisioning account and whether the creation matches a ticket or HR onboarding. | Look for group membership changes for the same TargetSid right after creation (4728, 4732, 4756) and for its first logon (4624). | Pivot on SubjectLogonId to find the creator's logon (4624) and, if process auditing is on, the process that did it (4688, e.g. `net.exe`, `net1.exe` or PowerShell). | Review the initial attributes for unusual values — non-513 PrimaryGroupId, SidHistory, delegation settings or pre-authentication disabled.",
+        "Audit Category": "Account Management",
+        "Key Event Fields": "TargetUserName, TargetDomainName, SubjectUserName, SubjectDomainName, SamAccountName",
+        "Attacker Behavior": "Persistence by creating a local account on a compromised host, often with `net user <name> <password> /add` followed by adding it to the local Administrators group (4732). | Creating a domain account and adding it to Domain Admins or another privileged group (4728, 4756). | Account names chosen to blend in, such as look-alikes of service or admin accounts, or names ending in `$` to resemble computer accounts."
+      },
+      "metrics": {
+        "event_id": 4720
+      },
+      "classification": {
+        "channel": "Security",
+        "category": "Account Management",
+        "log_type": "Windows Event Log"
+      },
+      "details": {
+        "Event Log Channel": "Security",
+        "Investigation Tips": "Check whether SubjectUserName is an expected provisioning account and whether the creation matches a ticket or HR onboarding. | Look for group membership changes for the same TargetSid right after creation (4728, 4732, 4756) and for its first logon (4624). | Pivot on SubjectLogonId to find the creator's logon (4624) and, if process auditing is on, the process that did it (4688, e.g. `net.exe`, `net1.exe` or PowerShell). | Review the initial attributes for unusual values — non-513 PrimaryGroupId, SidHistory, delegation settings or pre-authentication disabled.",
+        "Audit Category": "Account Management",
+        "Key Event Fields": "TargetUserName, TargetDomainName, SubjectUserName, SubjectDomainName, SamAccountName",
+        "Attacker Behavior": "Persistence by creating a local account on a compromised host, often with `net user <name> <password> /add` followed by adding it to the local Administrators group (4732). | Creating a domain account and adding it to Domain Admins or another privileged group (4728, 4756). | Account names chosen to blend in, such as look-alikes of service or admin accounts, or names ending in `$` to resemble computer accounts."
+      },
+      "relationships": [
+        {
+          "target": "Security.evtx",
+          "type": "evtx",
+          "relation": "logged_in_channel"
+        },
+        {
+          "target": "T1136.001",
+          "type": "mitre",
+          "relation": "detects_technique"
+        },
+        {
+          "target": "T1136.002",
+          "type": "mitre",
+          "relation": "detects_technique"
+        }
+      ],
+      "references": [
+        {
+          "title": "Event Encyclopedia Reference",
+          "url": "https://www.evtxparser.com/en/events/security/4720"
+        }
+      ],
+      "aliases": [
+        "Event ID 4720",
+        "EID 4720",
+        "Event 4720",
+        "4720"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:windows-events",
+        "fetched_at": "2026-10-10T11:32:33.948155+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "c8a14b3f8902d1e2e3f4a5b6c7d8e9f01a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d": {
+      "@type": "hash",
+      "id": "c8a14b3f8902d1e2e3f4a5b6c7d8e9f01a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+      "domain": "cyber",
+      "type": "hash",
+      "label": "c8a14b3f8902d1e2e3f4a5b6c7d8e9f01a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+      "title": "SHA-256 Digest: c8a14b3f8902...4b5c6d",
+      "severity": "INFO",
+      "badge": "SHA-256 HASH",
+      "summary": "256-bit SHA-256 cryptographic file hash. Status: Cryptographically Secure (NIST FIPS 180-4 Approved).",
+      "attributes": {
+        "Algorithm": "SHA-256",
+        "Length": "256 bits",
+        "Detection": "N/A",
+        "Type": "Cryptographic Digest"
+      },
+      "metrics": {
+        "bit_length": 256,
+        "malicious_engines": 0,
+        "total_engines": 0
+      },
+      "classification": {
+        "algorithm": "SHA-256",
+        "file_type": "Cryptographic Digest",
+        "threat_label": ""
+      },
+      "details": {
+        "Hash Value": "c8a14b3f8902d1e2e3f4a5b6c7d8e9f01a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "Algorithm": "SHA-256",
+        "Bit Length": "256 bits",
+        "Security Status": "Cryptographically Secure (NIST FIPS 180-4 Approved)",
+        "Recommended Use": "Digital Signatures, File Integrity, Forensic Evidence Verification",
+        "Detection Ratio": "Unchecked",
+        "File Type Classification": "Cryptographic Digest",
+        "Identified Threat Label": "None assigned"
+      },
+      "relationships": [],
+      "references": [
+        {
+          "title": "VirusTotal Intelligence",
+          "url": "https://www.virustotal.com/gui/file/c8a14b3f8902d1e2e3f4a5b6c7d8e9f01a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d"
+        },
+        {
+          "title": "MalwareBazaar Sample Search",
+          "url": "https://bazaar.abuse.ch/sample/c8a14b3f8902d1e2e3f4a5b6c7d8e9f01a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d/"
+        },
+        {
+          "title": "Hybrid Analysis Sandbox",
+          "url": "https://www.hybrid-analysis.com/search?query=c8a14b3f8902d1e2e3f4a5b6c7d8e9f01a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d"
+        }
+      ],
+      "aliases": [
+        "c8a14b3f8902d1e2e3f4a5b6c7d8e9f01a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "C8A14B3F8902D1E2E3F4A5B6C7D8E9F01A2B3C4D5E6F7A8B9C0D1E2F3A4B5C6D",
+        "c8a14b3f8902...4b5c6d"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:cryptographic",
+        "fetched_at": "2026-10-10T11:32:33.948359+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "10.0.4.15": {
+      "@type": "ip",
+      "id": "10.0.4.15",
+      "domain": "cyber",
+      "type": "ip",
+      "label": "10.0.4.15",
+      "title": "10.0.4.15 (RFC 1918 Private)",
+      "severity": "INFO",
+      "badge": "INTERNAL RFC 1918",
+      "summary": "RFC 1918 Private network endpoint.",
+      "attributes": {
+        "Network Scope": "RFC 1918 Private",
+        "Organization": "Internal Infrastructure",
+        "ASN": "N/A (Private)",
+        "Location": "Local / Private",
+        "Ports": "N/A"
+      },
+      "metrics": {
+        "ip_version": 4,
+        "is_private": true,
+        "open_ports_count": 0,
+        "vulns_count": 0
+      },
+      "classification": {
+        "scope": "RFC 1918 Private",
+        "is_private": true,
+        "asn": "N/A (Private)",
+        "org": "Internal Infrastructure"
+      },
+      "details": {
+        "IP Address": "10.0.4.15",
+        "Network Scope": "Internal Intranet Private Network (RFC 1918 / RFC 4193)",
+        "Organization": "Internal Infrastructure",
+        "Autonomous System (ASN)": "N/A (Private)",
+        "Internet Service Provider": "Private Intranet",
+        "Geographic Location": "Local / Private",
+        "Reverse DNS (PTR)": "None resolved",
+        "Open Ports": "None scanned",
+        "Known Vulnerabilities": "None reported"
+      },
+      "relationships": [],
+      "references": [],
+      "aliases": [
+        "10.0.4.15"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "heuristic:ipaddress",
+        "fetched_at": "2026-10-10T11:32:33.954048+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "GHSA-JFH8-C2JP-5V3Q": {
+      "@type": "ghsa",
+      "id": "GHSA-JFH8-C2JP-5V3Q",
+      "domain": "cyber",
+      "type": "ghsa",
+      "label": "GHSA-JFH8-C2JP-5V3Q",
+      "title": "Remote code injection in Log4j",
+      "severity": "CRITICAL",
+      "badge": "CVSS 10.0",
+      "summary": "# Summary\n\nLog4j versions prior to 2.16.0 are subject to a remote code execution vulnerability via the ldap JNDI parser.\nAs per [Apache's Log4j security guide](https://logging.apache.org/log4j/2.x/security.html): Apache Log4j2 <=2.14.1 JNDI features used in configuration, log messages, and parameters do not protect against attacker controlled LDAP and other JNDI related endpoints. An attacker who ...",
+      "attributes": {
+        "CVE": "CVE-2021-44228",
+        "Severity": "CRITICAL",
+        "CVSS": "10.0",
+        "Packages": "maven:org.apache.logging.log4j:log4j-core (fixed: 2.15.0), maven:org.apache.logging.log4j:log4j-core (fixed: 2.12.2), maven:com.guicedee.services:log4j-core"
+      },
+      "metrics": {
+        "cvss_score": 10.0,
+        "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H/E:H"
+      },
+      "classification": {
+        "cwes": [
+          "CWE-20",
+          "CWE-400",
+          "CWE-502",
+          "CWE-917"
+        ],
+        "ecosystems": [
+          "maven"
+        ]
+      },
+      "details": {
+        "Associated CVE": "CVE-2021-44228",
+        "Affected Packages": "maven:org.apache.logging.log4j:log4j-core (fixed: 2.15.0), maven:org.apache.logging.log4j:log4j-core (fixed: 2.12.2), maven:com.guicedee.services:log4j-core, maven:org.xbib.elasticsearch:log4j, maven:uk.co.nichesolutions.logging.log4j:log4j-core, maven:org.apache.logging.log4j:log4j-core (fixed: 2.3.1), maven:org.ops4j.pax.logging:pax-logging-log4j2 (fixed: 1.9.2), maven:org.ops4j.pax.logging:pax-logging-log4j2 (fixed: 1.10.8), maven:org.ops4j.pax.logging:pax-logging-log4j2 (fixed: 1.11.10), maven:org.ops4j.pax.logging:pax-logging-log4j2 (fixed: 2.0.11)",
+        "CWE Identifiers": "CWE-20, CWE-400, CWE-502, CWE-917"
+      },
+      "relationships": [
+        {
+          "target": "CVE-2021-44228",
+          "type": "cve",
+          "relation": "corresponds_to"
+        }
+      ],
+      "references": [
+        {
+          "title": "GitHub Advisory Link",
+          "url": "https://github.com/advisories/GHSA-JFH8-C2JP-5V3Q"
+        },
+        {
+          "title": "https://nvd.nist.gov/vuln/detail/CVE-2021-44228",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-44228"
+        },
+        {
+          "title": "https://github.com/apache/logging-log4j2/pull/608",
+          "url": "https://github.com/apache/logging-log4j2/pull/608"
+        },
+        {
+          "title": "https://github.com/tangxiaofeng7/apache-log4j-poc",
+          "url": "https://github.com/tangxiaofeng7/apache-log4j-poc"
+        },
+        {
+          "title": "https://logging.apache.org/log4j/2.x/changes-report.html#a2.15.0",
+          "url": "https://logging.apache.org/log4j/2.x/changes-report.html#a2.15.0"
+        }
+      ],
+      "aliases": [
+        "GHSA-JFH8-C2JP-5V3Q",
+        "CVE-2021-44228",
+        "GHSA-jfh8-c2jp-5v3q"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "api:github-advisory",
+        "fetched_at": "2026-10-10T11:32:34.406043+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8": {
+      "@type": "hash",
+      "id": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
+      "domain": "cyber",
+      "type": "hash",
+      "label": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
+      "title": "SHA-256 Digest: 5e884898da28...1542d8",
+      "severity": "INFO",
+      "badge": "SHA-256 HASH",
+      "summary": "256-bit SHA-256 cryptographic file hash. Status: Cryptographically Secure (NIST FIPS 180-4 Approved).",
+      "attributes": {
+        "Algorithm": "SHA-256",
+        "Length": "256 bits",
+        "Detection": "N/A",
+        "Type": "Cryptographic Digest"
+      },
+      "metrics": {
+        "bit_length": 256,
+        "malicious_engines": 0,
+        "total_engines": 0
+      },
+      "classification": {
+        "algorithm": "SHA-256",
+        "file_type": "Cryptographic Digest",
+        "threat_label": ""
+      },
+      "details": {
+        "Hash Value": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
+        "Algorithm": "SHA-256",
+        "Bit Length": "256 bits",
+        "Security Status": "Cryptographically Secure (NIST FIPS 180-4 Approved)",
+        "Recommended Use": "Digital Signatures, File Integrity, Forensic Evidence Verification",
+        "Detection Ratio": "Unchecked",
+        "File Type Classification": "Cryptographic Digest",
+        "Identified Threat Label": "None assigned"
+      },
+      "relationships": [],
+      "references": [
+        {
+          "title": "VirusTotal Intelligence",
+          "url": "https://www.virustotal.com/gui/file/5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"
+        },
+        {
+          "title": "MalwareBazaar Sample Search",
+          "url": "https://bazaar.abuse.ch/sample/5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8/"
+        },
+        {
+          "title": "Hybrid Analysis Sandbox",
+          "url": "https://www.hybrid-analysis.com/search?query=5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"
+        }
+      ],
+      "aliases": [
+        "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
+        "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8",
+        "5e884898da28...1542d8"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:cryptographic",
+        "fetched_at": "2026-10-10T11:32:34.406367+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "T1003.001": {
+      "@type": "mitre",
+      "id": "T1003.001",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1003.001",
+      "title": "T1003.001: LSASS Memory",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK CREDENTIAL ACCESS",
+      "summary": "Adversaries may attempt to access credential material stored in the process memory of the Local Security Authority Subsystem Service (LSASS). After a user logs on, the system generates and stores a variety of credential materials in LSASS process memory. These credential materials can be harvested by an administrative user or SYSTEM and u...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Credential Access",
+        "Technique ID": "T1003.001"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Credential Access"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1003.001",
+        "Primary Tactic": "Credential Access",
+        "Detection & Defense Guidance": "Adversaries may attempt to access credential material stored in the process memory of the Local Security Authority Subsystem Service (LSASS). After a user logs on, the system generates and stores a variety of credential materials in LSASS process memory. These credential materials can be harvested by an administrative user or SYSTEM and u...",
+        "Platforms": "Windows"
+      },
+      "relationships": [
+        {
+          "target": "T1003",
+          "type": "mitre",
+          "relation": "subtechnique_of"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1003/001"
+        }
+      ],
+      "aliases": [
+        "T1003.001"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:mitre-attack",
+        "fetched_at": "2026-10-10T11:32:34.406394+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "194.26.29.114": {
+      "@type": "ip",
+      "id": "194.26.29.114",
+      "domain": "cyber",
+      "type": "ip",
+      "label": "194.26.29.114",
+      "title": "194.26.29.114 (Unknown ASN / Provider)",
+      "severity": "HIGH",
+      "badge": "PUBLIC IP",
+      "summary": "Public Internet network endpoint.",
+      "attributes": {
+        "Network Scope": "Public Internet",
+        "Organization": "Unknown ASN / Provider",
+        "ASN": "",
+        "Location": "Global",
+        "Ports": "N/A"
+      },
+      "metrics": {
+        "ip_version": 4,
+        "is_private": false,
+        "open_ports_count": 0,
+        "vulns_count": 0
+      },
+      "classification": {
+        "scope": "Public Internet",
+        "is_private": false,
+        "asn": "",
+        "org": "Unknown ASN / Provider"
+      },
+      "details": {
+        "IP Address": "194.26.29.114",
+        "Network Scope": "Public Internet: globally routable IPv4 endpoint",
+        "Organization": "Unknown ASN / Provider",
+        "Autonomous System (ASN)": "Unspecified",
+        "Internet Service Provider": "Unspecified",
+        "Geographic Location": "Global",
+        "Reverse DNS (PTR)": "None resolved",
+        "Open Ports": "None scanned",
+        "Known Vulnerabilities": "None reported"
+      },
+      "relationships": [],
+      "references": [
+        {
+          "title": "Shodan Host Intelligence",
+          "url": "https://www.shodan.io/host/194.26.29.114"
+        },
+        {
+          "title": "VirusTotal IP Report",
+          "url": "https://www.virustotal.com/gui/ip-address/194.26.29.114"
+        },
+        {
+          "title": "AbuseIPDB Threat Check",
+          "url": "https://www.abuseipdb.com/check/194.26.29.114"
+        }
+      ],
+      "aliases": [
+        "194.26.29.114"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "heuristic:ipaddress",
+        "fetched_at": "2026-10-10T11:32:34.407584+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "Event-4624": {
+      "@type": "winevent",
+      "id": "Event-4624",
+      "domain": "cyber",
+      "type": "winevent",
+      "label": "Event ID 4624",
+      "title": "Event ID 4624: An account was successfully logged on",
+      "severity": "INFO",
+      "badge": "WIN EVENT 4624",
+      "summary": "Records successful authentication sessions. The LogonType code discloses how authentication occurred: 2 (Interactive Console), 3 (Network / SMB / WMI), 5 (Service), 9 (NewCredentials / Pass-the-Hash / Mimikatz), 10 (RemoteInteractive / RDP).",
+      "attributes": {
+        "Event Log Channel": "Security",
+        "Investigation Tips": "Filter out noise first: TargetUserName ending in `$`, `SYSTEM`, `ANONYMOUS LOGON` (unless you hunt null sessions) and LogonType 5. | Group by TargetUserName, LogonType and IpAddress to spot first-seen combinations. | Pivot on TargetLogonId: 4672 in the same second means an admin session; 4688 with the same SubjectLogonId lists what the session executed; 4634/4647 gives the session end. | For type 10, correlate with RDP events 1149, 21, 22, 24 and 25 to get the full session timeline. | On domain controllers, match type 3 logons with 4768/4769 (Kerberos) or 4776 (NTLM) to confirm which protocol was really used.",
+        "Audit Category": "Logon / Authentication",
+        "Key Event Fields": "LogonType, TargetUserName, TargetDomainName, IpAddress, WorkstationName, ProcessName, ElevatedToken",
+        "Attacker Behavior": "Lateral movement with stolen credentials: type 3 logons from a workstation to servers (PsExec, SMB, WMI), often with a burst of new source/target pairs. | RDP access (type 10) from unusual IP addresses, at unusual times, or to hosts the account never uses. | Pass-the-hash: NTLM type 3 logons where Kerberos is expected. On the source host, Mimikatz `sekurlsa::pth` shows up as type 9 with LogonProcessName `seclogo`."
+      },
+      "metrics": {
+        "event_id": 4624
+      },
+      "classification": {
+        "channel": "Security",
+        "category": "Logon / Authentication",
+        "log_type": "Windows Event Log"
+      },
+      "details": {
+        "Event Log Channel": "Security",
+        "Investigation Tips": "Filter out noise first: TargetUserName ending in `$`, `SYSTEM`, `ANONYMOUS LOGON` (unless you hunt null sessions) and LogonType 5. | Group by TargetUserName, LogonType and IpAddress to spot first-seen combinations. | Pivot on TargetLogonId: 4672 in the same second means an admin session; 4688 with the same SubjectLogonId lists what the session executed; 4634/4647 gives the session end. | For type 10, correlate with RDP events 1149, 21, 22, 24 and 25 to get the full session timeline. | On domain controllers, match type 3 logons with 4768/4769 (Kerberos) or 4776 (NTLM) to confirm which protocol was really used.",
+        "Audit Category": "Logon / Authentication",
+        "Key Event Fields": "LogonType, TargetUserName, TargetDomainName, IpAddress, WorkstationName, ProcessName, ElevatedToken",
+        "Attacker Behavior": "Lateral movement with stolen credentials: type 3 logons from a workstation to servers (PsExec, SMB, WMI), often with a burst of new source/target pairs. | RDP access (type 10) from unusual IP addresses, at unusual times, or to hosts the account never uses. | Pass-the-hash: NTLM type 3 logons where Kerberos is expected. On the source host, Mimikatz `sekurlsa::pth` shows up as type 9 with LogonProcessName `seclogo`."
+      },
+      "relationships": [
+        {
+          "target": "Security.evtx",
+          "type": "evtx",
+          "relation": "logged_in_channel"
+        },
+        {
+          "target": "T1078",
+          "type": "mitre",
+          "relation": "detects_technique"
+        },
+        {
+          "target": "T1021.001",
+          "type": "mitre",
+          "relation": "detects_technique"
+        },
+        {
+          "target": "T1021.002",
+          "type": "mitre",
+          "relation": "detects_technique"
+        }
+      ],
+      "references": [
+        {
+          "title": "Event Encyclopedia Reference",
+          "url": "https://www.evtxparser.com/en/events/security/4624"
+        }
+      ],
+      "aliases": [
+        "Event ID 4624",
+        "EID 4624",
+        "Event 4624",
+        "4624"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:windows-events",
+        "fetched_at": "2026-10-10T11:32:34.407765+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "Event-4688": {
+      "@type": "winevent",
+      "id": "Event-4688",
+      "domain": "cyber",
+      "type": "winevent",
+      "label": "Event ID 4688",
+      "title": "Event ID 4688: A new process has been created",
+      "severity": "INFO",
+      "badge": "WIN EVENT 4688",
+      "summary": "Tracks execution of all binaries. When CommandLine auditing policy is active, exposes full script execution arguments, PowerShell one-liners, and living-off-the-land commands.",
+      "attributes": {
+        "Event Log Channel": "Security",
+        "Investigation Tips": "Rebuild the process tree with NewProcessId / ProcessId and ParentProcessName, remembering that PIDs are reused over time. | Group by SubjectLogonId to see everything a single session ran, then pivot to the 4624 that created that session to learn its origin. | Look for rare parent/child pairs across the fleet rather than individual suspicious names. | If CommandLine is empty everywhere, the command-line policy is off — fall back to Sysmon 1, PowerShell 4104 or EDR data. | Use 4689 with the same PID to get the exit time and duration of short-lived tools.",
+        "Audit Category": "Detailed Tracking",
+        "Key Event Fields": "NewProcessName, CommandLine, ParentProcessName, SubjectUserName, TokenElevationType",
+        "Attacker Behavior": "Living-off-the-land execution: `powershell.exe` with `-enc` or download cradles, `rundll32.exe`, `regsvr32.exe`, `mshta.exe`, `certutil.exe` used with unusual arguments. | Office applications, browsers or `w3wp.exe` spawning command interpreters — a common sign of malicious documents or web shells. | Remote execution artifacts on the target: children of `services.exe` with random names (PsExec-style), `WmiPrvSE.exe` spawning `cmd.exe` (WMI), `wsmprovhost.exe` (WinRM)."
+      },
+      "metrics": {
+        "event_id": 4688
+      },
+      "classification": {
+        "channel": "Security",
+        "category": "Detailed Tracking",
+        "log_type": "Windows Event Log"
+      },
+      "details": {
+        "Event Log Channel": "Security",
+        "Investigation Tips": "Rebuild the process tree with NewProcessId / ProcessId and ParentProcessName, remembering that PIDs are reused over time. | Group by SubjectLogonId to see everything a single session ran, then pivot to the 4624 that created that session to learn its origin. | Look for rare parent/child pairs across the fleet rather than individual suspicious names. | If CommandLine is empty everywhere, the command-line policy is off — fall back to Sysmon 1, PowerShell 4104 or EDR data. | Use 4689 with the same PID to get the exit time and duration of short-lived tools.",
+        "Audit Category": "Detailed Tracking",
+        "Key Event Fields": "NewProcessName, CommandLine, ParentProcessName, SubjectUserName, TokenElevationType",
+        "Attacker Behavior": "Living-off-the-land execution: `powershell.exe` with `-enc` or download cradles, `rundll32.exe`, `regsvr32.exe`, `mshta.exe`, `certutil.exe` used with unusual arguments. | Office applications, browsers or `w3wp.exe` spawning command interpreters — a common sign of malicious documents or web shells. | Remote execution artifacts on the target: children of `services.exe` with random names (PsExec-style), `WmiPrvSE.exe` spawning `cmd.exe` (WMI), `wsmprovhost.exe` (WinRM)."
+      },
+      "relationships": [
+        {
+          "target": "Security.evtx",
+          "type": "evtx",
+          "relation": "logged_in_channel"
+        },
+        {
+          "target": "T1059",
+          "type": "mitre",
+          "relation": "detects_technique"
+        },
+        {
+          "target": "T1105",
+          "type": "mitre",
+          "relation": "detects_technique"
+        }
+      ],
+      "references": [
+        {
+          "title": "Event Encyclopedia Reference",
+          "url": "https://www.evtxparser.com/en/events/security/4688"
+        }
+      ],
+      "aliases": [
+        "Event ID 4688",
+        "EID 4688",
+        "Event 4688",
+        "4688"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:windows-events",
+        "fetched_at": "2026-10-10T11:32:34.407897+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "8f14e45fceea167a5a36dedd4bea2543": {
+      "@type": "hash",
+      "id": "8f14e45fceea167a5a36dedd4bea2543",
+      "domain": "cyber",
+      "type": "hash",
+      "label": "8f14e45fceea167a5a36dedd4bea2543",
+      "title": "MD5 Digest: 8f14e45fceea...ea2543",
+      "severity": "INFO",
+      "badge": "MD5 HASH",
+      "summary": "128-bit MD5 cryptographic file hash. Status: Cryptographically Broken (Vulnerable to Pre-image & Collision Attacks).",
+      "attributes": {
+        "Algorithm": "MD5",
+        "Length": "128 bits",
+        "Detection": "N/A",
+        "Type": "Cryptographic Digest"
+      },
+      "metrics": {
+        "bit_length": 128,
+        "malicious_engines": 0,
+        "total_engines": 0
+      },
+      "classification": {
+        "algorithm": "MD5",
+        "file_type": "Cryptographic Digest",
+        "threat_label": ""
+      },
+      "details": {
+        "Hash Value": "8f14e45fceea167a5a36dedd4bea2543",
+        "Algorithm": "MD5",
+        "Bit Length": "128 bits",
+        "Security Status": "Cryptographically Broken (Vulnerable to Pre-image & Collision Attacks)",
+        "Recommended Use": "Legacy Checksum Verification Only",
+        "Detection Ratio": "Unchecked",
+        "File Type Classification": "Cryptographic Digest",
+        "Identified Threat Label": "None assigned"
+      },
+      "relationships": [],
+      "references": [
+        {
+          "title": "VirusTotal Intelligence",
+          "url": "https://www.virustotal.com/gui/file/8f14e45fceea167a5a36dedd4bea2543"
+        },
+        {
+          "title": "MalwareBazaar Sample Search",
+          "url": "https://bazaar.abuse.ch/sample/8f14e45fceea167a5a36dedd4bea2543/"
+        },
+        {
+          "title": "Hybrid Analysis Sandbox",
+          "url": "https://www.hybrid-analysis.com/search?query=8f14e45fceea167a5a36dedd4bea2543"
+        }
+      ],
+      "aliases": [
+        "8f14e45fceea167a5a36dedd4bea2543",
+        "8F14E45FCEEA167A5A36DEDD4BEA2543",
+        "8f14e45fceea...ea2543"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:cryptographic",
+        "fetched_at": "2026-10-10T11:32:34.408052+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "7d8e9a2b4c1f0e3d5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f": {
+      "@type": "hash",
+      "id": "7d8e9a2b4c1f0e3d5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f",
+      "domain": "cyber",
+      "type": "hash",
+      "label": "7d8e9a2b4c1f0e3d5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f",
+      "title": "SHA-256 Digest: 7d8e9a2b4c1f...6d7e8f",
+      "severity": "INFO",
+      "badge": "SHA-256 HASH",
+      "summary": "256-bit SHA-256 cryptographic file hash. Status: Cryptographically Secure (NIST FIPS 180-4 Approved).",
+      "attributes": {
+        "Algorithm": "SHA-256",
+        "Length": "256 bits",
+        "Detection": "N/A",
+        "Type": "Cryptographic Digest"
+      },
+      "metrics": {
+        "bit_length": 256,
+        "malicious_engines": 0,
+        "total_engines": 0
+      },
+      "classification": {
+        "algorithm": "SHA-256",
+        "file_type": "Cryptographic Digest",
+        "threat_label": ""
+      },
+      "details": {
+        "Hash Value": "7d8e9a2b4c1f0e3d5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f",
+        "Algorithm": "SHA-256",
+        "Bit Length": "256 bits",
+        "Security Status": "Cryptographically Secure (NIST FIPS 180-4 Approved)",
+        "Recommended Use": "Digital Signatures, File Integrity, Forensic Evidence Verification",
+        "Detection Ratio": "Unchecked",
+        "File Type Classification": "Cryptographic Digest",
+        "Identified Threat Label": "None assigned"
+      },
+      "relationships": [],
+      "references": [
+        {
+          "title": "VirusTotal Intelligence",
+          "url": "https://www.virustotal.com/gui/file/7d8e9a2b4c1f0e3d5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f"
+        },
+        {
+          "title": "MalwareBazaar Sample Search",
+          "url": "https://bazaar.abuse.ch/sample/7d8e9a2b4c1f0e3d5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f/"
+        },
+        {
+          "title": "Hybrid Analysis Sandbox",
+          "url": "https://www.hybrid-analysis.com/search?query=7d8e9a2b4c1f0e3d5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f"
+        }
+      ],
+      "aliases": [
+        "7d8e9a2b4c1f0e3d5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f",
+        "7D8E9A2B4C1F0E3D5A6B7C8D9E0F1A2B3C4D5E6F7A8B9C0D1E2F3A4B5C6D7E8F",
+        "7d8e9a2b4c1f...6d7e8f"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:cryptographic",
+        "fetched_at": "2026-10-10T11:32:34.408174+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "1f2e3d4c5b6a7890123456789abcdef0123456789abcdef0123456789abcdef0": {
+      "@type": "hash",
+      "id": "1f2e3d4c5b6a7890123456789abcdef0123456789abcdef0123456789abcdef0",
+      "domain": "cyber",
+      "type": "hash",
+      "label": "1f2e3d4c5b6a7890123456789abcdef0123456789abcdef0123456789abcdef0",
+      "title": "SHA-256 Digest: 1f2e3d4c5b6a...bcdef0",
+      "severity": "INFO",
+      "badge": "SHA-256 HASH",
+      "summary": "256-bit SHA-256 cryptographic file hash. Status: Cryptographically Secure (NIST FIPS 180-4 Approved).",
+      "attributes": {
+        "Algorithm": "SHA-256",
+        "Length": "256 bits",
+        "Detection": "N/A",
+        "Type": "Cryptographic Digest"
+      },
+      "metrics": {
+        "bit_length": 256,
+        "malicious_engines": 0,
+        "total_engines": 0
+      },
+      "classification": {
+        "algorithm": "SHA-256",
+        "file_type": "Cryptographic Digest",
+        "threat_label": ""
+      },
+      "details": {
+        "Hash Value": "1f2e3d4c5b6a7890123456789abcdef0123456789abcdef0123456789abcdef0",
+        "Algorithm": "SHA-256",
+        "Bit Length": "256 bits",
+        "Security Status": "Cryptographically Secure (NIST FIPS 180-4 Approved)",
+        "Recommended Use": "Digital Signatures, File Integrity, Forensic Evidence Verification",
+        "Detection Ratio": "Unchecked",
+        "File Type Classification": "Cryptographic Digest",
+        "Identified Threat Label": "None assigned"
+      },
+      "relationships": [],
+      "references": [
+        {
+          "title": "VirusTotal Intelligence",
+          "url": "https://www.virustotal.com/gui/file/1f2e3d4c5b6a7890123456789abcdef0123456789abcdef0123456789abcdef0"
+        },
+        {
+          "title": "MalwareBazaar Sample Search",
+          "url": "https://bazaar.abuse.ch/sample/1f2e3d4c5b6a7890123456789abcdef0123456789abcdef0123456789abcdef0/"
+        },
+        {
+          "title": "Hybrid Analysis Sandbox",
+          "url": "https://www.hybrid-analysis.com/search?query=1f2e3d4c5b6a7890123456789abcdef0123456789abcdef0123456789abcdef0"
+        }
+      ],
+      "aliases": [
+        "1f2e3d4c5b6a7890123456789abcdef0123456789abcdef0123456789abcdef0",
+        "1F2E3D4C5B6A7890123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0",
+        "1f2e3d4c5b6a...bcdef0"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:cryptographic",
+        "fetched_at": "2026-10-10T11:32:34.408287+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "System.evtx": {
+      "@type": "evtx",
+      "id": "System.evtx",
+      "domain": "cyber",
+      "type": "evtx",
+      "label": "System.evtx",
+      "title": "Windows System Event Log",
+      "severity": "INFO",
+      "badge": "LOG CHANNEL",
+      "summary": "Contains events logged by Windows system components, service control manager, hardware changes, kernel drivers, and system startup/shutdown.",
+      "attributes": {
+        "Channel Path": "%SystemRoot%\\System32\\Winevt\\Logs\\System.evtx",
+        "Channel Name": "System",
+        "Provider": "System",
+        "Audit Recommendation": "Monitor Service Control Manager events for unexpected service binaries executing from temp or user-writable directories.",
+        "Retention": "Default 20MB. Circular overwrite policy."
+      },
+      "metrics": {
+        "default_format": "Binary XML (.evtx)",
+        "log_scope": "Operating System"
+      },
+      "classification": {
+        "channel": "System",
+        "mitre_tactics": [
+          "Persistence",
+          "Execution",
+          "Defense Evasion"
+        ],
+        "log_type": "Windows Event Log"
+      },
+      "details": {
+        "Channel Path": "%SystemRoot%\\System32\\Winevt\\Logs\\System.evtx",
+        "Logging Channel": "System",
+        "Forensic Role": "Contains events logged by Windows system components, service control manager, hardware changes, kernel drivers, and system startup/shutdown.",
+        "Key Event IDs": "7045 (New Service Installed), 7036 (Service State Change), 7040 (Service Start Type Changed), 104 (Log Cleared), 1074 (System Shutdown/Reboot), 41 (Kernel Power / BSOD), 6005 (EventLog Started), 6006 (EventLog Stopped)",
+        "Audit Policy": "Monitor Service Control Manager events for unexpected service binaries executing from temp or user-writable directories.",
+        "Retention Policy": "Default 20MB. Circular overwrite policy."
+      },
+      "relationships": [
+        {
+          "target": "Event-7045",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-7036",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-7040",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-104",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-1074",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-41",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-6005",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-6006",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Persistence",
+          "type": "mitre",
+          "relation": "monitors_tactic"
+        },
+        {
+          "target": "Execution",
+          "type": "mitre",
+          "relation": "monitors_tactic"
+        },
+        {
+          "target": "Defense Evasion",
+          "type": "mitre",
+          "relation": "monitors_tactic"
+        }
+      ],
+      "references": [
+        {
+          "title": "Microsoft Documentation",
+          "url": "https://learn.microsoft.com/en-us/troubleshoot/windows-server/system-management/system-log-events"
+        }
+      ],
+      "aliases": [
+        "%SystemRoot%\\System32\\Winevt\\Logs\\System.evtx",
+        "%SystemRoot%/System32/Winevt/Logs/System.evtx",
+        "System32/Winevt/Logs/System.evtx",
+        "System32\\Winevt\\Logs\\System.evtx",
+        "System.evtx"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:Event-7045",
+        "fetched_at": "2026-10-10T11:32:34.436262+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "Event-7045",
+          "relation": "logged_in_channel"
+        }
+      }
+    },
+    "45.142.214.88": {
+      "@type": "ip",
+      "id": "45.142.214.88",
+      "domain": "cyber",
+      "type": "ip",
+      "label": "45.142.214.88",
+      "title": "45.142.214.88 (Unknown ASN / Provider)",
+      "severity": "HIGH",
+      "badge": "PUBLIC IP",
+      "summary": "Public Internet network endpoint.",
+      "attributes": {
+        "Network Scope": "Public Internet",
+        "Organization": "Unknown ASN / Provider",
+        "ASN": "",
+        "Location": "Global",
+        "Ports": "N/A"
+      },
+      "metrics": {
+        "ip_version": 4,
+        "is_private": false,
+        "open_ports_count": 0,
+        "vulns_count": 0
+      },
+      "classification": {
+        "scope": "Public Internet",
+        "is_private": false,
+        "asn": "",
+        "org": "Unknown ASN / Provider"
+      },
+      "details": {
+        "IP Address": "45.142.214.88",
+        "Network Scope": "Public Internet: globally routable IPv4 endpoint",
+        "Organization": "Unknown ASN / Provider",
+        "Autonomous System (ASN)": "Unspecified",
+        "Internet Service Provider": "Unspecified",
+        "Geographic Location": "Global",
+        "Reverse DNS (PTR)": "None resolved",
+        "Open Ports": "None scanned",
+        "Known Vulnerabilities": "None reported"
+      },
+      "relationships": [],
+      "references": [
+        {
+          "title": "Shodan Host Intelligence",
+          "url": "https://www.shodan.io/host/45.142.214.88"
+        },
+        {
+          "title": "VirusTotal IP Report",
+          "url": "https://www.virustotal.com/gui/ip-address/45.142.214.88"
+        },
+        {
+          "title": "AbuseIPDB Threat Check",
+          "url": "https://www.abuseipdb.com/check/45.142.214.88"
+        }
+      ],
+      "aliases": [
+        "45.142.214.88"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "heuristic:ipaddress",
+        "fetched_at": "2026-10-10T11:32:34.434881+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "d41d8cd98f00b204e9800998ecf8427e": {
+      "@type": "hash",
+      "id": "d41d8cd98f00b204e9800998ecf8427e",
+      "domain": "cyber",
+      "type": "hash",
+      "label": "d41d8cd98f00b204e9800998ecf8427e",
+      "title": "MD5: Empty File (Zero-Byte)",
+      "severity": "INFO",
+      "badge": "MD5 NULL HASH",
+      "summary": "Standard MD5 hash of an empty string or 0-byte file (NULL byte sequence).",
+      "attributes": {
+        "Algorithm": "MD5",
+        "Length": "128 bits",
+        "Detection": "N/A",
+        "Type": "Cryptographic Digest"
+      },
+      "metrics": {
+        "bit_length": 128,
+        "malicious_engines": 0,
+        "total_engines": 0
+      },
+      "classification": {
+        "algorithm": "MD5",
+        "file_type": "Cryptographic Digest",
+        "threat_label": ""
+      },
+      "details": {
+        "Hash Value": "d41d8cd98f00b204e9800998ecf8427e",
+        "Algorithm": "MD5",
+        "Bit Length": "128 bits",
+        "Security Status": "Cryptographically Broken (Vulnerable to Pre-image & Collision Attacks)",
+        "Recommended Use": "Legacy Checksum Verification Only",
+        "Detection Ratio": "Unchecked",
+        "File Type Classification": "Cryptographic Digest",
+        "Identified Threat Label": "None assigned"
+      },
+      "relationships": [],
+      "references": [
+        {
+          "title": "VirusTotal Intelligence",
+          "url": "https://www.virustotal.com/gui/file/d41d8cd98f00b204e9800998ecf8427e"
+        },
+        {
+          "title": "MalwareBazaar Sample Search",
+          "url": "https://bazaar.abuse.ch/sample/d41d8cd98f00b204e9800998ecf8427e/"
+        },
+        {
+          "title": "Hybrid Analysis Sandbox",
+          "url": "https://www.hybrid-analysis.com/search?query=d41d8cd98f00b204e9800998ecf8427e"
+        }
+      ],
+      "aliases": [
+        "d41d8cd98f00b204e9800998ecf8427e",
+        "D41D8CD98F00B204E9800998ECF8427E",
+        "d41d8cd98f00...f8427e"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:cryptographic",
+        "fetched_at": "2026-10-10T11:32:34.435270+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "a3c5f891b24d78e3105cf4e819b7d206f4a38751e1293a5b67cd10f92b84e031": {
+      "@type": "hash",
+      "id": "a3c5f891b24d78e3105cf4e819b7d206f4a38751e1293a5b67cd10f92b84e031",
+      "domain": "cyber",
+      "type": "hash",
+      "label": "a3c5f891b24d78e3105cf4e819b7d206f4a38751e1293a5b67cd10f92b84e031",
+      "title": "SHA-256 Digest: a3c5f891b24d...84e031",
+      "severity": "INFO",
+      "badge": "SHA-256 HASH",
+      "summary": "256-bit SHA-256 cryptographic file hash. Status: Cryptographically Secure (NIST FIPS 180-4 Approved).",
+      "attributes": {
+        "Algorithm": "SHA-256",
+        "Length": "256 bits",
+        "Detection": "N/A",
+        "Type": "Cryptographic Digest"
+      },
+      "metrics": {
+        "bit_length": 256,
+        "malicious_engines": 0,
+        "total_engines": 0
+      },
+      "classification": {
+        "algorithm": "SHA-256",
+        "file_type": "Cryptographic Digest",
+        "threat_label": ""
+      },
+      "details": {
+        "Hash Value": "a3c5f891b24d78e3105cf4e819b7d206f4a38751e1293a5b67cd10f92b84e031",
+        "Algorithm": "SHA-256",
+        "Bit Length": "256 bits",
+        "Security Status": "Cryptographically Secure (NIST FIPS 180-4 Approved)",
+        "Recommended Use": "Digital Signatures, File Integrity, Forensic Evidence Verification",
+        "Detection Ratio": "Unchecked",
+        "File Type Classification": "Cryptographic Digest",
+        "Identified Threat Label": "None assigned"
+      },
+      "relationships": [],
+      "references": [
+        {
+          "title": "VirusTotal Intelligence",
+          "url": "https://www.virustotal.com/gui/file/a3c5f891b24d78e3105cf4e819b7d206f4a38751e1293a5b67cd10f92b84e031"
+        },
+        {
+          "title": "MalwareBazaar Sample Search",
+          "url": "https://bazaar.abuse.ch/sample/a3c5f891b24d78e3105cf4e819b7d206f4a38751e1293a5b67cd10f92b84e031/"
+        },
+        {
+          "title": "Hybrid Analysis Sandbox",
+          "url": "https://www.hybrid-analysis.com/search?query=a3c5f891b24d78e3105cf4e819b7d206f4a38751e1293a5b67cd10f92b84e031"
+        }
+      ],
+      "aliases": [
+        "a3c5f891b24d78e3105cf4e819b7d206f4a38751e1293a5b67cd10f92b84e031",
+        "A3C5F891B24D78E3105CF4E819B7D206F4A38751E1293A5B67CD10F92B84E031",
+        "a3c5f891b24d...84e031"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:cryptographic",
+        "fetched_at": "2026-10-10T11:32:34.435447+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "445a6c12b9d834a9812f00a5d29e71ab": {
+      "@type": "hash",
+      "id": "445a6c12b9d834a9812f00a5d29e71ab",
+      "domain": "cyber",
+      "type": "hash",
+      "label": "445a6c12b9d834a9812f00a5d29e71ab",
+      "title": "MD5 Digest: 445a6c12b9d8...9e71ab",
+      "severity": "INFO",
+      "badge": "MD5 HASH",
+      "summary": "128-bit MD5 cryptographic file hash. Status: Cryptographically Broken (Vulnerable to Pre-image & Collision Attacks).",
+      "attributes": {
+        "Algorithm": "MD5",
+        "Length": "128 bits",
+        "Detection": "N/A",
+        "Type": "Cryptographic Digest"
+      },
+      "metrics": {
+        "bit_length": 128,
+        "malicious_engines": 0,
+        "total_engines": 0
+      },
+      "classification": {
+        "algorithm": "MD5",
+        "file_type": "Cryptographic Digest",
+        "threat_label": ""
+      },
+      "details": {
+        "Hash Value": "445a6c12b9d834a9812f00a5d29e71ab",
+        "Algorithm": "MD5",
+        "Bit Length": "128 bits",
+        "Security Status": "Cryptographically Broken (Vulnerable to Pre-image & Collision Attacks)",
+        "Recommended Use": "Legacy Checksum Verification Only",
+        "Detection Ratio": "Unchecked",
+        "File Type Classification": "Cryptographic Digest",
+        "Identified Threat Label": "None assigned"
+      },
+      "relationships": [],
+      "references": [
+        {
+          "title": "VirusTotal Intelligence",
+          "url": "https://www.virustotal.com/gui/file/445a6c12b9d834a9812f00a5d29e71ab"
+        },
+        {
+          "title": "MalwareBazaar Sample Search",
+          "url": "https://bazaar.abuse.ch/sample/445a6c12b9d834a9812f00a5d29e71ab/"
+        },
+        {
+          "title": "Hybrid Analysis Sandbox",
+          "url": "https://www.hybrid-analysis.com/search?query=445a6c12b9d834a9812f00a5d29e71ab"
+        }
+      ],
+      "aliases": [
+        "445a6c12b9d834a9812f00a5d29e71ab",
+        "445A6C12B9D834A9812F00A5D29E71AB",
+        "445a6c12b9d8...9e71ab"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:cryptographic",
+        "fetched_at": "2026-10-10T11:32:34.435621+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "T1685.005": {
+      "@type": "mitre",
+      "id": "T1685.005",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1685.005",
+      "title": "T1685.005: Clear Windows Event Logs",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK DEFENSE IMPAIRMENT",
+      "summary": "Adversaries may clear Windows Event Logs to hide the activity of an intrusion. Windows Event Logs are a record of a computer's alerts and notifications. There are three system-defined sources of events: System, Application, and Security, with five event types: Error, Warning, Information, Success Audit, and Failure Audit. With administrat...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Defense Impairment",
+        "Technique ID": "T1685.005"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Defense Impairment"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1685.005",
+        "Primary Tactic": "Defense Impairment",
+        "Detection & Defense Guidance": "Adversaries may clear Windows Event Logs to hide the activity of an intrusion. Windows Event Logs are a record of a computer's alerts and notifications. There are three system-defined sources of events: System, Application, and Security, with five event types: Error, Warning, Information, Success Audit, and Failure Audit. With administrat...",
+        "Platforms": "Windows"
+      },
+      "relationships": [
+        {
+          "target": "T1685",
+          "type": "mitre",
+          "relation": "subtechnique_of"
+        },
+        {
+          "target": "Event-1102",
+          "type": "winevent",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1685/005"
+        }
+      ],
+      "aliases": [
+        "T1685.005"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:Event-1102",
+        "fetched_at": "2026-10-10T11:32:34.436085+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "Event-1102",
+          "relation": "detects_technique"
+        }
+      }
+    },
+    "T1543.003": {
+      "@type": "mitre",
+      "id": "T1543.003",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1543.003",
+      "title": "T1543.003: Windows Service",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK PERSISTENCE / PRIVILEGE ESCALATION",
+      "summary": "Adversaries may create or modify Windows services to repeatedly execute malicious payloads as part of persistence. When Windows boots up, it starts programs or applications called services that perform background system functions. Windows service configuration information, including the file path to the service's executable or recovery pr...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Persistence / Privilege Escalation",
+        "Technique ID": "T1543.003"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Persistence",
+          "Privilege Escalation"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1543.003",
+        "Primary Tactic": "Persistence / Privilege Escalation",
+        "Detection & Defense Guidance": "Adversaries may create or modify Windows services to repeatedly execute malicious payloads as part of persistence. When Windows boots up, it starts programs or applications called services that perform background system functions. Windows service configuration information, including the file path to the service's executable or recovery pr...",
+        "Platforms": "Windows"
+      },
+      "relationships": [
+        {
+          "target": "T1543",
+          "type": "mitre",
+          "relation": "subtechnique_of"
+        },
+        {
+          "target": "Event-7045",
+          "type": "winevent",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1543/003"
+        }
+      ],
+      "aliases": [
+        "T1543.003"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:Event-7045",
+        "fetched_at": "2026-10-10T11:32:34.436318+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "Event-7045",
+          "relation": "detects_technique"
+        }
+      }
+    },
+    "T1078": {
+      "@type": "mitre",
+      "id": "T1078",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1078",
+      "title": "T1078: Valid Accounts",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK STEALTH / PERSISTENCE / PRIVILEGE ESCALATION / INITIAL ACCESS",
+      "summary": "Adversaries may obtain and abuse credentials of existing accounts as a means of gaining Initial Access, Persistence, Privilege Escalation, or Defense Evasion. Compromised credentials may be used to bypass access controls placed on various resources on systems within the network and may even be used for persistent access to remote systems...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Stealth / Persistence / Privilege Escalation / Initial Access",
+        "Technique ID": "T1078"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Stealth",
+          "Persistence",
+          "Privilege Escalation",
+          "Initial Access"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1078",
+        "Primary Tactic": "Stealth / Persistence / Privilege Escalation / Initial Access",
+        "Detection & Defense Guidance": "Adversaries may obtain and abuse credentials of existing accounts as a means of gaining Initial Access, Persistence, Privilege Escalation, or Defense Evasion. Compromised credentials may be used to bypass access controls placed on various resources on systems within the network and may even be used for persistent access to remote systems...",
+        "Platforms": "Containers, ESXi, IaaS, Identity Provider, Linux, macOS, Network Devices, Office Suite, SaaS, Windows"
+      },
+      "relationships": [
+        {
+          "target": "Event-4672",
+          "type": "winevent",
+          "relation": "referenced_by"
+        },
+        {
+          "target": "Event-4728",
+          "type": "winevent",
+          "relation": "referenced_by"
+        },
+        {
+          "target": "Event-4624",
+          "type": "winevent",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1078"
+        }
+      ],
+      "aliases": [
+        "T1078"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:Event-4624",
+        "fetched_at": "2026-10-10T11:32:34.712936+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "Event-4624",
+          "relation": "detects_technique"
+        }
+      }
+    },
+    "T1068": {
+      "@type": "mitre",
+      "id": "T1068",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1068",
+      "title": "T1068: Exploitation for Privilege Escalation",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK PRIVILEGE ESCALATION",
+      "summary": "Adversaries may exploit software vulnerabilities in an attempt to elevate privileges. Exploitation of a software vulnerability occurs when an adversary takes advantage of a programming error in a program, service, or within the operating system software or kernel itself to execute adversary-controlled code. Security constructs such as per...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Privilege Escalation",
+        "Technique ID": "T1068"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Privilege Escalation"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1068",
+        "Primary Tactic": "Privilege Escalation",
+        "Detection & Defense Guidance": "Adversaries may exploit software vulnerabilities in an attempt to elevate privileges. Exploitation of a software vulnerability occurs when an adversary takes advantage of a programming error in a program, service, or within the operating system software or kernel itself to execute adversary-controlled code. Security constructs such as per...",
+        "Platforms": "Containers, Linux, macOS, Windows"
+      },
+      "relationships": [
+        {
+          "target": "Event-4672",
+          "type": "winevent",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1068"
+        }
+      ],
+      "aliases": [
+        "T1068"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:Event-4672",
+        "fetched_at": "2026-10-10T11:32:34.436573+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "Event-4672",
+          "relation": "detects_technique"
+        }
+      }
+    },
+    "T1071": {
+      "@type": "mitre",
+      "id": "T1071",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1071",
+      "title": "T1071: Application Layer Protocol",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK COMMAND AND CONTROL",
+      "summary": "Adversaries may communicate using OSI application layer protocols to avoid detection/network filtering by blending in with existing traffic. Commands to the remote system, and often the results of those commands, will be embedded within the protocol traffic between the client and server. Adversaries may utilize many different protocols, i...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Command And Control",
+        "Technique ID": "T1071"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Command And Control"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1071",
+        "Primary Tactic": "Command And Control",
+        "Detection & Defense Guidance": "Adversaries may communicate using OSI application layer protocols to avoid detection/network filtering by blending in with existing traffic. Commands to the remote system, and often the results of those commands, will be embedded within the protocol traffic between the client and server. Adversaries may utilize many different protocols, i...",
+        "Platforms": "Linux, macOS, Windows, Network Devices, ESXi"
+      },
+      "relationships": [
+        {
+          "target": "T1071.001",
+          "type": "mitre",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1071"
+        }
+      ],
+      "aliases": [
+        "T1071"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:T1071.001",
+        "fetched_at": "2026-10-10T11:32:34.436613+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "T1071.001",
+          "relation": "subtechnique_of"
+        }
+      }
+    },
+    "CWE-289": {
+      "@type": "cwe",
+      "id": "CWE-289",
+      "domain": "cyber",
+      "type": "cwe",
+      "label": "CWE-289",
+      "title": "CWE-289: Authentication Bypass by Alternate Name",
+      "severity": "MEDIUM",
+      "badge": "CWE BASE",
+      "summary": "The product performs authentication based on the name of a resource being accessed, or the name of the actor performing the access, but it does not properly check all possible names for that resource or actor.",
+      "attributes": {
+        "Abstraction": "Base",
+        "Framework": "MITRE Common Weakness Enumeration",
+        "Impact Scope": "Access Control"
+      },
+      "metrics": {
+        "abstraction": "Base",
+        "top25_rank": null
+      },
+      "classification": {
+        "framework": "MITRE CWE",
+        "abstraction": "Base",
+        "scopes": [
+          "Access Control"
+        ],
+        "impacts": [
+          "Bypass Protection Mechanism"
+        ]
+      },
+      "details": {
+        "Weakness Identifier": "CWE-289",
+        "Weakness Name": "Authentication Bypass by Alternate Name",
+        "Abstraction Layer": "Base",
+        "Common Consequences": "Bypass Protection Mechanism",
+        "Mitigation Strategy": "Input Validation: [Architecture and Design] Avoid making decisions based on names of resources (e.g. files) if those resources can have alternate names. | Input Validation: [Implementation] Inputs should be decoded and canonicalized to the application's current internal representation before being validated (CWE-180). Make sure that the application does not decode the same input twice (CWE-174). Such errors could be used to bypass allowlist validation schemes by introducing dangerous inputs after they have been checked.",
+        "Detection Methods": "Automated Static Analysis: Automated static analysis, commonly referred to as Static Application Security Testing (SAST), can find some instances of this weakness by analyzing source code (or binary/compiled code) without having to execute it. Typically, this is done by building a model of data flow and control flow, then searching for potentially-vulnerable patterns that connect \"sources\" (origins of input) with \"sinks\" (destinations where the data interacts with external components, a lower layer such as the OS, etc.)"
+      },
+      "relationships": [
+        {
+          "target": "T1078",
+          "type": "mitre",
+          "relation": "exploited_via"
+        },
+        {
+          "target": "T1556",
+          "type": "mitre",
+          "relation": "exploited_via"
+        },
+        {
+          "target": "CVE-2026-3184",
+          "type": "cve",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE CWE CWE-289 Definition",
+          "url": "https://cwe.mitre.org/data/definitions/289.html"
+        }
+      ],
+      "aliases": [
+        "CWE-289"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:CVE-2026-3184",
+        "fetched_at": "2026-10-10T11:32:34.436764+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "CVE-2026-3184",
+          "relation": "categorized_as"
+        }
+      }
+    },
+    "CWE-787": {
+      "@type": "cwe",
+      "id": "CWE-787",
+      "domain": "cyber",
+      "type": "cwe",
+      "label": "CWE-787",
+      "title": "CWE-787: Out-of-bounds Write",
+      "severity": "CRITICAL",
+      "badge": "TOP 25 #1",
+      "summary": "The product writes data past the end, or before the beginning, of the intended buffer.",
+      "attributes": {
+        "Abstraction": "Base",
+        "Framework": "MITRE Common Weakness Enumeration",
+        "Top 25 Rank": "2024 Rank #1",
+        "Impact Scope": "Availability, Integrity, Other"
+      },
+      "metrics": {
+        "abstraction": "Base",
+        "top25_rank": 1
+      },
+      "classification": {
+        "framework": "MITRE CWE",
+        "abstraction": "Base",
+        "top25_rank": 1,
+        "scopes": [
+          "Availability",
+          "Integrity",
+          "Other"
+        ],
+        "impacts": [
+          "DoS: Crash, Exit, or Restart",
+          "Execute Unauthorized Code or Commands",
+          "Modify Memory",
+          "Unexpected State"
+        ],
+        "platforms": [
+          "C",
+          "C++"
+        ]
+      },
+      "details": {
+        "Weakness Identifier": "CWE-787",
+        "Weakness Name": "Out-of-bounds Write",
+        "Abstraction Layer": "Base",
+        "Top 25 Rank": "MITRE CWE Top 25 (Rank #1)",
+        "Common Consequences": "DoS: Crash, Exit, or Restart | Execute Unauthorized Code or Commands | Modify Memory | Unexpected State",
+        "Mitigation Strategy": "[Implementation] Replace unbounded copy functions with analogous functions that support length arguments, such as strcpy with strncpy. Create these if they are not available.",
+        "Detection Methods": "Automated Static Analysis | Automated Dynamic Analysis: This weakness can be detected using dynamic tools and techniques that interact with the software using large test suites with many diverse inputs, such as fuzz testing (fuzzing), robustness testing, and fault injection. The software's operation may slow down, but it should not become unstable, crash, or generate incorrect results. | Automated Dynamic Analysis: Use tools that are integrated during\n\t      compilation to insert runtime error-checking mechanisms\n\t      related to memory safety errors, such as AddressSanitizer\n\t      (ASan) for C/C++ [REF-1518].",
+        "Applicable Platforms": "C, C++"
+      },
+      "relationships": [
+        {
+          "target": "T1190",
+          "type": "mitre",
+          "relation": "exploited_via"
+        },
+        {
+          "target": "T1068",
+          "type": "mitre",
+          "relation": "exploited_via"
+        },
+        {
+          "target": "T1203",
+          "type": "mitre",
+          "relation": "exploited_via"
+        },
+        {
+          "target": "CVE-2024-21762",
+          "type": "cve",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE CWE CWE-787 Definition",
+          "url": "https://cwe.mitre.org/data/definitions/787.html"
+        }
+      ],
+      "aliases": [
+        "CWE-787"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:CVE-2024-21762",
+        "fetched_at": "2026-10-10T11:32:34.436876+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "CVE-2024-21762",
+          "relation": "categorized_as"
+        }
+      }
+    },
+    "T1098": {
+      "@type": "mitre",
+      "id": "T1098",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1098",
+      "title": "T1098: Account Manipulation",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK PERSISTENCE / PRIVILEGE ESCALATION",
+      "summary": "Adversaries may manipulate accounts to maintain and/or elevate access to victim systems. Account manipulation may consist of any action that preserves or modifies adversary access to a compromised account, such as modifying credentials or permission groups. These actions could also include account activity designed to subvert security pol...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Persistence / Privilege Escalation",
+        "Technique ID": "T1098"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Persistence",
+          "Privilege Escalation"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1098",
+        "Primary Tactic": "Persistence / Privilege Escalation",
+        "Detection & Defense Guidance": "Adversaries may manipulate accounts to maintain and/or elevate access to victim systems. Account manipulation may consist of any action that preserves or modifies adversary access to a compromised account, such as modifying credentials or permission groups. These actions could also include account activity designed to subvert security pol...",
+        "Platforms": "Containers, ESXi, IaaS, Identity Provider, Linux, macOS, Network Devices, Office Suite, SaaS, Windows"
+      },
+      "relationships": [
+        {
+          "target": "Event-4728",
+          "type": "winevent",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1098"
+        }
+      ],
+      "aliases": [
+        "T1098"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:Event-4728",
+        "fetched_at": "2026-10-10T11:32:34.437085+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "Event-4728",
+          "relation": "detects_technique"
+        }
+      }
+    },
+    "T1059": {
+      "@type": "mitre",
+      "id": "T1059",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1059",
+      "title": "T1059: Command and Scripting Interpreter",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK EXECUTION",
+      "summary": "Adversaries may abuse command and script interpreters to execute commands, scripts, or binaries. These interfaces and languages provide ways of interacting with computer systems and are a common feature across many different platforms. Most systems come with some built-in command-line interface and scripting capabilities, for example, mac...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Execution",
+        "Technique ID": "T1059"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Execution"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1059",
+        "Primary Tactic": "Execution",
+        "Detection & Defense Guidance": "Adversaries may abuse command and script interpreters to execute commands, scripts, or binaries. These interfaces and languages provide ways of interacting with computer systems and are a common feature across many different platforms. Most systems come with some built-in command-line interface and scripting capabilities, for example, mac...",
+        "Platforms": "Containers, ESXi, IaaS, Identity Provider, Linux, macOS, Network Devices, Office Suite, SaaS, Windows"
+      },
+      "relationships": [
+        {
+          "target": "T1059.001",
+          "type": "mitre",
+          "relation": "referenced_by"
+        },
+        {
+          "target": "Event-4688",
+          "type": "winevent",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1059"
+        }
+      ],
+      "aliases": [
+        "T1059"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:Event-4688",
+        "fetched_at": "2026-10-10T11:32:34.713174+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "Event-4688",
+          "relation": "detects_technique"
+        }
+      }
+    },
+    "T1021": {
+      "@type": "mitre",
+      "id": "T1021",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1021",
+      "title": "T1021: Remote Services",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK LATERAL MOVEMENT",
+      "summary": "Adversaries may use Valid Accounts to log into a service that accepts remote connections, such as telnet, SSH, and VNC. The adversary may then perform actions as the logged-on user. In an enterprise environment, servers and workstations can be organized into domains. Domains provide centralized identity management, allowing users to login...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Lateral Movement",
+        "Technique ID": "T1021"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Lateral Movement"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1021",
+        "Primary Tactic": "Lateral Movement",
+        "Detection & Defense Guidance": "Adversaries may use Valid Accounts to log into a service that accepts remote connections, such as telnet, SSH, and VNC. The adversary may then perform actions as the logged-on user. In an enterprise environment, servers and workstations can be organized into domains. Domains provide centralized identity management, allowing users to login...",
+        "Platforms": "Linux, macOS, Windows, IaaS, ESXi"
+      },
+      "relationships": [
+        {
+          "target": "T1021.002",
+          "type": "mitre",
+          "relation": "referenced_by"
+        },
+        {
+          "target": "T1021.001",
+          "type": "mitre",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1021"
+        }
+      ],
+      "aliases": [
+        "T1021"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:T1021.002",
+        "fetched_at": "2026-10-10T11:32:34.437194+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "T1021.002",
+          "relation": "subtechnique_of"
+        }
+      }
+    },
+    "T1136.001": {
+      "@type": "mitre",
+      "id": "T1136.001",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1136.001",
+      "title": "T1136.001: Local Account",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK PERSISTENCE",
+      "summary": "Adversaries may create a local account to maintain access to victim systems. Local accounts are those configured by an organization for use by users, remote support, services, or for administration on a single system or service. For example, with a sufficient level of access, the Windows <code>net user /add</code> command can be used to c...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Persistence",
+        "Technique ID": "T1136.001"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Persistence"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1136.001",
+        "Primary Tactic": "Persistence",
+        "Detection & Defense Guidance": "Adversaries may create a local account to maintain access to victim systems. Local accounts are those configured by an organization for use by users, remote support, services, or for administration on a single system or service. For example, with a sufficient level of access, the Windows <code>net user /add</code> command can be used to c...",
+        "Platforms": "Containers, ESXi, Linux, macOS, Network Devices, Windows"
+      },
+      "relationships": [
+        {
+          "target": "T1136",
+          "type": "mitre",
+          "relation": "subtechnique_of"
+        },
+        {
+          "target": "Event-4720",
+          "type": "winevent",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1136/001"
+        }
+      ],
+      "aliases": [
+        "T1136.001"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:Event-4720",
+        "fetched_at": "2026-10-10T11:32:34.437373+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "Event-4720",
+          "relation": "detects_technique"
+        }
+      }
+    },
+    "T1136.002": {
+      "@type": "mitre",
+      "id": "T1136.002",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1136.002",
+      "title": "T1136.002: Domain Account",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK PERSISTENCE",
+      "summary": "Adversaries may create a domain account to maintain access to victim systems. Domain accounts are those managed by Active Directory Domain Services where access and permissions are configured across systems and services that are part of that domain. Domain accounts can cover user, administrator, and service accounts. With a sufficient lev...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Persistence",
+        "Technique ID": "T1136.002"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Persistence"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1136.002",
+        "Primary Tactic": "Persistence",
+        "Detection & Defense Guidance": "Adversaries may create a domain account to maintain access to victim systems. Domain accounts are those managed by Active Directory Domain Services where access and permissions are configured across systems and services that are part of that domain. Domain accounts can cover user, administrator, and service accounts. With a sufficient lev...",
+        "Platforms": "Linux, macOS, Windows"
+      },
+      "relationships": [
+        {
+          "target": "T1136",
+          "type": "mitre",
+          "relation": "subtechnique_of"
+        },
+        {
+          "target": "Event-4720",
+          "type": "winevent",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1136/002"
+        }
+      ],
+      "aliases": [
+        "T1136.002"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:Event-4720",
+        "fetched_at": "2026-10-10T11:32:34.437406+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "Event-4720",
+          "relation": "detects_technique"
+        }
+      }
+    },
+    "CVE-2021-44228": {
+      "@type": "cve",
+      "id": "CVE-2021-44228",
+      "domain": "cyber",
+      "type": "cve",
+      "label": "CVE-2021-44228",
+      "title": "Apache Log4j2 JNDI features do not protect against attacker controlled LDAP and other JNDI related endpoints",
+      "severity": "CRITICAL",
+      "badge": "CVSS 10",
+      "summary": "Apache Log4j2 2.0-beta9 through 2.15.0 (excluding security releases 2.12.2, 2.12.3, and 2.3.1) JNDI features used in configuration, log messages, and parameters do not protect against attacker controlled LDAP and other JNDI related endpoints. An attacker who can control log messages or log message parameters can execute arbitrary code loaded from LDAP servers when message lookup substitution is enabled. From log4j 2.15.0, this behavior has been disabled by default. From version 2.16.0 (along with 2.12.2, 2.12.3, and 2.3.1), this functionality has been completely removed. Note that this vulnerability is specific to log4j-core and does not affect log4net, log4cxx, or other Apache Logging Services projects.",
+      "attributes": {
+        "CVSS Score": "10 (CRITICAL)",
+        "Attack Vector": "Network / Remote",
+        "Attack Complexity": "LOW",
+        "Privileges Required": "NONE",
+        "User Interaction": "NONE",
+        "Weakness": "CWE-502: CWE-502 Deserialization of Untrusted Data",
+        "Affected Software": "Apache Software Foundation Apache Log4j2 (2.0-beta9–log4j-core*)"
+      },
+      "metrics": {
+        "cvss_score": 10,
+        "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+        "attack_vector": "NETWORK",
+        "attack_complexity": "LOW",
+        "privileges_required": "NONE",
+        "user_interaction": "NONE"
+      },
+      "classification": {
+        "cwes": [
+          "CWE-502"
+        ],
+        "vendors": [
+          "Apache Software Foundation"
+        ],
+        "products": [
+          "Apache Log4j2"
+        ],
+        "cpes": [
+          "cpe:2.3:a:apache_software_foundation:apache_log4j2:*:*:*:*:*:*:*"
+        ]
+      },
+      "details": {
+        "Vulnerability ID": "CVE-2021-44228",
+        "CVSS Score": "10 (CRITICAL)",
+        "CVSS Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+        "Attack Vector": "NETWORK",
+        "Weakness (CWE)": "CWE-502 (CWE-502 Deserialization of Untrusted Data)",
+        "Affected Software": "Apache Software Foundation Apache Log4j2 (2.0-beta9–log4j-core*)",
+        "CPE Identifiers": "cpe:2.3:a:apache_software_foundation:apache_log4j2:*:*:*:*:*:*:*"
+      },
+      "relationships": [
+        {
+          "target": "CWE-502",
+          "type": "cwe",
+          "relation": "categorized_as"
+        },
+        {
+          "target": "GHSA-JFH8-C2JP-5V3Q",
+          "type": "ghsa",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "Vendor Reference",
+          "url": "https://logging.apache.org/log4j/2.x/security.html"
+        },
+        {
+          "title": "[oss-security] 20211210 CVE-2021-44228: Apache Log4j2 JNDI features do not protect against attacker controlled LDAP and other JNDI related endpoints",
+          "url": "http://www.openwall.com/lists/oss-security/2021/12/10/1"
+        },
+        {
+          "title": "[oss-security] 20211210 Re: CVE-2021-44228: Apache Log4j2 JNDI features do not protect against attacker controlled LDAP and other JNDI related endpoints",
+          "url": "http://www.openwall.com/lists/oss-security/2021/12/10/2"
+        },
+        {
+          "title": "20211210 Vulnerability in Apache Log4j Library Affecting Cisco Products: December 2021",
+          "url": "https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-apache-log4j-qRuKNEbd"
+        },
+        {
+          "title": "[oss-security] 20211210 Re: CVE-2021-44228: Apache Log4j2 JNDI features do not protect against attacker controlled LDAP and other JNDI related endpoints",
+          "url": "http://www.openwall.com/lists/oss-security/2021/12/10/3"
+        },
+        {
+          "title": "Security Advisory",
+          "url": "https://security.netapp.com/advisory/ntap-20211210-0007/"
+        }
+      ],
+      "aliases": [
+        "CVE-2021-44228"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:GHSA-JFH8-C2JP-5V3Q",
+        "fetched_at": "2026-10-10T11:32:34.712434+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "GHSA-JFH8-C2JP-5V3Q",
+          "relation": "corresponds_to"
+        }
+      }
+    },
+    "CWE-20": {
+      "@type": "cwe",
+      "id": "CWE-20",
+      "domain": "cyber",
+      "type": "cwe",
+      "label": "CWE-20",
+      "title": "CWE-20: Improper Input Validation",
+      "severity": "CRITICAL",
+      "badge": "TOP 25 #6",
+      "summary": "The product receives input or data, but it does\n        not validate or incorrectly validates that the input has the\n        properties that are required to process the data safely and\n        correctly.",
+      "attributes": {
+        "Abstraction": "Class",
+        "Framework": "MITRE Common Weakness Enumeration",
+        "Top 25 Rank": "2024 Rank #6",
+        "Impact Scope": "Availability, Confidentiality, Integrity"
+      },
+      "metrics": {
+        "abstraction": "Class",
+        "top25_rank": 6
+      },
+      "classification": {
+        "framework": "MITRE CWE",
+        "abstraction": "Class",
+        "top25_rank": 6,
+        "scopes": [
+          "Availability",
+          "Confidentiality",
+          "Integrity"
+        ],
+        "impacts": [
+          "DoS: Crash, Exit, or Restart",
+          "DoS: Resource Consumption (CPU)",
+          "DoS: Resource Consumption (Memory)",
+          "Execute Unauthorized Code or Commands",
+          "Modify Memory",
+          "Read Files or Directories",
+          "Read Memory"
+        ]
+      },
+      "details": {
+        "Weakness Identifier": "CWE-20",
+        "Weakness Name": "Improper Input Validation",
+        "Abstraction Layer": "Class",
+        "Top 25 Rank": "MITRE CWE Top 25 (Rank #6)",
+        "Common Consequences": "DoS: Crash, Exit, or Restart | DoS: Resource Consumption (CPU) | DoS: Resource Consumption (Memory) | Execute Unauthorized Code or Commands | Modify Memory | Read Files or Directories | Read Memory",
+        "Mitigation Strategy": "Attack Surface Reduction: [Architecture and Design] Consider using language-theoretic security (LangSec) techniques that characterize inputs using a formal language and build \"recognizers\" for that language.  This effectively requires parsing to be a distinct layer that effectively enforces a boundary between raw input and internal data representations, instead of allowing parser code to be scattered throughout the program, where it could be subject to errors or inconsistencies that create weaknesses. [REF-1109] [REF-1110] [REF-1111] | Libraries or Frameworks: [Architecture and Design] Use an input validation framework such as Struts or the OWASP ESAPI Validation API. Note that using a framework does not automatically address all input validation problems; be mindful of weaknesses that could arise from misusing the framework itself (CWE-1173). | Attack Surface Reduction: [Architecture and Design] Understand all the potential areas where untrusted inputs can enter the product, including but not limited to: parameters or arguments, cookies, anything read from the network, environment variables, reverse DNS lookups, query results, request headers, URL components, e-mail, files, filenames, databases, and any external systems that provide data to the application. Remember that such inputs may be obtained indirectly through API calls. | [Implementation] When your application combines data from multiple sources, perform the validation after the sources have been combined. The individual data elements may pass the validation step but violate the intended restrictions after they have been combined.",
+        "Detection Methods": "Automated Static Analysis | Manual Static Analysis: When custom input validation is required, such as when enforcing business rules, manual analysis is necessary to ensure that the validation is properly implemented. | Fuzzing: Fuzzing techniques can be useful for detecting input validation errors. When unexpected inputs are provided to the software, the software should not crash or otherwise become unstable, and it should generate application-controlled error messages. If exceptions or interpreter-generated error messages occur, this indicates that the input was not detected and handled within the application logic itself."
+      },
+      "relationships": [
+        {
+          "target": "T1059.001",
+          "type": "mitre",
+          "relation": "exploited_via"
+        },
+        {
+          "target": "T1189",
+          "type": "mitre",
+          "relation": "exploited_via"
+        },
+        {
+          "target": "T1190",
+          "type": "mitre",
+          "relation": "exploited_via"
+        },
+        {
+          "target": "T1059",
+          "type": "mitre",
+          "relation": "exploited_via"
+        },
+        {
+          "target": "GHSA-JFH8-C2JP-5V3Q",
+          "type": "ghsa",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE CWE CWE-20 Definition",
+          "url": "https://cwe.mitre.org/data/definitions/20.html"
+        }
+      ],
+      "aliases": [
+        "CWE-20"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:GHSA-JFH8-C2JP-5V3Q",
+        "fetched_at": "2026-10-10T11:32:34.712521+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "GHSA-JFH8-C2JP-5V3Q",
+          "relation": "categorized_as"
+        }
+      }
+    },
+    "CWE-400": {
+      "@type": "cwe",
+      "id": "CWE-400",
+      "domain": "cyber",
+      "type": "cwe",
+      "label": "CWE-400",
+      "title": "CWE-400: Uncontrolled Resource Consumption",
+      "severity": "MEDIUM",
+      "badge": "CWE CLASS",
+      "summary": "The product does not properly control the allocation and maintenance of a limited resource.",
+      "attributes": {
+        "Abstraction": "Class",
+        "Framework": "MITRE Common Weakness Enumeration",
+        "Impact Scope": "Access Control, Availability, Other"
+      },
+      "metrics": {
+        "abstraction": "Class",
+        "top25_rank": null
+      },
+      "classification": {
+        "framework": "MITRE CWE",
+        "abstraction": "Class",
+        "scopes": [
+          "Access Control",
+          "Availability",
+          "Other"
+        ],
+        "impacts": [
+          "Bypass Protection Mechanism",
+          "DoS: Crash, Exit, or Restart",
+          "DoS: Resource Consumption (CPU)",
+          "DoS: Resource Consumption (Memory)",
+          "DoS: Resource Consumption (Other)",
+          "Other"
+        ]
+      },
+      "details": {
+        "Weakness Identifier": "CWE-400",
+        "Weakness Name": "Uncontrolled Resource Consumption",
+        "Abstraction Layer": "Class",
+        "Common Consequences": "Bypass Protection Mechanism | DoS: Crash, Exit, or Restart | DoS: Resource Consumption (CPU) | DoS: Resource Consumption (Memory) | DoS: Resource Consumption (Other) | Other",
+        "Mitigation Strategy": "[Architecture and Design] Design throttling mechanisms into the system architecture. The best protection is to limit the amount of resources that an unauthorized user can cause to be expended. A strong authentication and access control model will help prevent such attacks from occurring in the first place. The login application should be protected against DoS attacks as much as possible. Limiting the database access, perhaps by caching result sets, can help minimize the resources expended. To further limit the potential for a DoS attack, consider tracking the rate of requests received from users and blocking requests that exceed a defined rate threshold. | [Architecture and Design] Ensure that protocols have specific limits of scale placed on them. | [Implementation] Ensure that all failures in resource allocation place the system into a safe posture.",
+        "Detection Methods": "Automated Static Analysis | Automated Dynamic Analysis: Certain automated dynamic analysis techniques may be effective in spotting resource exhaustion problems, especially with resources such as processes, memory, and connections. The technique may involve generating a large number of requests to the product within a short time frame. | Fuzzing: While fuzzing is typically geared toward finding low-level implementation bugs, it can inadvertently find resource exhaustion problems. This can occur when the fuzzer generates a large number of test cases but does not restart the targeted product in between test cases. If an individual test case produces a crash, but it does not do so reliably, then an inability to handle resource exhaustion may be the cause."
+      },
+      "relationships": [
+        {
+          "target": "T1498",
+          "type": "mitre",
+          "relation": "exploited_via"
+        },
+        {
+          "target": "T1499",
+          "type": "mitre",
+          "relation": "exploited_via"
+        },
+        {
+          "target": "GHSA-JFH8-C2JP-5V3Q",
+          "type": "ghsa",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE CWE CWE-400 Definition",
+          "url": "https://cwe.mitre.org/data/definitions/400.html"
+        }
+      ],
+      "aliases": [
+        "CWE-400"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:GHSA-JFH8-C2JP-5V3Q",
+        "fetched_at": "2026-10-10T11:32:34.712580+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "GHSA-JFH8-C2JP-5V3Q",
+          "relation": "categorized_as"
+        }
+      }
+    },
+    "CWE-502": {
+      "@type": "cwe",
+      "id": "CWE-502",
+      "domain": "cyber",
+      "type": "cwe",
+      "label": "CWE-502",
+      "title": "CWE-502: Deserialization of Untrusted Data",
+      "severity": "HIGH",
+      "badge": "TOP 25 #15",
+      "summary": "The product deserializes untrusted data without sufficiently ensuring that the resulting data will be valid.",
+      "attributes": {
+        "Abstraction": "Base",
+        "Framework": "MITRE Common Weakness Enumeration",
+        "Top 25 Rank": "2024 Rank #15",
+        "Impact Scope": "Availability, Integrity, Other"
+      },
+      "metrics": {
+        "abstraction": "Base",
+        "top25_rank": 15
+      },
+      "classification": {
+        "framework": "MITRE CWE",
+        "abstraction": "Base",
+        "top25_rank": 15,
+        "scopes": [
+          "Availability",
+          "Integrity",
+          "Other"
+        ],
+        "impacts": [
+          "DoS: Resource Consumption (CPU)",
+          "Modify Application Data",
+          "Unexpected State",
+          "Varies by Context"
+        ],
+        "platforms": [
+          "Java",
+          "Ruby",
+          "PHP",
+          "Python",
+          "JavaScript"
+        ]
+      },
+      "details": {
+        "Weakness Identifier": "CWE-502",
+        "Weakness Name": "Deserialization of Untrusted Data",
+        "Abstraction Layer": "Base",
+        "Top 25 Rank": "MITRE CWE Top 25 (Rank #15)",
+        "Common Consequences": "DoS: Resource Consumption (CPU) | Modify Application Data | Unexpected State | Varies by Context",
+        "Mitigation Strategy": "[Architecture and Design] If available, use the signing/sealing features of the programming language to assure that deserialized data has not been tainted. For example, a hash-based message authentication code (HMAC) could be used to ensure that data has not been modified. | [Implementation] When deserializing data, populate a new object rather than just deserializing. The result is that the data flows through safe input validation and that the functions are safe. | [Implementation] Explicitly define a final object() to prevent deserialization. | [Implementation] Avoid having unnecessary types or gadgets (a sequence of instances and method invocations that can self-execute during the deserialization process, often found in libraries) available that can be leveraged for malicious ends. This limits the potential for unintended or unauthorized types and gadgets to be leveraged by the attacker. Add only acceptable classes to an allowlist. Note: new gadgets are constantly being discovered, so this alone is not a sufficient mitigation.",
+        "Detection Methods": "Automated Static Analysis: Automated static analysis, commonly referred to as Static Application Security Testing (SAST), can find some instances of this weakness by analyzing source code (or binary/compiled code) without having to execute it. Typically, this is done by building a model of data flow and control flow, then searching for potentially-vulnerable patterns that connect \"sources\" (origins of input) with \"sinks\" (destinations where the data interacts with external components, a lower layer such as the OS, etc.)",
+        "Applicable Platforms": "Java, Ruby, PHP, Python, JavaScript"
+      },
+      "relationships": [
+        {
+          "target": "T1190",
+          "type": "mitre",
+          "relation": "exploited_via"
+        },
+        {
+          "target": "T1059",
+          "type": "mitre",
+          "relation": "exploited_via"
+        },
+        {
+          "target": "GHSA-JFH8-C2JP-5V3Q",
+          "type": "ghsa",
+          "relation": "referenced_by"
+        },
+        {
+          "target": "CVE-2021-44228",
+          "type": "cve",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE CWE CWE-502 Definition",
+          "url": "https://cwe.mitre.org/data/definitions/502.html"
+        }
+      ],
+      "aliases": [
+        "CWE-502"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:GHSA-JFH8-C2JP-5V3Q",
+        "fetched_at": "2026-10-10T11:32:34.712615+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "GHSA-JFH8-C2JP-5V3Q",
+          "relation": "categorized_as"
+        }
+      }
+    },
+    "CWE-917": {
+      "@type": "cwe",
+      "id": "CWE-917",
+      "domain": "cyber",
+      "type": "cwe",
+      "label": "CWE-917",
+      "title": "CWE-917: Improper Neutralization of Special Elements used in an Expression Language Statement ('Expression Language Injection')",
+      "severity": "HIGH",
+      "badge": "CWE BASE",
+      "summary": "The product constructs all or part of an expression language (EL) statement in a framework such as a Java Server Page (JSP) using externally-influenced input from an upstream component, but it does not neutralize or incorrectly neutralizes special elements that could modify the intended EL statement before it is executed.",
+      "attributes": {
+        "Abstraction": "Base",
+        "Framework": "MITRE Common Weakness Enumeration",
+        "Impact Scope": "Confidentiality, Integrity"
+      },
+      "metrics": {
+        "abstraction": "Base",
+        "top25_rank": null
+      },
+      "classification": {
+        "framework": "MITRE CWE",
+        "abstraction": "Base",
+        "scopes": [
+          "Confidentiality",
+          "Integrity"
+        ],
+        "impacts": [
+          "Execute Unauthorized Code or Commands",
+          "Read Application Data"
+        ],
+        "platforms": [
+          "Java"
+        ]
+      },
+      "details": {
+        "Weakness Identifier": "CWE-917",
+        "Weakness Name": "Improper Neutralization of Special Elements used in an Expression Language Statement ('Expression Language Injection')",
+        "Abstraction Layer": "Base",
+        "Common Consequences": "Execute Unauthorized Code or Commands | Read Application Data",
+        "Mitigation Strategy": "[Architecture and Design] Avoid adding user-controlled data into an expression interpreter when possible. | [System Configuration] The framework or tooling might allow the developer to disable or deactivate the processing of EL expressions, such as setting the isELIgnored attribute for a JSP page to \"true\".",
+        "Detection Methods": "Automated Static Analysis: Automated static analysis, commonly referred to as Static Application Security Testing (SAST), can find some instances of this weakness by analyzing source code (or binary/compiled code) without having to execute it. Typically, this is done by building a model of data flow and control flow, then searching for potentially-vulnerable patterns that connect \"sources\" (origins of input) with \"sinks\" (destinations where the data interacts with external components, a lower layer such as the OS, etc.)",
+        "Applicable Platforms": "Java"
+      },
+      "relationships": [
+        {
+          "target": "T1190",
+          "type": "mitre",
+          "relation": "exploited_via"
+        },
+        {
+          "target": "T1059",
+          "type": "mitre",
+          "relation": "exploited_via"
+        },
+        {
+          "target": "GHSA-JFH8-C2JP-5V3Q",
+          "type": "ghsa",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE CWE CWE-917 Definition",
+          "url": "https://cwe.mitre.org/data/definitions/917.html"
+        }
+      ],
+      "aliases": [
+        "CWE-917"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:GHSA-JFH8-C2JP-5V3Q",
+        "fetched_at": "2026-10-10T11:32:34.712647+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "GHSA-JFH8-C2JP-5V3Q",
+          "relation": "categorized_as"
+        }
+      }
+    },
+    "T1003": {
+      "@type": "mitre",
+      "id": "T1003",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1003",
+      "title": "T1003: OS Credential Dumping",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK CREDENTIAL ACCESS",
+      "summary": "Adversaries may attempt to dump credentials to obtain account login and credential material, normally in the form of a hash or a clear text password. Credentials can be obtained from OS caches, memory, or structures. Credentials can then be used to perform Lateral Movement and access restricted information. Several of the tools mentioned...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Credential Access",
+        "Technique ID": "T1003"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Credential Access"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1003",
+        "Primary Tactic": "Credential Access",
+        "Detection & Defense Guidance": "Adversaries may attempt to dump credentials to obtain account login and credential material, normally in the form of a hash or a clear text password. Credentials can be obtained from OS caches, memory, or structures. Credentials can then be used to perform Lateral Movement and access restricted information. Several of the tools mentioned...",
+        "Platforms": "Linux, macOS, Windows"
+      },
+      "relationships": [
+        {
+          "target": "T1003.001",
+          "type": "mitre",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1003"
+        }
+      ],
+      "aliases": [
+        "T1003"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:T1003.001",
+        "fetched_at": "2026-10-10T11:32:34.712691+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "T1003.001",
+          "relation": "subtechnique_of"
+        }
+      }
+    },
+    "T1021.001": {
+      "@type": "mitre",
+      "id": "T1021.001",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1021.001",
+      "title": "T1021.001: Remote Desktop Protocol",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK LATERAL MOVEMENT",
+      "summary": "Adversaries may use Valid Accounts to log into a computer using the Remote Desktop Protocol (RDP). The adversary may then perform actions as the logged-on user. Remote desktop is a common feature in operating systems. It allows a user to log into an interactive session with a system desktop graphical user interface on a remote system. Mic...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Lateral Movement",
+        "Technique ID": "T1021.001"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Lateral Movement"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1021.001",
+        "Primary Tactic": "Lateral Movement",
+        "Detection & Defense Guidance": "Adversaries may use Valid Accounts to log into a computer using the Remote Desktop Protocol (RDP). The adversary may then perform actions as the logged-on user. Remote desktop is a common feature in operating systems. It allows a user to log into an interactive session with a system desktop graphical user interface on a remote system. Mic...",
+        "Platforms": "Windows"
+      },
+      "relationships": [
+        {
+          "target": "T1021",
+          "type": "mitre",
+          "relation": "subtechnique_of"
+        },
+        {
+          "target": "Event-4624",
+          "type": "winevent",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1021/001"
+        }
+      ],
+      "aliases": [
+        "T1021.001"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:Event-4624",
+        "fetched_at": "2026-10-10T11:32:34.712974+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "Event-4624",
+          "relation": "detects_technique"
+        }
+      }
+    },
+    "T1105": {
+      "@type": "mitre",
+      "id": "T1105",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1105",
+      "title": "T1105: Ingress Tool Transfer",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK COMMAND AND CONTROL",
+      "summary": "Adversaries may transfer tools or other files from an external system into a compromised environment. Tools or files may be copied from an external adversary-controlled system to the victim network through the command and control channel or through alternate protocols such as ftp. Once present, adversaries may also transfer/spread tools b...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Command And Control",
+        "Technique ID": "T1105"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Command And Control"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1105",
+        "Primary Tactic": "Command And Control",
+        "Detection & Defense Guidance": "Adversaries may transfer tools or other files from an external system into a compromised environment. Tools or files may be copied from an external adversary-controlled system to the victim network through the command and control channel or through alternate protocols such as ftp. Once present, adversaries may also transfer/spread tools b...",
+        "Platforms": "ESXi, Linux, macOS, Network Devices, Windows"
+      },
+      "relationships": [
+        {
+          "target": "Event-4688",
+          "type": "winevent",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1105"
+        }
+      ],
+      "aliases": [
+        "T1105"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:Event-4688",
+        "fetched_at": "2026-10-10T11:32:34.713206+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "Event-4688",
+          "relation": "detects_technique"
+        }
+      }
+    },
+    "T1685": {
+      "@type": "mitre",
+      "id": "T1685",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1685",
+      "title": "T1685: Disable or Modify Tools",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK DEFENSE IMPAIRMENT",
+      "summary": "Adversaries may disable, degrade, or tamper with security tools or applications (e.g., endpoint detection and response (EDR) tools, intrusion detection systems (IDS), antivirus, logging agents, sensors, etc.) to impair or reduce visibility of defensive capabilities. This may include stopping specific services, killing processes, modifying...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Defense Impairment",
+        "Technique ID": "T1685"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Defense Impairment"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1685",
+        "Primary Tactic": "Defense Impairment",
+        "Detection & Defense Guidance": "Adversaries may disable, degrade, or tamper with security tools or applications (e.g., endpoint detection and response (EDR) tools, intrusion detection systems (IDS), antivirus, logging agents, sensors, etc.) to impair or reduce visibility of defensive capabilities. This may include stopping specific services, killing processes, modifying...",
+        "Platforms": "Containers, ESXi, IaaS, Linux, macOS, Network Devices, Windows"
+      },
+      "relationships": [
+        {
+          "target": "T1685.005",
+          "type": "mitre",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1685"
+        }
+      ],
+      "aliases": [
+        "T1685"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:T1685.005",
+        "fetched_at": "2026-10-10T14:55:48.444442+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "T1685.005",
+          "relation": "subtechnique_of"
+        }
+      }
+    },
+    "T1543": {
+      "@type": "mitre",
+      "id": "T1543",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1543",
+      "title": "T1543: Create or Modify System Process",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK PERSISTENCE / PRIVILEGE ESCALATION",
+      "summary": "Adversaries may create or modify system-level processes to repeatedly execute malicious payloads as part of persistence. When operating systems boot up, they can start processes that perform background system functions. On Windows and Linux, these system processes are referred to as services. On macOS, launchd processes known as Launch Da...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Persistence / Privilege Escalation",
+        "Technique ID": "T1543"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Persistence",
+          "Privilege Escalation"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1543",
+        "Primary Tactic": "Persistence / Privilege Escalation",
+        "Detection & Defense Guidance": "Adversaries may create or modify system-level processes to repeatedly execute malicious payloads as part of persistence. When operating systems boot up, they can start processes that perform background system functions. On Windows and Linux, these system processes are referred to as services. On macOS, launchd processes known as Launch Da...",
+        "Platforms": "Containers, Linux, macOS, Windows"
+      },
+      "relationships": [
+        {
+          "target": "T1543.003",
+          "type": "mitre",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1543"
+        }
+      ],
+      "aliases": [
+        "T1543"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:T1543.003",
+        "fetched_at": "2026-10-10T14:55:48.444538+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "T1543.003",
+          "relation": "subtechnique_of"
+        }
+      }
+    },
+    "T1136": {
+      "@type": "mitre",
+      "id": "T1136",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1136",
+      "title": "T1136: Create Account",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK PERSISTENCE",
+      "summary": "Adversaries may create an account to maintain access to victim systems. With a sufficient level of access, creating such accounts may be used to establish secondary credentialed access that do not require persistent remote access tools to be deployed on the system. Accounts may be created on the local system or within a domain or cloud te...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Persistence",
+        "Technique ID": "T1136"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Persistence"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1136",
+        "Primary Tactic": "Persistence",
+        "Detection & Defense Guidance": "Adversaries may create an account to maintain access to victim systems. With a sufficient level of access, creating such accounts may be used to establish secondary credentialed access that do not require persistent remote access tools to be deployed on the system. Accounts may be created on the local system or within a domain or cloud te...",
+        "Platforms": "Windows, IaaS, Linux, macOS, Network Devices, Containers, SaaS, Office Suite, Identity Provider, ESXi"
+      },
+      "relationships": [
+        {
+          "target": "T1136.001",
+          "type": "mitre",
+          "relation": "referenced_by"
+        },
+        {
+          "target": "T1136.002",
+          "type": "mitre",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1136"
+        }
+      ],
+      "aliases": [
+        "T1136"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:T1136.001",
+        "fetched_at": "2026-10-10T14:55:48.444575+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "T1136.001",
+          "relation": "subtechnique_of"
+        }
+      }
+    }
+  }
+}

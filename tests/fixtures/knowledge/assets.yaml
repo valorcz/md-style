@@ -1,0 +1,29 @@
+- id: "DC01.corp.internal"
+  match:
+    exact:
+      - "DC01.corp.internal"
+      - "DC01"
+    in_code: true
+    in_prose: true
+    case_sensitive: false
+  badge: "PRIMARY DOMAIN CONTROLLER"
+  badge_type: "host"
+  category: "INFRASTRUCTURE // CORE DOMAIN CONTROLLER"
+  role: "Domain Controller"
+  title: "Primary DC (DC01.corp.internal)"
+  summary: "Primary Domain Controller running Windows Server 2022 Datacenter at 192.168.45.2. Hosts AD DS, DNS, and Kerberos KDC."
+  fields:
+    "HOST IP": "192.168.45.2"
+    "OS VERSION": "Windows Server 2022 Datacenter"
+    "FORENSIC STATUS": "Triage Acquired // NTDS.dit Volume Shadow Copy Verified"
+    "ROLES": "AD DS, DNS, Kerberos KDC, Schema Master"
+  investigation_tips:
+    - "Inspect NTDS volume shadow copies to confirm if ntds.dit was extracted."
+    - "Review Directory Service event log for abnormal replication activity."
+  attacker_behavior:
+    - "Attacker performed DCSync replication requests against DC01 from compromised workstation."
+  benign_causes:
+    - "Normal inter-site domain controller replication synchronization."
+  pivots:
+    - label: "MICROSOFT ACTIVE DIRECTORY GUIDE ↗"
+      url: "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/active-directory-domain-services"

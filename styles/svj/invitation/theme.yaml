@@ -1,0 +1,11 @@
+name: svj/invitation
+title: "SVJ Pozvánka na shromáždění"
+extends: svj/base
+stylesheets:
+  - invitation.css
+features:
+  sticky_tables: true
+  break_ranges: true
+paged:
+  headers:
+    center: "{i18n.svj.assembly_invite}"

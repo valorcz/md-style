@@ -1,15 +1,54 @@
 ---
 title: "Pozvánka na shromáždění vlastníků jednotek"
-style: svj-invitation
 language: cs
 toc: false
+md-style:
+  style: svj-invitation
+  annotations:
+    - id: "ann-svj-01"
+      createdAt: "2026-10-12T09:30:00Z"
+      author: "K. Svoboda (Byt č. 3)"
+      category: "question"
+      text: "Proč máme hradit výměnu armatury my jako vlastníci, když se jedná o napojení na centrální otopnou soustavu domu?"
+      range:
+        blockIndex: 12
+        quote: "Byt č. 3"
+        prefixContext: "| "
+        suffixContext: " | K. Svoboda |"
+        textOffsetInBlock: 0
+      resolved: false
+    - id: "ann-svj-02"
+      createdAt: "2026-10-12T14:15:00Z"
+      author: "Jan Dvořák (Předseda výboru SVJ)"
+      category: "insight"
+      text: "Podle § 6 nařízení vlády č. 366/2013 Sb. jsou společnou částí pouze stoupací rozvody až po uzavírací armaturu. Samotné radiátorové kohouty a šroubení uvnitř bytu jsou ze zákona i Prohlášení vlastníka ve výlučném vlastnictví jednotky."
+      range:
+        blockIndex: 12
+        quote: "V souladu s Prohlášením vlastníka"
+        prefixContext: ""
+        suffixContext: ""
+        textOffsetInBlock: 0
+      resolved: true
+    - id: "ann-svj-03"
+      createdAt: "2026-10-13T10:00:00Z"
+      author: "Ing. Marie Černá (Místopředsedkyně výboru)"
+      category: "feedback"
+      text: "K navýšení příspěvku do fondu oprav na 26 Kč/m² je podle § 1206 NOZ zapotřebí nadpoloviční většina přítomných hlasů. Z předběžné prezence máme avizováno 68 % podlahové plochy."
+      range:
+        blockIndex: 14
+        quote: "26 Kč / m² měsíčně"
+        prefixContext: "ve výši **"
+        suffixContext: "** s účinností"
+        textOffsetInBlock: 0
+      resolved: false
 ---
 
 Společenství vlastníků jednotek domu Jabloňová 24, Praha  
 se sídlem: Jabloňová 1420/24, 106 00 Praha 10 – Záběhlice  
-IČO: 76543210
+IČO: 76543210  
+Bankovní účet SVJ: 1420-76543210/0100 (Komerční banka, a.s.)
 
-Výbor Společenství vlastníků jednotek domu Jabloňová 24 svolává v souladu se stanovami SVJ a příslušnými ustanoveními občanského zákoníku **řádné shromáždění vlastníků jednotek**.
+Výbor Společenství vlastníků jednotek domu Jabloňová 24 svolává v souladu se stanovami SVJ a příslušnými ustanoveními občanského zákoníku (§ 1205 a § 1207 NOZ) **řádné shromáždění vlastníků jednotek**.
 
 ## Termín a místo konání
 
@@ -19,7 +58,7 @@ Výbor Společenství vlastníků jednotek domu Jabloňová 24 svolává v soul
 
 ## Program shromáždění
 
-::: {#toc}
+::: {#toc section="Detaily jednání"}
 :::
 
 **Za výbor SVJ Jabloňová 24, Praha**  
@@ -35,7 +74,7 @@ V případě dotazů či připomínek k podkladům před konáním shromážd�
 
 1. ### Zahájení
 
-Zahájení schůze, ověření usnášeníschopnosti shromáždění, volba orgánů shromáždění (předsedající, zapisovatel, ověřovatel zápisu a sčitatel hlasů), schválení navrženého programu jednání.
+Zahájení schůze, ověření usnášeníschopnosti shromáždění podle § 1206 NOZ, volba orgánů shromáždění (předsedající, zapisovatel, ověřovatel zápisu a sčitatel hlasů), schválení navrženého programu jednání.
 
 2. ### Zpráva výboru o hospodaření a schválení účetní závěrky za rok 2025
 
@@ -55,9 +94,9 @@ Děkujeme všem vlastníkům za součinnost a zpřístupnění jednotek během p
 
 4. ### Rozúčtování nákladů instalace dálkových odečtů měřidel
 
-V souladu s legislativními požadavky na měsíční informování o spotřebě tepla a vody byla dokončena instalace rádiových modulů na stávající poměrové měřiče tepla a vodoměry.
+V souladu s legislativními požadavky na měsíční informování o spotřebě tepla a vody podle § 8a zákona o službách č. 67/2013 Sb. byla dokončena instalace rádiových modulů na stávající poměrové měřiče tepla a vodoměry.
 
-Během instalace se v některých jednotkách vyskytla nutnost výměny vadných či zatuhlých uzavíracích ventilů a připojovacích šroubení. V souladu s Prohlášením vlastníka jsou tyto armatury výlučným příslušenstvím jednotky a náklady na jejich výměnu hradí vlastník dané jednotky:
+Během instalace se v některých jednotkách vyskytla nutnost výměny vadných či zatuhlých uzavíracích ventilů a připojovacích šroubení. V souladu s § 6 nařízení vlády č. 366/2013 Sb. a Prohlášením vlastníka jsou tyto armatury výlučným příslušenstvím jednotky a náklady na jejich výměnu hradí vlastník dané jednotky:
 
 | Byt | Vlastník | Termoregulační ventil | Uzavírací kulový kohout | Vícepráce instalace (h) | Náklad bez DPH | Cena vč. DPH (12 %) |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: |
@@ -68,11 +107,11 @@ Během instalace se v některých jednotkách vyskytla nutnost výměny vadnýc
 | Byt č. 22 | H. Blažková | 2 ks | 2 ks | 2,0 h | 2 890 Kč | 3 237 Kč |
 | Byt č. 29 | T. Mareš | 4 ks | 0 ks | 2,5 h | 3 860 Kč | 4 323 Kč |
 
-***Návrh výboru:*** Výbor navrhuje přeúčtovat uvedené přímé náklady jednotlivým vlastníkům formou jednorázové položky v předpisu záloh splatné do 30. 11. 2026.
+***Návrh výboru:*** Výbor navrhuje přeúčtovat uvedené přímé náklady jednotlivým vlastníkům formou jednorázové položky v předpisu záloh splatné do 30. 11. 2026. Platbu lze provést bankovním převodem na účet `1420-76543210/0100` pod variabilním symbolem odpovídajícím číslu bytu.
 
 5. ### Úprava výše měsíčního příspěvku do fondu oprav
 
-Současná výše příspěvku na správu domu a pozemku (fond oprav) činí 18 Kč/m² měsíčně a nebyla měněna od roku 2019. S ohledem na kumulovanou inflaci ve stavebnictví a nutnost vytvoření finanční rezervy pro plánovanou revitalizaci střechy v roce 2028 navrhuje výbor navýšení příspěvku.
+Současná výše příspěvku na správu domu a pozemku (fond oprav) činí 18 Kč/m² měsíčně a nebyla měněna od roku 2019. S ohledem na kumulovanou inflaci ve stavebnictví a nutnost vytvoření finanční rezervy pro plánovanou revitalizaci střechy v roce 2028 navrhuje výbor navýšení příspěvku podle § 1180 NOZ.
 
 Podrobná kalkulace dopadů na jednotlivé dispozice bytů:
 
@@ -80,7 +119,7 @@ Podrobná kalkulace dopadů na jednotlivé dispozice bytů:
 * **Dispozice 2+kk (cca 54 m²):** navýšení o cca 432 Kč / měsíc
 * **Dispozice 3+1 (cca 78 m²):** navýšení o cca 624 Kč / měsíc
 
-***Návrh výboru:*** Shromáždění schvaluje novou sazbu příspěvku do fondu oprav ve výši **26 Kč / m² měsíčně** s účinností od 1. ledna 2027.
+***Návrh výboru:*** Shromáždění schvaluje podle § 1180 NOZ a stanov novou sazbu příspěvku do fondu oprav ve výši **26 Kč / m² měsíčně** s účinností od 1. ledna 2027.
 
 6. ### Modernizace přístupového a kamerového systému
 
@@ -92,7 +131,7 @@ V návaznosti na předchozí podněty vlastníků ohledně zabezpečení suter�
 | **Alfa Bezpečnost s.r.o.** | 2× čtečka, 3× IP kamera Full HD, NVR úložiště 14 dní | 21 dní | 36 měsíců | 132 000 Kč |
 | **SafeHouse Systems a.s.** | 2× čtečka, 4× IP kamera 4K, cloudové úložiště | 30 dní | 36 měsíců | 165 000 Kč |
 
-Kamerový systém bude plně vyhovovat požadavkům na ochranu osobních údajů (GDPR) s režimem záznamu v délce 14 dní bez živého přenosu.
+Kamerový systém bude plně vyhovovat požadavkům na ochranu osobních údajů podle čl. 6 odst. 1 písm. f) GDPR s režimem záznamu v délce 14 dní bez živého přenosu.
 
 ***Návrh výboru:*** Pověření výboru k uzavření smlouvy o dílo s vybranou společností Securitas Domus s.r.o. v maximální výši 150 000 Kč bez DPH s financováním z fondu oprav.
 

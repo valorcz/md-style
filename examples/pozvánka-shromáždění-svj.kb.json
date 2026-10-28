@@ -1,0 +1,718 @@
+{
+  "@context": {
+    "@vocab": "https://schema.org/",
+    "id": "@id",
+    "type": "@type",
+    "entities": "@graph",
+    "cve": "https://cve.mitre.org/schema/",
+    "statute": "https://schema.org/Legislation",
+    "ico": "https://schema.org/Organization",
+    "iban": "https://schema.org/BankOrCreditUnion",
+    "provenance": "http://www.w3.org/ns/prov#wasDerivedFrom",
+    "fetched_at": "http://www.w3.org/ns/prov#generatedAtTime",
+    "relationships": "https://schema.org/mentions"
+  },
+  "@type": "Dataset",
+  "version": "1.0",
+  "document_id": "pozvánka-shromáždění-svj",
+  "generated_at": "2026-10-27T17:08:46.519170+00:00",
+  "sources_digest": {},
+  "entities": {
+    "statute-nv366-6": {
+      "@type": "statute",
+      "id": "statute-nv366-6",
+      "domain": "legal",
+      "type": "statute",
+      "label": "§ nv366-6",
+      "title": "§ 6 NV č. 366/2013 Sb. - Společné části domu a vnitřní instalace",
+      "severity": "INFO",
+      "badge": "ZÁKONNÉ USTANOVENÍ",
+      "summary": "Společnými částmi domu jsou rozvody tepla, teplé a studené vody včetně stoupacích šachet až k uzavíracím ventilům pro byt. Ventily, připojovací šroubení a armatury za hlavním uzávěrem bytu jsou výlučným příslušenstvím jednotky na náklad vlastníka.",
+      "attributes": {
+        "Předpis": "Nařízení vlády č. 366/2013 Sb., o úpravě některých záležitostí souvisejících s bytovým spoluvlastnictvím",
+        "Paragraf": "§ nv366-6"
+      },
+      "metrics": {},
+      "classification": {},
+      "details": {},
+      "relationships": [],
+      "references": [
+        {
+          "title": "Nařízení vlády č. 366/2013 Sb., o úpravě některých záležitostí souvisejících s bytovým spoluvlastnictvím",
+          "url": "https://www.zakonyprolidi.cz/cs/2013-366#p6"
+        }
+      ],
+      "aliases": [
+        "§ nv366-6",
+        "§nv366-6",
+        "§ nv366-6",
+        "§ 6 NV č. 366/2013 Sb. - Společné části domu a vnitřní instalace",
+        "§ 6 nařízení vlády č. 366/2013 Sb.",
+        "§ 6",
+        "§6"
+      ],
+      "widgets": [
+        {
+          "widget_type": "tactical_box",
+          "title": "§ 6 NV č. 366/2013 Sb. - Společné části domu a vnitřní instalace",
+          "tone": "info",
+          "data": {
+            "description": "Společnými částmi domu jsou rozvody tepla, teplé a studené vody včetně stoupacích šachet až k uzavíracím ventilům pro byt. Ventily, připojovací šroubení a armatury za hlavním uzávěrem bytu jsou výlučným příslušenstvím jednotky na náklad vlastníka.",
+            "code": "Klíčové ustanovení pro rozhraničení nákladů na opravy: hlavní stoupačka je hrazena z fondu oprav SVJ, ale koncový termoventil a šroubení uvnitř bytu hradí vlastník dané jednotky.",
+            "codeLabel": "Doporučení & Praxe pro SVJ"
+          },
+          "items": []
+        },
+        {
+          "widget_type": "attributes_table",
+          "title": "Právní metadata",
+          "tone": "neutral",
+          "data": {
+            "Předpis": "Nařízení vlády č. 366/2013 Sb., o úpravě některých záležitostí souvisejících s bytovým spoluvlastnictvím",
+            "Ustanovení": "§ nv366-6",
+            "Oblast": "Bytové spoluvlastnictví & Veřejná správa",
+            "Jurisdikce": "Česká republika / EU"
+          },
+          "items": []
+        },
+        {
+          "widget_type": "references",
+          "title": "Oficiální znění předpisu",
+          "tone": "neutral",
+          "data": {
+            "references": [
+              {
+                "title": "Nařízení vlády č. 366/2013 Sb., o úpravě některých záležitostí souvisejících s bytovým spoluvlastnictvím",
+                "url": "https://www.zakonyprolidi.cz/cs/2013-366#p6"
+              }
+            ]
+          },
+          "items": []
+        }
+      ],
+      "provenance": {
+        "source": "statute:czech-legal-code",
+        "fetched_at": "2026-10-15T10:24:02.267736+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "statute-gdpr-6": {
+      "@type": "statute",
+      "id": "statute-gdpr-6",
+      "domain": "legal",
+      "type": "statute",
+      "label": "Čl. 6 GDPR",
+      "title": "Čl. 6 odst. 1 písm. f) GDPR - Oprávněný zájem při provozu kamerového systému",
+      "severity": "INFO",
+      "badge": "ZÁKONNÉ USTANOVENÍ",
+      "summary": "Zpracování je zákonné, je-li nezbytné pro účely oprávněných zájmů správce či třetí strany, kromě případů, kdy před těmito zájmy mají přednost zájmy nebo základní práva a svobody subjektu údajů.",
+      "attributes": {
+        "Předpis": "Nařízení Evropského parlamentu a Rady (EU) 2016/679 (GDPR)",
+        "Paragraf": "Čl. 6 GDPR"
+      },
+      "metrics": {},
+      "classification": {},
+      "details": {},
+      "relationships": [],
+      "references": [
+        {
+          "title": "Nařízení Evropského parlamentu a Rady (EU) 2016/679 (GDPR)",
+          "url": "https://eur-lex.europa.eu/legal-content/CS/TXT/?uri=CELEX%3A32016R0679#d1e1888-1-1"
+        }
+      ],
+      "aliases": [
+        "§ gdpr-6",
+        "§gdpr-6",
+        "Čl. 6 GDPR",
+        "Čl. 6 odst. 1 písm. f) GDPR - Oprávněný zájem při provozu kamerového systému",
+        "čl. 6 odst. 1 písm. f) GDPR",
+        "§ 6",
+        "§6"
+      ],
+      "widgets": [
+        {
+          "widget_type": "tactical_box",
+          "title": "Čl. 6 odst. 1 písm. f) GDPR - Oprávněný zájem při provozu kamerového systému",
+          "tone": "info",
+          "data": {
+            "description": "Zpracování je zákonné, je-li nezbytné pro účely oprávněných zájmů správce či třetí strany, kromě případů, kdy před těmito zájmy mají přednost zájmy nebo základní práva a svobody subjektu údajů.",
+            "code": "SVJ může instalovat kamerový systém se záznamem pro ochranu společného majetku a prevenci vandalismu na základě oprávněného zájmu (bez nutnosti 100% souhlasu všech osob), pokud kamery nesledují vstupy do soukromých bytů.",
+            "codeLabel": "Doporučení & Praxe pro SVJ"
+          },
+          "items": []
+        },
+        {
+          "widget_type": "attributes_table",
+          "title": "Právní metadata",
+          "tone": "neutral",
+          "data": {
+            "Předpis": "Nařízení Evropského parlamentu a Rady (EU) 2016/679 (GDPR)",
+            "Ustanovení": "Čl. 6",
+            "Oblast": "Bytové spoluvlastnictví & Veřejná správa",
+            "Jurisdikce": "Česká republika / EU"
+          },
+          "items": []
+        },
+        {
+          "widget_type": "references",
+          "title": "Oficiální znění předpisu",
+          "tone": "neutral",
+          "data": {
+            "references": [
+              {
+                "title": "Nařízení Evropského parlamentu a Rady (EU) 2016/679 (GDPR)",
+                "url": "https://eur-lex.europa.eu/legal-content/CS/TXT/?uri=CELEX%3A32016R0679#d1e1888-1-1"
+              }
+            ]
+          },
+          "items": []
+        }
+      ],
+      "provenance": {
+        "source": "statute:czech-legal-code",
+        "fetched_at": "2026-10-15T10:24:02.267799+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "ico-76543210": {
+      "@type": "ico",
+      "id": "ico-76543210",
+      "domain": "legal",
+      "type": "ico",
+      "label": "IČO 76543210",
+      "title": "Společenství vlastníků jednotek domu Jabloňová 24, Praha",
+      "severity": "INFO",
+      "badge": "EKONOMICKÝ SUBJEKT (ARES)",
+      "summary": "Společenství vlastníků jednotek domu Jabloňová 24, Praha, sídlem Jabloňová 1420/24, 106 00 Praha 10 – Záběhlice. 145 - Společenství vlastníků jednotek.",
+      "attributes": {
+        "IČO": "76543210",
+        "Subjekt": "Společenství vlastníků jednotek domu Jabloňová 24, Praha",
+        "Právní forma": "145 - Společenství vlastníků jednotek",
+        "Sídlo": "Jabloňová 1420/24, 106 00 Praha 10 – Záběhlice"
+      },
+      "metrics": {},
+      "classification": {},
+      "details": {},
+      "relationships": [],
+      "references": [
+        {
+          "title": "Registr ARES (Ministerstvo financí ČR)",
+          "url": "https://ares.gov.cz/ekonomicke-subjekty?ico=76543210"
+        },
+        {
+          "title": "Veřejný rejstřík a Sbírka listin (Justice.cz)",
+          "url": "https://or.justice.cz/ias/ui/rejstrik-$firma?ico=76543210"
+        }
+      ],
+      "aliases": [
+        "IČO 76543210",
+        "IČO: 76543210",
+        "IČ: 76543210",
+        "76543210"
+      ],
+      "widgets": [
+        {
+          "widget_type": "tactical_box",
+          "title": "Společenství vlastníků jednotek domu Jabloňová 24, Praha",
+          "tone": "info",
+          "data": {
+            "description": "Registr ekonomických subjektů (ARES): 145 - Společenství vlastníků jednotek.",
+            "code": "Sídlo: Jabloňová 1420/24, 106 00 Praha 10 – Záběhlice\nDatum vzniku: 2010-04-12\nStav subjektu: Aktivní",
+            "codeLabel": "Sídlo & Registrační údaje"
+          },
+          "items": []
+        },
+        {
+          "widget_type": "attributes_table",
+          "title": "Identifikační údaje",
+          "tone": "neutral",
+          "data": {
+            "IČO": "76543210",
+            "Subjekt": "Společenství vlastníků jednotek domu Jabloňová 24, Praha",
+            "Právní forma": "145 - Společenství vlastníků jednotek",
+            "Sídlo": "Jabloňová 1420/24, 106 00 Praha 10 – Záběhlice",
+            "Kontrolní součet": "Testovací / Vlastní formát"
+          },
+          "items": []
+        },
+        {
+          "widget_type": "references",
+          "title": "Veřejné registry & Sbírka listin",
+          "tone": "neutral",
+          "data": {
+            "references": [
+              {
+                "title": "Registr ARES (Ministerstvo financí ČR)",
+                "url": "https://ares.gov.cz/ekonomicke-subjekty?ico=76543210"
+              },
+              {
+                "title": "Veřejný rejstřík a Sbírka listin (Justice.cz)",
+                "url": "https://or.justice.cz/ias/ui/rejstrik-$firma?ico=76543210"
+              }
+            ]
+          },
+          "items": []
+        }
+      ],
+      "provenance": {
+        "source": "ares:cz-ministry-of-finance",
+        "fetched_at": "2026-10-15T10:24:02.267992+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "iban-CZ4401000014200076543210": {
+      "@type": "iban",
+      "id": "iban-CZ4401000014200076543210",
+      "domain": "finance",
+      "type": "iban",
+      "label": "1420-76543210/0100",
+      "title": "Účet 1420-76543210/0100 – Komerční banka, a.s.",
+      "severity": "INFO",
+      "badge": "BANKOVNÍ SPOJENÍ & QR PLATBA",
+      "summary": "Tuzemský bankovní účet 1420-76543210/0100 vedený u Komerční banka, a.s. (IBAN: CZ4401000014200076543210, BIC: KOMBCZPP).",
+      "attributes": {
+        "Číslo účtu": "1420-76543210/0100",
+        "IBAN": "CZ4401000014200076543210",
+        "Banka": "Komerční banka, a.s.",
+        "SWIFT / BIC": "KOMBCZPP"
+      },
+      "metrics": {},
+      "classification": {},
+      "details": {},
+      "relationships": [],
+      "references": [],
+      "aliases": [
+        "1420-76543210/0100",
+        "CZ4401000014200076543210",
+        "účet 1420-76543210/0100",
+        "č.ú. 1420-76543210/0100"
+      ],
+      "widgets": [
+        {
+          "widget_type": "qr_platba",
+          "title": "Czech QR Platba (Standard ČBA)",
+          "tone": "success",
+          "data": {
+            "account": "1420-76543210/0100",
+            "iban": "CZ4401000014200076543210",
+            "bank_code": "0100",
+            "bank_name": "Komerční banka, a.s.",
+            "bic": "KOMBCZPP",
+            "spayd": "SPD*1.0*ACC:CZ4401000014200076543210*MSG:Platba SVJ"
+          },
+          "items": []
+        },
+        {
+          "widget_type": "attributes_table",
+          "title": "Platební spojení",
+          "tone": "neutral",
+          "data": {
+            "Číslo účtu": "1420-76543210/0100",
+            "Mezinárodní formát IBAN": "CZ4401000014200076543210",
+            "SWIFT / BIC": "KOMBCZPP",
+            "Finanční instituce": "Komerční banka, a.s.",
+            "Kód banky": "0100",
+            "Měna": "CZK (Česká koruna)"
+          },
+          "items": []
+        }
+      ],
+      "provenance": {
+        "source": "cnb:czech-national-bank",
+        "fetched_at": "2026-10-15T10:24:02.268111+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "statute-1206": {
+      "@type": "statute",
+      "id": "statute-1206",
+      "domain": "legal",
+      "type": "statute",
+      "label": "§ 1206",
+      "title": "§ 1206 NOZ - Usnášeníschopnost shromáždění a hlasovací většina",
+      "severity": "INFO",
+      "badge": "ZÁKONNÉ USTANOVENÍ",
+      "summary": "Shromáždění je způsobilé usnášet se za přítomnosti vlastníků jednotek, kteří mají většinu všech hlasů. K přijetí rozhodnutí se vyžaduje většina hlasů přítomných vlastníků jednotek, ledaže stanovy vyžadují vyšší počet hlasů.",
+      "attributes": {
+        "Předpis": "Zákon č. 89/2012 Sb., občanský zákoník",
+        "Paragraf": "§ 1206"
+      },
+      "metrics": {},
+      "classification": {},
+      "details": {},
+      "relationships": [],
+      "references": [
+        {
+          "title": "Zákon č. 89/2012 Sb., občanský zákoník",
+          "url": "https://www.zakonyprolidi.cz/cs/2012-89#p1206"
+        }
+      ],
+      "aliases": [
+        "§ 1206",
+        "§1206",
+        "§ 1206",
+        "§ 1206 NOZ - Usnášeníschopnost shromáždění a hlasovací většina",
+        "§ 1206 NOZ"
+      ],
+      "widgets": [
+        {
+          "widget_type": "tactical_box",
+          "title": "§ 1206 NOZ - Usnášeníschopnost shromáždění a hlasovací většina",
+          "tone": "info",
+          "data": {
+            "description": "Shromáždění je způsobilé usnášet se za přítomnosti vlastníků jednotek, kteří mají většinu všech hlasů. K přijetí rozhodnutí se vyžaduje většina hlasů přítomných vlastníků jednotek, ledaže stanovy vyžadují vyšší počet hlasů.",
+            "code": "Váha hlasu každého vlastníka se řídí velikostí jeho podlahového podílu na společných částech domu. K platnému usnesení je nutná přítomnost nadpoloviční většiny všech hlasů.",
+            "codeLabel": "Doporučení & Praxe pro SVJ"
+          },
+          "items": []
+        },
+        {
+          "widget_type": "attributes_table",
+          "title": "Právní metadata",
+          "tone": "neutral",
+          "data": {
+            "Předpis": "Zákon č. 89/2012 Sb., občanský zákoník",
+            "Ustanovení": "§ 1206",
+            "Oblast": "Bytové spoluvlastnictví & Veřejná správa",
+            "Jurisdikce": "Česká republika / EU"
+          },
+          "items": []
+        },
+        {
+          "widget_type": "references",
+          "title": "Oficiální znění předpisu",
+          "tone": "neutral",
+          "data": {
+            "references": [
+              {
+                "title": "Zákon č. 89/2012 Sb., občanský zákoník",
+                "url": "https://www.zakonyprolidi.cz/cs/2012-89#p1206"
+              }
+            ]
+          },
+          "items": []
+        }
+      ],
+      "provenance": {
+        "source": "statute:czech-legal-code",
+        "fetched_at": "2026-10-15T10:24:02.268145+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "statute-1207": {
+      "@type": "statute",
+      "id": "statute-1207",
+      "domain": "legal",
+      "type": "statute",
+      "label": "§ 1207",
+      "title": "§ 1207 NOZ - Svolání shromáždění vlastníků",
+      "severity": "INFO",
+      "badge": "ZÁKONNÉ USTANOVENÍ",
+      "summary": "Statutární orgán svolá shromáždění k zasedání tak, aby se konalo nejméně jedenkrát do roka. Pozvánka musí být vlastníkům doručena nejméně 15 dnů přede dnem konání zasedání.",
+      "attributes": {
+        "Předpis": "Zákon č. 89/2012 Sb., občanský zákoník",
+        "Paragraf": "§ 1207"
+      },
+      "metrics": {},
+      "classification": {},
+      "details": {},
+      "relationships": [],
+      "references": [
+        {
+          "title": "Zákon č. 89/2012 Sb., občanský zákoník",
+          "url": "https://www.zakonyprolidi.cz/cs/2012-89#p1207"
+        }
+      ],
+      "aliases": [
+        "§ 1207",
+        "§1207",
+        "§ 1207",
+        "§ 1207 NOZ - Svolání shromáždění vlastníků",
+        "§ 1207 NOZ"
+      ],
+      "widgets": [
+        {
+          "widget_type": "tactical_box",
+          "title": "§ 1207 NOZ - Svolání shromáždění vlastníků",
+          "tone": "info",
+          "data": {
+            "description": "Statutární orgán svolá shromáždění k zasedání tak, aby se konalo nejméně jedenkrát do roka. Pozvánka musí být vlastníkům doručena nejméně 15 dnů přede dnem konání zasedání.",
+            "code": "K pozvánce se připojí podklady týkající se navrhovaného programu. Nedodržení 15denní zákonné lhůty může zakládat neplatnost přijatých usnesení.",
+            "codeLabel": "Doporučení & Praxe pro SVJ"
+          },
+          "items": []
+        },
+        {
+          "widget_type": "attributes_table",
+          "title": "Právní metadata",
+          "tone": "neutral",
+          "data": {
+            "Předpis": "Zákon č. 89/2012 Sb., občanský zákoník",
+            "Ustanovení": "§ 1207",
+            "Oblast": "Bytové spoluvlastnictví & Veřejná správa",
+            "Jurisdikce": "Česká republika / EU"
+          },
+          "items": []
+        },
+        {
+          "widget_type": "references",
+          "title": "Oficiální znění předpisu",
+          "tone": "neutral",
+          "data": {
+            "references": [
+              {
+                "title": "Zákon č. 89/2012 Sb., občanský zákoník",
+                "url": "https://www.zakonyprolidi.cz/cs/2012-89#p1207"
+              }
+            ]
+          },
+          "items": []
+        }
+      ],
+      "provenance": {
+        "source": "statute:czech-legal-code",
+        "fetched_at": "2026-10-15T10:24:02.268171+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "statute-1205": {
+      "@type": "statute",
+      "id": "statute-1205",
+      "domain": "legal",
+      "type": "statute",
+      "label": "§ 1205",
+      "title": "§ 1205 NOZ - Orgány společenství vlastníků jednotek",
+      "severity": "INFO",
+      "badge": "ZÁKONNÉ USTANOVENÍ",
+      "summary": "Nejvyšším orgánem společenství vlastníků je shromáždění. Statutárním orgánem je výbor, ledaže stanovy určí, že je statutárním orgánem předseda společenství vlastníků.",
+      "attributes": {
+        "Předpis": "Zákon č. 89/2012 Sb., občanský zákoník",
+        "Paragraf": "§ 1205"
+      },
+      "metrics": {},
+      "classification": {},
+      "details": {},
+      "relationships": [],
+      "references": [
+        {
+          "title": "Zákon č. 89/2012 Sb., občanský zákoník",
+          "url": "https://www.zakonyprolidi.cz/cs/2012-89#p1205"
+        }
+      ],
+      "aliases": [
+        "§ 1205",
+        "§1205",
+        "§ 1205",
+        "§ 1205 NOZ - Orgány společenství vlastníků jednotek",
+        "§ 1205 "
+      ],
+      "widgets": [
+        {
+          "widget_type": "tactical_box",
+          "title": "§ 1205 NOZ - Orgány společenství vlastníků jednotek",
+          "tone": "info",
+          "data": {
+            "description": "Nejvyšším orgánem společenství vlastníků je shromáždění. Statutárním orgánem je výbor, ledaže stanovy určí, že je statutárním orgánem předseda společenství vlastníků.",
+            "code": "Statutární orgán zastupuje společenství navenek ve všech věcech. Za výbor jednají zpravidla dva členové výboru společně.",
+            "codeLabel": "Doporučení & Praxe pro SVJ"
+          },
+          "items": []
+        },
+        {
+          "widget_type": "attributes_table",
+          "title": "Právní metadata",
+          "tone": "neutral",
+          "data": {
+            "Předpis": "Zákon č. 89/2012 Sb., občanský zákoník",
+            "Ustanovení": "§ 1205",
+            "Oblast": "Bytové spoluvlastnictví & Veřejná správa",
+            "Jurisdikce": "Česká republika / EU"
+          },
+          "items": []
+        },
+        {
+          "widget_type": "references",
+          "title": "Oficiální znění předpisu",
+          "tone": "neutral",
+          "data": {
+            "references": [
+              {
+                "title": "Zákon č. 89/2012 Sb., občanský zákoník",
+                "url": "https://www.zakonyprolidi.cz/cs/2012-89#p1205"
+              }
+            ]
+          },
+          "items": []
+        }
+      ],
+      "provenance": {
+        "source": "statute:czech-legal-code",
+        "fetched_at": "2026-10-15T10:24:02.268194+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "statute-1180": {
+      "@type": "statute",
+      "id": "statute-1180",
+      "domain": "legal",
+      "type": "statute",
+      "label": "§ 1180",
+      "title": "§ 1180 NOZ - Příspěvky na správu domu a pozemku (Fond oprav)",
+      "severity": "INFO",
+      "badge": "ZÁKONNÉ USTANOVENÍ",
+      "summary": "Vlastník jednotky přispívá na správu domu a pozemku v poměru odpovídajícím jeho podílu na společných prostorách, nebylo-li stanovami nebo dohodou všech vlastníků určeno jinak.",
+      "attributes": {
+        "Předpis": "Zákon č. 89/2012 Sb., občanský zákoník",
+        "Paragraf": "§ 1180"
+      },
+      "metrics": {},
+      "classification": {},
+      "details": {},
+      "relationships": [],
+      "references": [
+        {
+          "title": "Zákon č. 89/2012 Sb., občanský zákoník",
+          "url": "https://www.zakonyprolidi.cz/cs/2012-89#p1180"
+        }
+      ],
+      "aliases": [
+        "§ 1180",
+        "§1180",
+        "§ 1180",
+        "§ 1180 NOZ - Příspěvky na správu domu a pozemku (Fond oprav)",
+        "§ 1180 NOZ"
+      ],
+      "widgets": [
+        {
+          "widget_type": "tactical_box",
+          "title": "§ 1180 NOZ - Příspěvky na správu domu a pozemku (Fond oprav)",
+          "tone": "info",
+          "data": {
+            "description": "Vlastník jednotky přispívá na správu domu a pozemku v poměru odpovídajícím jeho podílu na společných prostorách, nebylo-li stanovami nebo dohodou všech vlastníků určeno jinak.",
+            "code": "Příspěvky na správu domu a pozemku (tzv. fond oprav) schvaluje shromáždění vlastníků. Zvýšení sazby za m² podlahové plochy je standardním bodem programu pro zajištění budoucích oprav.",
+            "codeLabel": "Doporučení & Praxe pro SVJ"
+          },
+          "items": []
+        },
+        {
+          "widget_type": "attributes_table",
+          "title": "Právní metadata",
+          "tone": "neutral",
+          "data": {
+            "Předpis": "Zákon č. 89/2012 Sb., občanský zákoník",
+            "Ustanovení": "§ 1180",
+            "Oblast": "Bytové spoluvlastnictví & Veřejná správa",
+            "Jurisdikce": "Česká republika / EU"
+          },
+          "items": []
+        },
+        {
+          "widget_type": "references",
+          "title": "Oficiální znění předpisu",
+          "tone": "neutral",
+          "data": {
+            "references": [
+              {
+                "title": "Zákon č. 89/2012 Sb., občanský zákoník",
+                "url": "https://www.zakonyprolidi.cz/cs/2012-89#p1180"
+              }
+            ]
+          },
+          "items": []
+        }
+      ],
+      "provenance": {
+        "source": "statute:czech-legal-code",
+        "fetched_at": "2026-10-15T10:24:02.268211+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "statute-67-8a": {
+      "@type": "statute",
+      "id": "statute-67-8a",
+      "domain": "legal",
+      "type": "statute",
+      "label": "§ 67-8a",
+      "title": "§ 8a Zák. č. 67/2013 Sb. - Měsíční informování o spotřebě tepla a vody",
+      "severity": "INFO",
+      "badge": "ZÁKONNÉ USTANOVENÍ",
+      "summary": "Jsou-li instalována dálkově odečítaná měřidla, poskytovatel služeb (SVJ) poskytne příjemci služeb (vlastníkovi) informace o spotřebě tepla na vytápění a centralizované poskytování teplé vody měsíčně.",
+      "attributes": {
+        "Předpis": "Zákon č. 67/2013 Sb., kterým se upravují některé otázky související s poskytováním plnění spojených s užíváním bytů",
+        "Paragraf": "§ 67-8a"
+      },
+      "metrics": {},
+      "classification": {},
+      "details": {},
+      "relationships": [],
+      "references": [
+        {
+          "title": "Zákon č. 67/2013 Sb., kterým se upravují některé otázky související s poskytováním plnění spojených s užíváním bytů",
+          "url": "https://www.zakonyprolidi.cz/cs/2013-67#p8a"
+        }
+      ],
+      "aliases": [
+        "§ 67-8a",
+        "§67-8a",
+        "§ 67-8a",
+        "§ 8a Zák. č. 67/2013 Sb. - Měsíční informování o spotřebě tepla a vody",
+        "§ 8a zákona o službách č. 67/2013 Sb.",
+        "§ 8a",
+        "§8a"
+      ],
+      "widgets": [
+        {
+          "widget_type": "tactical_box",
+          "title": "§ 8a Zák. č. 67/2013 Sb. - Měsíční informování o spotřebě tepla a vody",
+          "tone": "info",
+          "data": {
+            "description": "Jsou-li instalována dálkově odečítaná měřidla, poskytovatel služeb (SVJ) poskytne příjemci služeb (vlastníkovi) informace o spotřebě tepla na vytápění a centralizované poskytování teplé vody měsíčně.",
+            "code": "Ustanovení implementuje evropskou směrnici o energetické účinnosti (EED). Vyžaduje instalaci rádiových modulů s dálkovým odečtem a zřízení elektronického přístupu (portál/email).",
+            "codeLabel": "Doporučení & Praxe pro SVJ"
+          },
+          "items": []
+        },
+        {
+          "widget_type": "attributes_table",
+          "title": "Právní metadata",
+          "tone": "neutral",
+          "data": {
+            "Předpis": "Zákon č. 67/2013 Sb., kterým se upravují některé otázky související s poskytováním plnění spojených s užíváním bytů",
+            "Ustanovení": "§ 67-8a",
+            "Oblast": "Bytové spoluvlastnictví & Veřejná správa",
+            "Jurisdikce": "Česká republika / EU"
+          },
+          "items": []
+        },
+        {
+          "widget_type": "references",
+          "title": "Oficiální znění předpisu",
+          "tone": "neutral",
+          "data": {
+            "references": [
+              {
+                "title": "Zákon č. 67/2013 Sb., kterým se upravují některé otázky související s poskytováním plnění spojených s užíváním bytů",
+                "url": "https://www.zakonyprolidi.cz/cs/2013-67#p8a"
+              }
+            ]
+          },
+          "items": []
+        }
+      ],
+      "provenance": {
+        "source": "statute:czech-legal-code",
+        "fetched_at": "2026-10-15T10:24:02.268235+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    }
+  }
+}

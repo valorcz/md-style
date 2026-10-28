@@ -1,0 +1,22 @@
+# Python & Virtual Environments
+.venv/
+__pycache__/
+*.pyc
+
+# Local Data Cache
+data/cache/
+viewer/node_modules/
+.agents/
+
+# Transient Build Artifacts
+output/
+*.html
+*.pdf
+*.tmp.*
+*.tmp
+*-manifest.json
+
+# Allow checked-in documentation examples
+!examples/*.html
+!examples/*.pdf
+

@@ -1,0 +1,1679 @@
+{
+  "@context": {
+    "@vocab": "https://schema.org/",
+    "id": "@id",
+    "type": "@type",
+    "entities": "@graph",
+    "cve": "https://cve.mitre.org/schema/",
+    "statute": "https://schema.org/Legislation",
+    "ico": "https://schema.org/Organization",
+    "iban": "https://schema.org/BankOrCreditUnion",
+    "provenance": "http://www.w3.org/ns/prov#wasDerivedFrom",
+    "fetched_at": "http://www.w3.org/ns/prov#generatedAtTime",
+    "relationships": "https://schema.org/mentions"
+  },
+  "@type": "Dataset",
+  "version": "1.0",
+  "document_id": "sample-forensic-report",
+  "generated_at": "2026-10-27T17:08:10.726468+00:00",
+  "sources_digest": {},
+  "entities": {
+    "T1053.005": {
+      "@type": "mitre",
+      "id": "T1053.005",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1053.005",
+      "title": "T1053.005: Scheduled Task",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK EXECUTION / PERSISTENCE / PRIVILEGE ESCALATION",
+      "summary": "Adversaries may abuse the Windows Task Scheduler to perform task scheduling for initial or recurring execution of malicious code. There are multiple ways to access the Task Scheduler in Windows. The schtasks utility can be run directly on the command line, or the Task Scheduler can be opened through the GUI within the Administrator Tools...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Execution / Persistence / Privilege Escalation",
+        "Technique ID": "T1053.005"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Execution",
+          "Persistence",
+          "Privilege Escalation"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1053.005",
+        "Primary Tactic": "Execution / Persistence / Privilege Escalation",
+        "Detection & Defense Guidance": "Adversaries may abuse the Windows Task Scheduler to perform task scheduling for initial or recurring execution of malicious code. There are multiple ways to access the Task Scheduler in Windows. The schtasks utility can be run directly on the command line, or the Task Scheduler can be opened through the GUI within the Administrator Tools...",
+        "Platforms": "Windows"
+      },
+      "relationships": [
+        {
+          "target": "T1053",
+          "type": "mitre",
+          "relation": "subtechnique_of"
+        },
+        {
+          "target": "Event-4698",
+          "type": "winevent",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1053/005"
+        }
+      ],
+      "aliases": [
+        "T1053.005"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:mitre-attack",
+        "fetched_at": "2026-10-10T09:27:23.673163+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "T1571": {
+      "@type": "mitre",
+      "id": "T1571",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1571",
+      "title": "T1571: Non-Standard Port",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK COMMAND AND CONTROL",
+      "summary": "Adversaries may communicate using a protocol and port pairing that are typically not associated. For example, HTTPS over port 8088 or port 587 as opposed to the traditional port 443. Adversaries may make changes to the standard port used by a protocol to bypass filtering or muddle analysis/parsing of network data. Adversaries may also mak...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Command And Control",
+        "Technique ID": "T1571"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Command And Control"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1571",
+        "Primary Tactic": "Command And Control",
+        "Detection & Defense Guidance": "Adversaries may communicate using a protocol and port pairing that are typically not associated. For example, HTTPS over port 8088 or port 587 as opposed to the traditional port 443. Adversaries may make changes to the standard port used by a protocol to bypass filtering or muddle analysis/parsing of network data. Adversaries may also mak...",
+        "Platforms": "ESXi, Linux, macOS, Windows"
+      },
+      "relationships": [],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1571"
+        }
+      ],
+      "aliases": [
+        "T1571"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:mitre-attack",
+        "fetched_at": "2026-10-10T09:27:23.673253+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "T1068": {
+      "@type": "mitre",
+      "id": "T1068",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1068",
+      "title": "T1068: Exploitation for Privilege Escalation",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK PRIVILEGE ESCALATION",
+      "summary": "Adversaries may exploit software vulnerabilities in an attempt to elevate privileges. Exploitation of a software vulnerability occurs when an adversary takes advantage of a programming error in a program, service, or within the operating system software or kernel itself to execute adversary-controlled code. Security constructs such as per...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Privilege Escalation",
+        "Technique ID": "T1068"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Privilege Escalation"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1068",
+        "Primary Tactic": "Privilege Escalation",
+        "Detection & Defense Guidance": "Adversaries may exploit software vulnerabilities in an attempt to elevate privileges. Exploitation of a software vulnerability occurs when an adversary takes advantage of a programming error in a program, service, or within the operating system software or kernel itself to execute adversary-controlled code. Security constructs such as per...",
+        "Platforms": "Containers, Linux, macOS, Windows"
+      },
+      "relationships": [],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1068"
+        }
+      ],
+      "aliases": [
+        "T1068"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:mitre-attack",
+        "fetched_at": "2026-10-10T09:27:23.673287+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "Security.evtx": {
+      "@type": "evtx",
+      "id": "Security.evtx",
+      "domain": "cyber",
+      "type": "evtx",
+      "label": "Security.evtx",
+      "title": "Windows Security Event Log",
+      "severity": "INFO",
+      "badge": "LOG CHANNEL",
+      "summary": "Primary forensic repository for authentication, user rights assignment, account management, audit policy changes, process creation (EID 4688), and object access auditing.",
+      "attributes": {
+        "Channel Path": "%SystemRoot%\\System32\\Winevt\\Logs\\Security.evtx",
+        "Channel Name": "Security",
+        "Provider": "Security",
+        "Audit Recommendation": "Enable Audit Process Creation (with CommandLine auditing), Audit Logon, Audit Account Management, and Audit Special Logon.",
+        "Retention": "Fixed maximum size (typically 128MB to 2GB in Enterprise). Wrap-around overwrite policy."
+      },
+      "metrics": {
+        "default_format": "Binary XML (.evtx)",
+        "log_scope": "Operating System"
+      },
+      "classification": {
+        "channel": "Security",
+        "mitre_tactics": [
+          "Initial Access",
+          "Privilege Escalation",
+          "Credential Access",
+          "Defense Evasion"
+        ],
+        "log_type": "Windows Event Log"
+      },
+      "details": {
+        "Channel Path": "%SystemRoot%\\System32\\Winevt\\Logs\\Security.evtx",
+        "Logging Channel": "Security",
+        "Forensic Role": "Primary forensic repository for authentication, user rights assignment, account management, audit policy changes, process creation (EID 4688), and object access auditing.",
+        "Key Event IDs": "4624 (Logon), 4625 (Failed Logon), 4672 (Admin Privs), 4688 (Process Created), 4720 (User Created), 4726 (User Deleted), 4728 (Member Added to Global Group), 4738 (User Account Modified), 1102 (Log Cleared)",
+        "Audit Policy": "Enable Audit Process Creation (with CommandLine auditing), Audit Logon, Audit Account Management, and Audit Special Logon.",
+        "Retention Policy": "Fixed maximum size (typically 128MB to 2GB in Enterprise). Wrap-around overwrite policy."
+      },
+      "relationships": [
+        {
+          "target": "Event-4624",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-4625",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-4672",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-4688",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-4720",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-4726",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-4728",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-4738",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-1102",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Initial Access",
+          "type": "mitre",
+          "relation": "monitors_tactic"
+        },
+        {
+          "target": "Privilege Escalation",
+          "type": "mitre",
+          "relation": "monitors_tactic"
+        },
+        {
+          "target": "Credential Access",
+          "type": "mitre",
+          "relation": "monitors_tactic"
+        },
+        {
+          "target": "Defense Evasion",
+          "type": "mitre",
+          "relation": "monitors_tactic"
+        },
+        {
+          "target": "Event-4698",
+          "type": "winevent",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "Microsoft Documentation",
+          "url": "https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/windows-security-log"
+        }
+      ],
+      "aliases": [
+        "Security.evtx",
+        "Security",
+        "Security.evtx",
+        "Security"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:windows-events",
+        "fetched_at": "2026-10-10T09:27:23.673347+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "T1003.001": {
+      "@type": "mitre",
+      "id": "T1003.001",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1003.001",
+      "title": "T1003.001: LSASS Memory",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK CREDENTIAL ACCESS",
+      "summary": "Adversaries may attempt to access credential material stored in the process memory of the Local Security Authority Subsystem Service (LSASS). After a user logs on, the system generates and stores a variety of credential materials in LSASS process memory. These credential materials can be harvested by an administrative user or SYSTEM and u...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Credential Access",
+        "Technique ID": "T1003.001"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Credential Access"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1003.001",
+        "Primary Tactic": "Credential Access",
+        "Detection & Defense Guidance": "Adversaries may attempt to access credential material stored in the process memory of the Local Security Authority Subsystem Service (LSASS). After a user logs on, the system generates and stores a variety of credential materials in LSASS process memory. These credential materials can be harvested by an administrative user or SYSTEM and u...",
+        "Platforms": "Windows"
+      },
+      "relationships": [
+        {
+          "target": "T1003",
+          "type": "mitre",
+          "relation": "subtechnique_of"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1003/001"
+        }
+      ],
+      "aliases": [
+        "T1003.001"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:mitre-attack",
+        "fetched_at": "2026-10-10T09:27:23.673552+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "T1059.001": {
+      "@type": "mitre",
+      "id": "T1059.001",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1059.001",
+      "title": "T1059.001: PowerShell",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK EXECUTION",
+      "summary": "Adversaries may abuse PowerShell commands and scripts for execution. PowerShell is a powerful interactive command-line interface and scripting environment included in the Windows operating system. Adversaries can use PowerShell to perform a number of actions, including discovery of information and execution of code. Examples include the <...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Execution",
+        "Technique ID": "T1059.001"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Execution"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1059.001",
+        "Primary Tactic": "Execution",
+        "Detection & Defense Guidance": "Adversaries may abuse PowerShell commands and scripts for execution. PowerShell is a powerful interactive command-line interface and scripting environment included in the Windows operating system. Adversaries can use PowerShell to perform a number of actions, including discovery of information and execution of code. Examples include the <...",
+        "Platforms": "Windows"
+      },
+      "relationships": [
+        {
+          "target": "T1059",
+          "type": "mitre",
+          "relation": "subtechnique_of"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1059/001"
+        }
+      ],
+      "aliases": [
+        "T1059.001"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:mitre-attack",
+        "fetched_at": "2026-10-10T09:27:23.673578+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "System.evtx": {
+      "@type": "evtx",
+      "id": "System.evtx",
+      "domain": "cyber",
+      "type": "evtx",
+      "label": "System.evtx",
+      "title": "Windows System Event Log",
+      "severity": "INFO",
+      "badge": "LOG CHANNEL",
+      "summary": "Contains events logged by Windows system components, service control manager, hardware changes, kernel drivers, and system startup/shutdown.",
+      "attributes": {
+        "Channel Path": "%SystemRoot%\\System32\\Winevt\\Logs\\System.evtx",
+        "Channel Name": "System",
+        "Provider": "System",
+        "Audit Recommendation": "Monitor Service Control Manager events for unexpected service binaries executing from temp or user-writable directories.",
+        "Retention": "Default 20MB. Circular overwrite policy."
+      },
+      "metrics": {
+        "default_format": "Binary XML (.evtx)",
+        "log_scope": "Operating System"
+      },
+      "classification": {
+        "channel": "System",
+        "mitre_tactics": [
+          "Persistence",
+          "Execution",
+          "Defense Evasion"
+        ],
+        "log_type": "Windows Event Log"
+      },
+      "details": {
+        "Channel Path": "%SystemRoot%\\System32\\Winevt\\Logs\\System.evtx",
+        "Logging Channel": "System",
+        "Forensic Role": "Contains events logged by Windows system components, service control manager, hardware changes, kernel drivers, and system startup/shutdown.",
+        "Key Event IDs": "7045 (New Service Installed), 7036 (Service State Change), 7040 (Service Start Type Changed), 104 (Log Cleared), 1074 (System Shutdown/Reboot), 41 (Kernel Power / BSOD), 6005 (EventLog Started), 6006 (EventLog Stopped)",
+        "Audit Policy": "Monitor Service Control Manager events for unexpected service binaries executing from temp or user-writable directories.",
+        "Retention Policy": "Default 20MB. Circular overwrite policy."
+      },
+      "relationships": [
+        {
+          "target": "Event-7045",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-7036",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-7040",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-104",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-1074",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-41",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-6005",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Event-6006",
+          "type": "winevent",
+          "relation": "hosts_event"
+        },
+        {
+          "target": "Persistence",
+          "type": "mitre",
+          "relation": "monitors_tactic"
+        },
+        {
+          "target": "Execution",
+          "type": "mitre",
+          "relation": "monitors_tactic"
+        },
+        {
+          "target": "Defense Evasion",
+          "type": "mitre",
+          "relation": "monitors_tactic"
+        }
+      ],
+      "references": [
+        {
+          "title": "Microsoft Documentation",
+          "url": "https://learn.microsoft.com/en-us/troubleshoot/windows-server/system-management/system-log-events"
+        }
+      ],
+      "aliases": [
+        "System.evtx",
+        "System",
+        "System.evtx",
+        "System"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:windows-events",
+        "fetched_at": "2026-10-10T09:27:23.673618+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "T1190": {
+      "@type": "mitre",
+      "id": "T1190",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1190",
+      "title": "T1190: Exploit Public-Facing Application",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK INITIAL ACCESS",
+      "summary": "Adversaries may attempt to exploit a weakness in an Internet-facing host or system to initially access a network. The weakness in the system can be a software bug, a temporary glitch, or a misconfiguration. Exploited applications are often websites/web servers, but can also include databases (like SQL), standard services (like SMB or SSH)...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Initial Access",
+        "Technique ID": "T1190"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Initial Access"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1190",
+        "Primary Tactic": "Initial Access",
+        "Detection & Defense Guidance": "Adversaries may attempt to exploit a weakness in an Internet-facing host or system to initially access a network. The weakness in the system can be a software bug, a temporary glitch, or a misconfiguration. Exploited applications are often websites/web servers, but can also include databases (like SQL), standard services (like SMB or SSH)...",
+        "Platforms": "Containers, ESXi, IaaS, Linux, macOS, Network Devices, Windows"
+      },
+      "relationships": [],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1190"
+        }
+      ],
+      "aliases": [
+        "T1190"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:mitre-attack",
+        "fetched_at": "2026-10-10T09:27:23.673662+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "T1071.001": {
+      "@type": "mitre",
+      "id": "T1071.001",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1071.001",
+      "title": "T1071.001: Web Protocols",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK COMMAND AND CONTROL",
+      "summary": "Adversaries may communicate using application layer protocols associated with web traffic to avoid detection/network filtering by blending in with existing traffic. Commands to the remote system, and often the results of those commands, will be embedded within the protocol traffic between the client and server. Protocols such as HTTP/S an...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Command And Control",
+        "Technique ID": "T1071.001"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Command And Control"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1071.001",
+        "Primary Tactic": "Command And Control",
+        "Detection & Defense Guidance": "Adversaries may communicate using application layer protocols associated with web traffic to avoid detection/network filtering by blending in with existing traffic. Commands to the remote system, and often the results of those commands, will be embedded within the protocol traffic between the client and server. Protocols such as HTTP/S an...",
+        "Platforms": "ESXi, Linux, macOS, Network Devices, Windows"
+      },
+      "relationships": [
+        {
+          "target": "T1071",
+          "type": "mitre",
+          "relation": "subtechnique_of"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1071/001"
+        }
+      ],
+      "aliases": [
+        "T1071.001"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:mitre-attack",
+        "fetched_at": "2026-10-10T09:27:23.673681+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "Event-4698": {
+      "@type": "winevent",
+      "id": "Event-4698",
+      "domain": "cyber",
+      "type": "winevent",
+      "label": "Event ID 4698",
+      "title": "Event ID 4698: A scheduled task was created",
+      "severity": "INFO",
+      "badge": "WIN EVENT 4698",
+      "summary": "Security event 4698 records a new scheduled task with its full XML: command, arguments, run-as account and triggers. A key persistence and remote exec signal.",
+      "attributes": {
+        "Event Log Channel": "Security",
+        "Investigation Tips": "Parse TaskContent and extract Command, Arguments, UserId and RunLevel; review anything not in your baseline of known task names and commands. | Look for 4699 with the same TaskName shortly after — create/run/delete is typical of remote execution. | Pivot on SubjectLogonId to the 4624 on the same host; a type 3 logon means the task was created remotely and gives the source IP. | Confirm execution in Task Scheduler Operational (106, 200, 201) and 4688 children of `svchost.exe` / `taskeng.exe`.",
+        "Audit Category": "Windows Security Auditing",
+        "Key Event Fields": "SubjectUserName (Account that made the change. For remote task management (`schtasks /s`, Impacket) this is the remote account.), SubjectDomainName (Domain or computer name of that account.), SubjectLogonId (Logon session of the account; pivot to 4624 on the same host to find where it came from.), TaskName (Full task path, e.g. `\\Microsoft\\Windows\\...` for built-in tasks. Tasks at the root (`\\Name`) or with names mimicking Microsoft ones deserve a look.), TaskContent (The task's full XML definition. Read `Actions/Exec/Command` and `Arguments` (what runs), `Principals` (`UserId`, `RunLevel` — `HighestAvailable` means elevated), `Triggers` and `Settings/Hidden`.), ClientProcessId (PID of the process that requested the change, on builds that log it. Match it to 4688.)",
+        "Attacker Behavior": "Persistence tasks running `powershell.exe`, `cmd.exe`, `rundll32.exe`, `mshta.exe` or a binary in `AppData` / `ProgramData` / `C:\\Users\\Public`, often at logon or every few minutes. | Remote execution: a task created by a remote account (network logon), run as SYSTEM, then deleted (4699) within seconds. | Tasks with `Hidden` set to true, names imitating Microsoft tasks, or placed at the root of the task library."
+      },
+      "metrics": {
+        "event_id": 4698
+      },
+      "classification": {
+        "channel": "Security",
+        "category": "Windows Security Auditing",
+        "log_type": "Windows Event Log"
+      },
+      "details": {
+        "Event Log Channel": "Security",
+        "Investigation Tips": "Parse TaskContent and extract Command, Arguments, UserId and RunLevel; review anything not in your baseline of known task names and commands. | Look for 4699 with the same TaskName shortly after — create/run/delete is typical of remote execution. | Pivot on SubjectLogonId to the 4624 on the same host; a type 3 logon means the task was created remotely and gives the source IP. | Confirm execution in Task Scheduler Operational (106, 200, 201) and 4688 children of `svchost.exe` / `taskeng.exe`.",
+        "Audit Category": "Windows Security Auditing",
+        "Key Event Fields": "SubjectUserName (Account that made the change. For remote task management (`schtasks /s`, Impacket) this is the remote account.), SubjectDomainName (Domain or computer name of that account.), SubjectLogonId (Logon session of the account; pivot to 4624 on the same host to find where it came from.), TaskName (Full task path, e.g. `\\Microsoft\\Windows\\...` for built-in tasks. Tasks at the root (`\\Name`) or with names mimicking Microsoft ones deserve a look.), TaskContent (The task's full XML definition. Read `Actions/Exec/Command` and `Arguments` (what runs), `Principals` (`UserId`, `RunLevel` — `HighestAvailable` means elevated), `Triggers` and `Settings/Hidden`.), ClientProcessId (PID of the process that requested the change, on builds that log it. Match it to 4688.)",
+        "Attacker Behavior": "Persistence tasks running `powershell.exe`, `cmd.exe`, `rundll32.exe`, `mshta.exe` or a binary in `AppData` / `ProgramData` / `C:\\Users\\Public`, often at logon or every few minutes. | Remote execution: a task created by a remote account (network logon), run as SYSTEM, then deleted (4699) within seconds. | Tasks with `Hidden` set to true, names imitating Microsoft tasks, or placed at the root of the task library."
+      },
+      "relationships": [
+        {
+          "target": "Security.evtx",
+          "type": "evtx",
+          "relation": "logged_in_channel"
+        },
+        {
+          "target": "T1053.005",
+          "type": "mitre",
+          "relation": "detects_technique"
+        }
+      ],
+      "references": [
+        {
+          "title": "Event Encyclopedia Reference",
+          "url": "https://www.evtxparser.com/en/events/security/4698"
+        }
+      ],
+      "aliases": [
+        "Event ID 4698",
+        "EID 4698",
+        "Event 4698",
+        "4698"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:windows-events",
+        "fetched_at": "2026-10-10T09:27:23.673710+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "T1053": {
+      "@type": "mitre",
+      "id": "T1053",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1053",
+      "title": "T1053: Scheduled Task/Job",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK EXECUTION / PERSISTENCE / PRIVILEGE ESCALATION",
+      "summary": "Adversaries may abuse task scheduling functionality to facilitate initial or recurring execution of malicious code. Utilities exist within all major operating systems to schedule programs or scripts to be executed at a specified date and time. A task can also be scheduled on a remote system, provided the proper authentication is met (ex:...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Execution / Persistence / Privilege Escalation",
+        "Technique ID": "T1053"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Execution",
+          "Persistence",
+          "Privilege Escalation"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1053",
+        "Primary Tactic": "Execution / Persistence / Privilege Escalation",
+        "Detection & Defense Guidance": "Adversaries may abuse task scheduling functionality to facilitate initial or recurring execution of malicious code. Utilities exist within all major operating systems to schedule programs or scripts to be executed at a specified date and time. A task can also be scheduled on a remote system, provided the proper authentication is met (ex:...",
+        "Platforms": "Containers, ESXi, Linux, macOS, Network Devices, Windows"
+      },
+      "relationships": [
+        {
+          "target": "T1053.005",
+          "type": "mitre",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1053"
+        }
+      ],
+      "aliases": [
+        "T1053"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:T1053.005",
+        "fetched_at": "2026-10-10T09:27:23.673783+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "T1053.005",
+          "relation": "subtechnique_of"
+        }
+      }
+    },
+    "T1003": {
+      "@type": "mitre",
+      "id": "T1003",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1003",
+      "title": "T1003: OS Credential Dumping",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK CREDENTIAL ACCESS",
+      "summary": "Adversaries may attempt to dump credentials to obtain account login and credential material, normally in the form of a hash or a clear text password. Credentials can be obtained from OS caches, memory, or structures. Credentials can then be used to perform Lateral Movement and access restricted information. Several of the tools mentioned...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Credential Access",
+        "Technique ID": "T1003"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Credential Access"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1003",
+        "Primary Tactic": "Credential Access",
+        "Detection & Defense Guidance": "Adversaries may attempt to dump credentials to obtain account login and credential material, normally in the form of a hash or a clear text password. Credentials can be obtained from OS caches, memory, or structures. Credentials can then be used to perform Lateral Movement and access restricted information. Several of the tools mentioned...",
+        "Platforms": "Linux, macOS, Windows"
+      },
+      "relationships": [
+        {
+          "target": "T1003.001",
+          "type": "mitre",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1003"
+        }
+      ],
+      "aliases": [
+        "T1003"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:T1003.001",
+        "fetched_at": "2026-10-10T09:27:23.673861+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "T1003.001",
+          "relation": "subtechnique_of"
+        }
+      }
+    },
+    "T1059": {
+      "@type": "mitre",
+      "id": "T1059",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1059",
+      "title": "T1059: Command and Scripting Interpreter",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK EXECUTION",
+      "summary": "Adversaries may abuse command and script interpreters to execute commands, scripts, or binaries. These interfaces and languages provide ways of interacting with computer systems and are a common feature across many different platforms. Most systems come with some built-in command-line interface and scripting capabilities, for example, mac...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Execution",
+        "Technique ID": "T1059"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Execution"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1059",
+        "Primary Tactic": "Execution",
+        "Detection & Defense Guidance": "Adversaries may abuse command and script interpreters to execute commands, scripts, or binaries. These interfaces and languages provide ways of interacting with computer systems and are a common feature across many different platforms. Most systems come with some built-in command-line interface and scripting capabilities, for example, mac...",
+        "Platforms": "Containers, ESXi, IaaS, Identity Provider, Linux, macOS, Network Devices, Office Suite, SaaS, Windows"
+      },
+      "relationships": [
+        {
+          "target": "T1059.001",
+          "type": "mitre",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1059"
+        }
+      ],
+      "aliases": [
+        "T1059"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:T1059.001",
+        "fetched_at": "2026-10-10T09:27:23.673902+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "T1059.001",
+          "relation": "subtechnique_of"
+        }
+      }
+    },
+    "T1071": {
+      "@type": "mitre",
+      "id": "T1071",
+      "domain": "cyber",
+      "type": "mitre",
+      "label": "T1071",
+      "title": "T1071: Application Layer Protocol",
+      "severity": "HIGH",
+      "badge": "MITRE ATT&CK COMMAND AND CONTROL",
+      "summary": "Adversaries may communicate using OSI application layer protocols to avoid detection/network filtering by blending in with existing traffic. Commands to the remote system, and often the results of those commands, will be embedded within the protocol traffic between the client and server. Adversaries may utilize many different protocols, i...",
+      "attributes": {
+        "Framework": "MITRE ATT&CK",
+        "Tactic": "Command And Control",
+        "Technique ID": "T1071"
+      },
+      "metrics": {
+        "matrix_version": "v14",
+        "scope": "Enterprise ATT&CK"
+      },
+      "classification": {
+        "tactics": [
+          "Command And Control"
+        ],
+        "framework": "MITRE ATT&CK Enterprise Matrix"
+      },
+      "details": {
+        "Technique Identifier": "T1071",
+        "Primary Tactic": "Command And Control",
+        "Detection & Defense Guidance": "Adversaries may communicate using OSI application layer protocols to avoid detection/network filtering by blending in with existing traffic. Commands to the remote system, and often the results of those commands, will be embedded within the protocol traffic between the client and server. Adversaries may utilize many different protocols, i...",
+        "Platforms": "Linux, macOS, Windows, Network Devices, ESXi"
+      },
+      "relationships": [
+        {
+          "target": "T1071.001",
+          "type": "mitre",
+          "relation": "referenced_by"
+        }
+      ],
+      "references": [
+        {
+          "title": "MITRE ATT&CK Matrix",
+          "url": "https://attack.mitre.org/techniques/T1071"
+        }
+      ],
+      "aliases": [
+        "T1071"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "transitive:T1071.001",
+        "fetched_at": "2026-10-10T09:27:23.673928+00:00",
+        "status": "resolved",
+        "manual_override": false,
+        "details": {
+          "discovered_via": "T1071.001",
+          "relation": "subtechnique_of"
+        }
+      }
+    },
+    "198.51.100.44": {
+      "@type": "ip",
+      "id": "198.51.100.44",
+      "domain": "cyber",
+      "type": "ip",
+      "label": "198.51.100.44",
+      "title": "198.51.100.44 (RFC 1918 Private)",
+      "severity": "INFO",
+      "badge": "INTERNAL RFC 1918",
+      "summary": "RFC 1918 Private network endpoint.",
+      "attributes": {
+        "Network Scope": "RFC 1918 Private",
+        "Organization": "Internal Infrastructure",
+        "ASN": "N/A (Private)",
+        "Location": "Local / Private",
+        "Ports": "N/A"
+      },
+      "metrics": {
+        "ip_version": 4,
+        "is_private": true,
+        "open_ports_count": 0,
+        "vulns_count": 0
+      },
+      "classification": {
+        "scope": "RFC 1918 Private",
+        "is_private": true,
+        "asn": "N/A (Private)",
+        "org": "Internal Infrastructure"
+      },
+      "details": {
+        "IP Address": "198.51.100.44",
+        "Network Scope": "Internal Intranet Private Network (RFC 1918 / RFC 4193)",
+        "Organization": "Internal Infrastructure",
+        "Autonomous System (ASN)": "N/A (Private)",
+        "Internet Service Provider": "Private Intranet",
+        "Geographic Location": "Local / Private",
+        "Reverse DNS (PTR)": "None resolved",
+        "Open Ports": "None scanned",
+        "Known Vulnerabilities": "None reported"
+      },
+      "relationships": [],
+      "references": [],
+      "aliases": [
+        "198.51.100.44"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "heuristic:ipaddress",
+        "fetched_at": "2026-10-11T10:23:09.368653+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "445a6c12b9d834a9812f00a5d29e71ab": {
+      "@type": "hash",
+      "id": "445a6c12b9d834a9812f00a5d29e71ab",
+      "domain": "cyber",
+      "type": "hash",
+      "label": "445a6c12b9d834a9812f00a5d29e71ab",
+      "title": "MD5 Digest: 445a6c12b9d8...9e71ab",
+      "severity": "INFO",
+      "badge": "MD5 HASH",
+      "summary": "128-bit MD5 cryptographic file hash. Status: Cryptographically Broken (Vulnerable to Pre-image & Collision Attacks).",
+      "attributes": {
+        "Algorithm": "MD5",
+        "Length": "128 bits",
+        "Detection": "N/A",
+        "Type": "Cryptographic Digest"
+      },
+      "metrics": {
+        "bit_length": 128,
+        "malicious_engines": 0,
+        "total_engines": 0
+      },
+      "classification": {
+        "algorithm": "MD5",
+        "file_type": "Cryptographic Digest",
+        "threat_label": ""
+      },
+      "details": {
+        "Hash Value": "445a6c12b9d834a9812f00a5d29e71ab",
+        "Algorithm": "MD5",
+        "Bit Length": "128 bits",
+        "Security Status": "Cryptographically Broken (Vulnerable to Pre-image & Collision Attacks)",
+        "Recommended Use": "Legacy Checksum Verification Only",
+        "Detection Ratio": "Unchecked",
+        "File Type Classification": "Cryptographic Digest",
+        "Identified Threat Label": "None assigned"
+      },
+      "relationships": [],
+      "references": [
+        {
+          "title": "VirusTotal Intelligence",
+          "url": "https://www.virustotal.com/gui/file/445a6c12b9d834a9812f00a5d29e71ab"
+        },
+        {
+          "title": "MalwareBazaar Sample Search",
+          "url": "https://bazaar.abuse.ch/sample/445a6c12b9d834a9812f00a5d29e71ab/"
+        },
+        {
+          "title": "Hybrid Analysis Sandbox",
+          "url": "https://www.hybrid-analysis.com/search?query=445a6c12b9d834a9812f00a5d29e71ab"
+        }
+      ],
+      "aliases": [
+        "445a6c12b9d834a9812f00a5d29e71ab",
+        "445A6C12B9D834A9812F00A5D29E71AB",
+        "445a6c12b9d8...9e71ab"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:cryptographic",
+        "fetched_at": "2026-10-11T10:23:09.369052+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "8f14e45fceea167a5a36dedd4bea2543": {
+      "@type": "hash",
+      "id": "8f14e45fceea167a5a36dedd4bea2543",
+      "domain": "cyber",
+      "type": "hash",
+      "label": "8f14e45fceea167a5a36dedd4bea2543",
+      "title": "MD5 Digest: 8f14e45fceea...ea2543",
+      "severity": "INFO",
+      "badge": "MD5 HASH",
+      "summary": "128-bit MD5 cryptographic file hash. Status: Cryptographically Broken (Vulnerable to Pre-image & Collision Attacks).",
+      "attributes": {
+        "Algorithm": "MD5",
+        "Length": "128 bits",
+        "Detection": "N/A",
+        "Type": "Cryptographic Digest"
+      },
+      "metrics": {
+        "bit_length": 128,
+        "malicious_engines": 0,
+        "total_engines": 0
+      },
+      "classification": {
+        "algorithm": "MD5",
+        "file_type": "Cryptographic Digest",
+        "threat_label": ""
+      },
+      "details": {
+        "Hash Value": "8f14e45fceea167a5a36dedd4bea2543",
+        "Algorithm": "MD5",
+        "Bit Length": "128 bits",
+        "Security Status": "Cryptographically Broken (Vulnerable to Pre-image & Collision Attacks)",
+        "Recommended Use": "Legacy Checksum Verification Only",
+        "Detection Ratio": "Unchecked",
+        "File Type Classification": "Cryptographic Digest",
+        "Identified Threat Label": "None assigned"
+      },
+      "relationships": [],
+      "references": [
+        {
+          "title": "VirusTotal Intelligence",
+          "url": "https://www.virustotal.com/gui/file/8f14e45fceea167a5a36dedd4bea2543"
+        },
+        {
+          "title": "MalwareBazaar Sample Search",
+          "url": "https://bazaar.abuse.ch/sample/8f14e45fceea167a5a36dedd4bea2543/"
+        },
+        {
+          "title": "Hybrid Analysis Sandbox",
+          "url": "https://www.hybrid-analysis.com/search?query=8f14e45fceea167a5a36dedd4bea2543"
+        }
+      ],
+      "aliases": [
+        "8f14e45fceea167a5a36dedd4bea2543",
+        "8F14E45FCEEA167A5A36DEDD4BEA2543",
+        "8f14e45fceea...ea2543"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:cryptographic",
+        "fetched_at": "2026-10-11T10:23:09.369287+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "7d8e9a2b4c1f0e3d5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f": {
+      "@type": "hash",
+      "id": "7d8e9a2b4c1f0e3d5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f",
+      "domain": "cyber",
+      "type": "hash",
+      "label": "7d8e9a2b4c1f0e3d5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f",
+      "title": "SHA-256 Digest: 7d8e9a2b4c1f...6d7e8f",
+      "severity": "INFO",
+      "badge": "SHA-256 HASH",
+      "summary": "256-bit SHA-256 cryptographic file hash. Status: Cryptographically Secure (NIST FIPS 180-4 Approved).",
+      "attributes": {
+        "Algorithm": "SHA-256",
+        "Length": "256 bits",
+        "Detection": "N/A",
+        "Type": "Cryptographic Digest"
+      },
+      "metrics": {
+        "bit_length": 256,
+        "malicious_engines": 0,
+        "total_engines": 0
+      },
+      "classification": {
+        "algorithm": "SHA-256",
+        "file_type": "Cryptographic Digest",
+        "threat_label": ""
+      },
+      "details": {
+        "Hash Value": "7d8e9a2b4c1f0e3d5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f",
+        "Algorithm": "SHA-256",
+        "Bit Length": "256 bits",
+        "Security Status": "Cryptographically Secure (NIST FIPS 180-4 Approved)",
+        "Recommended Use": "Digital Signatures, File Integrity, Forensic Evidence Verification",
+        "Detection Ratio": "Unchecked",
+        "File Type Classification": "Cryptographic Digest",
+        "Identified Threat Label": "None assigned"
+      },
+      "relationships": [],
+      "references": [
+        {
+          "title": "VirusTotal Intelligence",
+          "url": "https://www.virustotal.com/gui/file/7d8e9a2b4c1f0e3d5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f"
+        },
+        {
+          "title": "MalwareBazaar Sample Search",
+          "url": "https://bazaar.abuse.ch/sample/7d8e9a2b4c1f0e3d5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f/"
+        },
+        {
+          "title": "Hybrid Analysis Sandbox",
+          "url": "https://www.hybrid-analysis.com/search?query=7d8e9a2b4c1f0e3d5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f"
+        }
+      ],
+      "aliases": [
+        "7d8e9a2b4c1f0e3d5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f",
+        "7D8E9A2B4C1F0E3D5A6B7C8D9E0F1A2B3C4D5E6F7A8B9C0D1E2F3A4B5C6D7E8F",
+        "7d8e9a2b4c1f...6d7e8f"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:cryptographic",
+        "fetched_at": "2026-10-11T10:23:09.369401+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "a3c5f891b24d78e3105cf4e819b7d206f4a38751e1293a5b67cd10f92b84e031": {
+      "@type": "hash",
+      "id": "a3c5f891b24d78e3105cf4e819b7d206f4a38751e1293a5b67cd10f92b84e031",
+      "domain": "cyber",
+      "type": "hash",
+      "label": "a3c5f891b24d78e3105cf4e819b7d206f4a38751e1293a5b67cd10f92b84e031",
+      "title": "SHA-256 Digest: a3c5f891b24d...84e031",
+      "severity": "INFO",
+      "badge": "SHA-256 HASH",
+      "summary": "256-bit SHA-256 cryptographic file hash. Status: Cryptographically Secure (NIST FIPS 180-4 Approved).",
+      "attributes": {
+        "Algorithm": "SHA-256",
+        "Length": "256 bits",
+        "Detection": "N/A",
+        "Type": "Cryptographic Digest"
+      },
+      "metrics": {
+        "bit_length": 256,
+        "malicious_engines": 0,
+        "total_engines": 0
+      },
+      "classification": {
+        "algorithm": "SHA-256",
+        "file_type": "Cryptographic Digest",
+        "threat_label": ""
+      },
+      "details": {
+        "Hash Value": "a3c5f891b24d78e3105cf4e819b7d206f4a38751e1293a5b67cd10f92b84e031",
+        "Algorithm": "SHA-256",
+        "Bit Length": "256 bits",
+        "Security Status": "Cryptographically Secure (NIST FIPS 180-4 Approved)",
+        "Recommended Use": "Digital Signatures, File Integrity, Forensic Evidence Verification",
+        "Detection Ratio": "Unchecked",
+        "File Type Classification": "Cryptographic Digest",
+        "Identified Threat Label": "None assigned"
+      },
+      "relationships": [],
+      "references": [
+        {
+          "title": "VirusTotal Intelligence",
+          "url": "https://www.virustotal.com/gui/file/a3c5f891b24d78e3105cf4e819b7d206f4a38751e1293a5b67cd10f92b84e031"
+        },
+        {
+          "title": "MalwareBazaar Sample Search",
+          "url": "https://bazaar.abuse.ch/sample/a3c5f891b24d78e3105cf4e819b7d206f4a38751e1293a5b67cd10f92b84e031/"
+        },
+        {
+          "title": "Hybrid Analysis Sandbox",
+          "url": "https://www.hybrid-analysis.com/search?query=a3c5f891b24d78e3105cf4e819b7d206f4a38751e1293a5b67cd10f92b84e031"
+        }
+      ],
+      "aliases": [
+        "a3c5f891b24d78e3105cf4e819b7d206f4a38751e1293a5b67cd10f92b84e031",
+        "A3C5F891B24D78E3105CF4E819B7D206F4A38751E1293A5B67CD10F92B84E031",
+        "a3c5f891b24d...84e031"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:cryptographic",
+        "fetched_at": "2026-10-11T10:23:09.369509+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "c8a14b3f8902d1e2e3f4a5b6c7d8e9f01a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d": {
+      "@type": "hash",
+      "id": "c8a14b3f8902d1e2e3f4a5b6c7d8e9f01a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+      "domain": "cyber",
+      "type": "hash",
+      "label": "c8a14b3f8902d1e2e3f4a5b6c7d8e9f01a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+      "title": "SHA-256 Digest: c8a14b3f8902...4b5c6d",
+      "severity": "INFO",
+      "badge": "SHA-256 HASH",
+      "summary": "256-bit SHA-256 cryptographic file hash. Status: Cryptographically Secure (NIST FIPS 180-4 Approved).",
+      "attributes": {
+        "Algorithm": "SHA-256",
+        "Length": "256 bits",
+        "Detection": "N/A",
+        "Type": "Cryptographic Digest"
+      },
+      "metrics": {
+        "bit_length": 256,
+        "malicious_engines": 0,
+        "total_engines": 0
+      },
+      "classification": {
+        "algorithm": "SHA-256",
+        "file_type": "Cryptographic Digest",
+        "threat_label": ""
+      },
+      "details": {
+        "Hash Value": "c8a14b3f8902d1e2e3f4a5b6c7d8e9f01a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "Algorithm": "SHA-256",
+        "Bit Length": "256 bits",
+        "Security Status": "Cryptographically Secure (NIST FIPS 180-4 Approved)",
+        "Recommended Use": "Digital Signatures, File Integrity, Forensic Evidence Verification",
+        "Detection Ratio": "Unchecked",
+        "File Type Classification": "Cryptographic Digest",
+        "Identified Threat Label": "None assigned"
+      },
+      "relationships": [],
+      "references": [
+        {
+          "title": "VirusTotal Intelligence",
+          "url": "https://www.virustotal.com/gui/file/c8a14b3f8902d1e2e3f4a5b6c7d8e9f01a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d"
+        },
+        {
+          "title": "MalwareBazaar Sample Search",
+          "url": "https://bazaar.abuse.ch/sample/c8a14b3f8902d1e2e3f4a5b6c7d8e9f01a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d/"
+        },
+        {
+          "title": "Hybrid Analysis Sandbox",
+          "url": "https://www.hybrid-analysis.com/search?query=c8a14b3f8902d1e2e3f4a5b6c7d8e9f01a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d"
+        }
+      ],
+      "aliases": [
+        "c8a14b3f8902d1e2e3f4a5b6c7d8e9f01a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+        "C8A14B3F8902D1E2E3F4A5B6C7D8E9F01A2B3C4D5E6F7A8B9C0D1E2F3A4B5C6D",
+        "c8a14b3f8902...4b5c6d"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:cryptographic",
+        "fetched_at": "2026-10-11T10:23:09.369629+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "d41d8cd98f00b204e9800998ecf8427e": {
+      "@type": "hash",
+      "id": "d41d8cd98f00b204e9800998ecf8427e",
+      "domain": "cyber",
+      "type": "hash",
+      "label": "d41d8cd98f00b204e9800998ecf8427e",
+      "title": "MD5: Empty File (Zero-Byte)",
+      "severity": "INFO",
+      "badge": "MD5 NULL HASH",
+      "summary": "Standard MD5 hash of an empty string or 0-byte file (NULL byte sequence).",
+      "attributes": {
+        "Algorithm": "MD5",
+        "Length": "128 bits",
+        "Detection": "N/A",
+        "Type": "Cryptographic Digest"
+      },
+      "metrics": {
+        "bit_length": 128,
+        "malicious_engines": 0,
+        "total_engines": 0
+      },
+      "classification": {
+        "algorithm": "MD5",
+        "file_type": "Cryptographic Digest",
+        "threat_label": ""
+      },
+      "details": {
+        "Hash Value": "d41d8cd98f00b204e9800998ecf8427e",
+        "Algorithm": "MD5",
+        "Bit Length": "128 bits",
+        "Security Status": "Cryptographically Broken (Vulnerable to Pre-image & Collision Attacks)",
+        "Recommended Use": "Legacy Checksum Verification Only",
+        "Detection Ratio": "Unchecked",
+        "File Type Classification": "Cryptographic Digest",
+        "Identified Threat Label": "None assigned"
+      },
+      "relationships": [],
+      "references": [
+        {
+          "title": "VirusTotal Intelligence",
+          "url": "https://www.virustotal.com/gui/file/d41d8cd98f00b204e9800998ecf8427e"
+        },
+        {
+          "title": "MalwareBazaar Sample Search",
+          "url": "https://bazaar.abuse.ch/sample/d41d8cd98f00b204e9800998ecf8427e/"
+        },
+        {
+          "title": "Hybrid Analysis Sandbox",
+          "url": "https://www.hybrid-analysis.com/search?query=d41d8cd98f00b204e9800998ecf8427e"
+        }
+      ],
+      "aliases": [
+        "d41d8cd98f00b204e9800998ecf8427e",
+        "D41D8CD98F00B204E9800998ECF8427E",
+        "d41d8cd98f00...f8427e"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:cryptographic",
+        "fetched_at": "2026-10-11T10:23:09.369719+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "1f2e3d4c5b6a7890123456789abcdef0123456789abcdef0123456789abcdef0": {
+      "@type": "hash",
+      "id": "1f2e3d4c5b6a7890123456789abcdef0123456789abcdef0123456789abcdef0",
+      "domain": "cyber",
+      "type": "hash",
+      "label": "1f2e3d4c5b6a7890123456789abcdef0123456789abcdef0123456789abcdef0",
+      "title": "SHA-256 Digest: 1f2e3d4c5b6a...bcdef0",
+      "severity": "INFO",
+      "badge": "SHA-256 HASH",
+      "summary": "256-bit SHA-256 cryptographic file hash. Status: Cryptographically Secure (NIST FIPS 180-4 Approved).",
+      "attributes": {
+        "Algorithm": "SHA-256",
+        "Length": "256 bits",
+        "Detection": "N/A",
+        "Type": "Cryptographic Digest"
+      },
+      "metrics": {
+        "bit_length": 256,
+        "malicious_engines": 0,
+        "total_engines": 0
+      },
+      "classification": {
+        "algorithm": "SHA-256",
+        "file_type": "Cryptographic Digest",
+        "threat_label": ""
+      },
+      "details": {
+        "Hash Value": "1f2e3d4c5b6a7890123456789abcdef0123456789abcdef0123456789abcdef0",
+        "Algorithm": "SHA-256",
+        "Bit Length": "256 bits",
+        "Security Status": "Cryptographically Secure (NIST FIPS 180-4 Approved)",
+        "Recommended Use": "Digital Signatures, File Integrity, Forensic Evidence Verification",
+        "Detection Ratio": "Unchecked",
+        "File Type Classification": "Cryptographic Digest",
+        "Identified Threat Label": "None assigned"
+      },
+      "relationships": [],
+      "references": [
+        {
+          "title": "VirusTotal Intelligence",
+          "url": "https://www.virustotal.com/gui/file/1f2e3d4c5b6a7890123456789abcdef0123456789abcdef0123456789abcdef0"
+        },
+        {
+          "title": "MalwareBazaar Sample Search",
+          "url": "https://bazaar.abuse.ch/sample/1f2e3d4c5b6a7890123456789abcdef0123456789abcdef0123456789abcdef0/"
+        },
+        {
+          "title": "Hybrid Analysis Sandbox",
+          "url": "https://www.hybrid-analysis.com/search?query=1f2e3d4c5b6a7890123456789abcdef0123456789abcdef0123456789abcdef0"
+        }
+      ],
+      "aliases": [
+        "1f2e3d4c5b6a7890123456789abcdef0123456789abcdef0123456789abcdef0",
+        "1F2E3D4C5B6A7890123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0",
+        "1f2e3d4c5b6a...bcdef0"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:cryptographic",
+        "fetched_at": "2026-10-11T10:23:09.369806+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "3c9b74f0a282987dc1e843236e78ba57406a48d82d41b5107e324021bb2f4705": {
+      "@type": "hash",
+      "id": "3c9b74f0a282987dc1e843236e78ba57406a48d82d41b5107e324021bb2f4705",
+      "domain": "cyber",
+      "type": "hash",
+      "label": "3c9b74f0a282987dc1e843236e78ba57406a48d82d41b5107e324021bb2f4705",
+      "title": "SHA-256 Digest: 3c9b74f0a282...2f4705",
+      "severity": "INFO",
+      "badge": "SHA-256 HASH",
+      "summary": "256-bit SHA-256 cryptographic file hash. Status: Cryptographically Secure (NIST FIPS 180-4 Approved).",
+      "attributes": {
+        "Algorithm": "SHA-256",
+        "Length": "256 bits",
+        "Detection": "N/A",
+        "Type": "Cryptographic Digest"
+      },
+      "metrics": {
+        "bit_length": 256,
+        "malicious_engines": 0,
+        "total_engines": 0
+      },
+      "classification": {
+        "algorithm": "SHA-256",
+        "file_type": "Cryptographic Digest",
+        "threat_label": ""
+      },
+      "details": {
+        "Hash Value": "3c9b74f0a282987dc1e843236e78ba57406a48d82d41b5107e324021bb2f4705",
+        "Algorithm": "SHA-256",
+        "Bit Length": "256 bits",
+        "Security Status": "Cryptographically Secure (NIST FIPS 180-4 Approved)",
+        "Recommended Use": "Digital Signatures, File Integrity, Forensic Evidence Verification",
+        "Detection Ratio": "Unchecked",
+        "File Type Classification": "Cryptographic Digest",
+        "Identified Threat Label": "None assigned"
+      },
+      "relationships": [],
+      "references": [
+        {
+          "title": "VirusTotal Intelligence",
+          "url": "https://www.virustotal.com/gui/file/3c9b74f0a282987dc1e843236e78ba57406a48d82d41b5107e324021bb2f4705"
+        },
+        {
+          "title": "MalwareBazaar Sample Search",
+          "url": "https://bazaar.abuse.ch/sample/3c9b74f0a282987dc1e843236e78ba57406a48d82d41b5107e324021bb2f4705/"
+        },
+        {
+          "title": "Hybrid Analysis Sandbox",
+          "url": "https://www.hybrid-analysis.com/search?query=3c9b74f0a282987dc1e843236e78ba57406a48d82d41b5107e324021bb2f4705"
+        }
+      ],
+      "aliases": [
+        "3c9b74f0a282987dc1e843236e78ba57406a48d82d41b5107e324021bb2f4705",
+        "3C9B74F0A282987DC1E843236E78BA57406A48D82D41B5107E324021BB2F4705",
+        "3c9b74f0a282...2f4705"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:cryptographic",
+        "fetched_at": "2026-10-11T10:23:09.369894+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8": {
+      "@type": "hash",
+      "id": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
+      "domain": "cyber",
+      "type": "hash",
+      "label": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
+      "title": "SHA-256 Digest: 5e884898da28...1542d8",
+      "severity": "INFO",
+      "badge": "SHA-256 HASH",
+      "summary": "256-bit SHA-256 cryptographic file hash. Status: Cryptographically Secure (NIST FIPS 180-4 Approved).",
+      "attributes": {
+        "Algorithm": "SHA-256",
+        "Length": "256 bits",
+        "Detection": "N/A",
+        "Type": "Cryptographic Digest"
+      },
+      "metrics": {
+        "bit_length": 256,
+        "malicious_engines": 0,
+        "total_engines": 0
+      },
+      "classification": {
+        "algorithm": "SHA-256",
+        "file_type": "Cryptographic Digest",
+        "threat_label": ""
+      },
+      "details": {
+        "Hash Value": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
+        "Algorithm": "SHA-256",
+        "Bit Length": "256 bits",
+        "Security Status": "Cryptographically Secure (NIST FIPS 180-4 Approved)",
+        "Recommended Use": "Digital Signatures, File Integrity, Forensic Evidence Verification",
+        "Detection Ratio": "Unchecked",
+        "File Type Classification": "Cryptographic Digest",
+        "Identified Threat Label": "None assigned"
+      },
+      "relationships": [],
+      "references": [
+        {
+          "title": "VirusTotal Intelligence",
+          "url": "https://www.virustotal.com/gui/file/5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"
+        },
+        {
+          "title": "MalwareBazaar Sample Search",
+          "url": "https://bazaar.abuse.ch/sample/5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8/"
+        },
+        {
+          "title": "Hybrid Analysis Sandbox",
+          "url": "https://www.hybrid-analysis.com/search?query=5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"
+        }
+      ],
+      "aliases": [
+        "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
+        "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8",
+        "5e884898da28...1542d8"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "catalog:cryptographic",
+        "fetched_at": "2026-10-11T10:23:09.369980+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "10.200.4.15": {
+      "@type": "ip",
+      "id": "10.200.4.15",
+      "domain": "cyber",
+      "type": "ip",
+      "label": "10.200.4.15",
+      "title": "10.200.4.15 (RFC 1918 Private)",
+      "severity": "INFO",
+      "badge": "INTERNAL RFC 1918",
+      "summary": "RFC 1918 Private network endpoint.",
+      "attributes": {
+        "Network Scope": "RFC 1918 Private",
+        "Organization": "Internal Infrastructure",
+        "ASN": "N/A (Private)",
+        "Location": "Local / Private",
+        "Ports": "N/A"
+      },
+      "metrics": {
+        "ip_version": 4,
+        "is_private": true,
+        "open_ports_count": 0,
+        "vulns_count": 0
+      },
+      "classification": {
+        "scope": "RFC 1918 Private",
+        "is_private": true,
+        "asn": "N/A (Private)",
+        "org": "Internal Infrastructure"
+      },
+      "details": {
+        "IP Address": "10.200.4.15",
+        "Network Scope": "Internal Intranet Private Network (RFC 1918 / RFC 4193)",
+        "Organization": "Internal Infrastructure",
+        "Autonomous System (ASN)": "N/A (Private)",
+        "Internet Service Provider": "Private Intranet",
+        "Geographic Location": "Local / Private",
+        "Reverse DNS (PTR)": "None resolved",
+        "Open Ports": "None scanned",
+        "Known Vulnerabilities": "None reported"
+      },
+      "relationships": [],
+      "references": [],
+      "aliases": [
+        "10.200.4.15"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "heuristic:ipaddress",
+        "fetched_at": "2026-10-11T10:23:09.373873+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    },
+    "198.51.100.0": {
+      "@type": "ip",
+      "id": "198.51.100.0",
+      "domain": "cyber",
+      "type": "ip",
+      "label": "198.51.100.0",
+      "title": "198.51.100.0 (RFC 1918 Private)",
+      "severity": "INFO",
+      "badge": "INTERNAL RFC 1918",
+      "summary": "RFC 1918 Private network endpoint.",
+      "attributes": {
+        "Network Scope": "RFC 1918 Private",
+        "Organization": "Internal Infrastructure",
+        "ASN": "N/A (Private)",
+        "Location": "Local / Private",
+        "Ports": "N/A"
+      },
+      "metrics": {
+        "ip_version": 4,
+        "is_private": true,
+        "open_ports_count": 0,
+        "vulns_count": 0
+      },
+      "classification": {
+        "scope": "RFC 1918 Private",
+        "is_private": true,
+        "asn": "N/A (Private)",
+        "org": "Internal Infrastructure"
+      },
+      "details": {
+        "IP Address": "198.51.100.0",
+        "Network Scope": "Internal Intranet Private Network (RFC 1918 / RFC 4193)",
+        "Organization": "Internal Infrastructure",
+        "Autonomous System (ASN)": "N/A (Private)",
+        "Internet Service Provider": "Private Intranet",
+        "Geographic Location": "Local / Private",
+        "Reverse DNS (PTR)": "None resolved",
+        "Open Ports": "None scanned",
+        "Known Vulnerabilities": "None reported"
+      },
+      "relationships": [],
+      "references": [],
+      "aliases": [
+        "198.51.100.0"
+      ],
+      "widgets": [],
+      "provenance": {
+        "source": "heuristic:ipaddress",
+        "fetched_at": "2026-10-11T10:23:09.377103+00:00",
+        "status": "resolved",
+        "manual_override": false
+      }
+    }
+  }
+}

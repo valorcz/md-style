@@ -1,0 +1,10 @@
+# ==============================================================================
+# md-style Theme Definition: academic/classic
+# Formal University Syllabus & Lecture Script (FI MUNI).
+# ==============================================================================
+name: academic/classic
+title: "Academic Lecture - University Classic"
+extends: academic/lecture
+
+stylesheets:
+  - classic.css

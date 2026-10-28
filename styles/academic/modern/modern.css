@@ -1,0 +1,167 @@
+/* ==============================================================================
+   ACADEMIC / MODERN (md-style Sub-Theme)
+   Tech Modern Handout with soft pastel pills, geometric bullets, and refined callouts.
+   Extends: academic/lecture
+   ============================================================================== */
+
+/* 1. Unordered Lists with MUNI Blue Rounded Squares */
+ul {
+  list-style: none !important;
+  padding-left: 0 !important;
+  margin-top: 0;
+  margin-bottom: 1.25em;
+}
+
+ul > li {
+  position: relative;
+  padding-left: 1.45rem;
+  margin-bottom: 0.45em;
+  line-height: var(--line-height-body, 1.68);
+}
+
+ul > li::before {
+  content: "";
+  position: absolute;
+  left: 0.2rem;
+  top: 0.65em;
+  width: 6px;
+  height: 6px;
+  border-radius: 1.5px;
+  background-color: var(--color-muni-blue, #0000dc);
+}
+
+/* Nested Unordered Lists */
+ul > li > ul {
+  margin-top: 0.35em;
+  margin-bottom: 0.35em;
+  padding-left: 0.85rem !important;
+}
+
+ul > li > ul > li::before {
+  background-color: var(--color-fi-saffron, #f2d45c);
+  border: 1px solid #b45309;
+  border-radius: 50%;
+  width: 5px;
+  height: 5px;
+}
+
+/* 2. Ordered Lists with Soft Pastel Number Pills */
+ol {
+  list-style: none !important;
+  counter-reset: modern-counter;
+  padding-left: 0 !important;
+  margin-top: 0;
+  margin-bottom: 1.25em;
+}
+
+ol > li {
+  counter-increment: modern-counter;
+  position: relative;
+  padding-left: 2.3rem;
+  margin-bottom: 0.65em;
+  line-height: var(--line-height-body, 1.68);
+}
+
+ol > li::before {
+  content: counter(modern-counter);
+  position: absolute;
+  left: 0;
+  top: 0.15em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 9999px;
+  font-family: var(--font-sans, "Inter", sans-serif);
+  font-size: 0.78rem;
+  font-weight: 700;
+  background-color: #eef2ff;
+  color: var(--color-muni-blue, #0000dc);
+  border: 1px solid #c7d2fe;
+  box-shadow: 0 1px 2px rgba(0, 0, 220, 0.05);
+  box-sizing: border-box;
+}
+
+/* Nested Ordered Lists: clean lower-alpha letters without pills */
+ol > li > ol {
+  list-style: lower-alpha !important;
+  padding-left: 1.5rem !important;
+  margin-top: 0.4em;
+  margin-bottom: 0.4em;
+  counter-reset: none;
+}
+
+ol > li > ol > li {
+  padding-left: 0;
+  counter-increment: none;
+}
+
+ol > li > ol > li::before {
+  content: none !important;
+}
+
+/* 3. Refined Modern Callouts */
+.callout {
+  border-radius: 8px;
+  padding: 1.35rem 1.75rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
+}
+
+.callout .callout-content ol,
+.callout .callout-content ul {
+  padding-left: 0.25rem !important;
+}
+
+/* Teacher Notes in Modern */
+details.teacher-notes > ul,
+details.teacher-notes > ol {
+  padding-left: 2rem !important;
+}
+
+details.teacher-notes ul > li > ul {
+  padding-left: 1.5rem !important;
+}
+
+.callout-header {
+  gap: 0.75rem;
+}
+
+.callout-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 220, 0.08);
+}
+
+.callout.callout-warning .callout-icon,
+.callout.warning .callout-icon {
+  background: rgba(245, 158, 11, 0.15);
+}
+
+.callout.callout-important .callout-icon,
+.callout.important .callout-icon {
+  background: rgba(11, 27, 61, 0.12);
+}
+
+.callout.callout-tip .callout-icon,
+.callout.tip .callout-icon {
+  background: rgba(242, 212, 92, 0.25);
+}
+
+.callout.callout-caution .callout-icon,
+.callout.caution .callout-icon,
+.callout.callout-critical .callout-icon,
+.callout.critical .callout-icon {
+  background: rgba(220, 38, 38, 0.12);
+}
+
+.callout-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-transform: none; /* Sentence case for natural reading */
+}
