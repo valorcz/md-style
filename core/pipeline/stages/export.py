@@ -30,6 +30,21 @@ class Stage5Export(PipelineStage):
         input_file = context.config.input_file.resolve()
         bundler = AssetBundler(input_file, allow_online=context.config.allow_online)
 
+        # Auto-discover annotations: frontmatter takes precedence, then sidecar <doc>.annotations.json
+        annotations_data = context.frontmatter.get("annotations")
+        if not annotations_data:
+            sidecar_json = input_file.with_suffix(".annotations.json")
+            if sidecar_json.is_file():
+                try:
+                    with open(sidecar_json, "r", encoding="utf-8") as f:
+                        raw_ann = json.load(f)
+                        if isinstance(raw_ann, dict) and "annotations" in raw_ann:
+                            annotations_data = raw_ann["annotations"]
+                        elif isinstance(raw_ann, list):
+                            annotations_data = raw_ann
+                except Exception as e:
+                    Diagnostics.warn(f"Failed to read sidecar annotations {sidecar_json}: {e}")
+
         complete_html = bundler.assemble(
             html_fragment=context.html_fragment,
             theme=context.resolved_theme,
@@ -42,6 +57,7 @@ class Stage5Export(PipelineStage):
             frontmatter=context.frontmatter,
             raw_markdown=context.raw_content if context.config.embed_source else None,
             meta_tags={"generator": "md-style v3.0 (pure-python)"},
+            annotations=annotations_data,
             interactive_viewer=context.config.interactive_viewer
         )
         context.bundled_html = complete_html
