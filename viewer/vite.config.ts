@@ -5,10 +5,10 @@ import path from 'path';
 export default defineConfig({
   plugins: [svelte()],
   build: {
-    outDir: path.resolve(__dirname, '../core/assets'),
+    outDir: path.resolve(import.meta.dirname, '../core/assets'),
     emptyOutDir: false,
     lib: {
-      entry: path.resolve(__dirname, 'src/main.ts'),
+      entry: path.resolve(import.meta.dirname, 'src/main.ts'),
       name: 'MdStyleViewer',
       formats: ['iife'],
       fileName: () => 'viewer.bundle.js'
