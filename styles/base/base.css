@@ -34,6 +34,29 @@
   /* Global i18n string fallbacks */
   --i18n-page-prefix: "Page ";
   --i18n-page-of: " of ";
+
+  /* Pele diagram theming tokens */
+  --pele-bg: transparent;
+  --pele-fg: var(--color-text);
+  --pele-muted: var(--color-text-muted);
+  --pele-line: var(--color-border-dark);
+  --pele-surface: var(--color-paper);
+  --pele-surface-alt: var(--color-bg);
+  --pele-border: var(--color-border);
+  --pele-accent: var(--color-accent);
+  --pele-font: var(--font-body);
+  --pele-font-mono: var(--font-mono);
+}
+
+[data-theme="dark"], body.dark-theme, body.theme-forensic-cyber {
+  --pele-bg: transparent;
+  --pele-fg: #f1f5f9;
+  --pele-muted: #94a3b8;
+  --pele-line: #38bdf8;
+  --pele-surface: rgba(15, 23, 42, 0.85);
+  --pele-surface-alt: rgba(30, 41, 59, 0.9);
+  --pele-border: rgba(255, 255, 255, 0.15);
+  --pele-accent: #0284c7;
 }
 
 /* --------------------------------------------------------------------------

@@ -110,8 +110,9 @@ class MermaidRenderer:
                     res = json.loads(proc.stdout.strip())
                     if res.get("success") and res.get("svg"):
                         svg_content = res["svg"].strip()
+                        engine = res.get("engine", "beautiful-mermaid")
                         return (
-                            f'<figure class="mermaid-diagram" data-engine="beautiful-mermaid"{id_str}>\n'
+                            f'<figure class="mermaid-diagram" data-engine="{engine}"{id_str}>\n'
                             f'  <div class="mermaid-svg-wrapper">\n{svg_content}\n  </div>{caption_html}\n'
                             f'</figure>',
                             False

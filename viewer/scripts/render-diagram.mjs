@@ -8,6 +8,7 @@
  */
 
 import { renderMermaidSVG } from 'beautiful-mermaid';
+import * as pele from 'pele';
 import fs from 'fs';
 
 const SUPPORTED_PREFIXES = [
@@ -54,18 +55,37 @@ try {
     process.exit(0);
   }
 
-  if (!isSupportedDiagram(input)) {
-    console.log(JSON.stringify({
-      success: false,
-      reason: 'unsupported_schema',
-      error: 'Diagram schema not supported by beautiful-mermaid'
-    }));
-    process.exit(0);
+  const options = parseArgs();
+
+  // 1. Attempt beautiful-mermaid for its high-aesthetic layout
+  if (isSupportedDiagram(input)) {
+    try {
+      const svg = renderMermaidSVG(input, options);
+      if (svg) {
+        console.log(JSON.stringify({ success: true, svg, engine: 'beautiful-mermaid' }));
+        process.exit(0);
+      }
+    } catch (_) {
+      // Fall through to pele
+    }
   }
 
-  const options = parseArgs();
-  const svg = renderMermaidSVG(input, options);
-  console.log(JSON.stringify({ success: true, svg }));
+  // 2. Fallback to pele for all other diagram types or if beautiful-mermaid failed
+  try {
+    const res = pele.render(input);
+    if (res && res.svg) {
+      console.log(JSON.stringify({ success: true, svg: res.svg, engine: 'pele' }));
+      process.exit(0);
+    }
+  } catch (_) {
+    // Both failed
+  }
+
+  console.log(JSON.stringify({
+    success: false,
+    reason: 'unsupported_schema',
+    error: 'Diagram schema could not be rendered by beautiful-mermaid or pele'
+  }));
 } catch (err) {
   const msg = err.message || String(err);
   console.log(JSON.stringify({

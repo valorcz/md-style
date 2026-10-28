@@ -187,7 +187,7 @@
     });
   }
 
-  import mermaid from 'mermaid';
+  import * as pele from 'pele';
   import { renderMermaidSVG } from 'beautiful-mermaid';
 
   async function setupMermaidDiagrams() {
@@ -222,29 +222,28 @@
           }
         }
       } catch (bmErr) {
-        // Schema not supported by beautiful-mermaid, fallback to standard mermaid.js
+        // Schema not supported by beautiful-mermaid, fallback to pele
       }
 
       if (!rendered) {
         try {
-          mermaid.initialize({
-            startOnLoad: false,
-            theme: isDark ? 'dark' : 'default',
-            fontFamily: 'inherit',
-            securityLevel: 'loose'
-          });
-          await mermaid.run({
-            nodes: [codeEl as HTMLElement]
-          });
-          container.classList.remove('mermaid-fallback');
-          container.setAttribute('data-engine', 'mermaid-js');
-        } catch (mErr) {
-          console.warn('[Viewer] Diagram render error:', mErr);
+          const res = pele.render(rawCode);
+          if (res && res.svg) {
+            const wrapper = container.querySelector('.mermaid-svg-wrapper');
+            if (wrapper) {
+              wrapper.innerHTML = res.svg;
+              container.classList.remove('mermaid-fallback');
+              container.setAttribute('data-engine', 'pele');
+              rendered = true;
+            }
+          }
+        } catch (pErr) {
+          console.warn('[Viewer] Diagram render error:', pErr);
           const wrapper = container.querySelector('.mermaid-svg-wrapper');
           if (wrapper) {
             wrapper.innerHTML = `
               <div class="mermaid-error-card" style="padding: 12px; border: 1px solid #ef4444; border-radius: 6px; background: rgba(239, 68, 68, 0.08); color: #dc2626; font-family: monospace; font-size: 12px;">
-                <strong>[Diagram Syntax Error]</strong>: ${mErr instanceof Error ? mErr.message : String(mErr)}
+                <strong>[Diagram Syntax Error]</strong>: ${pErr instanceof Error ? pErr.message : String(pErr)}
                 <pre style="margin-top: 8px; color: inherit; white-space: pre-wrap; font-size: 11px;">${rawCode}</pre>
               </div>
             `;
