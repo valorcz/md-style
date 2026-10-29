@@ -88,6 +88,9 @@ class PipelineConfig:
     knowledge_path: Optional[Path] = None
     i18n_path: Optional[Path] = None
     toc_levels: Optional[str] = None
+    font_subsets: Optional[str] = None
+    all_fonts: bool = False
+    embed_diagram_fonts: bool = False
     verbose: bool = False
     quiet: bool = False
 

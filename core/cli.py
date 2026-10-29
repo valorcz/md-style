@@ -79,6 +79,28 @@ Examples:
     parser.add_argument("--no-embed-source", dest="embed_source", action="store_false", help="Do not embed Markdown source in HTML archive")
     parser.add_argument("--open", dest="open_after", action="store_true", help="Open generated report in default viewer")
 
+    # Font & Asset Optimization
+    parser.add_argument(
+        "--font-subsets",
+        dest="font_subsets",
+        default=None,
+        help="Comma-separated font unicode subsets to embed (e.g. 'latin,latin-ext', 'all', or 'auto'; default: auto based on language)"
+    )
+    parser.add_argument(
+        "--all-fonts", "--no-prune-fonts",
+        dest="all_fonts",
+        action="store_true",
+        default=False,
+        help="Embed all font unicode subsets without language-based pruning"
+    )
+    parser.add_argument(
+        "--embed-diagram-fonts",
+        dest="embed_diagram_fonts",
+        action="store_true",
+        default=False,
+        help="Force embedding duplicate base64 font payloads inside inline SVG diagrams (default: False, inherit from document)"
+    )
+
     # Knowledge Pack & Refresh
     parser.add_argument(
         "--kb-refresh",
@@ -463,6 +485,9 @@ def main():
         knowledge_path=Path(args.knowledge_path) if args.knowledge_path else None,
         i18n_path=Path(args.i18n_path) if args.i18n_path else None,
         toc_levels=args.toc_levels,
+        font_subsets=args.font_subsets,
+        all_fonts=args.all_fonts,
+        embed_diagram_fonts=args.embed_diagram_fonts,
         verbose=args.verbose,
         quiet=args.quiet
     )

@@ -28,7 +28,32 @@ class Stage5Export(PipelineStage):
 
         context.timer.start(self.stage_key)
         input_file = context.config.input_file.resolve()
-        bundler = AssetBundler(input_file, allow_online=context.config.allow_online)
+
+        # Resolve font subsets and diagram font deduplication
+        from core.fonts import resolve_font_subsets
+
+        fm = context.frontmatter or {}
+        subsets = resolve_font_subsets(
+            lang=context.doc_lang,
+            font_subsets_opt=context.config.font_subsets,
+            all_fonts=context.config.all_fonts,
+            frontmatter_subsets=fm.get("font_subsets"),
+        )
+
+        dedup_diagram_fonts = True
+        if context.config.embed_diagram_fonts:
+            dedup_diagram_fonts = False
+        elif "embed_diagram_fonts" in fm:
+            dedup_diagram_fonts = not bool(fm.get("embed_diagram_fonts"))
+        elif "dedup_diagram_fonts" in fm:
+            dedup_diagram_fonts = bool(fm.get("dedup_diagram_fonts"))
+
+        bundler = AssetBundler(
+            input_file,
+            allow_online=context.config.allow_online,
+            subsets=subsets,
+            dedup_diagram_fonts=dedup_diagram_fonts,
+        )
 
         # Auto-discover annotations: frontmatter takes precedence, then sidecar <doc>.annotations.json
         annotations_data = context.frontmatter.get("annotations")

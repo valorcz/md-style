@@ -6,7 +6,7 @@ Modular asset bundling and HTML packaging package.
 import re
 import hashlib
 from pathlib import Path
-from typing import Optional, List, Dict, Any, Tuple
+from typing import Optional, List, Dict, Any, Tuple, Set
 
 from core.themes import ResolvedTheme
 from core.kb.models import KnowledgePack
@@ -33,11 +33,19 @@ from core.bundler.html_assembler import (
 class AssetBundler:
     """Coordinates asset resolution, SVG inlining, font bundling, and single-file HTML assembly."""
 
-    def __init__(self, doc_path: Path, allow_online: bool = True):
+    def __init__(
+        self,
+        doc_path: Path,
+        allow_online: bool = True,
+        subsets: Optional[Set[str]] = None,
+        dedup_diagram_fonts: bool = True,
+    ):
         self.doc_path = doc_path
         self.doc_dir = doc_path.parent if doc_path.is_file() else doc_path
         self.allow_online = allow_online
-        self.font_bundler = FontBundler(allow_online=allow_online)
+        self.subsets = subsets
+        self.dedup_diagram_fonts = dedup_diagram_fonts
+        self.font_bundler = FontBundler(allow_online=allow_online, subsets=subsets)
         self.resolver = AssetResolver(self.doc_dir)
         self.html_builder = HtmlDocumentBuilder(self.font_bundler)
         self.fingerprint = ""
@@ -96,6 +104,13 @@ class AssetBundler:
                     if ok:
                         def _bundle_svg_fonts(sm: re.Match) -> str:
                             stag_open, s_body, stag_close = sm.groups()
+                            if self.dedup_diagram_fonts:
+                                s_body = re.sub(
+                                    r'@import\s+(?:url\([\'"]?https?://fonts\.googleapis\.com/[^\'")]+[\'"]?\)|[\'"]https?://fonts\.googleapis\.com/[^\'"]+[\'"])[^;]*;?',
+                                    r'/* Fonts inherited from document theme */',
+                                    s_body,
+                                    flags=re.IGNORECASE,
+                                )
                             b_css = self.font_bundler.process_css(s_body, img_path.parent)
                             return f"{stag_open}{b_css}{stag_close}"
 
@@ -138,6 +153,17 @@ class AssetBundler:
             prefix = match.group(1)
             raw_css = match.group(2)
             suffix = match.group(3)
+
+            # Strategy #1: Deduplicate Diagram Fonts
+            # If deduplicating diagram fonts, strip redundant remote font @imports
+            # from inline SVG diagrams since fonts are already provided by document <head>.
+            if self.dedup_diagram_fonts:
+                raw_css = re.sub(
+                    r'@import\s+(?:url\([\'"]?https?://fonts\.googleapis\.com/[^\'")]+[\'"]?\)|[\'"]https?://fonts\.googleapis\.com/[^\'"]+[\'"])[^;]*;?',
+                    r'/* Fonts inherited from document theme */',
+                    raw_css,
+                    flags=re.IGNORECASE,
+                )
 
             processed_css = self.font_bundler.process_css(raw_css, self.doc_dir)
 
