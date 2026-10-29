@@ -345,3 +345,180 @@ def extract_bundled_knowledge_pack(path_or_content: Any) -> Optional[Dict[str, A
     except Exception:
         return None
 
+
+def compute_bundle_size_breakdown(path_or_content: Any) -> Dict[str, int]:
+    """
+    Computes a size breakdown of a bundled HTML document into component bytes:
+    - total: overall document size in bytes (UTF-8)
+    - fonts: embedded base64 WOFF2/TTF font data (in stylesheets and diagrams)
+    - viewer_js: interactive Svelte viewer bundle code
+    - css: stylesheets and style blocks (excluding embedded font data)
+    - metadata: embedded JSON/markdown scripts (KB, i18n, annotations, print templates, markdown source)
+    - diagrams: SVG diagrams in document body (excluding embedded font data)
+    - images: embedded base64 images in document body
+    - content: document prose markup, tables, headings, callouts
+    """
+    if isinstance(path_or_content, Path):
+        if not path_or_content.is_file():
+            return {"total": 0, "fonts": 0, "viewer_js": 0, "css": 0, "metadata": 0, "diagrams": 0, "images": 0, "content": 0}
+        try:
+            content = path_or_content.read_text(encoding="utf-8", errors="replace")
+        except Exception:
+            return {"total": 0, "fonts": 0, "viewer_js": 0, "css": 0, "metadata": 0, "diagrams": 0, "images": 0, "content": 0}
+    else:
+        content = str(path_or_content)
+
+    total = len(content.encode("utf-8"))
+    if total == 0:
+        return {"total": 0, "fonts": 0, "viewer_js": 0, "css": 0, "metadata": 0, "diagrams": 0, "images": 0, "content": 0}
+
+    # 1. Fonts (data:font/...) across document stylesheets and SVG diagrams
+    fonts_bytes = 0
+    font_markers = ("data:font/", "data:application/font-", "data:application/x-font-")
+    for marker in font_markers:
+        idx = 0
+        while True:
+            pos = content.find(marker, idx)
+            if pos == -1:
+                break
+            end_s = content.find("'", pos)
+            end_d = content.find('"', pos)
+            end_p = content.find(')', pos)
+            ends = [e for e in (end_s, end_d, end_p) if e != -1]
+            if not ends:
+                break
+            end = min(ends)
+            fonts_bytes += len(content[pos:end].encode("utf-8"))
+            idx = end
+
+    # 2. Svelte viewer JS bundle
+    viewer_match = re.search(r'<script[^>]*>\s*([^\n<]*MdStyleViewer[\s\S]*?initViewer[\s\S]*?)</script>', content)
+    viewer_bytes = len(viewer_match.group(0).encode("utf-8")) if viewer_match else 0
+
+    # 3. CSS blocks (<style>...</style>) in head minus embedded fonts in head
+    head_match = re.search(r'<head[^>]*>([\s\S]*?)</head>', content)
+    head_content = head_match.group(1) if head_match else ""
+    head_css = sum(len(m.group(0).encode("utf-8")) for m in re.finditer(r'<style[^>]*>([\s\S]*?)</style>', head_content))
+    fonts_in_head = 0
+    for marker in font_markers:
+        idx = 0
+        while True:
+            pos = head_content.find(marker, idx)
+            if pos == -1:
+                break
+            end_s = head_content.find("'", pos)
+            end_d = head_content.find('"', pos)
+            end_p = head_content.find(')', pos)
+            ends = [e for e in (end_s, end_d, end_p) if e != -1]
+            if not ends:
+                break
+            end = min(ends)
+            fonts_in_head += len(head_content[pos:end].encode("utf-8"))
+            idx = end
+    css_bytes = max(0, head_css - fonts_in_head)
+
+    # 4. Metadata scripts (KB, i18n, markdown source, annotations, print templates)
+    meta_bytes = sum(len(m.group(0).encode("utf-8")) for m in re.finditer(r'<script[^>]*id=["\'](md-style-[^"\']+)["\'][^>]*>([\s\S]*?)</script>', content))
+
+    # 5. Inside document body (<main class="report-content">):
+    main_match = re.search(r'<main[^>]*>([\s\S]*?)</main>', content)
+    main_content = main_match.group(1) if main_match else ""
+
+    # SVGs (Mermaid, D2, vector figures) inside main minus fonts inside SVGs
+    svg_matches = list(re.finditer(r'<svg[\s\S]*?</svg>', main_content))
+    raw_svg_bytes = sum(len(m.group(0).encode("utf-8")) for m in svg_matches)
+    fonts_in_svg = 0
+    for sm in svg_matches:
+        s_text = sm.group(0)
+        for marker in font_markers:
+            idx = 0
+            while True:
+                pos = s_text.find(marker, idx)
+                if pos == -1:
+                    break
+                end_s = s_text.find("'", pos)
+                end_d = s_text.find('"', pos)
+                end_p = s_text.find(')', pos)
+                ends = [e for e in (end_s, end_d, end_p) if e != -1]
+                if not ends:
+                    break
+                end = min(ends)
+                fonts_in_svg += len(s_text[pos:end].encode("utf-8"))
+                idx = end
+    diagram_bytes = max(0, raw_svg_bytes - fonts_in_svg)
+
+    # Embedded base64 images inside main
+    img_bytes = sum(len(m.group(0).encode("utf-8")) for m in re.finditer(r'src=["\']data:image/[^;]+;base64,[A-Za-z0-9+/=]+["\']', main_content))
+
+    # 6. Markup & text (HTML structure, tables, callouts, headings, prose)
+    content_bytes = max(0, total - fonts_bytes - viewer_bytes - css_bytes - meta_bytes - diagram_bytes - img_bytes)
+
+    return {
+        "total": total,
+        "fonts": fonts_bytes,
+        "viewer_js": viewer_bytes,
+        "css": css_bytes,
+        "metadata": meta_bytes,
+        "diagrams": diagram_bytes,
+        "images": img_bytes,
+        "content": content_bytes,
+    }
+
+
+def format_bundle_size_breakdown(breakdown: Dict[str, int]) -> str:
+    """Formats the size breakdown dictionary into a structured Rich markup string."""
+    tot = breakdown.get("total", 0)
+    if tot <= 0:
+        return ""
+
+    def _fmt(b: int) -> str:
+        if b >= 1024 * 1024:
+            return f"{b / (1024 * 1024):.1f} MB"
+        return f"{b / 1024:.0f} KB" if b >= 1024 else f"{b} B"
+
+    f_bytes = breakdown.get("fonts", 0)
+    v_bytes = breakdown.get("viewer_js", 0)
+    c_bytes = breakdown.get("css", 0)
+    m_bytes = breakdown.get("metadata", 0)
+    d_bytes = breakdown.get("diagrams", 0)
+    img_bytes = breakdown.get("images", 0)
+    cnt_bytes = breakdown.get("content", 0)
+
+    line1_parts = []
+    if f_bytes > 0:
+        f_pct = f_bytes / tot * 100
+        line1_parts.append(f"[dim]Fonts:[/dim] [white]{_fmt(f_bytes)}[/white] [dim]({f_pct:.0f}%)[/dim]")
+    if v_bytes > 0:
+        v_pct = v_bytes / tot * 100
+        line1_parts.append(f"[dim]Viewer JS:[/dim] [white]{_fmt(v_bytes)}[/white] [dim]({v_pct:.0f}%)[/dim]")
+
+    line2_parts = []
+    if c_bytes > 0:
+        line2_parts.append(f"[dim]CSS:[/dim] [white]{_fmt(c_bytes)}[/white]")
+    if m_bytes > 0:
+        line2_parts.append(f"[dim]Data:[/dim] [white]{_fmt(m_bytes)}[/white]")
+
+    line3_parts = []
+    if d_bytes > 0:
+        line3_parts.append(f"[dim]Diagrams:[/dim] [white]{_fmt(d_bytes)}[/white]")
+    if img_bytes > 0:
+        line3_parts.append(f"[dim]Images:[/dim] [white]{_fmt(img_bytes)}[/white]")
+    if cnt_bytes > 0:
+        lbl = "Markup:" if (d_bytes > 0 or img_bytes > 0) else "Content:"
+        line3_parts.append(f"[dim]{lbl}[/dim] [white]{_fmt(cnt_bytes)}[/white]")
+
+    lines = []
+    if line1_parts:
+        lines.append(" [dim]•[/dim] ".join(line1_parts))
+    if line2_parts and not (d_bytes > 0 or img_bytes > 0):
+        line2_parts.extend(line3_parts)
+        lines.append(" [dim]•[/dim] ".join(line2_parts))
+    else:
+        if line2_parts:
+            lines.append(" [dim]•[/dim] ".join(line2_parts))
+        if line3_parts:
+            lines.append(" [dim]•[/dim] ".join(line3_parts))
+
+    return "\n".join(lines)
+
+

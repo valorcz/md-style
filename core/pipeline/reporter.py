@@ -87,6 +87,17 @@ class SummaryReporter:
         summary_table.add_row("Output Target:", f"[bold green]{output_path.name}[/bold green]")
         summary_table.add_row("Format:", format_name)
         summary_table.add_row("File Size:", file_size_str)
+
+        if output_path.is_file() and output_path.suffix.lower() in (".html", ".htm"):
+            try:
+                from core.bundler import compute_bundle_size_breakdown, format_bundle_size_breakdown
+                breakdown = compute_bundle_size_breakdown(output_path)
+                breakdown_str = format_bundle_size_breakdown(breakdown)
+                if breakdown_str:
+                    summary_table.add_row("Size Breakdown:", breakdown_str)
+            except Exception:
+                pass
+
         summary_table.add_row("Theme Style:", f"[yellow]{theme_name}[/yellow]")
 
         if context and context.pack and context.pack.entities:

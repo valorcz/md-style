@@ -25,6 +25,8 @@ from core.bundler.html_assembler import (
     is_md_style_html,
     extract_bundled_markdown,
     extract_bundled_knowledge_pack,
+    compute_bundle_size_breakdown,
+    format_bundle_size_breakdown,
 )
 
 

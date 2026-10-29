@@ -151,6 +151,7 @@ class ReportEngine:
 
         file_size_str = "N/A"
         sha256_short = ""
+        breakdown_str = ""
         if output_file.is_file():
             try:
                 sz = float(output_file.stat().st_size)
@@ -166,6 +167,11 @@ class ReportEngine:
                         hasher.update(chunk)
                 full_digest = hasher.hexdigest()
                 sha256_short = f"{full_digest[:12]}…{full_digest[-12:]}"
+
+                if not is_pdf and not is_crate and output_file.suffix.lower() in (".html", ".htm"):
+                    from core.bundler import compute_bundle_size_breakdown, format_bundle_size_breakdown
+                    breakdown = compute_bundle_size_breakdown(output_file)
+                    breakdown_str = format_bundle_size_breakdown(breakdown)
             except Exception:
                 pass
 
@@ -183,6 +189,8 @@ class ReportEngine:
         grid.add_row("Output Target:", f"[bold white]{output_file.name}[/bold white]")
         grid.add_row("Format:", format_badge)
         grid.add_row("File Size:", f"[bold white]{file_size_str}[/bold white]")
+        if breakdown_str:
+            grid.add_row("Size Breakdown:", breakdown_str)
         grid.add_row("Theme Style:", f"[bold cyan]{theme_name}[/bold cyan]")
 
         if pack and pack.entities:
