@@ -149,3 +149,9 @@ The interactive viewer client is inlined into bundled HTML reports and mounts cl
    * Google Docs-style text selection popover to add comments and review notes.
    * Auto-anchored to text nodes with surrounding prefix/suffix context for resilient re-hydration.
    * Export to updated standalone HTML bundle or source Markdown with CriticMarkup notes.
+
+---
+
+## 5. Roadmap & Future Deliverables
+
+For standalone binary distribution (PyInstaller, zero-runtime deployment) and planned diagram optimizations, see [Product & Technical Roadmap](roadmap.md).

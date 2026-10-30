@@ -209,6 +209,13 @@ td.nowrap code {
     page-break-inside: avoid !important;
   }
 
+  /* Optical diagram budgeting for paged media (avoids multi-page diagram overflow) */
+  figure.mermaid-diagram .mermaid-svg-wrapper svg,
+  figure.d2-diagram .d2-svg-wrapper svg {
+    max-height: 135mm !important;
+    width: auto !important;
+  }
+
   h1, h2, h3, h4, h5, h6 {
     break-after: avoid !important;
   }

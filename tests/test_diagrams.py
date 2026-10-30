@@ -79,3 +79,22 @@ sequenceDiagram
     # Critical check: CommonMark must NOT have wrapped inner statements in <pre><code>
     assert "autonumber\n<pre><code>" not in html_frag
     assert "&amp;gt;&amp;gt;" not in html_frag
+
+
+def test_diagram_optical_sizing_and_budgeting():
+    """Verifies that tall diagrams receive optical budget attributes and max-width capping."""
+    from core.diagrams.figures import compute_diagram_layout_attributes, extract_svg_dimensions
+
+    # 1. Test dimension extraction
+    sample_svg = '<svg viewBox="0 0 300 700" width="300" height="700"></svg>'
+    w, h = extract_svg_dimensions(sample_svg)
+    assert w == 300.0
+    assert h == 700.0
+
+    # 2. Test layout attributes computation for tall diagram (AR = 300/700 = 0.43)
+    extra_cls, extra_style = compute_diagram_layout_attributes(sample_svg, max_height_px=520.0)
+    assert "diagram-tall" in extra_cls
+    assert "--diagram-natural-w: 300.0px" in extra_style
+    assert "--diagram-natural-h: 700.0px" in extra_style
+    # Budgeted width: 520 * (300/700) = 222.9px + 48px padding = 270.9px
+    assert "max-width: min(100%, 270.9px)" in extra_style

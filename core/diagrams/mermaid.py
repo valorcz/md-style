@@ -14,7 +14,7 @@ import json
 from typing import Dict, Any, Tuple, Optional
 from ..diagnostics import logger
 from ..config import VIEWER_DIR, MERMAID_SCRIPT
-from .figures import FigureManager, FIGURE_LABELS
+from .figures import FigureManager, FIGURE_LABELS, compute_diagram_layout_attributes
 
 class MermaidRenderer:
     def __init__(self, figure_manager: Optional[FigureManager] = None):
@@ -111,8 +111,9 @@ class MermaidRenderer:
                     if res.get("success") and res.get("svg"):
                         svg_content = res["svg"].strip()
                         engine = res.get("engine", "beautiful-mermaid")
+                        extra_cls, extra_style = compute_diagram_layout_attributes(svg_content)
                         return (
-                            f'<figure class="mermaid-diagram" data-engine="{engine}"{id_str}>\n'
+                            f'<figure class="mermaid-diagram{extra_cls}" data-engine="{engine}"{extra_style}{id_str}>\n'
                             f'  <div class="mermaid-svg-wrapper">\n{svg_content}\n  </div>{caption_html}\n'
                             f'</figure>',
                             False

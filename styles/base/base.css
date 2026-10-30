@@ -614,14 +614,32 @@ figure.figure-container .svg-inlined-wrapper {
 }
 
 figure.figure-container .svg-container svg,
-figure.figure-container .svg-inlined-wrapper svg,
-figure.mermaid-diagram .mermaid-svg-wrapper svg,
-figure.d2-diagram .d2-svg-wrapper svg {
+figure.figure-container .svg-inlined-wrapper svg {
   width: 100%;
   max-width: 100%;
   height: auto;
   display: block;
   margin: 0 auto;
+}
+
+/* Vector Diagram Sizing & Optical Typography Budgeting:
+   - diagrams naturally center and never blow up above natural width or max budget height
+   - prevents tall flowcharts from consuming full 2000px+ heights and scaling text to billboard sizes
+*/
+figure.mermaid-diagram .mermaid-svg-wrapper svg,
+figure.d2-diagram .d2-svg-wrapper svg {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 520px;
+  display: block;
+  margin: 0 auto;
+}
+
+figure.mermaid-diagram.diagram-tall,
+figure.d2-diagram.diagram-tall {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 figure.figure-container img,

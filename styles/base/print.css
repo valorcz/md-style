@@ -131,6 +131,12 @@ figure,
     box-shadow: none !important;
   }
 
+  figure.mermaid-diagram .mermaid-svg-wrapper svg,
+  figure.d2-diagram .d2-svg-wrapper svg {
+    max-height: 135mm !important;
+    width: auto !important;
+  }
+
   .print-action-bar {
     display: none !important;
   }
