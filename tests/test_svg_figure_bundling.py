@@ -23,7 +23,7 @@ def test_markdown_parser_standalone_image_becomes_figure():
 Odhadovaný text.
 """
     html_out, toc, meta = parser.render(md_content)
-    assert '<figure class="figure-container svg-figure"' in html_out
+    assert 'class="doc-figure figure-container svg-figure"' in html_out
     assert 'class="svg-container"' in html_out
     assert '<figcaption class="svg-caption">' in html_out
     assert '<span class="figure-label">Obrázek 1:</span>' in html_out
@@ -156,7 +156,7 @@ def test_svg_figure_sizing_attributes_and_classes(tmp_path):
 
     # Check Markdown figure transformation
     assert 'style="max-width: 500px;"' in html_frag
-    assert 'class="figure-container svg-figure wide"' in html_frag
+    assert 'class="doc-figure figure-container svg-figure wide"' in html_frag
 
     bundler = AssetBundler(doc_file, allow_online=False)
     theme = ThemeResolver().resolve("base")
@@ -164,13 +164,13 @@ def test_svg_figure_sizing_attributes_and_classes(tmp_path):
 
     # Check that width style transferred to inlined wrapper
     assert 'max-width: 500px;' in bundled_html
-    assert 'class="figure-container svg-figure wide"' in bundled_html
+    assert 'class="doc-figure figure-container svg-figure wide"' in bundled_html
 
 
 def test_figure_css_scoping_protects_toolbar_icons():
-    """Verifies that figure CSS selectors in base.css target inner containers, protecting toolbar SVGs."""
-    base_css_path = Path(__file__).resolve().parent.parent / "styles" / "base" / "base.css"
-    css_content = base_css_path.read_text(encoding="utf-8")
+    """Verifies that figure CSS selectors in figures.css target inner containers, protecting toolbar SVGs."""
+    figures_css_path = Path(__file__).resolve().parent.parent / "styles" / "base" / "figures.css"
+    css_content = figures_css_path.read_text(encoding="utf-8")
 
     # Invariant: naked 'figure.figure-container svg' or 'figure.figure-container.small svg'
     # would blow up toolbar icons in Svelte viewer

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy, tick } from 'svelte';
   import Icon from './Icon.svelte';
+  import { getSvgDimensions, calculateFitToScreen } from '../figure/figure-geometry';
 
   export let isOpen: boolean = false;
   export let svgElement: SVGElement | null = null;
@@ -21,57 +22,20 @@
   let vbHeight: number = 520;
   let initialScale: number = 1.0;
 
-  function getSvgDimensions(): { w: number; h: number } {
-    if (!svgElement) return { w: 960, h: 520 };
-
-    // 1. Check viewBox attribute
-    const viewBoxAttr = svgElement.getAttribute('viewBox');
-    if (viewBoxAttr) {
-      const parts = viewBoxAttr.trim().split(/[\s,]+/).map(Number);
-      if (parts.length === 4 && parts[2] > 0 && parts[3] > 0) {
-        return { w: parts[2], h: parts[3] };
-      }
-    }
-
-    // 2. Check explicit width/height attributes
-    const wAttr = svgElement.getAttribute('width');
-    const hAttr = svgElement.getAttribute('height');
-    const parsedW = wAttr ? parseFloat(wAttr) : NaN;
-    const parsedH = hAttr ? parseFloat(hAttr) : NaN;
-    if (!isNaN(parsedW) && !isNaN(parsedH) && parsedW > 0 && parsedH > 0) {
-      return { w: parsedW, h: parsedH };
-    }
-
-    // 3. Fallback to bounding rect
-    try {
-      const rect = svgElement.getBoundingClientRect();
-      if (rect.width > 0 && rect.height > 0) {
-        return { w: rect.width, h: rect.height };
-      }
-    } catch (_) {}
-
-    return { w: 960, h: 520 };
-  }
-
   function fitToScreen() {
     if (!svgElement) return;
-    const dims = getSvgDimensions();
+    const dims = getSvgDimensions(svgElement);
     vbWidth = dims.w;
     vbHeight = dims.h;
 
     if (canvasContainer) {
       const rect = canvasContainer.getBoundingClientRect();
-      if (rect.width > 0 && rect.height > 0) {
-        // Leave comfortable breathing room around the diagram
-        const availW = Math.max(100, rect.width - 64);
-        const availH = Math.max(100, rect.height - 56);
-        const fit = Math.min(availW / vbWidth, availH / vbHeight);
-        scale = Number(Math.max(0.1, fit).toFixed(2));
-        initialScale = scale;
-        panX = 0;
-        panY = 0;
-        return;
-      }
+      const res = calculateFitToScreen(dims, rect);
+      scale = res.scale;
+      initialScale = res.scale;
+      panX = res.panX;
+      panY = res.panY;
+      return;
     }
 
     scale = 1.0;

@@ -47,7 +47,8 @@ def test_d2_renderer_fallback_html():
         )
         assert is_fallback is True
         assert 'id="fig-test"' in html_out
-        assert 'class="d2-diagram d2-fallback"' in html_out
+        assert 'd2-diagram d2-fallback' in html_out
+        assert 'data-figure-type="d2"' in html_out
         assert 'data-engine="fallback"' in html_out
         assert 'x -&gt; y: hello' in html_out or 'x -> y: hello' in html_out
         assert '<figcaption class="d2-caption">' in html_out
@@ -66,7 +67,8 @@ serviceB -> database: SQL Query
 ```
 """
     html_frag, toc, meta = parser.render(md_content)
-    assert '<figure class="d2-diagram' in html_frag
+    assert 'd2-diagram' in html_frag
+    assert 'data-figure-type="d2"' in html_frag
     assert 'id="arch-diagram"' in html_frag
     assert 'Service Topology' in html_frag
     assert parser.d2_renderer.figure_count == 1

@@ -4,6 +4,7 @@ extends: null
 stylesheets:
   - fonts.css
   - base.css
+  - figures.css
 features:
   callouts: true
   sticky_tables: true

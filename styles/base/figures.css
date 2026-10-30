@@ -1,0 +1,249 @@
+/* ==========================================================================
+   FIGURES, DIAGRAMS & VECTOR ASSETS (Unified Universal Engine)
+   Architectural Single Source of Truth for:
+   - Standalone image figures (.figure-container, .image-figure)
+   - Inlined SVG vector figures (.svg-figure, .svg-inlined-wrapper)
+   - Mermaid diagram figures (.mermaid-diagram)
+   - D2 diagram figures (.d2-diagram)
+   - Universal base class: .doc-figure
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Base Figure Container
+   -------------------------------------------------------------------------- */
+figure.doc-figure,
+figure.figure-container,
+figure.svg-figure,
+figure.image-figure,
+figure.mermaid-diagram,
+figure.d2-diagram {
+  margin: 2.5rem 0;
+  text-align: center;
+  width: 100%;
+  max-width: 100%;
+  position: relative;
+  box-sizing: border-box;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* --------------------------------------------------------------------------
+   2. Inner Wrappers
+   -------------------------------------------------------------------------- */
+figure.doc-figure .svg-container,
+figure.doc-figure .image-container,
+figure.doc-figure .mermaid-svg-wrapper,
+figure.doc-figure .d2-svg-wrapper,
+figure.doc-figure .svg-inlined-wrapper,
+figure.figure-container .svg-container,
+figure.figure-container .image-container,
+figure.figure-container .svg-inlined-wrapper,
+figure.mermaid-diagram .mermaid-svg-wrapper,
+figure.d2-diagram .d2-svg-wrapper {
+  overflow-x: auto;
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* --------------------------------------------------------------------------
+   3. Optical Sizing & Proportional Layout Rules
+   - SVG diagrams naturally center and scale proportionally
+   - Default optical budget clamps tall diagrams (<= 520px on screen)
+   -------------------------------------------------------------------------- */
+figure.doc-figure .svg-container svg,
+figure.doc-figure .svg-inlined-wrapper svg,
+figure.figure-container .svg-container svg,
+figure.figure-container .svg-inlined-wrapper svg {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Build-time optical budgeting for diagrams */
+figure.doc-figure .mermaid-svg-wrapper svg,
+figure.doc-figure .d2-svg-wrapper svg,
+figure.mermaid-diagram .mermaid-svg-wrapper svg,
+figure.d2-diagram .d2-svg-wrapper svg {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 520px;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Orientation helpers */
+figure.doc-figure.orientation-portrait,
+figure.doc-figure.diagram-tall,
+figure.mermaid-diagram.diagram-tall,
+figure.d2-diagram.diagram-tall {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+figure.doc-figure img,
+figure.figure-container img,
+img {
+  max-width: 100%;
+  height: auto;
+  display: inline-block;
+}
+
+/* --------------------------------------------------------------------------
+   4. Markdown Attribute Sizing Utilities: {.small}, {.medium}, {.large}
+   -------------------------------------------------------------------------- */
+figure.doc-figure.small .svg-inlined-wrapper,
+figure.doc-figure.small img,
+figure.doc-figure.small .svg-container svg,
+figure.doc-figure.small .svg-inlined-wrapper svg,
+figure.figure-container.small .svg-inlined-wrapper,
+figure.figure-container.small img,
+figure.figure-container.small .svg-container svg,
+figure.figure-container.small .svg-inlined-wrapper svg {
+  max-width: 380px !important;
+}
+
+figure.doc-figure.medium .svg-inlined-wrapper,
+figure.doc-figure.medium img,
+figure.doc-figure.medium .svg-container svg,
+figure.doc-figure.medium .svg-inlined-wrapper svg,
+figure.figure-container.medium .svg-inlined-wrapper,
+figure.figure-container.medium img,
+figure.figure-container.medium .svg-container svg,
+figure.figure-container.medium .svg-inlined-wrapper svg {
+  max-width: 620px !important;
+}
+
+figure.doc-figure.large .svg-inlined-wrapper,
+figure.doc-figure.large img,
+figure.doc-figure.large .svg-container svg,
+figure.doc-figure.large .svg-inlined-wrapper svg,
+figure.figure-container.large .svg-inlined-wrapper,
+figure.figure-container.large img,
+figure.figure-container.large .svg-container svg,
+figure.figure-container.large .svg-inlined-wrapper svg {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+/* --------------------------------------------------------------------------
+   5. Wide Breakout Mode (.wide / .breakout)
+   Expands beyond prose column for high-detail inspection
+   -------------------------------------------------------------------------- */
+figure.doc-figure.wide,
+figure.doc-figure.breakout,
+figure.figure-container.wide,
+figure.figure-container.breakout,
+figure.mermaid-diagram.wide,
+figure.mermaid-diagram.breakout,
+figure.d2-diagram.wide,
+figure.d2-diagram.breakout,
+figure.svg-figure.wide,
+figure.svg-figure.breakout {
+  width: min(100vw - 3rem, 68rem) !important;
+  max-width: min(100vw - 3rem, 68rem) !important;
+  position: relative !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+}
+
+/* When expanded to wide mode, permit vector SVGs to scale up for detail view */
+figure.doc-figure.wide .mermaid-svg-wrapper svg,
+figure.doc-figure.wide .d2-svg-wrapper svg,
+figure.doc-figure.wide .svg-container svg,
+figure.doc-figure.wide .svg-inlined-wrapper svg,
+figure.doc-figure.breakout .mermaid-svg-wrapper svg,
+figure.doc-figure.breakout .d2-svg-wrapper svg,
+figure.doc-figure.breakout .svg-container svg,
+figure.doc-figure.breakout .svg-inlined-wrapper svg,
+figure.mermaid-diagram.wide .mermaid-svg-wrapper svg,
+figure.mermaid-diagram.breakout .mermaid-svg-wrapper svg,
+figure.d2-diagram.wide .d2-svg-wrapper svg,
+figure.d2-diagram.breakout .d2-svg-wrapper svg,
+figure.figure-container.wide .svg-container svg,
+figure.figure-container.wide .svg-inlined-wrapper svg,
+figure.figure-container.breakout .svg-container svg,
+figure.figure-container.breakout .svg-inlined-wrapper svg {
+  max-height: 75vh !important;
+  max-width: 100% !important;
+  width: auto !important;
+}
+
+/* Tall portrait SVGs in wide mode: protect against excessive vertical stretch */
+figure.doc-figure.wide.diagram-tall .mermaid-svg-wrapper svg,
+figure.doc-figure.wide.diagram-tall .d2-svg-wrapper svg,
+figure.doc-figure.wide.diagram-tall .svg-container svg,
+figure.doc-figure.wide.diagram-tall .svg-inlined-wrapper svg,
+figure.doc-figure.wide.orientation-portrait .mermaid-svg-wrapper svg,
+figure.doc-figure.wide.orientation-portrait .d2-svg-wrapper svg,
+figure.doc-figure.wide.orientation-portrait .svg-container svg,
+figure.doc-figure.wide.orientation-portrait .svg-inlined-wrapper svg,
+figure.figure-container.wide.diagram-tall .svg-container svg,
+figure.figure-container.wide.diagram-tall .svg-inlined-wrapper svg,
+figure.mermaid-diagram.wide.diagram-tall .mermaid-svg-wrapper svg,
+figure.d2-diagram.wide.diagram-tall .d2-svg-wrapper svg {
+  max-height: 650px !important;
+}
+
+/* --------------------------------------------------------------------------
+   6. Captions
+   -------------------------------------------------------------------------- */
+figcaption.figure-caption,
+figcaption.svg-caption,
+figcaption.mermaid-caption,
+figcaption.d2-caption {
+  font-size: 0.85rem;
+  color: var(--color-text-muted, #64748b);
+  margin-top: 0.5rem;
+  font-style: italic;
+  text-align: center;
+}
+
+figcaption .figure-label {
+  font-weight: 600;
+  font-style: normal;
+  color: var(--color-text-primary, #0f172a);
+}
+
+figure.d2-diagram.d2-fallback pre.d2-code {
+  text-align: left;
+  background: var(--color-surface, #f8fafc);
+  border: 1px solid var(--color-border, #e2e8f0);
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+/* --------------------------------------------------------------------------
+   7. Print Media (@media print)
+   -------------------------------------------------------------------------- */
+@media print {
+  figure.doc-figure.wide,
+  figure.doc-figure.breakout,
+  figure.figure-container.wide,
+  figure.figure-container.breakout,
+  figure.mermaid-diagram.wide,
+  figure.mermaid-diagram.breakout,
+  figure.d2-diagram.wide,
+  figure.d2-diagram.breakout,
+  figure.svg-figure.wide,
+  figure.svg-figure.breakout {
+    width: 100% !important;
+    max-width: 100% !important;
+    left: auto !important;
+    transform: none !important;
+  }
+
+  figure.doc-figure .mermaid-svg-wrapper svg,
+  figure.doc-figure .d2-svg-wrapper svg,
+  figure.mermaid-diagram .mermaid-svg-wrapper svg,
+  figure.d2-diagram .d2-svg-wrapper svg {
+    max-height: 135mm !important;
+    width: auto !important;
+  }
+}

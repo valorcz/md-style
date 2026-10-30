@@ -14,7 +14,8 @@ import json
 from typing import Dict, Any, Tuple, Optional
 from ..diagnostics import logger
 from ..config import VIEWER_DIR, MERMAID_SCRIPT
-from .figures import FigureManager, FIGURE_LABELS, compute_diagram_layout_attributes
+from .figures import FigureManager, FIGURE_LABELS
+from .geometry import SVGGeometryBudgeter
 
 class MermaidRenderer:
     def __init__(self, figure_manager: Optional[FigureManager] = None):
@@ -111,9 +112,12 @@ class MermaidRenderer:
                     if res.get("success") and res.get("svg"):
                         svg_content = res["svg"].strip()
                         engine = res.get("engine", "beautiful-mermaid")
-                        extra_cls, extra_style = compute_diagram_layout_attributes(svg_content)
+                        geom = SVGGeometryBudgeter.compute(svg_content)
+                        extra_cls = geom.class_string if geom else ""
+                        extra_style = geom.style_string if geom else ""
+                        data_attrs = geom.data_attributes if geom else ""
                         return (
-                            f'<figure class="mermaid-diagram{extra_cls}" data-engine="{engine}"{extra_style}{id_str}>\n'
+                            f'<figure class="doc-figure mermaid-diagram{extra_cls}" data-figure-type="mermaid" data-engine="{engine}"{data_attrs}{extra_style}{id_str}>\n'
                             f'  <div class="mermaid-svg-wrapper">\n{svg_content}\n  </div>{caption_html}\n'
                             f'</figure>',
                             False
@@ -140,7 +144,7 @@ class MermaidRenderer:
         # Fallback container for Svelte viewer
         escaped_code = html.escape(code.strip())
         fallback_html = (
-            f'<figure class="mermaid-diagram mermaid-fallback" data-engine="client"{id_str}>\n'
+            f'<figure class="doc-figure mermaid-diagram mermaid-fallback" data-figure-type="mermaid" data-engine="client"{id_str}>\n'
             f'  <div class="mermaid-svg-wrapper">\n'
             f'    <pre class="mermaid">\n{escaped_code}\n    </pre>\n'
             f'  </div>{caption_html}\n'

@@ -1,78 +1,48 @@
 <script lang="ts">
   import Icon from './Icon.svelte';
+  import { FigureController } from '../figure/figure-controller';
 
   export let figureElement: HTMLElement;
   export let i18n: Record<string, string> = {};
   export let onOpenLightbox: ((detail: { svgElement: SVGElement; title: string; id: string }) => void) | undefined = undefined;
 
+  let controller: FigureController;
   let isWide: boolean = false;
   let copied: boolean = false;
 
   $: if (figureElement) {
-    isWide = figureElement.classList.contains('wide') || figureElement.classList.contains('breakout');
+    controller = new FigureController(figureElement);
+    isWide = controller.isWide;
   }
 
   function toggleWide() {
-    if (!figureElement) return;
-    isWide = !isWide;
-    figureElement.classList.toggle('wide', isWide);
-  }
-
-  function getCaptionText(): string {
-    if (!figureElement) return 'Figure';
-    const captionEl = figureElement.querySelector('figcaption');
-    return captionEl?.textContent?.trim() || figureElement.getAttribute('id') || 'Figure';
+    if (!controller) return;
+    isWide = controller.toggleWide();
   }
 
   function handleOpenLightbox() {
-    if (!figureElement || !onOpenLightbox) return;
-    const svgEl = figureElement.querySelector('svg');
+    if (!figureElement || !onOpenLightbox || !controller) return;
+    const svgEl = controller.getSvgElement();
     if (!svgEl) return;
     onOpenLightbox({
       svgElement: svgEl,
-      title: getCaptionText(),
+      title: controller.getCaptionText(),
       id: figureElement.getAttribute('id') || 'figure'
     });
   }
 
   async function copySvg() {
-    if (!figureElement) return;
-    const svgEl = figureElement.querySelector('svg');
-    if (!svgEl) return;
-    try {
-      const serializer = new XMLSerializer();
-      const svgStr = serializer.serializeToString(svgEl);
-      await navigator.clipboard.writeText(svgStr);
+    if (!controller) return;
+    const success = await controller.copySvg();
+    if (success) {
       copied = true;
       setTimeout(() => { copied = false; }, 2000);
-    } catch (e) {
-      console.warn('Failed to copy SVG to clipboard:', e);
     }
   }
 
   function downloadSvg() {
-    if (!figureElement) return;
-    const svgEl = figureElement.querySelector('svg');
-    if (!svgEl) return;
-    try {
-      const serializer = new XMLSerializer();
-      const svgStr = serializer.serializeToString(svgEl);
-      const blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      const rawTitle = getCaptionText()
-        .toLowerCase()
-        .replace(/[^a-z0-9_-]+/g, '-')
-        .replace(/^-|-$/g, '');
-      a.download = (rawTitle || 'diagram') + '.svg';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch (e) {
-      console.warn('Failed to download SVG:', e);
-    }
+    if (!controller) return;
+    controller.downloadSvg();
   }
 </script>
 

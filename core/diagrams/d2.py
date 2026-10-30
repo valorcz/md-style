@@ -13,7 +13,8 @@ import shutil
 import subprocess
 from typing import Dict, Any, Tuple, Optional
 from ..diagnostics import logger
-from .figures import FigureManager, FIGURE_LABELS, compute_diagram_layout_attributes
+from .figures import FigureManager, FIGURE_LABELS
+from .geometry import SVGGeometryBudgeter
 
 class D2Renderer:
     def __init__(self, figure_manager: Optional[FigureManager] = None):
@@ -120,9 +121,12 @@ class D2Renderer:
 
                 if proc.returncode == 0 and proc.stdout.strip():
                     svg_content = proc.stdout.strip()
-                    extra_cls, extra_style = compute_diagram_layout_attributes(svg_content)
+                    geom = SVGGeometryBudgeter.compute(svg_content)
+                    extra_cls = geom.class_string if geom else ""
+                    extra_style = geom.style_string if geom else ""
+                    data_attrs = geom.data_attributes if geom else ""
                     return (
-                        f'<figure class="d2-diagram{extra_cls}" data-engine="d2"{extra_style}{id_str}>\n'
+                        f'<figure class="doc-figure d2-diagram{extra_cls}" data-figure-type="d2" data-engine="d2"{data_attrs}{extra_style}{id_str}>\n'
                         f'  <div class="d2-svg-wrapper">\n{svg_content}\n  </div>{caption_html}\n'
                         f'</figure>',
                         False
@@ -141,7 +145,7 @@ class D2Renderer:
         # 2. Fallback container
         escaped_code = html.escape(code.strip())
         fallback_html = (
-            f'<figure class="d2-diagram d2-fallback" data-engine="fallback"{id_str}>\n'
+            f'<figure class="doc-figure d2-diagram d2-fallback" data-figure-type="d2" data-engine="fallback"{id_str}>\n'
             f'  <div class="d2-svg-wrapper">\n'
             f'    <pre class="d2-code"><code>{escaped_code}</code></pre>\n'
             f'  </div>{caption_html}\n'

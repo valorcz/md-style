@@ -159,9 +159,11 @@
     });
   }
 
+  import { getSvgDimensions } from './figure/figure-geometry';
+
   function setupFigureToolbars() {
     const figures = document.querySelectorAll<HTMLElement>(
-      'figure.figure-container, figure.svg-figure, figure.mermaid-diagram, figure.d2-diagram'
+      'figure.doc-figure, figure.figure-container, figure.svg-figure, figure.mermaid-diagram, figure.d2-diagram'
     );
 
     figures.forEach(figure => {
@@ -190,7 +192,7 @@
   import * as pele from 'pele';
 
   async function setupMermaidDiagrams() {
-    const fallbackContainers = document.querySelectorAll('.mermaid-fallback');
+    const fallbackContainers = document.querySelectorAll<HTMLElement>('.mermaid-fallback');
     if (fallbackContainers.length === 0) return;
 
     for (const container of Array.from(fallbackContainers)) {
@@ -207,6 +209,34 @@
             wrapper.innerHTML = res.svg;
             container.classList.remove('mermaid-fallback');
             container.setAttribute('data-engine', 'pele');
+
+            // Apply unified geometry dataset and optical budget attributes
+            const svgEl = wrapper.querySelector('svg');
+            if (svgEl) {
+              const dims = getSvgDimensions(svgEl);
+              container.classList.add(`orientation-${dims.orientation}`);
+              container.setAttribute('data-orientation', dims.orientation);
+              container.setAttribute('data-natural-w', String(Math.round(dims.w * 10) / 10));
+              container.setAttribute('data-natural-h', String(Math.round(dims.h * 10) / 10));
+              container.setAttribute('data-aspect-ratio', String(Math.round(dims.aspectRatio * 100) / 100));
+
+              if (dims.orientation === 'portrait') {
+                container.classList.add('diagram-tall');
+              } else if (dims.orientation === 'ultrawide') {
+                container.classList.add('diagram-wide');
+              }
+
+              // Optical sizing: cap width proportionally if height exceeds 520px
+              const maxH = 520;
+              const padding = 48;
+              let optWidth = dims.w + padding;
+              if (dims.h > maxH) {
+                optWidth = Math.min(dims.w, maxH * dims.aspectRatio) + padding;
+              }
+              container.style.setProperty('--fig-natural-w', `${dims.w}px`);
+              container.style.setProperty('--fig-natural-h', `${dims.h}px`);
+              container.style.setProperty('max-width', `min(100%, ${Math.round(optWidth)}px)`);
+            }
           }
         }
       } catch (pErr) {

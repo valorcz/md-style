@@ -94,7 +94,8 @@ def test_diagram_optical_sizing_and_budgeting():
     # 2. Test layout attributes computation for tall diagram (AR = 300/700 = 0.43)
     extra_cls, extra_style = compute_diagram_layout_attributes(sample_svg, max_height_px=520.0)
     assert "diagram-tall" in extra_cls
-    assert "--diagram-natural-w: 300.0px" in extra_style
-    assert "--diagram-natural-h: 700.0px" in extra_style
+    assert "orientation-portrait" in extra_cls
+    assert "--fig-natural-w: 300.0px" in extra_style
+    assert "--fig-natural-h: 700.0px" in extra_style
     # Budgeted width: 520 * (300/700) = 222.9px + 48px padding = 270.9px
     assert "max-width: min(100%, 270.9px)" in extra_style

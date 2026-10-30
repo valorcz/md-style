@@ -57,13 +57,17 @@ def figures_plugin(
                     fig_num = fm.next_number()
                     fig_id = img_id or f"fig-{fig_num}"
 
-                    classes = ["figure-container"]
+                    classes = ["doc-figure", "figure-container"]
                     if is_svg:
                         classes.append("svg-figure")
                     else:
                         classes.append("image-figure")
                     if custom_class:
                         classes.append(custom_class)
+
+                    # Build figure data attributes
+                    fig_type = "svg" if is_svg else "image"
+                    data_attrs = f' data-figure-type="{fig_type}"'
 
                     # Sizing style from width or style attributes
                     fig_styles = []
@@ -99,7 +103,7 @@ def figures_plugin(
                     )
 
                     fig_html = (
-                        f'<figure class="{" ".join(classes)}" id="{html.escape(fig_id)}"{fig_style_attr}>\n'
+                        f'<figure class="{" ".join(classes)}" id="{html.escape(fig_id)}"{data_attrs}{fig_style_attr}>\n'
                         f'  <div class="{wrapper_class}">\n'
                         f'    {img_html}\n'
                         f'  </div>{caption_html}\n'
