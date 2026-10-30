@@ -672,19 +672,53 @@ figure.figure-container.large .svg-inlined-wrapper svg {
   width: 100% !important;
 }
 
-/* Breakout / wide figure: expands beyond normal prose column */
+/* Breakout / wide figure: expands beyond normal prose column for inspection */
 figure.figure-container.wide,
-figure.figure-container.breakout {
-  width: min(100vw - 3rem, 68rem);
-  max-width: min(100vw - 3rem, 68rem);
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
+figure.figure-container.breakout,
+figure.mermaid-diagram.wide,
+figure.mermaid-diagram.breakout,
+figure.d2-diagram.wide,
+figure.d2-diagram.breakout,
+figure.svg-figure.wide,
+figure.svg-figure.breakout {
+  width: min(100vw - 3rem, 68rem) !important;
+  max-width: min(100vw - 3rem, 68rem) !important;
+  position: relative !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+}
+
+/* When expanded to wide mode, permit vector SVGs to scale up for detail view */
+figure.mermaid-diagram.wide .mermaid-svg-wrapper svg,
+figure.mermaid-diagram.breakout .mermaid-svg-wrapper svg,
+figure.d2-diagram.wide .d2-svg-wrapper svg,
+figure.d2-diagram.breakout .d2-svg-wrapper svg,
+figure.figure-container.wide .svg-container svg,
+figure.figure-container.wide .svg-inlined-wrapper svg,
+figure.figure-container.breakout .svg-container svg,
+figure.figure-container.breakout .svg-inlined-wrapper svg {
+  max-height: 75vh !important;
+  max-width: 100% !important;
+  width: auto !important;
+}
+
+/* Tall portrait SVGs in wide mode: protect against excessive vertical stretch */
+figure.figure-container.wide.diagram-tall .svg-container svg,
+figure.figure-container.wide.diagram-tall .svg-inlined-wrapper svg,
+figure.mermaid-diagram.wide.diagram-tall .mermaid-svg-wrapper svg,
+figure.d2-diagram.wide.diagram-tall .d2-svg-wrapper svg {
+  max-height: 650px !important;
 }
 
 @media print {
   figure.figure-container.wide,
-  figure.figure-container.breakout {
+  figure.figure-container.breakout,
+  figure.mermaid-diagram.wide,
+  figure.mermaid-diagram.breakout,
+  figure.d2-diagram.wide,
+  figure.d2-diagram.breakout,
+  figure.svg-figure.wide,
+  figure.svg-figure.breakout {
     width: 100% !important;
     max-width: 100% !important;
     left: auto !important;
