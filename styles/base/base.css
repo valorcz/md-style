@@ -582,10 +582,6 @@ div.tip .title, div.success .title, div.finding .title {
    Moved to styles/base/figures.css (Universal Figures & Diagrams Engine)
    -------------------------------------------------------------------------- */
 @import url('figures.css');
-  padding: 1rem;
-  max-width: 100%;
-  overflow-x: auto;
-}
 
 /* Timestamps (nowrap) vs Hashes (break-all) */
 .timestamp,

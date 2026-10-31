@@ -10,6 +10,7 @@
 
   export let entityCount: number = 0;
   export let commentCount: number = 0;
+  export let componentCount: number = 0;
   export let educativeMode: boolean = true;
   export let onTogglePaged: (() => void) | undefined = undefined;
 
@@ -95,6 +96,12 @@
       {/if}
     </div>
     <div class="hud-right">
+      {#if componentCount > 0}
+        <span class="hud-pill hud-pill-component" title="Document contains {componentCount} interactive Svelte component(s)">
+          <Icon name="zap" size={13} />
+          <span>Interactive ({componentCount})</span>
+        </span>
+      {/if}
       <button
         class="action-btn"
         class:active={educativeMode}
@@ -214,6 +221,27 @@
     align-items: center;
     gap: 0.5rem;
     flex-shrink: 0;
+  }
+  .hud-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    user-select: none;
+  }
+  .hud-pill-component {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    color: #34d399;
+  }
+  :global([data-theme="light"]) .hud-pill-component,
+  :global(body.light-theme) .hud-pill-component {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: #059669;
   }
   .action-btn {
     display: inline-flex;

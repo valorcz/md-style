@@ -242,6 +242,8 @@ class AssetBundler:
         meta_tags: Optional[Dict[str, str]] = None,
         annotations: Optional[List[Dict[str, Any]]] = None,
         interactive_viewer: Optional[bool] = None,
+        custom_components: Optional[Dict[str, Any]] = None,
+        custom_components_css: Optional[str] = None,
     ) -> str:
         # Pre-process inline images and sanitize styles
         processed_html = self.inline_images(html_fragment)
@@ -263,6 +265,8 @@ class AssetBundler:
             meta_tags=meta_tags,
             annotations=annotations,
             interactive_viewer=interactive_viewer,
+            custom_components=custom_components,
+            custom_components_css=custom_components_css,
         )
 
 

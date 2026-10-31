@@ -208,6 +208,50 @@ class Stage4Compilation(PipelineStage):
         context.diagram_count = total_diagrams
         context.html_fragment = html_fragment
 
+        # Compile any document-defined interactive Svelte components
+        doc_components = getattr(parser, "doc_components", {})
+        if doc_components:
+            from pathlib import Path
+            from core.bundler.svelte_compiler import SvelteComponentCompiler
+
+            doc_dir = context.config.input_file.resolve().parent
+            repo_root = Path(__file__).resolve().parent.parent.parent.parent
+
+            comp_defs = []
+            for cname, cinfo in doc_components.items():
+                target = cinfo.get("target") or cname
+                candidates = [
+                    doc_dir / target,
+                    doc_dir / f"{target}.svelte",
+                    doc_dir / "components" / f"{target}.svelte" if not target.endswith(".svelte") else doc_dir / "components" / target,
+                    doc_dir / "components" / f"{cname}.svelte",
+                    repo_root / "examples" / "components" / f"{cname}.svelte",
+                ]
+                resolved_file = None
+                for cand in candidates:
+                    if cand.is_file():
+                        resolved_file = cand
+                        break
+
+                if resolved_file:
+                    comp_defs.append({"name": cname, "path": str(resolved_file)})
+                else:
+                    Diagnostics.warn(
+                        f"Custom Svelte component '{cname}' referenced in document but not found on disk. "
+                        f"Checked locations:\n" + "\n".join(f"  - {c}" for c in candidates)
+                    )
+
+            if comp_defs:
+                compiler = SvelteComponentCompiler()
+                comp_result = compiler.compile_components(comp_defs)
+                if comp_result.get("success"):
+                    context.custom_components = comp_result.get("components", {})
+                    context.component_css = comp_result.get("aggregatedCss", "")
+                    if not context.config.quiet:
+                        Diagnostics.info(
+                            f"Stage 4: Compiled {len(context.custom_components)} dynamic Svelte component(s)"
+                        )
+
         if not context.config.quiet:
             if context.config.verbose:
                 Diagnostics.info(

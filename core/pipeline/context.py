@@ -124,6 +124,8 @@ class PipelineContext:
     toc_html: str = ""
     toc_entries: List[Dict[str, Any]] = field(default_factory=list)
     diagram_count: int = 0
+    custom_components: Dict[str, Any] = field(default_factory=dict)
+    component_css: str = ""
 
     # Stage 5 artifacts
     bundled_html: str = ""

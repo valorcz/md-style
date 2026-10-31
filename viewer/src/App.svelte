@@ -27,6 +27,7 @@
   let hasSourceMarkdown: boolean = false;
   let sourceMarkdownText: string = '';
   let activeLightboxFigure: { svgElement: SVGElement; title: string; id: string } | null = null;
+  let customComponentCount: number = 0;
 
   function loadKnowledgeData() {
     const scriptEl = document.getElementById('md-style-kb-data');
@@ -319,6 +320,7 @@
     loadKnowledgeData();
     loadI18nData();
     checkSourceMarkdown();
+    customComponentCount = document.querySelectorAll('.doc-component-mount').length;
     setupMermaidDiagrams().then(() => {
       setupFigureToolbars();
     });
@@ -431,6 +433,7 @@
     activeDrawerTab={drawerTab}
     entityCount={Object.keys(knowledgeData).length}
     commentCount={$annotationStore.annotations.length}
+    componentCount={customComponentCount}
     educativeMode={$annotationStore.educativeMode}
     on:togglePaged={handleTogglePaged}
     on:toggleInspector={handleToggleInspector}

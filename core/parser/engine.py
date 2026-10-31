@@ -23,7 +23,15 @@ from core.icons import IconService
 from core.diagrams.mermaid import MermaidRenderer
 from core.diagrams.d2 import D2Renderer
 from core.diagrams.figures import FigureManager
-from core.parser.plugins import pandoc_divs_plugin, callouts_plugin, inline_toc, mermaid_plugin, d2_plugin, figures_plugin
+from core.parser.plugins import (
+    pandoc_divs_plugin,
+    callouts_plugin,
+    inline_toc,
+    mermaid_plugin,
+    d2_plugin,
+    figures_plugin,
+    components_plugin,
+)
 from core.parser.transforms import (
     transform_tables,
     transform_headings_and_extract_toc,
@@ -100,6 +108,7 @@ class MarkdownParser:
         self.enable_mermaid = enable_mermaid
         self.theme_name = theme_name
         self.figure_manager = FigureManager(lang=self.lang)
+        self.doc_components: Dict[str, Any] = {}
         self.mermaid_renderer = MermaidRenderer(figure_manager=self.figure_manager) if enable_mermaid else None
         self.d2_renderer = D2Renderer(figure_manager=self.figure_manager)
 
@@ -116,6 +125,7 @@ class MarkdownParser:
             .use(pandoc_divs_plugin)
             .use(callouts_plugin, catalog=self.catalog, icon_service=self.icon_service)
             .use(figures_plugin, figure_manager=self.figure_manager, lang=self.lang)
+            .use(components_plugin)
             .enable("table")
             .enable("strikethrough")
         )
@@ -197,5 +207,9 @@ class MarkdownParser:
 
         # 6. Render tokens to semantic HTML
         html_fragment = self.md.renderer.render(tokens, self.md.options, env)
+        env_components = env.get("doc_components", {})
+        if env_components:
+            self.doc_components.update(env_components)
+        meta["doc_components"] = dict(self.doc_components)
 
         return html_fragment, toc, meta

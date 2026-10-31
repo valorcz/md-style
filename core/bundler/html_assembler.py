@@ -42,11 +42,21 @@ class HtmlDocumentBuilder:
         meta_tags: Optional[Dict[str, str]] = None,
         annotations: Optional[List[Dict[str, Any]]] = None,
         interactive_viewer: Optional[bool] = None,
+        custom_components: Optional[Dict[str, Any]] = None,
+        custom_components_css: Optional[str] = None,
     ) -> str:
-        meta_tags = meta_tags or {}
+        meta_tags = dict(meta_tags or {})
         catalog = catalog or I18nCatalog(lang)
         frontmatter = frontmatter or {}
         fingerprint = hashlib.sha256(html_fragment.encode("utf-8")).hexdigest()
+
+        if custom_components:
+            meta_tags["doc-components"] = ",".join(sorted(custom_components.keys()))
+            if "Content-Security-Policy" not in meta_tags:
+                meta_tags["Content-Security-Policy"] = (
+                    "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; "
+                    "img-src data: blob:; font-src data:; connect-src 'none';"
+                )
 
         # Resolve interactive viewer setting
         if interactive_viewer is not None:
@@ -125,6 +135,60 @@ class HtmlDocumentBuilder:
         except Exception as e:
             Diagnostics.warn(f"Failed to generate Pygments CSS for {highlight_style}: {e}")
 
+        if custom_components_css:
+            css_blocks.append(f"/* Document Dynamic Components Scoped Styles */\n{custom_components_css}")
+
+        # Base layout & fallback styles for custom components
+        if custom_components:
+            base_comp_css = """/* Base Dynamic Component Mount & Fallback */
+.doc-component-container {
+  position: relative;
+  width: 100%;
+  margin: 1.5rem 0;
+}
+.doc-component-mount {
+  position: relative;
+  width: 100%;
+}
+.doc-component-mount[data-mounted="true"] > .doc-component-fallback {
+  display: none !important;
+}
+.doc-component-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 2rem 1rem;
+  border: 1px dashed var(--line, rgba(255, 255, 255, 0.2));
+  border-radius: 6px;
+  background: var(--surface-bg, rgba(0, 0, 0, 0.05));
+  font-family: var(--font-mono, monospace);
+  text-align: center;
+}
+.doc-component-fallback .fallback-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #10b981;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.doc-component-fallback .fallback-title {
+  font-size: 0.95rem;
+  color: var(--fg, inherit);
+}
+.doc-component-fallback .fallback-hint {
+  font-size: 0.75rem;
+  color: var(--fg-dim, #94a3b8);
+}
+@media print {
+  .doc-component-container {
+    break-inside: avoid;
+  }
+}
+"""
+            css_blocks.append(base_comp_css)
+
         # Embedded JSON data scripts
         kb_script_block = ""
         if knowledge_pack and knowledge_pack.entities:
@@ -199,6 +263,13 @@ class HtmlDocumentBuilder:
             except Exception as e:
                 Diagnostics.warn(f"Failed to read Svelte viewer bundle: {e}")
 
+        components_script_block = ""
+        if custom_components:
+            js_snippets = [c["js"] for c in custom_components.values() if isinstance(c, dict) and "js" in c]
+            if js_snippets:
+                all_js = "\n".join(js_snippets)
+                components_script_block = f'<script id="md-style-components">\n{all_js}\n</script>\n'
+
         body_classes = [f"theme-{theme.name.replace('/', '-')}"]
         if paged_mode:
             body_classes.append("paged-preview")
@@ -230,7 +301,7 @@ class HtmlDocumentBuilder:
 {source_markdown_block}
 {annotations_script_block}
 {print_templates_block}
-{f'<div id="md-style-viewer-root"></div>\n' if enable_interactive else ''}{viewer_script_block}
+{f'<div id="md-style-viewer-root"></div>\n' if enable_interactive else ''}{viewer_script_block}{components_script_block}
 </body>
 </html>
 """
