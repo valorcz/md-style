@@ -1,7 +1,7 @@
 """
 core/diagrams/mermaid.py
 Dual-mode renderer for Mermaid diagram code blocks.
-- Build-time: Compiles diagrams into beautiful vector SVGs via beautiful-mermaid in viewer/scripts/render-diagram.mjs.
+- Build-time: Compiles diagrams into clean, themeable vector SVGs via pele in viewer/scripts/render-diagram.mjs.
 - Client-time: Emits clean fallback containers for viewer.bundle.js when JS runtimes are absent or schemas are unsupported.
 - Full CLI diagnostics on stderr for invalid diagram syntax.
 """
@@ -76,7 +76,7 @@ class MermaidRenderer:
     ) -> Tuple[str, bool]:
         """
         Renders diagram as semantic <figure> container.
-        Attempts build-time compilation via beautiful-mermaid; falls back to client container.
+        Attempts build-time compilation via pele; falls back to client container.
         Returns: (rendered_html, is_fallback)
         """
         if self.figure_manager:
@@ -92,14 +92,11 @@ class MermaidRenderer:
         diagram_ref = f"'{id_attr}'" if id_attr else f"Figure {self.figure_count}"
         line_ref = f" (line {line_no})" if line_no else ""
 
-        # Map document theme to beautiful-mermaid theme
-        bm_theme = "zinc-dark" if ("dark" in theme.lower() or "cyber" in theme.lower()) else "zinc-light"
-
-        # Check if build-time beautiful-mermaid execution is possible
+        # Check if build-time pele execution is possible
         if self._runtime and MERMAID_SCRIPT.exists():
             try:
                 proc = subprocess.run(
-                    [self._runtime, str(MERMAID_SCRIPT), f"--theme={bm_theme}", "--transparent"],
+                    [self._runtime, str(MERMAID_SCRIPT)],
                     input=code.strip(),
                     text=True,
                     capture_output=True,
@@ -111,7 +108,7 @@ class MermaidRenderer:
                     res = json.loads(proc.stdout.strip())
                     if res.get("success") and res.get("svg"):
                         svg_content = res["svg"].strip()
-                        engine = res.get("engine", "beautiful-mermaid")
+                        engine = res.get("engine", "pele")
                         geom = SVGGeometryBudgeter.compute(svg_content)
                         extra_cls = geom.class_string if geom else ""
                         extra_style = geom.style_string if geom else ""
@@ -124,7 +121,7 @@ class MermaidRenderer:
                         )
                     elif res.get("reason") == "unsupported_schema":
                         logger.warning(
-                            f"Mermaid diagram {diagram_ref}{line_ref} schema not supported by beautiful-mermaid. Emitting client-side fallback."
+                            f"Mermaid diagram {diagram_ref}{line_ref} schema not supported by pele. Emitting client-side fallback."
                         )
                     else:
                         err_msg = res.get("error") or "Unknown render error"

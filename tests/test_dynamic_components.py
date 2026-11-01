@@ -103,9 +103,8 @@ initialFilter: "all"
     assert "logical-physical-map" in html_text
 
 
-def test_playwright_component_interactivity(tmp_path):
+def test_playwright_component_interactivity(page, tmp_path):
     pytest.importorskip("playwright")
-    from playwright.sync_api import sync_playwright
 
     doc_path = tmp_path / "test-playwright.md"
     out_html = tmp_path / "test-playwright.html"
@@ -139,108 +138,103 @@ graph LR
     Stage4Compilation().execute(ctx)
     Stage5Export().execute(ctx)
 
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
+    console_errors = []
+    page.on("console", lambda msg: console_errors.append(msg.text) if msg.type == "error" else None)
+    page.on("pageerror", lambda err: console_errors.append(str(err)))
 
-        console_errors = []
-        page.on("console", lambda msg: console_errors.append(msg.text) if msg.type == "error" else None)
-        page.on("pageerror", lambda err: console_errors.append(str(err)))
+    page.goto(f"file://{out_html.resolve()}")
+    page.wait_for_selector(".logical-physical-map", timeout=5000)
 
-        page.goto(f"file://{out_html.resolve()}")
-        page.wait_for_selector(".logical-physical-map", timeout=5000)
+    # 1. Check HUD component pill badge
+    hud_badge = page.wait_for_selector(".hud-pill-component", timeout=3000)
+    text = hud_badge.inner_text()
+    assert "Interactive" in text
 
-        # 1. Check HUD component pill badge
-        hud_badge = page.wait_for_selector(".hud-pill-component", timeout=3000)
-        text = hud_badge.inner_text()
-        assert "Interactive" in text
+    # 2. Check initial filter 'procA'
+    proc_a = page.wait_for_selector('.flat-btn:has-text("Process A (Browser)")')
+    assert proc_a.evaluate('el => el.classList.contains("active")') is True
 
-        # 2. Check initial filter 'procA'
-        proc_a = page.wait_for_selector('.flat-btn:has-text("Process A (Browser)")')
-        assert proc_a.evaluate('el => el.classList.contains("active")') is True
+    # 3. Click 'Process B' and verify state transition
+    proc_b = page.wait_for_selector('.flat-btn:has-text("Process B (Editor)")')
+    proc_b.click()
+    page.wait_for_timeout(100)
+    assert proc_b.evaluate('el => el.classList.contains("active")') is True
+    assert proc_a.evaluate('el => el.classList.contains("active")') is False
 
-        # 3. Click 'Process B' and verify state transition
-        proc_b = page.wait_for_selector('.flat-btn:has-text("Process B (Editor)")')
-        proc_b.click()
-        page.wait_for_timeout(100)
-        assert proc_b.evaluate('el => el.classList.contains("active")') is True
-        assert proc_a.evaluate('el => el.classList.contains("active")') is False
+    # 4. Press presenter hotkey '4' and verify Page Fault active
+    page.keyboard.press("4")
+    page.wait_for_timeout(100)
+    fault_btn = page.wait_for_selector('.flat-btn:has-text("Page Fault")')
+    assert fault_btn.evaluate('el => el.classList.contains("active")') is True
 
-        # 4. Press presenter hotkey '4' and verify Page Fault active
-        page.keyboard.press("4")
-        page.wait_for_timeout(100)
-        fault_btn = page.wait_for_selector('.flat-btn:has-text("Page Fault")')
-        assert fault_btn.evaluate('el => el.classList.contains("active")') is True
+    # 5. Verify tailored toolbar on dynamic component figure (Option B)
+    comp_fig = page.query_selector("figure.doc-component-container")
+    assert comp_fig is not None
+    comp_toolbar = comp_fig.query_selector(".figure-toolbar")
+    assert comp_toolbar is not None
 
-        # 5. Verify tailored toolbar on dynamic component figure (Option B)
-        comp_fig = page.query_selector("figure.doc-component-container")
-        assert comp_fig is not None
-        comp_toolbar = comp_fig.query_selector(".figure-toolbar")
-        assert comp_toolbar is not None
+    # Components must have Fullscreen and Wide, but NOT Copy or Download
+    assert comp_fig.query_selector('.fig-btn:has-text("Fullscreen")') is not None
+    assert comp_fig.query_selector('.fig-btn:has-text("Wide")') is not None
+    assert comp_fig.query_selector('.fig-btn:has-text("Copy")') is None
+    assert comp_fig.query_selector('button[title*="Download"]') is None
 
-        # Components must have Fullscreen and Wide, but NOT Copy or Download
-        assert comp_fig.query_selector('.fig-btn:has-text("Fullscreen")') is not None
-        assert comp_fig.query_selector('.fig-btn:has-text("Wide")') is not None
-        assert comp_fig.query_selector('.fig-btn:has-text("Copy")') is None
-        assert comp_fig.query_selector('button[title*="Download"]') is None
+    # Test Wide toggle on dynamic component
+    wide_btn = comp_fig.query_selector('.fig-btn:has-text("Wide")')
+    wide_btn.click(force=True)
+    page.wait_for_timeout(100)
+    assert comp_fig.evaluate('el => el.classList.contains("wide")') is True
+    # Verify wide breakout card surface is grounded with background
+    wide_bg = page.evaluate('el => window.getComputedStyle(el).backgroundColor', comp_fig)
+    assert '255, 255, 255' in wide_bg
 
-        # Test Wide toggle on dynamic component
-        wide_btn = comp_fig.query_selector('.fig-btn:has-text("Wide")')
-        wide_btn.click(force=True)
-        page.wait_for_timeout(100)
-        assert comp_fig.evaluate('el => el.classList.contains("wide")') is True
-        # Verify wide breakout card surface is grounded with background
-        wide_bg = page.evaluate('el => window.getComputedStyle(el).backgroundColor', comp_fig)
-        assert '255, 255, 255' in wide_bg
+    # 6. Test Live Component Fullscreen Mode (Option A)
+    fs_btn = comp_fig.query_selector('.fig-btn:has-text("Fullscreen")')
+    assert fs_btn is not None
+    fs_btn.click(force=True)
+    page.wait_for_timeout(150)
 
-        # 6. Test Live Component Fullscreen Mode (Option A)
-        fs_btn = comp_fig.query_selector('.fig-btn:has-text("Fullscreen")')
-        assert fs_btn is not None
-        fs_btn.click(force=True)
-        page.wait_for_timeout(150)
+    # In fullscreen: class attached to figure and body
+    assert comp_fig.evaluate('el => el.classList.contains("component-fullscreen")') is True
+    assert page.evaluate('() => document.body.classList.contains("has-component-fullscreen")') is True
 
-        # In fullscreen: class attached to figure and body
-        assert comp_fig.evaluate('el => el.classList.contains("component-fullscreen")') is True
-        assert page.evaluate('() => document.body.classList.contains("has-component-fullscreen")') is True
+    # Verify all component controls and status bar remain present and interactive
+    assert comp_fig.query_selector(".map-toolbar").is_visible() is True
+    assert comp_fig.query_selector(".map-svg").is_visible() is True
+    assert comp_fig.query_selector(".map-status-bar").is_visible() is True
 
-        # Verify all component controls and status bar remain present and interactive
-        assert comp_fig.query_selector(".map-toolbar").is_visible() is True
-        assert comp_fig.query_selector(".map-svg").is_visible() is True
-        assert comp_fig.query_selector(".map-status-bar").is_visible() is True
+    # Test live interaction while in fullscreen (click Process A)
+    proc_a_btn = comp_fig.query_selector('.flat-btn:has-text("Process A (Browser)")')
+    proc_a_btn.click()
+    page.wait_for_timeout(100)
+    assert proc_a_btn.evaluate('el => el.classList.contains("active")') is True
 
-        # Test live interaction while in fullscreen (click Process A)
-        proc_a_btn = comp_fig.query_selector('.flat-btn:has-text("Process A (Browser)")')
-        proc_a_btn.click()
-        page.wait_for_timeout(100)
-        assert proc_a_btn.evaluate('el => el.classList.contains("active")') is True
+    # Test Exit fullscreen via Esc key
+    page.keyboard.press("Escape")
+    page.wait_for_timeout(150)
+    assert comp_fig.evaluate('el => el.classList.contains("component-fullscreen")') is False
+    assert page.evaluate('() => document.body.classList.contains("has-component-fullscreen")') is False
 
-        # Test Exit fullscreen via Esc key
-        page.keyboard.press("Escape")
-        page.wait_for_timeout(150)
-        assert comp_fig.evaluate('el => el.classList.contains("component-fullscreen")') is False
-        assert page.evaluate('() => document.body.classList.contains("has-component-fullscreen")') is False
+    # 7. Verify standard static diagram retains Zoom/Lightbox, Copy, Download
+    diag_fig = page.query_selector("figure.mermaid-diagram")
+    assert diag_fig is not None
+    diag_toolbar = diag_fig.query_selector(".figure-toolbar")
+    assert diag_toolbar is not None
 
-        # 7. Verify standard static diagram retains Zoom/Lightbox, Copy, Download
-        diag_fig = page.query_selector("figure.mermaid-diagram")
-        assert diag_fig is not None
-        diag_toolbar = diag_fig.query_selector(".figure-toolbar")
-        assert diag_toolbar is not None
+    # Static diagrams have Zoom, Wide, Copy, Download
+    zoom_btn = diag_fig.query_selector('.fig-btn:has-text("Zoom")')
+    assert zoom_btn is not None
+    assert diag_fig.query_selector('.fig-btn:has-text("Copy")') is not None
+    assert diag_fig.query_selector('button[title*="Download"]') is not None
 
-        # Static diagrams have Zoom, Wide, Copy, Download
-        zoom_btn = diag_fig.query_selector('.fig-btn:has-text("Zoom")')
-        assert zoom_btn is not None
-        assert diag_fig.query_selector('.fig-btn:has-text("Copy")') is not None
-        assert diag_fig.query_selector('button[title*="Download"]') is not None
+    # Clicking Zoom opens the vector lightbox
+    zoom_btn.click(force=True)
+    page.wait_for_timeout(200)
+    lightbox = page.query_selector(".lightbox-backdrop")
+    assert lightbox is not None
+    assert lightbox.query_selector("svg") is not None
+    modal = page.query_selector(".lightbox-modal")
+    modal_bg = page.evaluate('el => window.getComputedStyle(el).backgroundColor', modal)
+    assert '255, 255, 255' in modal_bg
 
-        # Clicking Zoom opens the vector lightbox
-        zoom_btn.click(force=True)
-        page.wait_for_timeout(200)
-        lightbox = page.query_selector(".lightbox-backdrop")
-        assert lightbox is not None
-        assert lightbox.query_selector("svg") is not None
-        modal = page.query_selector(".lightbox-modal")
-        modal_bg = page.evaluate('el => window.getComputedStyle(el).backgroundColor', modal)
-        assert '255, 255, 255' in modal_bg
-
-        assert len(console_errors) == 0, f"Errors in browser console: {console_errors}"
-        browser.close()
+    assert len(console_errors) == 0, f"Errors in browser console: {console_errors}"

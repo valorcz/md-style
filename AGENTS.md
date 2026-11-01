@@ -48,7 +48,7 @@ flowchart LR
     STAGE1 --> STAGE2 --> STAGE3 --> STAGE4 --> STAGE5
 ```
 
-* **Stage 1 (Ingestion & Diagrams)**: Normalizes nested containers, parses frontmatter (`core/frontmatter.py`), renders Mermaid code blocks to SVG via `beautiful-mermaid`.
+* **Stage 1 (Ingestion & Diagrams)**: Normalizes nested containers, parses frontmatter (`core/frontmatter.py`), renders Mermaid code blocks to SVG via `pele`.
 * **Stage 2 (Knowledge Pack Sync)**: Discovers indicators in text (CVEs, IPs, hashes, statutes, IČO, IBAN), resolves them against local/cached knowledge bases, and computes SHA-256 integrity digests (`core/kb/`).
 * **Stage 3 (Theme Resolution)**: Resolves the declarative inheritance chain from `base` down to the leaf theme (`styles/**/theme.yaml`), merging CSS custom properties, Paged.js page geometry, and feature flags (`core/themes.py`).
 * **Stage 4 (AST Compilation)**: Transforms Markdown tokens into semantic HTML with custom callouts, table wrappers, footnotes, and pill-wrapped entity spans (`core/parser/`).
