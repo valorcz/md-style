@@ -57,8 +57,13 @@ try {
 
   const options = parseArgs();
 
+  // beautiful-mermaid does not support sequence diagram colored background rectangles ('rect <color>').
+  // It renders them as uncolored outline boxes with fill="none" and a group header badge 'rect [rgb(...)]'.
+  // For sequence diagrams with rect blocks, delegate to pele which renders compliant background panels.
+  const hasSequenceRect = /^\s*sequencediagram/im.test(input) && /^\s*rect\s+/im.test(input);
+
   // 1. Attempt beautiful-mermaid for its high-aesthetic layout
-  if (isSupportedDiagram(input)) {
+  if (!hasSequenceRect && isSupportedDiagram(input)) {
     try {
       const svg = renderMermaidSVG(input, options);
       if (svg) {
