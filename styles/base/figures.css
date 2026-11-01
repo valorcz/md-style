@@ -150,6 +150,21 @@ figure.svg-figure.breakout {
   position: relative !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
+  background: var(--color-paper, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem 1rem;
+  box-sizing: border-box;
+}
+
+[data-theme="dark"] figure.doc-figure.wide,
+[data-theme="dark"] figure.doc-figure.breakout,
+body.dark-theme figure.doc-figure.wide,
+body.theme-forensic-cyber figure.doc-figure.wide {
+  background: rgba(15, 23, 42, 0.92);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
 }
 
 /* When expanded to wide mode, permit vector SVGs to scale up for detail view */

@@ -179,6 +179,9 @@ initialFilter: "procA"
         wide_btn.click(force=True)
         page.wait_for_timeout(100)
         assert fig.evaluate('el => el.classList.contains("wide")') is True
+        # Verify wide breakout card surface is grounded with background
+        wide_bg = page.evaluate('el => window.getComputedStyle(el).backgroundColor', fig)
+        assert '255, 255, 255' in wide_bg
 
         # Test Zoom / Lightbox
         zoom_btn = fig.query_selector('.fig-btn:has-text("Zoom")')
@@ -188,6 +191,10 @@ initialFilter: "procA"
         lightbox = page.query_selector(".lightbox-backdrop")
         assert lightbox is not None
         assert lightbox.query_selector("svg") is not None
+        # Verify Lightbox modal adopts light theme matching document
+        modal = page.query_selector(".lightbox-modal")
+        modal_bg = page.evaluate('el => window.getComputedStyle(el).backgroundColor', modal)
+        assert '255, 255, 255' in modal_bg
 
         assert len(console_errors) == 0, f"Errors in browser console: {console_errors}"
         browser.close()

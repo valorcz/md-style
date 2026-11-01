@@ -68,7 +68,9 @@
     if (currentTheme) {
       isDarkMode = currentTheme === 'dark';
     } else {
-      isDarkMode = !document.body.classList.contains('theme-forensic-dossier') && !document.body.classList.contains('theme-svj-invitation');
+      const isCyber = document.body.classList.contains('theme-forensic-cyber');
+      const hasDarkClass = document.body.classList.contains('dark-theme');
+      isDarkMode = isCyber || hasDarkClass;
       document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
     }
 
