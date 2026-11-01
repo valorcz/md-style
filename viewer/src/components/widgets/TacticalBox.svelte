@@ -8,6 +8,7 @@
   export let description: string = '';
   export let code: string = '';
   export let codeLabel: string = '';
+  export let fields: Array<{ label: string; value: string; code?: boolean; extra?: string }> = [];
 
   const toneClassMap: Record<string, string> = {
     defense: 'tactical-tips',
@@ -42,6 +43,26 @@
         <span class="path-label">{codeLabel}</span>
       {/if}
       <code>{code}</code>
+    </div>
+  {/if}
+
+  {#if fields && fields.length > 0}
+    <div class="tactical-fields">
+      {#each fields as field}
+        {#if field.value}
+          <div class="tactical-path">
+            <span class="path-label">{field.label}:</span>
+            {#if field.code}
+              <code>{field.value}</code>
+            {:else}
+              <strong>{field.value}</strong>
+            {/if}
+            {#if field.extra}
+              <span class="muted-field-extra">({field.extra})</span>
+            {/if}
+          </div>
+        {/if}
+      {/each}
     </div>
   {/if}
 
@@ -120,6 +141,11 @@
   .path-label {
     font-weight: 600;
     opacity: 0.85;
+  }
+  .muted-field-extra {
+    font-size: 0.74rem;
+    opacity: 0.75;
+    margin-left: 0.2rem;
   }
   .tactical-path code {
     font-family: var(--font-mono, monospace);

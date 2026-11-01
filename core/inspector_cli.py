@@ -227,17 +227,67 @@ def render_entity_card(ent: Entity, console: Optional[Console] = None) -> None:
             code_label = w_data.get("codeLabel", "Code / Notes")
             code_text = w_data.get("code", "")
             desc = w_data.get("description", "")
+            fields = w_data.get("fields", [])
             body = ""
             if desc:
                 body += f"{desc}\n\n"
+            if fields:
+                for fld in fields:
+                    lbl = fld.get("label", "")
+                    val = fld.get("value", "")
+                    extra = fld.get("extra", "")
+                    extra_str = f" ({extra})" if extra else ""
+                    if fld.get("code"):
+                        body += f"[bold]{lbl}:[/bold] [cyan]`{val}`[/cyan]{extra_str}\n"
+                    else:
+                        body += f"[bold]{lbl}:[/bold] {val}{extra_str}\n"
+                body += "\n"
+            if w.items:
+                for item in w.items:
+                    body += f" • {item}\n"
+                body += "\n"
             if code_text:
                 body += f"[bold underline]{code_label}:[/bold underline]\n{code_text}"
+
+            tone_borders = {
+                "threat": "red",
+                "defense": "cyan",
+                "telemetry": "magenta",
+                "info": "green"
+            }
+            border = tone_borders.get(w.tone, "green")
             con.print(
                 Panel(
                     body.strip(),
-                    title=f"[bold green]■ {title}[/bold green]",
-                    border_style="green",
+                    title=f"[bold {border}]■ {title}[/bold {border}]",
+                    border_style=border,
                     box=box.SQUARE
+                )
+            )
+        elif w_type == "gauge":
+            score = w_data.get("score", "N/A")
+            severity = w_data.get("severity", "UNKNOWN")
+            vector = w_data.get("vector", "")
+            body = f"[bold]CVSS Score:[/bold] [bold red]{score} / 10.0[/bold red]  ([bold]{severity}[/bold])"
+            if vector:
+                body += f"\n[dim]{vector}[/dim]"
+            con.print(
+                Panel(
+                    body,
+                    title="[bold red]■ Vulnerability Severity Gauge[/bold red]",
+                    border_style="red",
+                    box=box.ROUNDED
+                )
+            )
+        elif w_type == "rank_badge":
+            rank = w_data.get("rank", "N/A")
+            title = w.title or "Ranking"
+            con.print(
+                Panel(
+                    f"[bold yellow]★ RANK #{rank}[/bold yellow] in {title}",
+                    title=f"[bold yellow]■ {title}[/bold yellow]",
+                    border_style="yellow",
+                    box=box.ROUNDED
                 )
             )
         elif w_type == "qr_platba":

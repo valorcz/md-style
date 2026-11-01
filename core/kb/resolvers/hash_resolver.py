@@ -15,7 +15,7 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 
 from core.kb.resolvers.base import BaseResolver
-from core.kb.models import Entity, Provenance
+from core.kb.models import Entity, Provenance, WidgetDescriptor
 from core.config import HASH_CACHE_PATH, get_threat_intel_api_key
 from core.diagnostics import Diagnostics
 from core.i18n import I18nCatalog
@@ -250,6 +250,28 @@ class HashResolver(BaseResolver):
             status="resolved"
         )
 
+        fields = [
+            {"label": "Algorithm", "value": algo_name, "extra": f"{algo_meta['bit_length']} bits"}
+        ]
+        if total_engines:
+            fields.append({"label": "VirusTotal Detection", "value": f"{malicious_count} / {total_engines} engines"})
+        if threat_label and threat_label != "None assigned":
+            fields.append({"label": "Threat Classification", "value": threat_label, "code": True})
+        if algo_meta.get("security_status"):
+            fields.append({"label": "Security Status", "value": algo_meta["security_status"]})
+
+        widgets: List[WidgetDescriptor] = [
+            WidgetDescriptor(
+                widget_type="tactical_box",
+                title="Cryptographic Hash & Threat Intelligence",
+                tone="threat" if malicious_count > 0 else "info",
+                data={
+                    "icon": "alert-circle" if malicious_count > 0 else "shield",
+                    "fields": fields
+                }
+            )
+        ]
+
         return Entity(
             id=clean_hash,
             domain="cyber",
@@ -279,5 +301,6 @@ class HashResolver(BaseResolver):
             relationships=relationships,
             references=references,
             provenance=prov,
+            widgets=widgets,
             aliases=[clean_hash, clean_hash.upper(), meaningful_name]
         )

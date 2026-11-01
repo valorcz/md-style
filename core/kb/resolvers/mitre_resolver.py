@@ -11,7 +11,7 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 
 from core.kb.resolvers.base import BaseResolver
-from core.kb.models import Entity, Provenance
+from core.kb.models import Entity, Provenance, WidgetDescriptor
 from core.config import MITRE_DB_PATH, INTEL_CACHE_DIR
 from core.i18n import I18nCatalog
 from core.diagnostics import Diagnostics
@@ -124,6 +124,25 @@ class MitreResolver(BaseResolver):
         badge_prefix = self.catalog.t("badges.mitre", default="MITRE")
         badge = f"{badge_prefix} {tactic.upper()}" if tactic else badge_prefix
 
+        fields = [
+            {"label": "Tactic", "value": tactic},
+            {"label": "Technique", "value": f"{tid} - {info.get('title', tid)}", "code": True}
+        ]
+        if info.get("platforms"):
+            fields.append({"label": "Platforms", "value": ", ".join(info["platforms"])})
+
+        widgets: List[WidgetDescriptor] = [
+            WidgetDescriptor(
+                widget_type="tactical_box",
+                title="MITRE ATT&CK Matrix Telemetry",
+                tone="threat",
+                data={
+                    "icon": "target",
+                    "fields": fields
+                }
+            )
+        ]
+
         return Entity(
             id=tid,
             domain="cyber",
@@ -144,5 +163,6 @@ class MitreResolver(BaseResolver):
             relationships=relationships,
             references=[{"title": "MITRE ATT&CK Matrix", "url": info.get("url", f"https://attack.mitre.org/techniques/{tid}/")}],
             provenance=prov,
+            widgets=widgets,
             aliases=[tid]
         )

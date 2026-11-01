@@ -1,13 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import Icon from '../components/Icon.svelte';
-  import CveCard from '../inspector/families/CveCard.svelte';
-  import WinEventCard from '../inspector/families/WinEventCard.svelte';
-  import EvtxCard from '../inspector/families/EvtxCard.svelte';
-  import CweCard from '../inspector/families/CweCard.svelte';
-  import IpCard from '../inspector/families/IpCard.svelte';
-  import HashCard from '../inspector/families/HashCard.svelte';
-  import MitreCard from '../inspector/families/MitreCard.svelte';
   import DynamicSchemaCard from '../inspector/families/DynamicSchemaCard.svelte';
 
   export let entity: any;
@@ -123,23 +116,7 @@
 
   <!-- Bespoke Family Cards & Extensible Schema Router -->
   <div class="family-card-wrapper">
-    {#if (entity.type || '').toLowerCase() === 'cve'}
-      <CveCard {entity} {allEntities} {checkResolvable} {i18n} on:pivot={(e) => dispatch('pivot', e.detail)} />
-    {:else if (entity.type || '').toLowerCase() === 'winevent'}
-      <WinEventCard {entity} {allEntities} {checkResolvable} {i18n} on:pivot={(e) => dispatch('pivot', e.detail)} />
-    {:else if (entity.type || '').toLowerCase() === 'evtx'}
-      <EvtxCard {entity} {allEntities} {checkResolvable} {i18n} on:pivot={(e) => dispatch('pivot', e.detail)} />
-    {:else if (entity.type || '').toLowerCase() === 'cwe'}
-      <CweCard {entity} {allEntities} {checkResolvable} {i18n} on:pivot={(e) => dispatch('pivot', e.detail)} />
-    {:else if (entity.type || '').toLowerCase() === 'ip'}
-      <IpCard {entity} {allEntities} {checkResolvable} {i18n} on:pivot={(e) => dispatch('pivot', e.detail)} />
-    {:else if (entity.type || '').toLowerCase() === 'hash'}
-      <HashCard {entity} {allEntities} {checkResolvable} {i18n} on:pivot={(e) => dispatch('pivot', e.detail)} />
-    {:else if (entity.type || '').toLowerCase() === 'mitre'}
-      <MitreCard {entity} {allEntities} {checkResolvable} {i18n} on:pivot={(e) => dispatch('pivot', e.detail)} />
-    {:else}
-      <DynamicSchemaCard {entity} {allEntities} {checkResolvable} {i18n} on:pivot={(e) => dispatch('pivot', e.detail)} />
-    {/if}
+    <DynamicSchemaCard {entity} {allEntities} {checkResolvable} {i18n} on:pivot={(e) => dispatch('pivot', e.detail)} />
   </div>
 
   <!-- Provenance Footer -->

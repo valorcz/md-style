@@ -353,4 +353,51 @@ def test_hash_resolver_cryptographic_analysis():
     assert "Cryptographically Secure" in ent_sha.details["Security Status"]
 
 
+def test_all_resolvers_emit_widget_descriptors():
+    """Verifies all cyber and infrastructure resolvers emit declarative WidgetDescriptors."""
+    from core.kb.resolvers.cve_resolver import CveResolver
+    from core.kb.resolvers.mitre_resolver import MitreResolver
+    from core.kb.resolvers.ip_resolver import IpResolver
+    from core.kb.resolvers.hash_resolver import HashResolver
+    from core.kb.resolvers.winevent_resolver import WinEventResolver
+    from core.kb.resolvers.evtx_resolver import EvtxResolver
+    from core.kb.resolvers.cwe_resolver import CweResolver
+
+    # CVE -> gauge
+    cve_ent = CveResolver().resolve("CVE-2021-44228", allow_online=False)
+    assert cve_ent is not None
+    assert any(w.widget_type == "gauge" for w in cve_ent.widgets)
+
+    # MITRE -> tactical_box
+    mitre_ent = MitreResolver().resolve("T1003", allow_online=False)
+    assert mitre_ent is not None
+    assert any(w.widget_type == "tactical_box" for w in mitre_ent.widgets)
+
+    # IP -> tactical_box
+    ip_ent = IpResolver().resolve("10.0.4.15", allow_online=False)
+    assert ip_ent is not None
+    assert any(w.widget_type == "tactical_box" for w in ip_ent.widgets)
+
+    # HASH -> tactical_box
+    hash_ent = HashResolver().resolve("d41d8cd98f00b204e9800998ecf8427e", allow_online=False)
+    assert hash_ent is not None
+    assert any(w.widget_type == "tactical_box" for w in hash_ent.widgets)
+
+    # WinEvent -> tactical_box
+    win_ent = WinEventResolver().resolve("4624", allow_online=False)
+    assert win_ent is not None
+    assert any(w.widget_type == "tactical_box" for w in win_ent.widgets)
+
+    # EVTX -> tactical_box
+    evtx_ent = EvtxResolver().resolve("System.evtx", allow_online=False)
+    assert evtx_ent is not None
+    assert any(w.widget_type == "tactical_box" for w in evtx_ent.widgets)
+
+    # CWE -> rank_badge or tactical_box
+    cwe_ent = CweResolver().resolve("CWE-79", allow_online=False)
+    assert cwe_ent is not None
+    assert any(w.widget_type in ("rank_badge", "tactical_box") for w in cwe_ent.widgets)
+
+
+
 

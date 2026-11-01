@@ -23,6 +23,10 @@
   $: widgets = Array.isArray(entity?.widgets) ? entity.widgets : [];
   $: hasPivotsWidget = widgets.some((w: any) => w.widget_type === 'pivots');
   $: hasAttributesWidget = widgets.some((w: any) => w.widget_type === 'attributes_table' || w.widget_type === 'kv_grid');
+  $: hasSummaryInWidgets = widgets.some((w: any) => w.data?.description && w.data.description === entity.summary);
+  $: resolvedReferences = (Array.isArray(entity?.references) && entity.references.length > 0)
+    ? entity.references
+    : (widgets.find((w: any) => w.widget_type === 'references')?.data?.references || []);
 </script>
 
 <div class="family-card dynamic-schema-card">
@@ -39,10 +43,12 @@
         <TacticalBox
           title={w.title}
           tone={w.tone || 'info'}
+          icon={w.data?.icon || ''}
           description={w.data?.description || ''}
           code={w.data?.code || ''}
           codeLabel={w.data?.codeLabel || ''}
-          items={w.items || []}
+          items={w.items || w.data?.items || []}
+          fields={w.data?.fields || []}
         />
       {:else if w.widget_type === 'rank_badge'}
         <RankTrophy
@@ -81,7 +87,9 @@
   {/if}
 
   <!-- 2. Standard Fallback Sections -->
-  <SummarySection summary={entity.summary} title={i18n.summary || 'Summary'} />
+  {#if !hasSummaryInWidgets}
+    <SummarySection summary={entity.summary} title={i18n.summary || 'Summary'} />
+  {/if}
 
   <MetricsGrid metrics={entity.metrics} title={i18n.metrics || 'Telemetry & Scoring Metrics'} />
 
@@ -116,7 +124,7 @@
     />
   {/if}
 
-  <ReferencesList references={entity.references} title={i18n.references || 'Verified References'} />
+  <ReferencesList references={resolvedReferences} title={i18n.references || 'Verified References'} />
 </div>
 
 <style>

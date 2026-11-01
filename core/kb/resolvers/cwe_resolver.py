@@ -14,7 +14,7 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 
 from core.kb.resolvers.base import BaseResolver
-from core.kb.models import Entity, Provenance
+from core.kb.models import Entity, Provenance, WidgetDescriptor
 from core.config import CWE_CACHE_PATH, CWE_DB_PATH
 from core.diagnostics import Diagnostics
 from core.i18n import I18nCatalog
@@ -261,6 +261,36 @@ class CweResolver(BaseResolver):
             manual_override=False
         )
 
+        widgets: List[WidgetDescriptor] = []
+        if top25_rank:
+            widgets.append(
+                WidgetDescriptor(
+                    widget_type="rank_badge",
+                    title="MITRE CWE Top 25",
+                    data={"rank": top25_rank}
+                )
+            )
+        if impacts:
+            widgets.append(
+                WidgetDescriptor(
+                    widget_type="tactical_box",
+                    title="Technical Impact & Consequences",
+                    tone="threat",
+                    items=impacts,
+                    data={"icon": "alert-circle"}
+                )
+            )
+        if mitigations:
+            widgets.append(
+                WidgetDescriptor(
+                    widget_type="tactical_box",
+                    title="Defensive Remediation & Mitigations",
+                    tone="defense",
+                    items=mitigations,
+                    data={"icon": "academic"}
+                )
+            )
+
         return Entity(
             id=cwe_id,
             domain="cyber",
@@ -277,5 +307,6 @@ class CweResolver(BaseResolver):
             relationships=relationships,
             references=[{"title": f"MITRE CWE {cwe_id} Definition", "url": url}],
             provenance=prov,
+            widgets=widgets,
             aliases=[cwe_id]
         )

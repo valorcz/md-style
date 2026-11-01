@@ -14,7 +14,7 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 
 from core.kb.resolvers.base import BaseResolver
-from core.kb.models import Entity, Provenance
+from core.kb.models import Entity, Provenance, WidgetDescriptor
 from core.config import WIN_EVENTS_DB_PATH, WIN_EVENTS_CACHE_PATH, EVTX_CACHE_PATH
 from core.diagnostics import Diagnostics
 from core.i18n import I18nCatalog
@@ -360,6 +360,22 @@ class EvtxResolver(BaseResolver):
             reverse=True
         )
 
+        widgets: List[WidgetDescriptor] = []
+        if role or channel_path:
+            widgets.append(
+                WidgetDescriptor(
+                    widget_type="tactical_box",
+                    title="Forensic Channel Telemetry",
+                    tone="telemetry",
+                    data={
+                        "icon": "layers",
+                        "description": role,
+                        "code": channel_path,
+                        "codeLabel": "Default Log Path:"
+                    }
+                )
+            )
+
         return Entity(
             id=canonical_key,
             domain="cyber",
@@ -386,5 +402,6 @@ class EvtxResolver(BaseResolver):
             relationships=relationships,
             references=references,
             provenance=prov,
+            widgets=widgets,
             aliases=aliases
         )

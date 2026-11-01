@@ -12,7 +12,7 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 
 from core.kb.resolvers.base import BaseResolver
-from core.kb.models import Entity, Provenance
+from core.kb.models import Entity, Provenance, WidgetDescriptor
 from core.config import GHSA_CACHE_PATH
 from core.diagnostics import Diagnostics
 from core.i18n import I18nCatalog
@@ -164,6 +164,21 @@ class GhsaResolver(BaseResolver):
             "CWE Identifiers": ", ".join(cwes) if cwes else "None"
         }
 
+        widgets: List[WidgetDescriptor] = []
+        if cvss_score is not None:
+            widgets.append(
+                WidgetDescriptor(
+                    widget_type="gauge",
+                    title="CVSS Severity Gauge",
+                    tone="threat",
+                    data={
+                        "score": cvss_score,
+                        "severity": severity,
+                        "vector": cvss_vector or ""
+                    }
+                )
+            )
+
         return Entity(
             id=ghsa_id,
             domain="cyber",
@@ -185,5 +200,6 @@ class GhsaResolver(BaseResolver):
             relationships=relationships,
             references=references[:5],
             provenance=prov,
+            widgets=widgets,
             aliases=[ghsa_id] + ([cve_id] if cve_id else [])
         )
