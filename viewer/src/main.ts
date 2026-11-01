@@ -61,6 +61,7 @@ function initViewer() {
 function mountDocumentComponents() {
   const customRegistry = (window as any).__MD_STYLE_COMPONENTS__ || {};
   const mounts = document.querySelectorAll<HTMLElement>('.doc-component-mount');
+  let mountedCount = 0;
 
   mounts.forEach(mountEl => {
     if (mountEl.getAttribute('data-mounted') === 'true') return;
@@ -89,10 +90,19 @@ function mountDocumentComponents() {
         target: mountEl,
         props
       });
+      mountedCount++;
     } catch (err) {
       console.error(`[md-style] Error mounting custom component '${compName}':`, err);
     }
   });
+
+  if (mountedCount > 0) {
+    document.dispatchEvent(new CustomEvent('md-style:components-mounted'));
+    const viewer = (window as any).MdStyleViewer;
+    if (viewer && typeof viewer.setupFigureToolbars === 'function') {
+      try { viewer.setupFigureToolbars(); } catch(e) {}
+    }
+  }
 }
 
 if (document.readyState === 'loading') {

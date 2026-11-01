@@ -167,5 +167,27 @@ initialFilter: "procA"
         fault_btn = page.wait_for_selector('.flat-btn:has-text("Page Fault")')
         assert fault_btn.evaluate('el => el.classList.contains("active")') is True
 
+        # 5. Verify viewer figure toolbar overlay on dynamic component figure
+        fig = page.query_selector("figure.doc-component-container")
+        assert fig is not None
+        toolbar = fig.query_selector(".figure-toolbar")
+        assert toolbar is not None
+
+        # Test Wide toggle on dynamic component
+        wide_btn = fig.query_selector('.fig-btn:has-text("Wide")')
+        assert wide_btn is not None
+        wide_btn.click(force=True)
+        page.wait_for_timeout(100)
+        assert fig.evaluate('el => el.classList.contains("wide")') is True
+
+        # Test Zoom / Lightbox
+        zoom_btn = fig.query_selector('.fig-btn:has-text("Zoom")')
+        assert zoom_btn is not None
+        zoom_btn.click(force=True)
+        page.wait_for_timeout(200)
+        lightbox = page.query_selector(".lightbox-backdrop")
+        assert lightbox is not None
+        assert lightbox.query_selector("svg") is not None
+
         assert len(console_errors) == 0, f"Errors in browser console: {console_errors}"
         browser.close()

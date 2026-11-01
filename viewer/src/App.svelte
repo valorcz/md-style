@@ -321,6 +321,16 @@
     loadI18nData();
     checkSourceMarkdown();
     customComponentCount = document.querySelectorAll('.doc-component-mount').length;
+
+    // Expose toolbar setup so late-mounted components can register toolbars
+    const viewerObj = (window as any).MdStyleViewer || {};
+    viewerObj.setupFigureToolbars = setupFigureToolbars;
+    (window as any).MdStyleViewer = viewerObj;
+
+    document.addEventListener('md-style:components-mounted', () => {
+      setTimeout(setupFigureToolbars, 50);
+    });
+
     setupMermaidDiagrams().then(() => {
       setupFigureToolbars();
     });
