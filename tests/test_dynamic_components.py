@@ -118,6 +118,11 @@ style: "academic/modern"
 ```component LogicalPhysicalMap
 initialFilter: "procA"
 ```
+
+```mermaid
+graph LR
+    A[Start] --> B[Finish]
+```
 """, encoding="utf-8")
 
     cfg = PipelineConfig(
@@ -167,31 +172,72 @@ initialFilter: "procA"
         fault_btn = page.wait_for_selector('.flat-btn:has-text("Page Fault")')
         assert fault_btn.evaluate('el => el.classList.contains("active")') is True
 
-        # 5. Verify viewer figure toolbar overlay on dynamic component figure
-        fig = page.query_selector("figure.doc-component-container")
-        assert fig is not None
-        toolbar = fig.query_selector(".figure-toolbar")
-        assert toolbar is not None
+        # 5. Verify tailored toolbar on dynamic component figure (Option B)
+        comp_fig = page.query_selector("figure.doc-component-container")
+        assert comp_fig is not None
+        comp_toolbar = comp_fig.query_selector(".figure-toolbar")
+        assert comp_toolbar is not None
+
+        # Components must have Fullscreen and Wide, but NOT Copy or Download
+        assert comp_fig.query_selector('.fig-btn:has-text("Fullscreen")') is not None
+        assert comp_fig.query_selector('.fig-btn:has-text("Wide")') is not None
+        assert comp_fig.query_selector('.fig-btn:has-text("Copy")') is None
+        assert comp_fig.query_selector('button[title*="Download"]') is None
 
         # Test Wide toggle on dynamic component
-        wide_btn = fig.query_selector('.fig-btn:has-text("Wide")')
-        assert wide_btn is not None
+        wide_btn = comp_fig.query_selector('.fig-btn:has-text("Wide")')
         wide_btn.click(force=True)
         page.wait_for_timeout(100)
-        assert fig.evaluate('el => el.classList.contains("wide")') is True
+        assert comp_fig.evaluate('el => el.classList.contains("wide")') is True
         # Verify wide breakout card surface is grounded with background
-        wide_bg = page.evaluate('el => window.getComputedStyle(el).backgroundColor', fig)
+        wide_bg = page.evaluate('el => window.getComputedStyle(el).backgroundColor', comp_fig)
         assert '255, 255, 255' in wide_bg
 
-        # Test Zoom / Lightbox
-        zoom_btn = fig.query_selector('.fig-btn:has-text("Zoom")')
+        # 6. Test Live Component Fullscreen Mode (Option A)
+        fs_btn = comp_fig.query_selector('.fig-btn:has-text("Fullscreen")')
+        assert fs_btn is not None
+        fs_btn.click(force=True)
+        page.wait_for_timeout(150)
+
+        # In fullscreen: class attached to figure and body
+        assert comp_fig.evaluate('el => el.classList.contains("component-fullscreen")') is True
+        assert page.evaluate('() => document.body.classList.contains("has-component-fullscreen")') is True
+
+        # Verify all component controls and status bar remain present and interactive
+        assert comp_fig.query_selector(".map-toolbar").is_visible() is True
+        assert comp_fig.query_selector(".map-svg").is_visible() is True
+        assert comp_fig.query_selector(".map-status-bar").is_visible() is True
+
+        # Test live interaction while in fullscreen (click Process A)
+        proc_a_btn = comp_fig.query_selector('.flat-btn:has-text("Process A (Browser)")')
+        proc_a_btn.click()
+        page.wait_for_timeout(100)
+        assert proc_a_btn.evaluate('el => el.classList.contains("active")') is True
+
+        # Test Exit fullscreen via Esc key
+        page.keyboard.press("Escape")
+        page.wait_for_timeout(150)
+        assert comp_fig.evaluate('el => el.classList.contains("component-fullscreen")') is False
+        assert page.evaluate('() => document.body.classList.contains("has-component-fullscreen")') is False
+
+        # 7. Verify standard static diagram retains Zoom/Lightbox, Copy, Download
+        diag_fig = page.query_selector("figure.mermaid-diagram")
+        assert diag_fig is not None
+        diag_toolbar = diag_fig.query_selector(".figure-toolbar")
+        assert diag_toolbar is not None
+
+        # Static diagrams have Zoom, Wide, Copy, Download
+        zoom_btn = diag_fig.query_selector('.fig-btn:has-text("Zoom")')
         assert zoom_btn is not None
+        assert diag_fig.query_selector('.fig-btn:has-text("Copy")') is not None
+        assert diag_fig.query_selector('button[title*="Download"]') is not None
+
+        # Clicking Zoom opens the vector lightbox
         zoom_btn.click(force=True)
         page.wait_for_timeout(200)
         lightbox = page.query_selector(".lightbox-backdrop")
         assert lightbox is not None
         assert lightbox.query_selector("svg") is not None
-        # Verify Lightbox modal adopts light theme matching document
         modal = page.query_selector(".lightbox-modal")
         modal_bg = page.evaluate('el => window.getComputedStyle(el).backgroundColor', modal)
         assert '255, 255, 255' in modal_bg

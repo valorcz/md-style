@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount, onDestroy } from 'svelte';
   import Icon from './Icon.svelte';
   import { FigureController } from '../figure/figure-controller';
 
@@ -8,17 +9,45 @@
 
   let controller: FigureController;
   let isWide: boolean = false;
+  let isFullscreen: boolean = false;
+  let isComponent: boolean = false;
   let copied: boolean = false;
 
   $: if (figureElement) {
     controller = new FigureController(figureElement);
     isWide = controller.isWide;
+    isFullscreen = controller.isFullscreen;
+    isComponent = controller.isComponent;
   }
 
   function toggleWide() {
     if (!controller) return;
     isWide = controller.toggleWide();
   }
+
+  function toggleFullscreen() {
+    if (!controller) return;
+    isFullscreen = controller.toggleFullscreen();
+  }
+
+  function handleKeydown(e: KeyboardEvent) {
+    if (e.key === 'Escape' && isFullscreen) {
+      if (controller) {
+        isFullscreen = controller.toggleFullscreen();
+      }
+    }
+  }
+
+  onMount(() => {
+    window.addEventListener('keydown', handleKeydown);
+  });
+
+  onDestroy(() => {
+    window.removeEventListener('keydown', handleKeydown);
+    if (isFullscreen && controller) {
+      controller.toggleFullscreen();
+    }
+  });
 
   function handleOpenLightbox() {
     if (!figureElement || !onOpenLightbox || !controller) return;
@@ -46,46 +75,74 @@
   }
 </script>
 
-<div class="figure-toolbar" role="toolbar" aria-label="Figure tools">
-  <button
-    type="button"
-    class="fig-btn"
-    title={i18n.zoom || "Zoom & Pan Lightbox"}
-    on:click|stopPropagation={handleOpenLightbox}
-  >
-    <Icon name="maximize" size={13} />
-    <span class="btn-label">{i18n.zoom || "Zoom"}</span>
-  </button>
+<div class="figure-toolbar" class:in-fullscreen={isFullscreen} role="toolbar" aria-label="Figure tools">
+  {#if isComponent}
+    <!-- Tailored Toolbar for Dynamic Svelte Components -->
+    <button
+      type="button"
+      class="fig-btn"
+      class:active={isFullscreen}
+      title={isFullscreen ? (i18n.exit_fullscreen || "Exit fullscreen (Esc)") : (i18n.fullscreen || "Fullscreen mode")}
+      on:click|stopPropagation={toggleFullscreen}
+    >
+      <Icon name={isFullscreen ? "minimize" : "maximize"} size={13} />
+      <span class="btn-label">{isFullscreen ? (i18n.exit || "Exit") : (i18n.fullscreen || "Fullscreen")}</span>
+    </button>
 
-  <button
-    type="button"
-    class="fig-btn"
-    class:active={isWide}
-    title={isWide ? (i18n.collapse_width || "Standard width") : (i18n.expand_width || "Expand width")}
-    on:click|stopPropagation={toggleWide}
-  >
-    <Icon name="expand" size={13} />
-    <span class="btn-label">{isWide ? (i18n.standard || "Normal") : (i18n.wide || "Wide")}</span>
-  </button>
+    {#if !isFullscreen}
+      <button
+        type="button"
+        class="fig-btn"
+        class:active={isWide}
+        title={isWide ? (i18n.collapse_width || "Standard width") : (i18n.expand_width || "Expand width")}
+        on:click|stopPropagation={toggleWide}
+      >
+        <Icon name="expand" size={13} />
+        <span class="btn-label">{isWide ? (i18n.standard || "Normal") : (i18n.wide || "Wide")}</span>
+      </button>
+    {/if}
+  {:else}
+    <!-- Standard Toolbar for Static Diagrams & Vector Graphics -->
+    <button
+      type="button"
+      class="fig-btn"
+      title={i18n.zoom || "Zoom & Pan Lightbox"}
+      on:click|stopPropagation={handleOpenLightbox}
+    >
+      <Icon name="maximize" size={13} />
+      <span class="btn-label">{i18n.zoom || "Zoom"}</span>
+    </button>
 
-  <button
-    type="button"
-    class="fig-btn"
-    title={copied ? (i18n.copied || "Copied!") : (i18n.copy_svg || "Copy SVG")}
-    on:click|stopPropagation={copySvg}
-  >
-    <Icon name={copied ? "check" : "copy"} size={13} />
-    <span class="btn-label">{copied ? (i18n.copied || "Copied") : (i18n.copy || "Copy")}</span>
-  </button>
+    <button
+      type="button"
+      class="fig-btn"
+      class:active={isWide}
+      title={isWide ? (i18n.collapse_width || "Standard width") : (i18n.expand_width || "Expand width")}
+      on:click|stopPropagation={toggleWide}
+    >
+      <Icon name="expand" size={13} />
+      <span class="btn-label">{isWide ? (i18n.standard || "Normal") : (i18n.wide || "Wide")}</span>
+    </button>
 
-  <button
-    type="button"
-    class="fig-btn"
-    title={i18n.download_svg || "Download SVG"}
-    on:click|stopPropagation={downloadSvg}
-  >
-    <Icon name="download" size={13} />
-  </button>
+    <button
+      type="button"
+      class="fig-btn"
+      title={copied ? (i18n.copied || "Copied!") : (i18n.copy_svg || "Copy SVG")}
+      on:click|stopPropagation={copySvg}
+    >
+      <Icon name={copied ? "check" : "copy"} size={13} />
+      <span class="btn-label">{copied ? (i18n.copied || "Copied") : (i18n.copy || "Copy")}</span>
+    </button>
+
+    <button
+      type="button"
+      class="fig-btn"
+      title={i18n.download_svg || "Download SVG"}
+      on:click|stopPropagation={downloadSvg}
+    >
+      <Icon name="download" size={13} />
+    </button>
+  {/if}
 </div>
 
 <style>
@@ -124,14 +181,23 @@
     margin: 0 !important;
   }
 
-  /* Reveal on hover of parent figure or when focused inside */
+  /* Reveal on hover of parent figure or when focused inside, or when fullscreen */
   :global(figure:hover) .figure-toolbar,
   :global(figure:focus-within) .figure-toolbar,
   .figure-toolbar:hover,
-  .figure-toolbar:focus-within {
-    opacity: 1;
-    pointer-events: auto;
+  .figure-toolbar:focus-within,
+  .figure-toolbar.in-fullscreen {
+    opacity: 1 !important;
+    pointer-events: auto !important;
     transform: translateY(0);
+  }
+
+  .figure-toolbar.in-fullscreen {
+    position: fixed !important;
+    top: 1.25rem !important;
+    right: 1.5rem !important;
+    z-index: 999999 !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18) !important;
   }
 
   .fig-btn {

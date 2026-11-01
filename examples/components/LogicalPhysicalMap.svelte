@@ -586,11 +586,15 @@
     font-size: 8px !important;
   }
 
-  /* Wide Breakout Responsiveness */
+  /* Wide Breakout & Fullscreen Modal Responsiveness */
   :global(figure.wide) .logical-physical-map,
   :global(figure.wide) .map-toolbar,
   :global(figure.wide) .map-svg,
-  :global(figure.wide) .map-status-bar {
+  :global(figure.wide) .map-status-bar,
+  :global(figure.component-fullscreen) .logical-physical-map,
+  :global(figure.component-fullscreen) .map-toolbar,
+  :global(figure.component-fullscreen) .map-svg,
+  :global(figure.component-fullscreen) .map-status-bar {
     max-width: 100% !important;
   }
 </style>
