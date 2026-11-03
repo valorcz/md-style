@@ -201,21 +201,23 @@
     position: fixed;
     top: 40px;
     bottom: 0;
-    left: 0;
-    width: 280px;
+    right: 0;
+    left: auto;
+    width: 260px;
     max-width: 85vw;
     z-index: 9998;
-    background: rgba(15, 23, 42, 0.94);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-right: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.25);
+    background: rgba(18, 19, 22, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-left: 1px solid rgba(255, 255, 255, 0.06);
+    border-right: none;
+    box-shadow: none;
     display: flex;
     flex-direction: column;
-    transform: translateX(-100%);
+    transform: translateX(100%);
     transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-    font-family: var(--font-ui, var(--font-body, system-ui, sans-serif));
-    color: #f1f5f9;
+    font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
+    color: #94a3b8;
   }
 
   .sidebar-toc.is-open {
@@ -412,11 +414,10 @@
   }
 
   .toc-link.is-active {
-    background: rgba(56, 189, 248, 0.14);
+    background: transparent;
     border-left-color: #38bdf8;
     border-left-color: var(--accent-color, #38bdf8);
-    color: #38bdf8;
-    color: var(--accent-color, #38bdf8);
+    color: #f1f5f9;
     font-weight: 600;
   }
 
@@ -430,10 +431,11 @@
   /* Light Theme overrides */
   :global([data-theme="light"]) .sidebar-toc,
   :global(body.light-theme) .sidebar-toc {
-    background: rgba(255, 255, 255, 0.94);
-    border-right-color: rgba(0, 0, 0, 0.08);
-    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.08);
-    color: #1e293b;
+    background: rgba(255, 255, 255, 0.82);
+    border-left: 1px solid rgba(0, 0, 0, 0.05);
+    border-right: none;
+    box-shadow: none;
+    color: #64748b;
   }
 
   :global([data-theme="light"]) .toc-heading,
@@ -473,9 +475,10 @@
 
   :global([data-theme="light"]) .toc-link.is-active,
   :global(body.light-theme) .toc-link.is-active {
-    background: rgba(2, 132, 199, 0.1);
+    background: transparent;
     border-left-color: #0284c7;
-    color: #0284c7;
+    color: #0f172a;
+    font-weight: 600;
   }
 
   @media print {

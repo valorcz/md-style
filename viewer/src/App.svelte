@@ -526,16 +526,11 @@
 />
 
 <style>
-  @media (min-width: 1024px) and (max-width: 1399px) {
+  @media (min-width: 1024px) {
     :global(body.toc-docked .report-content),
     :global(body.toc-docked main) {
-      margin-left: 290px !important;
-      transition: margin-left 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-  }
-  @media (min-width: 1400px) {
-    :global(body.toc-docked .report-content),
-    :global(body.toc-docked main) {
+      margin-right: 270px !important;
+      margin-left: auto !important;
       transition: margin 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     }
   }
