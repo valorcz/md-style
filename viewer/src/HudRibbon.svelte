@@ -269,8 +269,8 @@
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    font-family: var(--font-mono, "JetBrains Mono", "Cascadia Code", "Fira Code", monospace);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    font-family: var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+    box-shadow: none;
   }
   .hud-content {
     display: flex;
@@ -301,19 +301,20 @@
     white-space: nowrap;
   }
   .hud-dot {
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
-    background: #00f0ff;
-    box-shadow: 0 0 8px #00f0ff;
+    background: #0284c7;
+    box-shadow: none;
     flex-shrink: 0;
   }
   .hud-title {
     font-size: 0.8rem;
     font-weight: 700;
-    letter-spacing: 0.04em;
+    letter-spacing: -0.01em;
     color: #f8fafc;
-    text-transform: uppercase;
+    text-transform: none;
+    font-weight: 600;
   }
   .hud-sep {
     color: #64748b;
@@ -551,16 +552,16 @@
   }
   .progress-bar-fill {
     height: 100%;
-    background: #00f0ff;
+    background: #0284c7;
     transition: width 0.05s linear;
   }
 
   /* Light Theme overrides */
   :global([data-theme="light"]) .hud-container,
   :global(body.light-theme) .hud-container {
-    background: rgba(255, 255, 255, 0.94);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    background: rgba(255, 255, 255, 0.88);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
   }
   :global([data-theme="light"]) .hud-title,
   :global(body.light-theme) .hud-title {

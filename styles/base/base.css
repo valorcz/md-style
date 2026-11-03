@@ -718,31 +718,31 @@ header#title-block-header:has(.meta-label) p.date::before {
 
 /* CSS Custom Highlight API Pseudo-Elements */
 ::highlight(md-ann-feedback) {
-  background-color: rgba(2, 132, 199, 0.18);
+  background-color: rgba(2, 132, 199, 0.10);
   text-decoration: underline dashed #0284c7 2px;
   text-underline-offset: 3px;
 }
 
 ::highlight(md-ann-correction) {
-  background-color: rgba(244, 63, 94, 0.2);
+  background-color: rgba(244, 63, 94, 0.10);
   text-decoration: underline wavy #f43f5e 2px;
   text-underline-offset: 3px;
 }
 
 ::highlight(md-ann-insight) {
-  background-color: rgba(245, 158, 11, 0.22);
+  background-color: rgba(245, 158, 11, 0.12);
   text-decoration: underline dotted #f59e0b 2px;
   text-underline-offset: 3px;
 }
 
 ::highlight(md-ann-commendation) {
-  background-color: rgba(16, 185, 129, 0.2);
+  background-color: rgba(16, 185, 129, 0.10);
   text-decoration: underline solid #10b981 2px;
   text-underline-offset: 3px;
 }
 
 ::highlight(md-ann-question) {
-  background-color: rgba(168, 85, 247, 0.2);
+  background-color: rgba(168, 85, 247, 0.10);
   text-decoration: underline dotted #a855f7 2px;
   text-underline-offset: 3px;
 }
@@ -757,31 +757,31 @@ mark.md-annotation-mark {
 }
 
 mark.md-annotation-mark.category-feedback {
-  background-color: rgba(2, 132, 199, 0.18);
+  background-color: rgba(2, 132, 199, 0.10);
   text-decoration: underline dashed #0284c7 2px;
   text-underline-offset: 3px;
 }
 
 mark.md-annotation-mark.category-correction {
-  background-color: rgba(244, 63, 94, 0.2);
+  background-color: rgba(244, 63, 94, 0.10);
   text-decoration: underline wavy #f43f5e 2px;
   text-underline-offset: 3px;
 }
 
 mark.md-annotation-mark.category-insight {
-  background-color: rgba(245, 158, 11, 0.22);
+  background-color: rgba(245, 158, 11, 0.12);
   text-decoration: underline dotted #f59e0b 2px;
   text-underline-offset: 3px;
 }
 
 mark.md-annotation-mark.category-commendation {
-  background-color: rgba(16, 185, 129, 0.2);
+  background-color: rgba(16, 185, 129, 0.10);
   text-decoration: underline solid #10b981 2px;
   text-underline-offset: 3px;
 }
 
 mark.md-annotation-mark.category-question {
-  background-color: rgba(168, 85, 247, 0.2);
+  background-color: rgba(168, 85, 247, 0.10);
   text-decoration: underline dotted #a855f7 2px;
   text-underline-offset: 3px;
 }
