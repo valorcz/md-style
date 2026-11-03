@@ -2,6 +2,7 @@
   import { onMount, mount } from 'svelte';
   import InspectorDrawer from './InspectorDrawer.svelte';
   import HudRibbon from './HudRibbon.svelte';
+  import SidebarToc from './components/SidebarToc.svelte';
   import TableToolbar from './TableToolbar.svelte';
   import FigureToolbar from './components/FigureToolbar.svelte';
   import FigureLightbox from './components/FigureLightbox.svelte';
@@ -23,7 +24,12 @@
   let i18nData: Record<string, string> = {};
   let selectedEntity: any = null;
   let isDrawerOpen: boolean = false;
+  let isTocOpen: boolean = false;
   let drawerTab: 'kb' | 'comments' = 'kb';
+
+  $: if (typeof document !== 'undefined') {
+    document.body.classList.toggle('toc-docked', isTocOpen);
+  }
   let hasSourceMarkdown: boolean = false;
   let sourceMarkdownText: string = '';
   let activeLightboxFigure: { svgElement: SVGElement; title: string; id: string } | null = null;
@@ -398,11 +404,24 @@
       }
     };
 
+    const handleKeydown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || (e.target as HTMLElement)?.isContentEditable) return;
+      if (e.key === 't' || e.key === 'T') {
+        if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+          e.preventDefault();
+          isTocOpen = !isTocOpen;
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeydown);
     document.addEventListener('click', clickHandler);
     setupTableToolbars();
     setupFigureToolbars();
 
     return () => {
+      document.removeEventListener('keydown', handleKeydown);
       document.removeEventListener('click', clickHandler);
       document.removeEventListener('selectionchange', handleSelectionChange);
     };
@@ -435,19 +454,28 @@
 {/if}
 
 {#if enableHud}
+  <SidebarToc
+    isOpen={isTocOpen}
+    i18n={i18nData}
+    onClose={() => { isTocOpen = false; }}
+  />
   <HudRibbon
     {title}
     i18n={i18nData}
     {isPagedMode}
     isInspectorOpen={isDrawerOpen}
+    {isTocOpen}
     activeDrawerTab={drawerTab}
     entityCount={Object.keys(knowledgeData).length}
     commentCount={$annotationStore.annotations.length}
     componentCount={customComponentCount}
     educativeMode={$annotationStore.educativeMode}
+    {hasSourceMarkdown}
     on:togglePaged={handleTogglePaged}
     on:toggleInspector={handleToggleInspector}
+    on:toggleToc={() => { isTocOpen = !isTocOpen; }}
     on:toggleEducativeMode={() => annotationStore.toggleEducativeMode()}
+    on:downloadSource={handleDownloadSource}
   />
 {/if}
 
@@ -496,3 +524,19 @@
   i18n={i18nData}
   onClose={() => { activeLightboxFigure = null; }}
 />
+
+<style>
+  @media (min-width: 1024px) and (max-width: 1399px) {
+    :global(body.toc-docked .report-content),
+    :global(body.toc-docked main) {
+      margin-left: 290px !important;
+      transition: margin-left 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+  }
+  @media (min-width: 1400px) {
+    :global(body.toc-docked .report-content),
+    :global(body.toc-docked main) {
+      transition: margin 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+  }
+</style>

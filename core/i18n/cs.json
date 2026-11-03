@@ -61,7 +61,13 @@
     "download_md": "Stáhnout .md",
     "paginating": "Stránkování listů A4...",
     "web_view": "Webové zobrazení",
-    "paper_view": "Stránkové zobrazení (A4)"
+    "paper_view": "Stránkové zobrazení (A4)",
+    "sidebar_toc": "Obsah dokumentu",
+    "toggle_toc": "Zobrazit / skrýt obsah (T)",
+    "more_actions": "Další možnosti",
+    "educative_mode": "Výukový režim",
+    "reader_mode": "Čtenářský režim",
+    "source_markdown": "Stáhnout Markdown (.md)"
   },
   "badges": {
     "statute": "ZÁKONNÉ USTANOVENÍ",
