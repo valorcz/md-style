@@ -1,6 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import Icon from '../components/Icon.svelte';
+  import IconButton from '../components/ui/IconButton.svelte';
 
   export let activeTab: 'kb' | 'comments' = 'kb';
   export let entity: any = null;
@@ -41,9 +42,14 @@
       </button>
     </div>
   {/if}
-  <button class="close-btn" on:click={() => dispatch('close')} aria-label={i18n.close || 'Close'}>
-    <Icon name="x" size={14} />
-  </button>
+  <IconButton
+    class="close-btn"
+    name="x"
+    size={14}
+    title={i18n.close || 'Close'}
+    ariaLabel={i18n.close || 'Close'}
+    on:click={() => dispatch('close')}
+  />
 </header>
 
 <style>
@@ -103,23 +109,7 @@
     background: rgba(0, 0, 0, 0.04);
     color: var(--color-text, #0f172a);
   }
-  .close-btn {
-    background: transparent;
-    border: none;
-    color: var(--color-text-muted, #64748b);
-    font-size: 1.1rem;
-    cursor: pointer;
-    padding: 0.25rem 0.4rem;
-    border-radius: 4px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.15s ease;
-  }
-  .close-btn:hover {
-    background: rgba(0, 0, 0, 0.05);
-    color: var(--color-text, #0f172a);
-  }
+
 
   /* Dark Theme */
   :global([data-theme="dark"]) .drawer-header {
@@ -141,11 +131,5 @@
     border-color: #60a5fa;
     color: #60a5fa;
   }
-  :global([data-theme="dark"]) .close-btn {
-    color: #94a3b8;
-  }
-  :global([data-theme="dark"]) .close-btn:hover {
-    color: #f1f5f9;
-    background: rgba(255, 255, 255, 0.08);
-  }
+  
 </style>

@@ -3,6 +3,7 @@
   import type { AnnotationCategory } from './types';
   import { renderAnnotationMarkdown } from './markdown';
   import Icon from '../components/Icon.svelte';
+  import IconButton from '../components/ui/IconButton.svelte';
 
   export let position: { x: number; y: number } = { x: 0, y: 0 };
   export let quoteText: string = '';
@@ -120,9 +121,7 @@
           <span class="btn-label">{cat.label}</span>
         </button>
       {/each}
-      <button class="popover-close-btn" on:click={() => dispatch('cancel')} title="Cancel" aria-label="Cancel">
-        <Icon name="x" size={13} />
-      </button>
+      <IconButton class="popover-close-btn" name="x" size={13} title="Cancel" ariaLabel="Cancel" on:click={() => dispatch('cancel')} />
     </div>
   {:else}
     <div class="popover-composer">
@@ -255,23 +254,6 @@
     color: #111827;
   }
 
-  .popover-close-btn {
-    background: transparent;
-    border: none;
-    color: #9ca3af;
-    padding: 0.3rem;
-    cursor: pointer;
-    border-radius: 4px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-left: auto;
-  }
-
-  .popover-close-btn:hover {
-    color: #4b5563;
-    background: rgba(0, 0, 0, 0.05);
-  }
 
   /* Google Docs Style Composer */
   .popover-composer {

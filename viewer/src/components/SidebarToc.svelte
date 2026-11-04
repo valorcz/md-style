@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onMount, tick } from 'svelte';
   import Icon from './Icon.svelte';
+  import IconButton from './ui/IconButton.svelte';
+  import PillButton from './ui/PillButton.svelte';
   import { layoutStore } from '../layout/layout-store';
 
   export let isOpen: boolean | undefined = undefined;
@@ -153,30 +155,34 @@
     {#if availableLevels.length > 1}
       <div class="toc-depth-filter" role="radiogroup" aria-label="Heading Depth Filter">
         {#each availableLevels as lvl}
-          <button
+          <PillButton
             class="depth-pill"
-            class:is-active={selectedDepth === lvl}
+            active={selectedDepth === lvl}
             on:click={() => (selectedDepth = lvl)}
             title="Zobrazit po úroveň H{lvl}"
           >
             h{lvl}
-          </button>
+          </PillButton>
         {/each}
         {#if Math.max(...availableLevels) > 3 || selectedDepth >= 6}
-          <button
+          <PillButton
             class="depth-pill"
-            class:is-active={selectedDepth >= 6}
+            active={selectedDepth >= 6}
             on:click={() => (selectedDepth = 6)}
             title="Všechny úrovně"
           >
             vše
-          </button>
+          </PillButton>
         {/if}
       </div>
     {/if}
-    <button class="toc-close-btn" on:click={handleClose} title={i18n['ui.close'] || 'Close'}>
-      <Icon name="x" size={13} />
-    </button>
+    <IconButton
+      class="toc-close-btn"
+      name="x"
+      size={13}
+      title={i18n['ui.close'] || 'Close'}
+      on:click={handleClose}
+    />
   </div>
 
   <div class="toc-scroll-body">
@@ -271,26 +277,6 @@
       gap: 0.2rem;
     }
 
-    .sidebar-toc.is-spine .depth-pill {
-      background: transparent;
-      border: 1px solid rgba(0, 0, 0, 0.08);
-      color: #94a3b8;
-      font-size: 0.65rem;
-      padding: 0.08rem 0.35rem;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .sidebar-toc.is-spine .depth-pill:hover {
-      color: #0f172a;
-      border-color: rgba(0, 0, 0, 0.2);
-    }
-
-    .sidebar-toc.is-spine .depth-pill.is-active {
-      color: #0284c7;
-      border-color: #0284c7;
-      font-weight: 600;
-    }
 
     /* Right-aligned spine navigation links */
     .sidebar-toc.is-spine .toc-tree {
@@ -350,18 +336,7 @@
     :global([data-theme="dark"]) .sidebar-toc.is-spine .toc-heading {
       color: #64748b;
     }
-    :global([data-theme="dark"]) .sidebar-toc.is-spine .depth-pill {
-      border-color: rgba(255, 255, 255, 0.1);
-      color: #94a3b8;
-    }
-    :global([data-theme="dark"]) .sidebar-toc.is-spine .depth-pill:hover {
-      color: #f1f5f9;
-      border-color: rgba(255, 255, 255, 0.25);
-    }
-    :global([data-theme="dark"]) .sidebar-toc.is-spine .depth-pill.is-active {
-      color: #38bdf8;
-      border-color: #38bdf8;
-    }
+
     :global([data-theme="dark"]) .sidebar-toc.is-spine .toc-link {
       color: #94a3b8;
     }
@@ -418,55 +393,12 @@
     gap: 0.5rem;
   }
 
-  .toc-close-btn {
-    background: transparent;
-    border: none;
-    outline: none;
-    box-shadow: none;
-    color: var(--color-text-muted, #64748b);
-    cursor: pointer;
-    padding: 0.25rem 0.4rem;
-    border-radius: 4px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.15s ease;
-  }
-
-  .toc-close-btn:hover {
-    background: rgba(0, 0, 0, 0.05);
-    color: var(--color-text, #0f172a);
-  }
-
-  :global([data-theme="dark"]) .toc-close-btn {
-    color: #94a3b8;
-  }
-  :global([data-theme="dark"]) .toc-close-btn:hover {
-    color: #f1f5f9;
-    background: rgba(255, 255, 255, 0.08);
-  }
 
   .sidebar-toc:not(.is-spine) .toc-depth-filter {
     display: flex;
     gap: 0.35rem;
   }
 
-  .sidebar-toc:not(.is-spine) .depth-pill {
-    background: rgba(0, 0, 0, 0.04);
-    border: 1px solid var(--color-border, rgba(0, 0, 0, 0.08));
-    padding: 0.12rem 0.45rem;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    cursor: pointer;
-    color: var(--color-text-muted, #475569);
-  }
-
-  .sidebar-toc:not(.is-spine) .depth-pill.is-active {
-    background: rgba(2, 132, 199, 0.1);
-    border-color: #0284c7;
-    color: #0284c7;
-    font-weight: 600;
-  }
 
   .sidebar-toc:not(.is-spine) .toc-tree {
     padding: 0.75rem 0.5rem;

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy, tick } from 'svelte';
   import Icon from './Icon.svelte';
+  import IconButton from './ui/IconButton.svelte';
   import { getSvgDimensions, calculateFitToScreen } from '../figure/figure-geometry';
 
   export let isOpen: boolean = false;
@@ -185,9 +186,14 @@
             <span class="btn-text">SVG</span>
           </button>
 
-          <button type="button" class="ctrl-btn close-btn" on:click={onClose} title="Close (Esc)" aria-label="Close">
-            <Icon name="x" size={15} />
-          </button>
+          <IconButton
+            class="close-btn"
+            name="x"
+            size={15}
+            title="Close (Esc)"
+            ariaLabel="Close"
+            on:click={onClose}
+          />
         </div>
       </header>
 
@@ -432,10 +438,6 @@
     font-size: 0.72rem;
   }
 
-  .ctrl-btn.close-btn:hover {
-    background: rgba(239, 68, 68, 0.25);
-    color: #f87171;
-  }
 
   .lightbox-canvas {
     flex: 1;
