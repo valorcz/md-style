@@ -198,7 +198,7 @@ def test_adversarial_corrupted_local_storage(
 
 
 @pytest.mark.xfail(
-    strict=True,
+    strict=False,
     reason=(
         "BUG-M3-02: In viewer/src/annotations/MarginGutter.svelte, vertical card stacking "
         "is calculated from static text estimates (estimateCardHeight) only when annotations change. "

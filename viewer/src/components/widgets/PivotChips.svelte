@@ -52,10 +52,10 @@
   }
   .section-heading {
     margin: 0;
-    font-size: 0.8rem;
+    font-size: 0.74rem;
     font-weight: 700;
-    letter-spacing: 0.04em;
-    color: #94a3b8;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted, #64748b);
     text-transform: uppercase;
     display: flex;
     align-items: center;
@@ -64,83 +64,75 @@
   .heading-icon {
     display: flex;
     align-items: center;
-    color: #38bdf8;
+    color: var(--color-accent, #2563eb);
   }
   .relationship-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem;
+    gap: 0.35rem;
   }
   .rel-chip {
-    background: #1e293b;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(37, 99, 235, 0.06);
+    border: 1px solid rgba(37, 99, 235, 0.16);
     border-radius: 4px;
-    padding: 0.3rem 0.55rem;
+    padding: 0.25rem 0.5rem;
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.35rem;
     cursor: pointer;
     transition: all 0.15s ease;
     text-align: left;
   }
   .rel-chip:hover {
-    background: #0284c7;
-    border-color: #38bdf8;
-    transform: translateY(-1px);
+    background: rgba(37, 99, 235, 0.14);
+    border-color: var(--color-accent, #2563eb);
   }
   .rel-icon {
     display: flex;
     align-items: center;
-    color: #38bdf8;
-  }
-  .rel-chip:hover .rel-icon {
-    color: #ffffff;
+    color: var(--color-accent, #2563eb);
   }
   .rel-badge {
     font-size: 0.68rem;
-    color: #94a3b8;
+    color: var(--color-text-muted, #64748b);
     text-transform: uppercase;
     font-weight: 500;
   }
-  .rel-chip:hover .rel-badge {
-    color: #e0f2fe;
-  }
   .rel-target {
-    font-family: var(--font-mono, monospace);
+    font-family: inherit;
     font-size: 0.78rem;
-    color: #38bdf8;
+    color: var(--color-accent, #2563eb);
     font-weight: 600;
   }
   .rel-chip:hover .rel-target {
-    color: #ffffff;
+    color: var(--color-primary, #0f172a);
   }
 
-  /* Light Theme */
-  :global([data-theme="light"]) .section-heading,
-  :global(body.light-theme) .section-heading,
-  :global(body.theme-forensic-dossier) .section-heading {
-    color: #64748b;
+  /* Dark Theme */
+  :global([data-theme="dark"]) .section-heading {
+    color: #94a3b8;
   }
-  :global([data-theme="light"]) .heading-icon,
-  :global(body.light-theme) .heading-icon,
-  :global(body.theme-forensic-dossier) .heading-icon {
-    color: #0284c7;
+  :global([data-theme="dark"]) .heading-icon {
+    color: #60a5fa;
   }
-  :global([data-theme="light"]) .rel-chip,
-  :global(body.light-theme) .rel-chip,
-  :global(body.theme-forensic-dossier) .rel-chip {
-    background: #f1f5f9;
-    border: 1px solid rgba(0, 0, 0, 0.08);
+  :global([data-theme="dark"]) .rel-chip {
+    background: rgba(96, 165, 250, 0.1);
+    border-color: rgba(96, 165, 250, 0.25);
   }
-  :global([data-theme="light"]) .rel-chip:hover,
-  :global(body.light-theme) .rel-chip:hover,
-  :global(body.theme-forensic-dossier) .rel-chip {
-    background: #0284c7;
-    border-color: #0284c7;
+  :global([data-theme="dark"]) .rel-chip:hover {
+    background: rgba(96, 165, 250, 0.2);
+    border-color: #60a5fa;
   }
-  :global([data-theme="light"]) .rel-chip:hover .rel-target,
-  :global(body.light-theme) .rel-chip:hover .rel-target,
-  :global(body.theme-forensic-dossier) .rel-chip:hover .rel-target {
+  :global([data-theme="dark"]) .rel-icon {
+    color: #60a5fa;
+  }
+  :global([data-theme="dark"]) .rel-badge {
+    color: #94a3b8;
+  }
+  :global([data-theme="dark"]) .rel-target {
+    color: #60a5fa;
+  }
+  :global([data-theme="dark"]) .rel-chip:hover .rel-target {
     color: #ffffff;
   }
 </style>

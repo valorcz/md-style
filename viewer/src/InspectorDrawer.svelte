@@ -152,17 +152,17 @@
     height: calc(100vh - 40px);
     width: 440px;
     max-width: 90vw;
-    background: rgba(15, 23, 42, 0.96);
+    background: var(--color-paper, #ffffff);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    color: #e2e8f0;
-    border-left: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: -8px 0 24px rgba(0, 0, 0, 0.4);
+    color: var(--color-text, #1e293b);
+    border-left: 1px solid var(--color-border, #e2e8f0);
+    box-shadow: -4px 0 24px rgba(15, 23, 42, 0.08);
     z-index: 9999;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    font-family: var(--font-mono, "JetBrains Mono", "Cascadia Code", "Fira Code", monospace);
+    font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
     animation: slideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
   }
   @keyframes slideIn {
@@ -177,13 +177,11 @@
     flex: 1;
   }
 
-  /* Light Theme */
-  :global([data-theme="light"]) .drawer-container,
-  :global(body.light-theme) .drawer-container,
-  :global(body.theme-forensic-dossier) .drawer-container {
-    background: rgba(255, 255, 255, 0.98);
-    color: #1e293b;
-    border-left: 1px solid #cbd5e1;
-    box-shadow: -8px 0 24px rgba(15, 23, 42, 0.08);
+  /* Dark Theme */
+  :global([data-theme="dark"]) .drawer-container {
+    background: #1a1b1f;
+    color: #ededed;
+    border-left-color: #262930;
+    box-shadow: -8px 0 32px rgba(0, 0, 0, 0.5);
   }
 </style>

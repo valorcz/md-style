@@ -47,70 +47,56 @@
     document.body.removeChild(el);
   }
 
-  function getTypeIcon(type: string): string {
+  function getTypeLabel(type: string): string {
     const t = (type || '').toLowerCase();
-    if (t === 'cve') return '🛡️';
-    if (t === 'cwe') return '🧩';
-    if (t === 'ghsa') return '📢';
-    if (t === 'mitre') return '⚔️';
-    if (t === 'winevent') return '📋';
-    if (t === 'evtx') return '🗄️';
-    if (t === 'ip') return '🌐';
-    if (t === 'hash') return '#️⃣';
-    if (t === 'registry') return '🗝️';
-    if (t === 'network') return '🌐';
-    if (t === 'statute' || t === 'law') return '⚖️';
-    if (t === 'ico' || t === 'company' || t === 'ares') return '🏢';
-    if (t === 'iban' || t === 'bank') return '💳';
-    return '📦';
+    if (t === 'statute' || t === 'law') return 'Právní předpis / Zákon';
+    if (t === 'standard') return 'Technický standard';
+    if (t === 'authority' || t === 'institution') return 'Státní orgán / Dozor';
+    if (t === 'ico' || t === 'company' || t === 'ares') return 'Organizace / Subjekt';
+    if (t === 'cve' || t === 'cwe' || t === 'vulnerability') return 'Bezpečnostní zranitelnost';
+    if (t === 'mitre') return 'Taktika / Technika';
+    return (type || 'Pojem').toUpperCase();
   }
 </script>
 
 <div class="entity-detail-container">
   <!-- Hero Card -->
-  <div class="entity-hero-card type-{(entity.type || 'entity').toLowerCase()}">
+  <div class="entity-hero-card">
     <div class="hero-top-row">
       <span class="hero-type-tag">
-        <span class="hero-type-icon">{getTypeIcon(entity.type)}</span>
-        {(entity.type || 'entity').toUpperCase()}
+        {getTypeLabel(entity.type)}
       </span>
-      <div class="hero-badges">
-        {#if entity.provenance?.source?.startsWith('transitive:')}
-          <span class="badge badge-transitive" title="Inferred via graph closure from {entity.provenance.source.replace('transitive:', '')}">
-            🔗 CONNECTED INTEL
-          </span>
-        {/if}
-        <span class="badge badge-{entity.severity?.toLowerCase() || 'info'}">
-          {entity.severity || 'INFO'}
+      {#if entity.severity && entity.severity !== 'INFO'}
+        <span class="badge badge-{entity.severity.toLowerCase()}">
+          {entity.severity}
         </span>
-        {#if entity.badge}
-          <span class="badge badge-meta">{entity.badge}</span>
-        {/if}
-      </div>
+      {/if}
     </div>
 
     <h2 class="entity-title">{entity.title || entity.label || entity.id}</h2>
 
     <div class="token-row">
-      <code class="entity-id" title="Artifact Value">{entity.id}</code>
+      <code class="entity-id" title="Identifikátor">{entity.id}</code>
       <button
         class="copy-btn"
         class:is-copied={copiedField === 'id'}
         on:click={() => copyToClipboard(entity.id, 'id')}
-        title="Copy Artifact Value"
+        title="Kopírovat identifikátor"
       >
-        <Icon name={copiedField === 'id' ? 'check' : 'copy'} size={13} />
-        <span>{copiedField === 'id' ? 'Copied!' : 'Copy Artifact'}</span>
+        <Icon name={copiedField === 'id' ? 'check' : 'copy'} size={12} />
+        <span>{copiedField === 'id' ? 'Zkopírováno' : 'Kopírovat'}</span>
       </button>
-      <button
-        class="copy-btn copy-btn-subtle"
-        class:is-copied={copiedField === 'json'}
-        on:click={() => copyToClipboard(JSON.stringify(entity, null, 2), 'json')}
-        title="Copy Complete Entity JSON"
-      >
-        <Icon name={copiedField === 'json' ? 'check' : 'code'} size={13} />
-        <span>{copiedField === 'json' ? 'Copied JSON!' : 'JSON'}</span>
-      </button>
+      {#if entity.attributes || entity.metrics}
+        <button
+          class="copy-btn copy-btn-subtle"
+          class:is-copied={copiedField === 'json'}
+          on:click={() => copyToClipboard(JSON.stringify(entity, null, 2), 'json')}
+          title="Kopírovat data JSON"
+        >
+          <Icon name={copiedField === 'json' ? 'check' : 'code'} size={12} />
+          <span>{copiedField === 'json' ? 'JSON zkopírován' : 'JSON'}</span>
+        </button>
+      {/if}
     </div>
   </div>
 
@@ -123,8 +109,7 @@
   {#if entity.provenance}
     <footer class="drawer-footer">
       <small class="provenance-stamp">
-        {i18n.provenance || 'Provenance'}: <strong>{entity.provenance.source}</strong> ·
-        {i18n.status || 'Status'}: {entity.provenance.status}
+        {i18n.provenance || 'Zdroj'}: <strong>{entity.provenance.source}</strong>
         {#if entity.provenance.fetched_at}
           · {new Date(entity.provenance.fetched_at).toLocaleDateString()}
         {/if}
@@ -137,36 +122,19 @@
   .entity-detail-container {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1.1rem;
     flex: 1;
   }
   .entity-hero-card {
-    background: #1e293b;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--color-paper, #ffffff);
+    border: 1px solid var(--color-border, #e2e8f0);
     border-radius: 8px;
     padding: 1rem 1.15rem;
     display: flex;
     flex-direction: column;
-    gap: 0.65rem;
-    position: relative;
-    overflow: hidden;
+    gap: 0.55rem;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
   }
-  .entity-hero-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 4px;
-    background: #38bdf8;
-  }
-  .entity-hero-card.type-cve::before { background: #ef4444; }
-  .entity-hero-card.type-cwe::before { background: #f59e0b; }
-  .entity-hero-card.type-winevent::before { background: #00f0ff; }
-  .entity-hero-card.type-mitre::before { background: #f97316; }
-  .entity-hero-card.type-evtx::before { background: #a855f7; }
-  .entity-hero-card.type-statute::before,
-  .entity-hero-card.type-law::before { background: #10b981; }
 
   .hero-top-row {
     display: flex;
@@ -174,136 +142,130 @@
     justify-content: space-between;
   }
   .hero-type-tag {
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: #94a3b8;
-    letter-spacing: 0.05em;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-  .hero-type-icon {
-    font-size: 0.95rem;
-  }
-  .hero-badges {
-    display: flex;
-    gap: 0.4rem;
-    align-items: center;
-  }
-  .badge {
-    font-size: 0.72rem;
-    font-weight: 700;
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
+    font-size: 0.68rem;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    color: var(--color-accent, #2563eb);
   }
-  .badge-critical { background: #ef4444; color: #fff; }
-  .badge-high { background: #f97316; color: #fff; }
-  .badge-medium { background: #eab308; color: #000; }
-  .badge-info { background: #3b82f6; color: #fff; }
-  .badge-meta {
-    background: rgba(255, 255, 255, 0.1);
-    color: #94a3b8;
+  .badge {
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
   }
-  .badge-transitive {
-    background: rgba(168, 85, 247, 0.2);
-    color: #c084fc;
-    border: 1px solid rgba(168, 85, 247, 0.4);
-  }
+  .badge-critical { background: rgba(239, 68, 68, 0.12); color: #dc2626; border: 1px solid rgba(239, 68, 68, 0.3); }
+  .badge-high { background: rgba(249, 115, 22, 0.12); color: #ea580c; border: 1px solid rgba(249, 115, 22, 0.3); }
+  .badge-medium { background: rgba(234, 179, 8, 0.14); color: #b45309; border: 1px solid rgba(234, 179, 8, 0.3); }
+  .badge-info { background: rgba(37, 99, 235, 0.08); color: #2563eb; }
 
   .entity-title {
     font-size: 1.15rem;
     font-weight: 700;
     margin: 0;
     line-height: 1.35;
-    color: #f8fafc;
+    color: var(--color-primary, #0f172a);
   }
   .token-row {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.45rem;
     flex-wrap: wrap;
+    margin-top: 0.15rem;
   }
   .entity-id {
     font-family: var(--font-mono, monospace);
-    font-size: 0.82rem;
-    background: rgba(255, 255, 255, 0.06);
-    padding: 0.25rem 0.5rem;
+    font-size: 0.78rem;
+    background: rgba(0, 0, 0, 0.04);
+    padding: 0.2rem 0.45rem;
     border-radius: 4px;
-    color: #38bdf8;
+    color: var(--color-accent, #2563eb);
   }
   .copy-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    font-size: 0.75rem;
+    gap: 0.3rem;
+    font-size: 0.74rem;
     font-weight: 600;
-    background: rgba(56, 189, 248, 0.12);
-    border: 1px solid rgba(56, 189, 248, 0.35);
-    color: #38bdf8;
+    background: rgba(37, 99, 235, 0.08);
+    border: none;
+    color: var(--color-accent, #2563eb);
     border-radius: 4px;
-    padding: 0.25rem 0.6rem;
+    padding: 0.2rem 0.5rem;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background 0.15s ease, color 0.15s ease;
     white-space: nowrap;
     font-family: inherit;
   }
   .copy-btn:hover {
-    background: rgba(56, 189, 248, 0.22);
-    border-color: #38bdf8;
-    color: #f0f9ff;
+    background: rgba(37, 99, 235, 0.16);
+    color: var(--color-primary, #0f172a);
   }
   .copy-btn.is-copied {
-    background: #10b981 !important;
-    border-color: #10b981 !important;
+    background: #059669 !important;
     color: #ffffff !important;
   }
   .copy-btn-subtle {
     background: transparent;
-    border-color: rgba(255, 255, 255, 0.18);
-    color: #94a3b8;
+    color: var(--color-text-muted, #64748b);
   }
   .copy-btn-subtle:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: #e2e8f0;
-    border-color: #cbd5e1;
+    background: rgba(0, 0, 0, 0.04);
+    color: var(--color-text, #0f172a);
   }
+
   .family-card-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1.1rem;
   }
   .drawer-footer {
     margin-top: auto;
-    padding-top: 1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--color-border, rgba(0, 0, 0, 0.06));
   }
   .provenance-stamp {
     font-size: 0.72rem;
-    color: #64748b;
+    color: var(--color-text-muted, #64748b);
   }
 
-  /* Light Theme */
-  :global([data-theme="light"]) .entity-hero-card,
-  :global(body.light-theme) .entity-hero-card {
-    background: #ffffff;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  /* Dark Theme */
+  :global([data-theme="dark"]) .entity-hero-card {
+    background: #23252a;
+    border-color: #2e323b;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
   }
-  :global([data-theme="light"]) .entity-title,
-  :global(body.light-theme) .entity-title {
-    color: #0f172a;
+  :global([data-theme="dark"]) .hero-type-tag {
+    color: #60a5fa;
   }
-  :global([data-theme="light"]) .entity-id,
-  :global(body.light-theme) .entity-id {
-    background: rgba(0, 0, 0, 0.05);
-    color: #0284c7;
+  :global([data-theme="dark"]) .entity-title {
+    color: #f1f5f9;
   }
-  :global([data-theme="light"]) .badge-transitive,
-  :global(body.light-theme) .badge-transitive {
-    background: rgba(147, 51, 234, 0.1);
-    color: #7e22ce;
-    border: 1px solid rgba(147, 51, 234, 0.3);
+  :global([data-theme="dark"]) .entity-id {
+    background: rgba(255, 255, 255, 0.06);
+    color: #60a5fa;
+  }
+  :global([data-theme="dark"]) .copy-btn {
+    background: rgba(96, 165, 250, 0.12);
+    color: #60a5fa;
+  }
+  :global([data-theme="dark"]) .copy-btn:hover {
+    background: rgba(96, 165, 250, 0.2);
+    color: #ffffff;
+  }
+  :global([data-theme="dark"]) .copy-btn-subtle {
+    color: #94a3b8;
+  }
+  :global([data-theme="dark"]) .copy-btn-subtle:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #f1f5f9;
+  }
+  :global([data-theme="dark"]) .drawer-footer {
+    border-top-color: #262930;
+  }
+  :global([data-theme="dark"]) .provenance-stamp {
+    color: #94a3b8;
   }
 </style>

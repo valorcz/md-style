@@ -33,10 +33,10 @@
   }
   .section-heading {
     margin: 0;
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    color: #94a3b8;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted, #64748b);
     text-transform: uppercase;
     display: flex;
     align-items: center;
@@ -45,7 +45,7 @@
   .heading-icon {
     display: inline-flex;
     align-items: center;
-    color: #38bdf8;
+    color: var(--color-text-muted, #64748b);
   }
   .metrics-grid {
     display: grid;
@@ -53,47 +53,43 @@
     gap: 0.5rem;
   }
   .metric-card {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 4px;
-    padding: 0.45rem 0.6rem;
+    background: var(--color-bg-alt, #f8fafc);
+    border: 1px solid var(--color-border, #e2e8f0);
+    border-radius: 6px;
+    padding: 0.5rem 0.65rem;
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
   }
   .metric-key {
     font-size: 0.68rem;
-    color: #94a3b8;
-    font-weight: 700;
+    color: var(--color-text-muted, #64748b);
+    font-weight: 600;
     letter-spacing: 0.05em;
   }
   .metric-val {
-    font-family: var(--font-mono, monospace);
-    font-size: 0.85rem;
-    color: #38bdf8;
-    font-weight: 700;
+    font-family: var(--font-sans, system-ui, sans-serif);
+    font-size: 0.9rem;
+    color: var(--color-text, #0f172a);
+    font-weight: 600;
     word-break: break-all;
   }
 
-  :global([data-theme="light"]) .section-heading,
-  :global(body.theme-forensic-dossier) .section-heading {
-    color: #475569;
+  :global([data-theme="dark"]) .section-heading {
+    color: #94a3b8;
   }
-  :global([data-theme="light"]) .heading-icon,
-  :global(body.theme-forensic-dossier) .heading-icon {
-    color: #0284c7;
+  :global([data-theme="dark"]) .heading-icon {
+    color: #38bdf8;
   }
-  :global([data-theme="light"]) .metric-card,
-  :global(body.theme-forensic-dossier) .metric-card {
-    background: #f8fafc;
-    border-color: #e2e8f0;
+  :global([data-theme="dark"]) .metric-card {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
   }
-  :global([data-theme="light"]) .metric-key,
-  :global(body.theme-forensic-dossier) .metric-key {
-    color: #64748b;
+  :global([data-theme="dark"]) .metric-key {
+    color: #94a3b8;
   }
-  :global([data-theme="light"]) .metric-val,
-  :global(body.theme-forensic-dossier) .metric-val {
-    color: #0369a1;
+  :global([data-theme="dark"]) .metric-val {
+    color: #38bdf8;
+    font-family: var(--font-mono, monospace);
   }
 </style>

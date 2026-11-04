@@ -32,10 +32,10 @@
   }
   .section-heading {
     margin: 0;
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    color: #94a3b8;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted, #64748b);
     text-transform: uppercase;
     display: flex;
     align-items: center;
@@ -44,7 +44,7 @@
   .heading-icon {
     display: inline-flex;
     align-items: center;
-    color: #38bdf8;
+    color: var(--color-text-muted, #64748b);
   }
   .references-list {
     list-style: none;
@@ -59,7 +59,7 @@
     line-height: 1.4;
   }
   .references-list a {
-    color: #38bdf8;
+    color: var(--color-primary, #2563eb);
     text-decoration: none;
     word-break: break-all;
     display: inline-flex;
@@ -70,16 +70,13 @@
     text-decoration: underline;
   }
 
-  :global([data-theme="light"]) .section-heading,
-  :global(body.theme-forensic-dossier) .section-heading {
-    color: #475569;
+  :global([data-theme="dark"]) .section-heading {
+    color: #94a3b8;
   }
-  :global([data-theme="light"]) .heading-icon,
-  :global(body.theme-forensic-dossier) .heading-icon {
-    color: #0284c7;
+  :global([data-theme="dark"]) .heading-icon {
+    color: #38bdf8;
   }
-  :global([data-theme="light"]) .references-list a,
-  :global(body.theme-forensic-dossier) .references-list a {
-    color: #0284c7;
+  :global([data-theme="dark"]) .references-list a {
+    color: #38bdf8;
   }
 </style>
