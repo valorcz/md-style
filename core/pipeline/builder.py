@@ -47,6 +47,9 @@ class PipelineBuilder:
         self._knowledge_path: Optional[Path] = None
         self._i18n_path: Optional[Path] = None
         self._toc_levels: Optional[str] = None
+        self._lint: bool = True
+        self._lint_details: bool = False
+        self._strict_lint: bool = False
         self._verbose: bool = False
         self._quiet: bool = False
 
@@ -101,6 +104,12 @@ class PipelineBuilder:
         self._quiet = quiet
         return self
 
+    def with_lint(self, enabled: bool = True, details: bool = False, strict: bool = False) -> "PipelineBuilder":
+        self._lint = enabled
+        self._lint_details = details
+        self._strict_lint = strict
+        return self
+
     def with_custom_stages(self, stages: List[PipelineStage]) -> "PipelineBuilder":
         self._custom_stages = stages
         return self
@@ -135,6 +144,9 @@ class PipelineBuilder:
             knowledge_path=self._knowledge_path,
             i18n_path=self._i18n_path,
             toc_levels=self._toc_levels,
+            lint=self._lint,
+            lint_details=self._lint_details,
+            strict_lint=self._strict_lint,
             verbose=self._verbose,
             quiet=self._quiet,
         )

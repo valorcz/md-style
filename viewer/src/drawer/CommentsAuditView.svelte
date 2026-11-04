@@ -79,26 +79,26 @@
     gap: 0.35rem;
     padding: 0.45rem 0.6rem;
     font-size: 0.74rem;
-    font-weight: 600;
+    font-weight: 500;
     border-radius: 4px;
     border: none;
     cursor: pointer;
-    transition: background 0.15s ease;
+    transition: opacity 0.15s ease;
     white-space: nowrap;
     text-align: center;
     font-family: inherit;
   }
   .export-html-btn {
-    background: #0284c7;
+    background: var(--color-primary, #2563eb);
     color: #fff;
   }
-  .export-html-btn:hover { background: #0369a1; }
+  .export-html-btn:hover { opacity: 0.9; }
   .export-md-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: #cbd5e1;
+    background: var(--color-bg-alt, #f1f5f9);
+    border: 1px solid var(--color-border, #cbd5e1);
+    color: var(--color-text, #334155);
   }
-  .export-md-btn:hover { background: rgba(255, 255, 255, 0.18); color: #fff; }
+  .export-md-btn:hover { background: #e2e8f0; color: #0f172a; }
   .comments-list {
     display: flex;
     flex-direction: column;
@@ -112,23 +112,19 @@
     justify-content: center;
     padding: 3rem 1.5rem;
     text-align: center;
-    color: #94a3b8;
+    color: var(--color-text-muted, #94a3b8);
   }
   .empty-icon { font-size: 2rem; margin-bottom: 0.5rem; }
-  .empty-subtitle { font-size: 0.78rem; color: #64748b; margin-top: 0.25rem; }
+  .empty-subtitle { font-size: 0.78rem; color: var(--color-text-muted, #64748b); margin-top: 0.25rem; }
 
-  /* Light Theme */
-  :global([data-theme="light"]) .export-md-btn,
-  :global(body.light-theme) .export-md-btn,
-  :global(body.theme-forensic-dossier) .export-md-btn {
-    background: #f1f5f9;
-    border: 1px solid #cbd5e1;
-    color: #334155;
+  /* Dark Theme */
+  :global([data-theme="dark"]) .export-md-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #cbd5e1;
   }
-  :global([data-theme="light"]) .export-md-btn:hover,
-  :global(body.light-theme) .export-md-btn:hover,
-  :global(body.theme-forensic-dossier) .export-md-btn:hover {
-    background: #e2e8f0;
-    color: #0f172a;
+  :global([data-theme="dark"]) .export-md-btn:hover {
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
   }
 </style>

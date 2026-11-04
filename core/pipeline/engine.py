@@ -87,7 +87,8 @@ class ReportEngine:
                 pack=context.pack,
                 diagrams_count=self.metrics.diagrams_rendered,
                 is_pdf=self.config.generate_pdf,
-                is_crate=context.is_crate
+                is_crate=context.is_crate,
+                context=context
             )
             Diagnostics.success(
                 f"Report generated: {context.final_output_file.resolve()} (Total: {total_time:.2f}s)"
@@ -143,7 +144,8 @@ class ReportEngine:
         pack: Optional[KnowledgePack],
         diagrams_count: int,
         is_pdf: bool,
-        is_crate: bool
+        is_crate: bool,
+        context: Optional[PipelineContext] = None
     ) -> None:
         """Renders an executive compilation dashboard card to stderr_console."""
         if self.config.quiet:
@@ -203,6 +205,32 @@ class ReportEngine:
         if diagrams_count > 0:
             grid.add_row("Diagrams:", f"[bold magenta]{diagrams_count} rendered[/bold magenta]")
 
+        if context and context.lint_result:
+            lr = context.lint_result
+            if lr.grade in ("A+", "A"):
+                grade_styled = f"[bold green]{lr.grade}[/bold green]"
+            elif lr.grade == "B":
+                grade_styled = f"[bold cyan]{lr.grade}[/bold cyan]"
+            elif lr.grade == "C":
+                grade_styled = f"[bold yellow]{lr.grade}[/bold yellow]"
+            elif lr.grade == "D":
+                grade_styled = f"[bold orange3]{lr.grade}[/bold orange3]"
+            else:
+                grade_styled = f"[bold red]{lr.grade}[/bold red]"
+
+            issues_parts = []
+            if lr.errors > 0:
+                issues_parts.append(f"[bold red]{lr.errors} error{'s' if lr.errors > 1 else ''}[/bold red]")
+            if lr.warnings > 0:
+                issues_parts.append(f"[yellow]{lr.warnings} warning{'s' if lr.warnings > 1 else ''}[/yellow]")
+            if not issues_parts:
+                issues_str = "[green]Clean (0 issues)[/green]"
+            else:
+                issues_str = ", ".join(issues_parts)
+
+            lint_str = f"Grade {grade_styled} ({lr.score:.1f}/100) • {issues_str}"
+            grid.add_row("Prose & Syntax:", lint_str)
+
         grid.add_row("Compilation Time:", f"[bold green]{total_time:.2f}s[/bold green]")
         if sha256_short:
             grid.add_row("SHA-256 Digest:", f"[dim]{sha256_short}[/dim]")
@@ -216,6 +244,13 @@ class ReportEngine:
         )
         stderr_console.print()
         stderr_console.print(panel)
+
+        if context and context.lint_result and getattr(self.config, "lint_details", False):
+            try:
+                from core.lint.reporter import print_lint_report
+                print_lint_report(context.lint_result, verbose=getattr(self.config, "verbose", False))
+            except Exception:
+                pass
 
     # Backwards-compatibility proxies for tests
     def _compile_pdf(self, src_html: Path, dst_pdf: Path, **kwargs):

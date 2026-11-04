@@ -1,6 +1,6 @@
 """
 tests/test_diagrams.py
-Validates beautiful-mermaid compilation, CLI diagnostics on syntax errors,
+Validates pele compilation, CLI diagnostics on syntax errors,
 figure localization, and Markdown-It fence plugin integration.
 """
 
@@ -16,8 +16,8 @@ def test_vendor_directory_eliminated():
     assert not vendor_dir.exists(), "vendor/ directory must be completely removed"
     assert MERMAID_SCRIPT.exists(), f"render script must exist at {MERMAID_SCRIPT}"
 
-def test_beautiful_mermaid_static_svg():
-    """Tests successful build-time SVG compilation using beautiful-mermaid."""
+def test_pele_static_svg():
+    """Tests successful build-time SVG compilation using pele."""
     renderer = MermaidRenderer()
     code = "flowchart TD\n    A[Start] --> B[End]"
     html_out, is_fallback = renderer.render_figure(
@@ -28,7 +28,7 @@ def test_beautiful_mermaid_static_svg():
     )
 
     assert not is_fallback, "Should compile directly to static SVG when node is available"
-    assert 'data-engine="beautiful-mermaid"' in html_out
+    assert 'data-engine="pele"' in html_out
     assert "<svg" in html_out
     assert 'id="fig-test-flowchart"' in html_out
     assert '<figcaption class="mermaid-caption">' in html_out
@@ -58,6 +58,34 @@ def test_localized_figure_captions():
 
     en_caption = renderer.format_caption("System Architecture", lang="en", count=2)
     assert "Figure 2:" in en_caption
+
+
+def test_sequence_diagram_rect_background_renders_with_fill():
+    """Verifies that sequence diagrams with rect rgb(...) background blocks compile with fill."""
+    renderer = MermaidRenderer()
+    code = """sequenceDiagram
+    autonumber
+    actor Attacker as Útočník
+    participant BOR as BOR-AD
+
+    rect rgb(240, 245, 255)
+    note over Attacker, BOR: Fáze 1
+    Attacker->>BOR: RDP login
+    end
+"""
+    html_out, is_fallback = renderer.render_figure(
+        code=code,
+        id_attr="fig-seq-rect",
+        caption="Sequence Rect Test",
+        lang="cs"
+    )
+
+    assert not is_fallback, "Should compile directly to static SVG"
+    assert 'data-engine="pele"' in html_out
+    assert "<svg" in html_out
+    assert "pele-rect" in html_out
+    assert "fill:rgb(240, 245, 255)" in html_out
+
 
 def test_markdown_it_fence_plugin_no_mangling():
     """Verifies that 4-space indented lines in sequence diagrams are not mangled into pre/code by CommonMark."""

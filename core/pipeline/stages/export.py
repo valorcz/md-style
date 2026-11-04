@@ -83,7 +83,9 @@ class Stage5Export(PipelineStage):
             raw_markdown=context.raw_content if context.config.embed_source else None,
             meta_tags={"generator": "md-style v3.0 (pure-python)"},
             annotations=annotations_data,
-            interactive_viewer=context.config.interactive_viewer
+            interactive_viewer=context.config.interactive_viewer,
+            custom_components=context.custom_components,
+            custom_components_css=context.component_css,
         )
         context.bundled_html = complete_html
 

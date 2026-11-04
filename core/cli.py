@@ -116,6 +116,9 @@ Examples:
     parser.add_argument("--no-auto-nowrap", dest="auto_nowrap", action="store_false", default=True, help="Disable auto-nowrap on tables")
 
     # Diagnostics & Utilities
+    parser.add_argument("--lint", "--lint-details", dest="lint_details", action="store_true", help="Audit prose quality, formatting density, and print detailed findings")
+    parser.add_argument("--no-lint", dest="enable_lint", action="store_false", default=True, help="Disable automatic prose and syntax linter during compilation")
+    parser.add_argument("--strict-lint", dest="strict_lint", action="store_true", default=False, help="Fail compilation (exit code > 0) if prose linter encounters errors")
     parser.add_argument("--list-styles", action="store_true", help="List all available built-in document styles")
     parser.add_argument(
         "--list-artifacts", "--list-resolvers",
@@ -293,7 +296,32 @@ def show_kb_status(input_path: Path) -> None:
     stdout_console.print()
 
 def main():
-    # 1. Shorthand subcommands: md-style inspect <target> [token] / md-style preview <file> [--page]
+    # 1. Shorthand subcommands: md-style inspect / md-style preview / md-style theme / md-style lint
+    if len(sys.argv) > 1 and sys.argv[1] == "lint":
+        lint_parser = argparse.ArgumentParser(
+            prog="md-style lint",
+            description="Audit prose quality, formatting density, structural rhythm, and typography"
+        )
+        lint_parser.add_argument("target", help="Markdown document to lint")
+        lint_parser.add_argument("-p", "--profile", choices=["article", "handbook", "notes", "slides"], help="Linting profile")
+        lint_parser.add_argument("-v", "--verbose", action="store_true", help="Display informational hints and snippet previews")
+        lint_parser.add_argument("--strict", action="store_true", help="Exit with code 1 if score < 80 or FAIL issue found")
+        lint_parser.add_argument("-l", "--lang", help="Override document language (e.g. en, cs, sk)")
+
+        lint_args = lint_parser.parse_args(sys.argv[2:])
+        target_path = Path(lint_args.target)
+        if not target_path.is_file():
+            Diagnostics.error(f"File not found: {target_path}")
+            sys.exit(1)
+
+        from core.lint import ProseLinter, print_lint_report
+        linter = ProseLinter()
+        result = linter.lint_file(target_path, requested_profile=lint_args.profile, lang=lint_args.lang)
+        print_lint_report(result, verbose=lint_args.verbose)
+        if lint_args.strict and (result.score < 80.0 or any(i.severity == "FAIL" for i in result.issues)):
+            sys.exit(1)
+        sys.exit(0)
+
     if len(sys.argv) > 1 and sys.argv[1] == "inspect":
         target = sys.argv[2] if len(sys.argv) > 2 and not sys.argv[2].startswith("-") else None
         token = sys.argv[3] if len(sys.argv) > 3 and not sys.argv[3].startswith("-") else None
@@ -488,6 +516,9 @@ def main():
         font_subsets=args.font_subsets,
         all_fonts=args.all_fonts,
         embed_diagram_fonts=args.embed_diagram_fonts,
+        lint=args.enable_lint,
+        lint_details=args.lint_details,
+        strict_lint=args.strict_lint,
         verbose=args.verbose,
         quiet=args.quiet
     )

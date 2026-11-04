@@ -46,6 +46,58 @@
   --pele-accent: var(--color-accent);
   --pele-font: var(--font-body);
   --pele-font-mono: var(--font-mono);
+
+  /* Universal Dynamic Component Tokens */
+  --comp-surface: var(--color-paper, #ffffff);
+  --comp-surface-subtle: var(--color-bg, #f8fafc);
+  --comp-header-bg: rgba(0, 0, 0, 0.035);
+  --comp-border: var(--color-border, #e2e8f0);
+  --comp-border-strong: var(--color-border-dark, #cbd5e1);
+  --comp-text: var(--color-text, #0f172a);
+  --comp-text-muted: var(--color-text-muted, #64748b);
+  --comp-frame-bg: rgba(0, 0, 0, 0.02);
+  --comp-proc-a: #0284c7;
+  --comp-proc-b: #7c3aed;
+  --comp-swap: #b45309;
+  --comp-free: #059669;
+}
+
+html[data-theme="dark"] {
+  --color-paper: #121316;
+  --color-bg: #090a0c;
+  --color-text: #e2e8f0;
+  --color-text-muted: #94a3b8;
+  --color-border: #262930;
+  --color-border-dark: #3e4451;
+  --color-primary: #f8fafc;
+  --color-secondary: #cbd5e1;
+  --color-accent: #60a5fa;
+  color: var(--color-text);
+}
+
+/* Universal typographic & element contrast remediation for dark mode */
+[data-theme="dark"] :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--color-primary, #f8fafc) !important;
+}
+[data-theme="dark"] :is(p, li, td, th, blockquote) {
+  color: var(--color-text, #e2e8f0);
+}
+[data-theme="dark"] a:not(.toc-link) {
+  color: var(--color-accent, #60a5fa);
+}
+[data-theme="dark"] :is(table, tr, td, th) {
+  border-color: var(--color-border, #262930) !important;
+}
+[data-theme="dark"] hr {
+  border-color: var(--color-border, #262930) !important;
+}
+[data-theme="dark"] :is(.callout, .admonition, .note-box) {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+[data-theme="dark"] code:not(pre code) {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #f1f5f9 !important;
 }
 
 [data-theme="dark"], body.dark-theme, body.theme-forensic-cyber {
@@ -57,32 +109,65 @@
   --pele-surface-alt: rgba(30, 41, 59, 0.9);
   --pele-border: rgba(255, 255, 255, 0.15);
   --pele-accent: #0284c7;
+
+  /* Universal Dynamic Component Tokens (Dark) */
+  --comp-surface: rgba(15, 23, 42, 0.85);
+  --comp-surface-subtle: rgba(15, 23, 42, 0.6);
+  --comp-header-bg: rgba(255, 255, 255, 0.06);
+  --comp-border: rgba(255, 255, 255, 0.14);
+  --comp-border-strong: rgba(255, 255, 255, 0.25);
+  --comp-text: #f1f5f9;
+  --comp-text-muted: #94a3b8;
+  --comp-frame-bg: rgba(255, 255, 255, 0.02);
+  --comp-proc-a: #38bdf8;
+  --comp-proc-b: #a78bfa;
+  --comp-swap: #fbbf24;
+  --comp-free: #34d399;
 }
 
 /* --------------------------------------------------------------------------
    2. Resets & Document Container
    -------------------------------------------------------------------------- */
-html {
+/* Unified seamless canvas for web reading view (Dropbox Paper / Notion style) */
+html:not(.paged-view):not(.sheet-view) {
   font-size: 100%;
   box-sizing: border-box;
-  background-color: var(--color-bg);
+  background-color: var(--color-paper, #ffffff) !important;
   -webkit-text-size-adjust: 100%;
   text-rendering: optimizeLegibility;
+}
+
+/* For paged or sheet previews, use subtle background canvas */
+html:has(body.paged-view),
+html:has(body.sheet-view) {
+  background-color: var(--color-bg, #f8fafc) !important;
 }
 
 *, *::before, *::after {
   box-sizing: inherit;
 }
 
-body {
+body:not(.paged-view):not(.sheet-view) {
   font-family: var(--font-body);
   font-size: 15px;
   line-height: var(--line-height-body);
   color: var(--color-text);
-  background-color: var(--color-paper);
+  background-color: var(--color-paper, #ffffff) !important;
   max-width: var(--doc-max-width);
   margin: 2.5rem auto;
   padding: 3rem 3.5rem;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Screen Preview Mode (paged / sheet simulation overrides) */
+body.paged-view,
+body.sheet-view {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: var(--line-height-body);
+  color: var(--color-text);
+  background-color: var(--color-paper, #ffffff);
   border: 1px solid var(--color-border);
   border-radius: 8px;
   box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05),
@@ -582,10 +667,6 @@ div.tip .title, div.success .title, div.finding .title {
    Moved to styles/base/figures.css (Universal Figures & Diagrams Engine)
    -------------------------------------------------------------------------- */
 @import url('figures.css');
-  padding: 1rem;
-  max-width: 100%;
-  overflow-x: auto;
-}
 
 /* Timestamps (nowrap) vs Hashes (break-all) */
 .timestamp,
@@ -624,48 +705,43 @@ header#title-block-header:has(.meta-label) p.date::before {
 }
 
 /* --------------------------------------------------------------------------
-   Inspectable Entity Micro-Interactions & Hover Affordances
+   Inspectable Entity Micro-Interactions & Hover Affordances (Zen Style)
    -------------------------------------------------------------------------- */
 .inspectable {
-  cursor: pointer !important;
-  border-bottom: 1.5px dotted var(--inspectable-accent, #38bdf8);
+  cursor: help !important;
+  font-family: inherit;
+  border-bottom: 1px dashed var(--inspectable-accent, var(--color-accent, #2563eb));
   text-underline-offset: 3px;
-  border-radius: 2px;
-  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+  border-radius: 0;
+  transition: color 0.15s ease, border-color 0.15s ease;
   position: relative;
   display: inline-block;
 }
 
 .inspectable:hover,
 .inspectable:focus-visible {
-  background: var(--inspectable-hover-bg, rgba(56, 189, 248, 0.15));
-  box-shadow: 0 0 8px var(--inspectable-glow, rgba(56, 189, 248, 0.25));
   outline: none;
+  background: transparent;
+  box-shadow: none;
+  color: var(--inspectable-accent, var(--color-accent, #2563eb));
+  border-bottom-style: solid;
 }
 
-/* Severity-specific affordances */
+/* Severity-specific quiet accents */
 .inspectable-critical {
   --inspectable-accent: #ef4444;
-  --inspectable-hover-bg: rgba(239, 68, 68, 0.18);
-  --inspectable-glow: rgba(239, 68, 68, 0.35);
 }
 
 .inspectable-high {
   --inspectable-accent: #f97316;
-  --inspectable-hover-bg: rgba(249, 115, 22, 0.18);
-  --inspectable-glow: rgba(249, 115, 22, 0.35);
 }
 
 .inspectable-medium {
-  --inspectable-accent: #eab308;
-  --inspectable-hover-bg: rgba(234, 179, 8, 0.18);
-  --inspectable-glow: rgba(234, 179, 8, 0.35);
+  --inspectable-accent: #d97706;
 }
 
 .inspectable-info {
-  --inspectable-accent: #38bdf8;
-  --inspectable-hover-bg: rgba(56, 189, 248, 0.15);
-  --inspectable-glow: rgba(56, 189, 248, 0.25);
+  --inspectable-accent: var(--color-accent, #2563eb);
 }
 
 /* --------------------------------------------------------------------------
@@ -680,6 +756,9 @@ header#title-block-header:has(.meta-label) p.date::before {
   .document-container {
     transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   }
+  html[data-inspector-open="true"] .report-content,
+  html[data-inspector-open="true"] main,
+  html[data-inspector-open="true"] .document-container,
   body.inspector-open .report-content,
   body.inspector-open main,
   body.inspector-open .document-container {
@@ -694,31 +773,31 @@ header#title-block-header:has(.meta-label) p.date::before {
 
 /* CSS Custom Highlight API Pseudo-Elements */
 ::highlight(md-ann-feedback) {
-  background-color: rgba(2, 132, 199, 0.18);
+  background-color: rgba(2, 132, 199, 0.10);
   text-decoration: underline dashed #0284c7 2px;
   text-underline-offset: 3px;
 }
 
 ::highlight(md-ann-correction) {
-  background-color: rgba(244, 63, 94, 0.2);
+  background-color: rgba(244, 63, 94, 0.10);
   text-decoration: underline wavy #f43f5e 2px;
   text-underline-offset: 3px;
 }
 
 ::highlight(md-ann-insight) {
-  background-color: rgba(245, 158, 11, 0.22);
+  background-color: rgba(245, 158, 11, 0.12);
   text-decoration: underline dotted #f59e0b 2px;
   text-underline-offset: 3px;
 }
 
 ::highlight(md-ann-commendation) {
-  background-color: rgba(16, 185, 129, 0.2);
+  background-color: rgba(16, 185, 129, 0.10);
   text-decoration: underline solid #10b981 2px;
   text-underline-offset: 3px;
 }
 
 ::highlight(md-ann-question) {
-  background-color: rgba(168, 85, 247, 0.2);
+  background-color: rgba(168, 85, 247, 0.10);
   text-decoration: underline dotted #a855f7 2px;
   text-underline-offset: 3px;
 }
@@ -733,31 +812,31 @@ mark.md-annotation-mark {
 }
 
 mark.md-annotation-mark.category-feedback {
-  background-color: rgba(2, 132, 199, 0.18);
+  background-color: rgba(2, 132, 199, 0.10);
   text-decoration: underline dashed #0284c7 2px;
   text-underline-offset: 3px;
 }
 
 mark.md-annotation-mark.category-correction {
-  background-color: rgba(244, 63, 94, 0.2);
+  background-color: rgba(244, 63, 94, 0.10);
   text-decoration: underline wavy #f43f5e 2px;
   text-underline-offset: 3px;
 }
 
 mark.md-annotation-mark.category-insight {
-  background-color: rgba(245, 158, 11, 0.22);
+  background-color: rgba(245, 158, 11, 0.12);
   text-decoration: underline dotted #f59e0b 2px;
   text-underline-offset: 3px;
 }
 
 mark.md-annotation-mark.category-commendation {
-  background-color: rgba(16, 185, 129, 0.2);
+  background-color: rgba(16, 185, 129, 0.10);
   text-decoration: underline solid #10b981 2px;
   text-underline-offset: 3px;
 }
 
 mark.md-annotation-mark.category-question {
-  background-color: rgba(168, 85, 247, 0.2);
+  background-color: rgba(168, 85, 247, 0.10);
   text-decoration: underline dotted #a855f7 2px;
   text-underline-offset: 3px;
 }

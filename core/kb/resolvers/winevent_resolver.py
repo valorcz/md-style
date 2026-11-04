@@ -12,7 +12,7 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 
 from core.kb.resolvers.base import BaseResolver
-from core.kb.models import Entity, Provenance
+from core.kb.models import Entity, Provenance, WidgetDescriptor
 from core.config import WIN_EVENTS_DB_PATH, WIN_EVENTS_CACHE_PATH
 from core.i18n import I18nCatalog
 from core.diagnostics import Diagnostics
@@ -175,6 +175,30 @@ class WinEventResolver(BaseResolver):
         if info.get("url"):
             references.append({"title": "Event Encyclopedia Reference", "url": info["url"]})
 
+        widgets: List[WidgetDescriptor] = []
+        tips_raw = info.get("tips") or "Correlate with process creation and user logon telemetry."
+        tips_items = [t.strip() for t in tips_raw.split("|") if t.strip()] if "|" in tips_raw else [tips_raw]
+        widgets.append(
+            WidgetDescriptor(
+                widget_type="tactical_box",
+                title="Forensic Investigation Playbook",
+                tone="defense",
+                items=tips_items,
+                data={"icon": "academic"}
+            )
+        )
+        if info.get("attacker_behavior"):
+            beh_items = info["attacker_behavior"] if isinstance(info["attacker_behavior"], list) else [str(info["attacker_behavior"])]
+            widgets.append(
+                WidgetDescriptor(
+                    widget_type="tactical_box",
+                    title="Adversary Tactics & Techniques",
+                    tone="threat",
+                    items=beh_items[:3],
+                    data={"icon": "alert-circle"}
+                )
+            )
+
         return Entity(
             id=f"Event-{eid}",
             domain="cyber",
@@ -195,5 +219,6 @@ class WinEventResolver(BaseResolver):
             relationships=relationships,
             references=references,
             provenance=prov,
+            widgets=widgets,
             aliases=[f"Event ID {eid}", f"EID {eid}", f"Event {eid}", eid]
         )

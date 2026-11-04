@@ -64,15 +64,15 @@
   .drawer-section {
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
-    margin-top: 0.5rem;
+    gap: 0.5rem;
+    margin-top: 0.4rem;
   }
   .section-heading {
     margin: 0;
-    font-size: 0.8rem;
+    font-size: 0.74rem;
     font-weight: 700;
-    letter-spacing: 0.04em;
-    color: #94a3b8;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted, #64748b);
     text-transform: uppercase;
     display: flex;
     align-items: center;
@@ -81,22 +81,22 @@
   .heading-icon {
     display: flex;
     align-items: center;
-    color: #38bdf8;
+    color: var(--color-accent, #2563eb);
   }
   .attributes-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.8rem;
+    font-size: 0.82rem;
   }
   .attributes-table th,
   .attributes-table td {
-    padding: 0.4rem 0.6rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 0.45rem 0.6rem;
+    border-bottom: 1px solid var(--color-border, #f1f5f9);
     vertical-align: top;
     text-align: left;
   }
   .attributes-table th {
-    color: #94a3b8;
+    color: var(--color-text-muted, #64748b);
     font-weight: 600;
     width: 38%;
   }
@@ -104,66 +104,51 @@
     width: 42%;
   }
   .attributes-table td {
-    color: #cbd5e1;
+    color: var(--color-text, #1e293b);
     overflow-wrap: break-word;
     word-break: break-word;
   }
   .inline-pivot-btn {
-    background: rgba(56, 189, 248, 0.12);
-    border: 1px solid rgba(56, 189, 248, 0.3);
-    color: #38bdf8;
+    background: rgba(37, 99, 235, 0.08);
+    border: none;
+    color: var(--color-accent, #2563eb);
     border-radius: 4px;
     padding: 0.15rem 0.45rem;
-    font-family: var(--font-mono, monospace);
-    font-size: 0.78rem;
+    font-family: inherit;
+    font-size: 0.76rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background 0.15s ease, color 0.15s ease;
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
   }
   .inline-pivot-btn:hover {
-    background: #0284c7;
-    border-color: #38bdf8;
-    color: #ffffff;
-    transform: translateY(-1px);
+    background: rgba(37, 99, 235, 0.16);
+    color: var(--color-primary, #0f172a);
   }
 
-  /* Light Theme */
-  :global([data-theme="light"]) .section-heading,
-  :global(body.light-theme) .section-heading,
-  :global(body.theme-forensic-dossier) .section-heading {
-    color: #64748b;
+  /* Dark Theme */
+  :global([data-theme="dark"]) .section-heading {
+    color: #94a3b8;
   }
-  :global([data-theme="light"]) .heading-icon,
-  :global(body.light-theme) .heading-icon,
-  :global(body.theme-forensic-dossier) .heading-icon {
-    color: #0284c7;
+  :global([data-theme="dark"]) .heading-icon {
+    color: #60a5fa;
   }
-  :global([data-theme="light"]) .attributes-table th,
-  :global(body.light-theme) .attributes-table th,
-  :global(body.theme-forensic-dossier) .attributes-table th {
-    color: #64748b;
-    border-bottom-color: rgba(0, 0, 0, 0.06);
+  :global([data-theme="dark"]) .attributes-table th {
+    color: #94a3b8;
+    border-bottom-color: #262930;
   }
-  :global([data-theme="light"]) .attributes-table td,
-  :global(body.light-theme) .attributes-table td,
-  :global(body.theme-forensic-dossier) .attributes-table td {
-    color: #334155;
-    border-bottom-color: rgba(0, 0, 0, 0.06);
+  :global([data-theme="dark"]) .attributes-table td {
+    color: #e2e8f0;
+    border-bottom-color: #262930;
   }
-  :global([data-theme="light"]) .inline-pivot-btn,
-  :global(body.light-theme) .inline-pivot-btn,
-  :global(body.theme-forensic-dossier) .inline-pivot-btn {
-    background: rgba(2, 132, 199, 0.08);
-    border: 1px solid rgba(2, 132, 199, 0.25);
-    color: #0284c7;
+  :global([data-theme="dark"]) .inline-pivot-btn {
+    background: rgba(96, 165, 250, 0.12);
+    color: #60a5fa;
   }
-  :global([data-theme="light"]) .inline-pivot-btn:hover,
-  :global(body.light-theme) .inline-pivot-btn:hover,
-  :global(body.theme-forensic-dossier) .inline-pivot-btn:hover {
-    background: #0284c7;
+  :global([data-theme="dark"]) .inline-pivot-btn:hover {
+    background: rgba(96, 165, 250, 0.2);
     color: #ffffff;
   }
 </style>

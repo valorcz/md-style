@@ -16,7 +16,7 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 
 from core.kb.resolvers.base import BaseResolver
-from core.kb.models import Entity, Provenance
+from core.kb.models import Entity, Provenance, WidgetDescriptor
 from core.config import IP_CACHE_PATH, get_threat_intel_api_key
 from core.diagnostics import Diagnostics
 from core.i18n import I18nCatalog
@@ -258,6 +258,31 @@ class IpResolver(BaseResolver):
         if ptr_host:
             aliases.append(ptr_host)
 
+        fields = [
+            {"label": "Scope", "value": classification["scope_desc"], "code": True}
+        ]
+        if org and org != "Internal Infrastructure":
+            f_org = {"label": "Organization", "value": org}
+            if asn and asn != "Unspecified":
+                f_org["extra"] = asn
+            fields.append(f_org)
+        if ports:
+            fields.append({"label": "Open Ports (Shodan)", "value": ", ".join(str(p) for p in ports), "code": True})
+        if ptr_host and ptr_host != "None resolved":
+            fields.append({"label": "Reverse DNS", "value": ptr_host, "code": True})
+
+        widgets: List[WidgetDescriptor] = [
+            WidgetDescriptor(
+                widget_type="tactical_box",
+                title="Network Endpoint Classification",
+                tone="telemetry",
+                data={
+                    "icon": "layout",
+                    "fields": fields
+                }
+            )
+        ]
+
         return Entity(
             id=clean_ip,
             domain="cyber",
@@ -290,5 +315,6 @@ class IpResolver(BaseResolver):
             relationships=relationships,
             references=references,
             provenance=prov,
+            widgets=widgets,
             aliases=aliases
         )

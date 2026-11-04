@@ -78,7 +78,7 @@
       <div class="author-details">
         <span class="card-author">{annotation.author}</span>
         <span class="category-badge" style="--badge-color: {categoryMeta[annotation.category]?.color || '#1a73e8'}">
-          <Icon name={categoryMeta[annotation.category]?.icon || 'message-square'} size={11} />
+          <span class="category-dot" style="background-color: {categoryMeta[annotation.category]?.color || '#1a73e8'}"></span>
           {categoryMeta[annotation.category]?.label}
         </span>
       </div>
@@ -144,108 +144,120 @@
 </div>
 
 <style>
+  /* --------------------------------------------------------------------------
+     Clean Editorial & Paper Card Styling (Zero Visual Smog)
+     -------------------------------------------------------------------------- */
   .annotation-card {
     background: #ffffff;
-    border: 1px solid #dadce0;
-    border-left: 3px solid #1a73e8;
+    border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 8px;
-    padding: 0.65rem 0.75rem;
-    color: #1f2937;
+    padding: 0.75rem 0.85rem;
+    color: #1e293b;
     font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
-    font-size: 0.8rem;
-    transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    font-size: 0.81rem;
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
     cursor: pointer;
-    box-shadow: 0 1px 3px rgba(60, 64, 67, 0.12), 0 1px 2px rgba(60, 64, 67, 0.24);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     box-sizing: border-box;
+    position: relative;
   }
 
   .annotation-card:hover {
-    border-color: #bdc1c6;
-    box-shadow: 0 2px 6px rgba(60, 64, 67, 0.15);
+    border-color: rgba(0, 0, 0, 0.16);
+    box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.08);
     transform: translateY(-1px);
   }
 
   .annotation-card.active {
-    border-color: #1a73e8;
-    border-left-width: 4px;
-    box-shadow: 0 4px 14px rgba(26, 115, 232, 0.18), 0 1px 3px rgba(60, 64, 67, 0.12);
+    border-color: #0284c7;
+    box-shadow: 0 0 0 1px #0284c7, 0 6px 20px -2px rgba(2, 132, 199, 0.16);
   }
 
-  .annotation-card.category-correction { border-left-color: #ea4335; }
-  .annotation-card.category-insight { border-left-color: #f9ab00; }
-  .annotation-card.category-commendation { border-left-color: #34a853; }
-  .annotation-card.category-question { border-left-color: #a142f4; }
-
   .annotation-card.resolved {
-    opacity: 0.65;
-    background: #f8f9fa;
-    border-left-color: #9aa0a6;
+    opacity: 0.55;
+    background: #fafaf9;
+    border-color: rgba(0, 0, 0, 0.05);
   }
 
   .card-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.45rem;
   }
 
   .header-left {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.45rem;
   }
 
   .card-avatar {
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
-    background: #e8f0fe;
-    color: #1a73e8;
-    font-size: 0.68rem;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 0.65rem;
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    border: 1px solid rgba(26, 115, 232, 0.2);
+    border: 1px solid rgba(0, 0, 0, 0.06);
   }
 
   .author-details {
     display: flex;
-    flex-direction: column;
-    gap: 0.05rem;
+    align-items: center;
+    gap: 0.45rem;
   }
 
   .card-author {
     font-size: 0.78rem;
     font-weight: 600;
-    color: #202124;
+    color: #1e293b;
     line-height: 1.2;
   }
 
   .category-badge {
-    font-size: 0.64rem;
-    font-weight: 600;
-    color: var(--badge-color, #1a73e8);
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: #64748b;
     display: inline-flex;
     align-items: center;
-    gap: 0.2rem;
+    gap: 0.25rem;
     line-height: 1.1;
   }
 
+  .category-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  /* Quiet Header Actions: fade in on card hover/focus */
   .header-actions {
     display: flex;
     align-items: center;
-    gap: 0.2rem;
+    gap: 0.15rem;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  .annotation-card:hover .header-actions,
+  .annotation-card.active .header-actions {
+    opacity: 1;
   }
 
   .action-icon-btn {
     background: transparent;
     border: none;
-    color: #5f6368;
+    color: #94a3b8;
     cursor: pointer;
     padding: 0.25rem;
-    border-radius: 50%;
+    border-radius: 4px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -253,89 +265,41 @@
   }
 
   .action-icon-btn:hover {
-    color: #202124;
+    color: #0f172a;
     background: rgba(0, 0, 0, 0.06);
   }
 
   .action-icon-btn.resolve-btn:hover {
-    color: #137333;
-    background: rgba(19, 115, 51, 0.1);
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+  }
+
+  .action-icon-btn.resolve-btn.is-resolved {
+    color: #10b981;
   }
 
   .action-icon-btn.delete-btn:hover {
-    color: #d93025;
-    background: rgba(217, 48, 37, 0.1);
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
   }
 
+  /* Breathable context quote */
   .card-quote {
-    font-size: 0.72rem;
-    color: #5f6368;
-    background: rgba(26, 115, 232, 0.04);
-    padding: 0.3rem 0.5rem;
-    border-radius: 0 4px 4px 0;
-    border-left: 2px solid #1a73e8;
-    margin-bottom: 0.45rem;
+    background: transparent;
+    border-left: 2px solid rgba(0, 0, 0, 0.12);
+    padding: 0.15rem 0 0.15rem 0.5rem;
+    font-size: 0.74rem;
+    line-height: 1.4;
+    color: #64748b;
     font-style: italic;
-    line-height: 1.35;
+    margin-bottom: 0.45rem;
   }
 
   .card-text {
-    line-height: 1.45;
-    color: #3c4043;
-    overflow-wrap: break-word;
+    font-size: 0.81rem;
+    line-height: 1.55;
+    color: #334155;
     word-break: break-word;
-    font-size: 0.8rem;
-  }
-
-  /* Scoped Markdown Formatting */
-  :global(.card-text.markdown-body p) {
-    margin: 0.25rem 0;
-  }
-  :global(.card-text.markdown-body p:first-child) {
-    margin-top: 0;
-  }
-  :global(.card-text.markdown-body p:last-child) {
-    margin-bottom: 0;
-  }
-  :global(.card-text.markdown-body pre) {
-    background: #f1f3f4;
-    border: 1px solid #dadce0;
-    border-radius: 4px;
-    padding: 0.35rem 0.5rem;
-    font-size: 0.74rem;
-    max-height: 160px;
-    overflow-x: auto;
-    overflow-y: auto;
-    margin: 0.35rem 0;
-  }
-  :global(.card-text.markdown-body code) {
-    font-family: var(--font-mono, monospace);
-    font-size: 0.76rem;
-    background: #f1f3f4;
-    padding: 0.1rem 0.3rem;
-    border-radius: 3px;
-    color: #1a73e8;
-  }
-  :global(.card-text.markdown-body ul),
-  :global(.card-text.markdown-body ol) {
-    margin: 0.25rem 0;
-    padding-left: 1.1rem;
-    font-size: 0.78rem;
-  }
-  :global(.card-text.markdown-body li) {
-    margin-bottom: 0.15rem;
-  }
-  :global(.card-text.markdown-body a) {
-    color: #1a73e8;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
-  :global(.card-text.markdown-body blockquote) {
-    border-left: 2px solid #1a73e8;
-    padding-left: 0.5rem;
-    margin: 0.25rem 0;
-    font-style: italic;
-    color: #5f6368;
   }
 
   .card-footer {
@@ -344,40 +308,37 @@
     justify-content: space-between;
     margin-top: 0.45rem;
     font-size: 0.68rem;
-    color: #80868b;
+    color: #94a3b8;
   }
 
   .resolved-badge {
-    font-weight: 700;
-    color: #188038;
-    letter-spacing: 0.04em;
+    color: #10b981;
+    font-weight: 600;
+    font-size: 0.65rem;
     display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
-    background: #e6f4ea;
-    padding: 0.1rem 0.4rem;
-    border-radius: 10px;
+    gap: 0.2rem;
   }
 
   .card-edit-box {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
-    margin-top: 0.4rem;
+    gap: 0.45rem;
   }
 
   .edit-textarea {
     width: 100%;
     box-sizing: border-box;
-    background: #ffffff;
-    border: 1px solid #1a73e8;
-    color: #202124;
-    border-radius: 4px;
-    padding: 0.4rem;
-    font-size: 0.78rem;
     font-family: inherit;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    border: 1px solid #0284c7;
+    border-radius: 6px;
+    padding: 0.45rem;
+    resize: vertical;
     outline: none;
-    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+    background: #ffffff;
+    color: #1e293b;
   }
 
   .edit-actions {
@@ -389,7 +350,7 @@
   .btn-sm-cancel {
     background: transparent;
     border: none;
-    color: #5f6368;
+    color: #64748b;
     font-size: 0.72rem;
     padding: 0.2rem 0.5rem;
     border-radius: 4px;
@@ -401,7 +362,7 @@
   }
 
   .btn-sm-save {
-    background: #1a73e8;
+    background: #0284c7;
     border: none;
     color: #ffffff;
     font-size: 0.72rem;
@@ -409,40 +370,40 @@
     padding: 0.2rem 0.65rem;
     border-radius: 4px;
     cursor: pointer;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   }
 
   .btn-sm-save:hover {
-    background: #1557b0;
+    background: #0369a1;
   }
 
   /* --------------------------------------------------------------------------
-     Dark Mode
+     Dark Mode (Refined Slate / Midnight)
      -------------------------------------------------------------------------- */
   :global([data-theme="dark"]) .annotation-card,
   :global(body.dark-theme) .annotation-card {
-    background: #1e293b;
-    border-color: rgba(255, 255, 255, 0.1);
-    color: #e2e8f0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    background: #1a1b20;
+    border-color: rgba(255, 255, 255, 0.08);
+    color: #ededed;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   }
 
   :global([data-theme="dark"]) .annotation-card:hover,
   :global(body.dark-theme) .annotation-card:hover {
-    border-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.18);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
   }
 
   :global([data-theme="dark"]) .annotation-card.active,
   :global(body.dark-theme) .annotation-card.active {
     border-color: #38bdf8;
-    box-shadow: 0 0 14px rgba(56, 189, 248, 0.25);
+    box-shadow: 0 0 0 1px #38bdf8, 0 6px 20px rgba(56, 189, 248, 0.22);
   }
 
   :global([data-theme="dark"]) .card-avatar,
   :global(body.dark-theme) .card-avatar {
-    background: rgba(56, 189, 248, 0.15);
-    color: #38bdf8;
-    border-color: rgba(56, 189, 248, 0.3);
+    background: #23252c;
+    color: #94a3b8;
+    border-color: rgba(255, 255, 255, 0.08);
   }
 
   :global([data-theme="dark"]) .card-author,
@@ -450,9 +411,14 @@
     color: #f1f5f9;
   }
 
+  :global([data-theme="dark"]) .category-badge,
+  :global(body.dark-theme) .category-badge {
+    color: #94a3b8;
+  }
+
   :global([data-theme="dark"]) .action-icon-btn,
   :global(body.dark-theme) .action-icon-btn {
-    color: #94a3b8;
+    color: #64748b;
   }
 
   :global([data-theme="dark"]) .action-icon-btn:hover,
@@ -463,31 +429,18 @@
 
   :global([data-theme="dark"]) .card-quote,
   :global(body.dark-theme) .card-quote {
-    background: rgba(0, 0, 0, 0.3);
     color: #94a3b8;
-    border-left-color: #38bdf8;
+    border-left-color: rgba(255, 255, 255, 0.15);
   }
 
   :global([data-theme="dark"]) .card-text,
   :global(body.dark-theme) .card-text {
-    color: #f1f5f9;
-  }
-
-  :global([data-theme="dark"] .card-text.markdown-body pre),
-  :global(body.dark-theme .card-text.markdown-body pre) {
-    background: rgba(0, 0, 0, 0.5);
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-
-  :global([data-theme="dark"] .card-text.markdown-body code),
-  :global(body.dark-theme .card-text.markdown-body code) {
-    background: rgba(255, 255, 255, 0.1);
-    color: #38bdf8;
+    color: #cbd5e1;
   }
 
   :global([data-theme="dark"]) .edit-textarea,
   :global(body.dark-theme) .edit-textarea {
-    background: rgba(15, 23, 42, 0.8);
+    background: #121316;
     border-color: #38bdf8;
     color: #fff;
   }

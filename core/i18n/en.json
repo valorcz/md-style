@@ -61,7 +61,13 @@
     "download_md": "Download .md",
     "paginating": "Paginating A4 sheets...",
     "web_view": "Web View",
-    "paper_view": "Paper View"
+    "paper_view": "Paper View",
+    "sidebar_toc": "Table of Contents",
+    "toggle_toc": "Toggle Table of Contents (T)",
+    "more_actions": "More actions",
+    "educative_mode": "Educative Mode",
+    "reader_mode": "Reader Mode",
+    "source_markdown": "Download Markdown (.md)"
   },
   "badges": {
     "statute": "LEGAL STATUTE",

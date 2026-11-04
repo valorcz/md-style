@@ -66,8 +66,8 @@
 
 <style>
   .archive-action-card {
-    background: #1e293b;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--color-bg-alt, #f8fafc);
+    border: 1px solid var(--color-border, #e2e8f0);
     border-radius: 6px;
     padding: 0.85rem 1rem;
     display: flex;
@@ -82,6 +82,7 @@
   }
   .archive-icon {
     font-size: 1.3rem;
+    color: var(--color-text-muted, #64748b);
   }
   .archive-text {
     display: flex;
@@ -89,29 +90,30 @@
     font-size: 0.82rem;
   }
   .archive-text strong {
-    color: #f1f5f9;
+    color: var(--color-text, #0f172a);
+    font-weight: 600;
   }
   .archive-text span {
-    color: #94a3b8;
+    color: var(--color-text-muted, #64748b);
     font-size: 0.75rem;
   }
   .download-archive-btn {
-    background: #0284c7;
+    background: var(--color-primary, #2563eb);
     color: #ffffff;
     border: none;
     font-size: 0.78rem;
-    font-weight: 600;
+    font-weight: 500;
     padding: 0.35rem 0.75rem;
     border-radius: 4px;
     cursor: pointer;
     white-space: nowrap;
-    transition: background 0.15s ease;
+    transition: opacity 0.15s ease;
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
   }
   .download-archive-btn:hover {
-    background: #0369a1;
+    opacity: 0.9;
   }
   .search-box {
     position: relative;
@@ -121,32 +123,33 @@
   .search-icon {
     position: absolute;
     left: 10px;
-    color: #64748b;
+    color: var(--color-text-muted, #94a3b8);
     display: flex;
     align-items: center;
     pointer-events: none;
   }
   .search-input {
     width: 100%;
-    background: #1e293b;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 5px;
-    color: #f8fafc;
+    background: var(--color-paper, #ffffff);
+    border: 1px solid var(--color-border, #e2e8f0);
+    border-radius: 6px;
+    color: var(--color-text, #0f172a);
     padding: 0.5rem 0.75rem 0.5rem 2.1rem;
     font-size: 0.85rem;
     outline: none;
     font-family: inherit;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
   }
   .search-input:focus {
-    border-color: #38bdf8;
-    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+    border-color: var(--color-primary, #2563eb);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
   }
   .search-clear-btn {
     position: absolute;
     right: 8px;
     background: transparent;
     border: none;
-    color: #94a3b8;
+    color: var(--color-text-muted, #94a3b8);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -155,8 +158,8 @@
     border-radius: 4px;
   }
   .search-clear-btn:hover {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-text, #0f172a);
+    background: rgba(0, 0, 0, 0.05);
   }
   .category-pills {
     display: flex;
@@ -164,53 +167,59 @@
     gap: 0.4rem;
   }
   .pill-btn {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #94a3b8;
-    font-size: 0.72rem;
-    font-weight: 600;
-    padding: 0.2rem 0.55rem;
-    border-radius: 12px;
+    background: var(--color-bg-alt, #f8fafc);
+    border: 1px solid var(--color-border, #e2e8f0);
+    color: var(--color-text-muted, #64748b);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
     cursor: pointer;
     transition: all 0.15s ease;
     font-family: inherit;
   }
   .pill-btn:hover {
-    background: rgba(255, 255, 255, 0.12);
-    color: #fff;
+    background: rgba(0, 0, 0, 0.04);
+    color: var(--color-text, #0f172a);
   }
   .pill-btn.active {
-    background: #0284c7;
-    border-color: #0284c7;
+    background: var(--color-text, #0f172a);
+    border-color: var(--color-text, #0f172a);
     color: #ffffff;
   }
 
-  /* Light Theme */
-  :global([data-theme="light"]) .archive-action-card,
-  :global(body.light-theme) .archive-action-card {
-    background: #f8fafc;
-    border: 1px solid rgba(0, 0, 0, 0.08);
+  /* Dark Theme */
+  :global([data-theme="dark"]) .archive-action-card {
+    background: #1e293b;
+    border-color: rgba(255, 255, 255, 0.1);
   }
-  :global([data-theme="light"]) .search-input,
-  :global(body.light-theme) .search-input {
-    background: #ffffff;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    color: #0f172a;
+  :global([data-theme="dark"]) .archive-text strong {
+    color: #f1f5f9;
   }
-  :global([data-theme="light"]) .pill-btn,
-  :global(body.light-theme) .pill-btn {
-    background: rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    color: #475569;
+  :global([data-theme="dark"]) .archive-text span {
+    color: #94a3b8;
   }
-  :global([data-theme="light"]) .pill-btn:hover,
-  :global(body.light-theme) .pill-btn:hover {
-    background: rgba(0, 0, 0, 0.08);
-    color: #0f172a;
+  :global([data-theme="dark"]) .search-input {
+    background: #1e293b;
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #f8fafc;
   }
-  :global([data-theme="light"]) .pill-btn.active,
-  :global(body.light-theme) .pill-btn.active {
-    background: #0284c7;
+  :global([data-theme="dark"]) .search-clear-btn:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+  }
+  :global([data-theme="dark"]) .pill-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+  }
+  :global([data-theme="dark"]) .pill-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
     color: #ffffff;
+  }
+  :global([data-theme="dark"]) .pill-btn.active {
+    background: var(--color-primary, #38bdf8);
+    border-color: var(--color-primary, #38bdf8);
+    color: #0f172a;
   }
 </style>

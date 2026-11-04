@@ -10,36 +10,37 @@
 
   interface PositionedCard {
     annotation: DocumentAnnotation;
+    desiredTop: number;
     top: number;
   }
 
   let positionedCards: PositionedCard[] = [];
   let gutterLeft: number = 0;
   let isPositioned: boolean = false;
+  let isNarrowMode: boolean = false;
 
   async function calculatePositions() {
     await tick();
     const unresolved = annotations.filter(a => !a.resolved);
     const root = document.querySelector('.report-content') || document.querySelector('main') || document.body;
+    if (!root) return;
+
+    const docRect = root.getBoundingClientRect();
+    const isTocDocked = typeof document !== 'undefined' && document.body.classList.contains('toc-docked');
+
+    const spaceRight = window.innerWidth - docRect.right;
+    const spaceLeft = docRect.left;
+
+    // 1. Dynamic horizontal docking: Always dock to the RIGHT of the document
+    // (while ToC sits as a quiet spine on the LEFT). Never encroach into document text!
+    const CARD_WIDTH = 280;
+    const GUTTER_GAP = 24;
+
+    gutterLeft = docRect.right + window.scrollX + GUTTER_GAP;
+    isPositioned = true;
+
+    // 2. Initial vertical positioning pass
     const items: { annotation: DocumentAnnotation; desiredTop: number }[] = [];
-
-    // 1. Calculate dynamic horizontal gutter docking relative to document paper
-    if (root) {
-      const docRect = root.getBoundingClientRect();
-      const idealLeft = docRect.right + window.scrollX + 24;
-      const minRightSpace = window.innerWidth - 304; // 280px card + 24px viewport margin
-      
-      // If there is ample margin room, dock right outside the paper
-      // Otherwise keep anchored at the right viewport edge on desktop displays
-      if (idealLeft + 280 <= window.innerWidth - 16) {
-        gutterLeft = idealLeft;
-      } else {
-        gutterLeft = Math.max(16, minRightSpace);
-      }
-      isPositioned = true;
-    }
-
-    // 2. Calculate vertical card positions
     for (const ann of unresolved) {
       const range = deserializeRange(ann.range, root as HTMLElement);
       let top = 0;
@@ -47,7 +48,6 @@
         const rect = range.getBoundingClientRect();
         top = window.scrollY + rect.top;
       } else {
-        // Fallback: estimate from blockIndex
         const blocks = root.querySelectorAll('p, li, h1, h2, h3, blockquote, tr');
         const blk = blocks[ann.range.blockIndex];
         if (blk) {
@@ -55,38 +55,61 @@
           top = window.scrollY + rect.top;
         }
       }
-      items.push({ annotation: ann, desiredTop: Math.max(48, top) });
+      items.push({ annotation: ann, desiredTop: Math.max(54, top) });
     }
 
-    // Sort by desired vertical position
+    // Sort strictly by vertical anchor position
     items.sort((a, b) => a.desiredTop - b.desiredTop);
 
-    // Collision-avoidance stacking pass using dynamic content height estimation
-    const result: PositionedCard[] = [];
+    // Initial coarse layout
     let currentY = 0;
-
+    const initialCards: PositionedCard[] = [];
     for (const item of items) {
-      const estimatedHeight = estimateCardHeight(item.annotation);
-      let finalTop = Math.max(item.desiredTop, currentY);
-      result.push({
+      const estH = estimateCardHeight(item.annotation);
+      const topPos = Math.max(item.desiredTop, currentY);
+      initialCards.push({
         annotation: item.annotation,
-        top: finalTop
+        desiredTop: item.desiredTop,
+        top: topPos
       });
-      currentY = finalTop + estimatedHeight + 10;
+      currentY = topPos + estH + 12;
     }
+    positionedCards = initialCards;
 
-    positionedCards = result;
+    // 3. Second pass: Measure REAL rendered DOM heights to guarantee 0 vertical overlap
+    await tick();
+    const gutterEl = document.querySelector('.margin-gutter');
+    if (gutterEl) {
+      const cardEls = Array.from(gutterEl.querySelectorAll<HTMLElement>('.gutter-item'));
+      if (cardEls.length === positionedCards.length) {
+        let realY = 0;
+        let changed = false;
+        const refinedCards = positionedCards.map((c, i) => {
+          const desired = c.desiredTop;
+          const actualHeight = cardEls[i]?.offsetHeight || 100;
+          const finalTop = Math.max(desired, realY);
+          realY = finalTop + actualHeight + 12; // 12px guaranteed collision-free gap
+          if (Math.abs(finalTop - c.top) > 1) {
+            changed = true;
+          }
+          return { annotation: c.annotation, desiredTop: c.desiredTop, top: finalTop };
+        });
+        if (changed) {
+          positionedCards = refinedCards;
+        }
+      }
+    }
   }
 
   function estimateCardHeight(ann: DocumentAnnotation): number {
     const text = ann.text || '';
     const lineCount = text.split('\n').length;
     const hasCodeBlock = text.includes('```');
-    const baseHeight = 90;
+    const baseHeight = 110;
     const codeExtra = hasCodeBlock ? 80 : 0;
-    const lineExtra = Math.min(160, lineCount * 18);
-    const lengthExtra = Math.min(100, Math.floor(text.length / 50) * 16);
-    return Math.min(350, baseHeight + codeExtra + lineExtra + lengthExtra);
+    const lineExtra = Math.min(180, lineCount * 20);
+    const lengthExtra = Math.min(120, Math.floor(text.length / 45) * 18);
+    return Math.min(400, baseHeight + codeExtra + lineExtra + lengthExtra);
   }
 
   $: if (annotations) {
@@ -100,8 +123,21 @@
   onMount(() => {
     calculatePositions();
     window.addEventListener('resize', calculatePositions);
+
+    // Watch for toc-docked or inspector-open class changes on body
+    const observer = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        if (m.attributeName === 'class') {
+          setTimeout(calculatePositions, 50);
+          break;
+        }
+      }
+    });
+    observer.observe(document.body, { attributes: true });
+
     return () => {
       window.removeEventListener('resize', calculatePositions);
+      observer.disconnect();
     };
   });
 </script>
@@ -132,7 +168,7 @@
     width: 280px;
     pointer-events: none;
     z-index: 1000;
-    transition: left 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease;
+    transition: left 0.22s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease;
   }
 
   .gutter-item {
@@ -143,7 +179,7 @@
     transition: top 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  @media (max-width: 1200px) {
+  @media (max-width: 1100px) {
     .margin-gutter {
       display: none !important;
     }

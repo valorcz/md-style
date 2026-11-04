@@ -241,6 +241,11 @@
     font-family: var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
   }
 
+  :global([data-theme="light"]) .lightbox-backdrop,
+  :global(body.light-theme) .lightbox-backdrop {
+    background: rgba(15, 23, 42, 0.45);
+  }
+
   @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }

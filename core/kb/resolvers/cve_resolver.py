@@ -14,7 +14,7 @@ from typing import Optional, List, Dict, Any, Set
 from datetime import datetime, timezone
 
 from core.kb.resolvers.base import BaseResolver
-from core.kb.models import Entity, Provenance
+from core.kb.models import Entity, Provenance, WidgetDescriptor
 from core.config import CVE_CACHE_PATH, CVE_DB_PATH, CACHE_DIR
 from core.diagnostics import Diagnostics
 from core.i18n import I18nCatalog
@@ -403,6 +403,32 @@ class CveResolver(BaseResolver):
         if cwe:
             relationships.append({"target": cwe, "type": "cwe", "relation": "categorized_as"})
 
+        widgets: List[WidgetDescriptor] = []
+        if cvss is not None:
+            widgets.append(
+                WidgetDescriptor(
+                    widget_type="gauge",
+                    title="CVSS Severity Gauge",
+                    tone="threat",
+                    data={
+                        "score": cvss,
+                        "severity": severity,
+                        "vector": cvss_vector or ""
+                    }
+                )
+            )
+        if data.get("solutions"):
+            sol_items = data["solutions"] if isinstance(data["solutions"], list) else [str(data["solutions"])]
+            widgets.append(
+                WidgetDescriptor(
+                    widget_type="tactical_box",
+                    title="Remediation & Mitigation Guidance",
+                    tone="defense",
+                    items=sol_items,
+                    data={"icon": "academic"}
+                )
+            )
+
         prov = Provenance(
             source="registry:circl-cve",
             fetched_at=datetime.now(timezone.utc).isoformat(),
@@ -426,5 +452,6 @@ class CveResolver(BaseResolver):
             relationships=relationships,
             references=data.get("references", []),
             provenance=prov,
+            widgets=widgets,
             aliases=[cve_id]
         )

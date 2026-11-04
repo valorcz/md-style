@@ -11,6 +11,7 @@ from core.diagnostics import PipelineTimer, DiagnosticMetrics
 from core.themes import ResolvedTheme
 from core.kb.models import KnowledgePack
 from core.i18n import I18nCatalog
+from core.lint.models import LintResult
 
 DISALLOWED_INPUT_EXTENSIONS = {
     ".pdf", ".html", ".htm", ".xhtml", ".docx", ".doc", ".odt",
@@ -91,6 +92,9 @@ class PipelineConfig:
     font_subsets: Optional[str] = None
     all_fonts: bool = False
     embed_diagram_fonts: bool = False
+    lint: bool = True
+    lint_details: bool = False
+    strict_lint: bool = False
     verbose: bool = False
     quiet: bool = False
 
@@ -108,6 +112,7 @@ class PipelineContext:
     doc_title: str = ""
     doc_lang: str = "en"
     style_param: str = "forensic"
+    lint_result: Optional[LintResult] = None
     catalog: Optional[I18nCatalog] = None
     is_crate: bool = False
     target_html: Optional[Path] = None
@@ -124,6 +129,8 @@ class PipelineContext:
     toc_html: str = ""
     toc_entries: List[Dict[str, Any]] = field(default_factory=list)
     diagram_count: int = 0
+    custom_components: Dict[str, Any] = field(default_factory=dict)
+    component_css: str = ""
 
     # Stage 5 artifacts
     bundled_html: str = ""

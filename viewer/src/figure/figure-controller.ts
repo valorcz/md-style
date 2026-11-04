@@ -13,14 +13,26 @@ export interface FigureActionCallbacks {
 export class FigureController {
   private figureEl: HTMLElement;
   private isWideState: boolean = false;
+  private isFullscreenState: boolean = false;
 
   constructor(figureEl: HTMLElement) {
     this.figureEl = figureEl;
     this.isWideState = figureEl.classList.contains('wide') || figureEl.classList.contains('breakout');
+    this.isFullscreenState = figureEl.classList.contains('component-fullscreen');
   }
 
   get isWide(): boolean {
     return this.isWideState;
+  }
+
+  get isFullscreen(): boolean {
+    return this.isFullscreenState;
+  }
+
+  get isComponent(): boolean {
+    return this.figureEl.classList.contains('doc-component-container') ||
+           this.figureEl.hasAttribute('data-component') ||
+           this.figureEl.querySelector('.doc-component-mount') !== null;
   }
 
   getCaptionText(): string {
@@ -36,6 +48,15 @@ export class FigureController {
     this.isWideState = !this.isWideState;
     this.figureEl.classList.toggle('wide', this.isWideState);
     return this.isWideState;
+  }
+
+  toggleFullscreen(): boolean {
+    this.isFullscreenState = !this.isFullscreenState;
+    this.figureEl.classList.toggle('component-fullscreen', this.isFullscreenState);
+    if (typeof document !== 'undefined') {
+      document.body.classList.toggle('has-component-fullscreen', this.isFullscreenState);
+    }
+    return this.isFullscreenState;
   }
 
   async copySvg(): Promise<boolean> {
