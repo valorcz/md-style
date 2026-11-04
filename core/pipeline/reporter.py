@@ -112,6 +112,33 @@ class SummaryReporter:
         if context and context.diagram_count > 0:
             summary_table.add_row("Diagrams:", f"{context.diagram_count} rendered")
 
+        if context and context.lint_result:
+            lr = context.lint_result
+            # Format score and grade
+            if lr.grade in ("A+", "A"):
+                grade_styled = f"[bold green]{lr.grade}[/bold green]"
+            elif lr.grade == "B":
+                grade_styled = f"[bold cyan]{lr.grade}[/bold cyan]"
+            elif lr.grade == "C":
+                grade_styled = f"[bold yellow]{lr.grade}[/bold yellow]"
+            elif lr.grade == "D":
+                grade_styled = f"[bold orange3]{lr.grade}[/bold orange3]"
+            else:
+                grade_styled = f"[bold red]{lr.grade}[/bold red]"
+
+            issues_parts = []
+            if lr.errors > 0:
+                issues_parts.append(f"[bold red]{lr.errors} error{'s' if lr.errors > 1 else ''}[/bold red]")
+            if lr.warnings > 0:
+                issues_parts.append(f"[yellow]{lr.warnings} warning{'s' if lr.warnings > 1 else ''}[/yellow]")
+            if not issues_parts:
+                issues_str = "[green]Clean (0 issues)[/green]"
+            else:
+                issues_str = ", ".join(issues_parts)
+
+            lint_str = f"Grade {grade_styled} ({lr.score:.1f}/100) • {issues_str}"
+            summary_table.add_row("Prose & Syntax:", lint_str)
+
         summary_table.add_row("Compilation Time:", f"{total_time:.2f}s")
         if sha256_digest:
             summary_table.add_row("SHA-256 Digest:", f"[dim]{sha256_digest[:12]}…{sha256_digest[-12:]}[/dim]")
@@ -128,3 +155,10 @@ class SummaryReporter:
 
         stdout_console.print()
         stdout_console.print(summary_panel)
+
+        if context and context.lint_result and getattr(context.config, "lint_details", False):
+            try:
+                from core.lint.reporter import print_lint_report
+                print_lint_report(context.lint_result, verbose=getattr(context.config, "verbose", False))
+            except Exception:
+                pass

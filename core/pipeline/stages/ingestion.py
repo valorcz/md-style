@@ -138,6 +138,25 @@ class Stage1Ingestion(PipelineStage):
         target_html.parent.mkdir(parents=True, exist_ok=True)
         context.target_html = target_html
 
+        # Optional prose and typography linting
+        if context.config.lint:
+            try:
+                from core.lint import ProseLinter
+                linter = ProseLinter()
+                context.lint_result = linter.lint_text(
+                    raw_content,
+                    file_path=input_file,
+                    lang=doc_lang,
+                )
+                if context.config.strict_lint and context.lint_result.errors > 0:
+                    Diagnostics.error(
+                        f"Strict lint failure: {context.lint_result.errors} error(s) found in {input_file.name}."
+                    )
+                    sys.exit(1)
+            except Exception as e:
+                if context.config.verbose:
+                    Diagnostics.warn(f"Linter execution encountered an issue: {e}")
+
         context.timer.stop(self.stage_key)
         if not context.config.quiet and context.config.verbose:
             Diagnostics.info(

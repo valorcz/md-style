@@ -116,7 +116,9 @@ Examples:
     parser.add_argument("--no-auto-nowrap", dest="auto_nowrap", action="store_false", default=True, help="Disable auto-nowrap on tables")
 
     # Diagnostics & Utilities
-    parser.add_argument("--lint", action="store_true", help="Audit prose quality, formatting density, and typography")
+    parser.add_argument("--lint", "--lint-details", dest="lint_details", action="store_true", help="Audit prose quality, formatting density, and print detailed findings")
+    parser.add_argument("--no-lint", dest="enable_lint", action="store_false", default=True, help="Disable automatic prose and syntax linter during compilation")
+    parser.add_argument("--strict-lint", dest="strict_lint", action="store_true", default=False, help="Fail compilation (exit code > 0) if prose linter encounters errors")
     parser.add_argument("--list-styles", action="store_true", help="List all available built-in document styles")
     parser.add_argument(
         "--list-artifacts", "--list-resolvers",
@@ -470,12 +472,6 @@ def main():
         Diagnostics.error(str(e))
         sys.exit(1)
 
-    if args.lint:
-        from core.lint import ProseLinter, print_lint_report
-        linter = ProseLinter()
-        lint_res = linter.lint_file(input_path, lang=args.lang)
-        print_lint_report(lint_res, verbose=args.verbose)
-
     if args.kb_status:
         show_kb_status(input_path)
         sys.exit(0)
@@ -520,6 +516,9 @@ def main():
         font_subsets=args.font_subsets,
         all_fonts=args.all_fonts,
         embed_diagram_fonts=args.embed_diagram_fonts,
+        lint=args.enable_lint,
+        lint_details=args.lint_details,
+        strict_lint=args.strict_lint,
         verbose=args.verbose,
         quiet=args.quiet
     )

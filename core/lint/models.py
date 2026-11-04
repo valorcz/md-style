@@ -83,3 +83,15 @@ class LintResult:
             return "D"
         else:
             return "F"
+
+    @property
+    def errors(self) -> int:
+        return sum(1 for i in self.issues if i.severity == "FAIL")
+
+    @property
+    def warnings(self) -> int:
+        return sum(1 for i in self.issues if i.severity == "WARN")
+
+    @property
+    def infos(self) -> int:
+        return sum(1 for i in self.issues if i.severity == "INFO")
