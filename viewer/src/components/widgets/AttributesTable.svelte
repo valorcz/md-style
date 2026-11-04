@@ -13,6 +13,9 @@
     pivot: string;
   }>();
 
+  let copiedKey: string | null = null;
+  let copiedTimeout: any = null;
+
   function isTargetResolvable(target: string): boolean {
     if (!target || typeof target !== 'string') return false;
     const trimmed = target.trim();
@@ -26,6 +29,39 @@
   $: filteredEntries = Object.entries(data || {}).filter(([k]) =>
     k !== 'Investigation Tips' && k !== 'Attacker Behavior' && k !== 'Forensic Role'
   );
+
+  function isWideValue(val: any, key: string): boolean {
+    if (val === null || val === undefined) return false;
+    if (typeof val === 'object') return true;
+    const str = String(val);
+    return str.length > 26 || str.includes('\n') || key.length > 22;
+  }
+
+  function copyValue(text: string, key: string) {
+    if (!text) return;
+    copiedKey = key;
+    if (copiedTimeout) clearTimeout(copiedTimeout);
+    copiedTimeout = setTimeout(() => {
+      copiedKey = null;
+    }, 1600);
+
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+    } else {
+      fallbackCopy(text);
+    }
+  }
+
+  function fallbackCopy(text: string) {
+    const el = document.createElement('textarea');
+    el.value = text;
+    el.style.position = 'fixed';
+    el.style.opacity = '0';
+    document.body.appendChild(el);
+    el.select();
+    try { document.execCommand('copy'); } catch (_) {}
+    document.body.removeChild(el);
+  }
 </script>
 
 {#if filteredEntries.length > 0}
@@ -34,29 +70,56 @@
       <span class="heading-icon"><Icon name={icon} size={14} /></span>
       <span>{title}</span>
     </h3>
-    <table class="attributes-table" class:details-table={isDetailsTable}>
-      <tbody>
-        {#each filteredEntries as [key, val]}
-          <tr>
-            <th scope="row">{key}</th>
-            <td>
-              {#if typeof val === 'string' && resolveFn(val)}
-                <button type="button" class="inline-pivot-btn" on:click={() => dispatch('pivot', val)} title="Inspect {val}">
-                  {val} ↗
-                </button>
-              {:else if key === 'Associated CVE' && typeof val === 'string' && val.startsWith('CVE-')}
-                <button type="button" class="inline-pivot-btn" on:click={() => dispatch('pivot', val)} title="Inspect {val}">
-                  <Icon name="alert-circle" size={12} />
-                  <span>{val} ↗</span>
-                </button>
-              {:else}
-                {typeof val === 'object' ? JSON.stringify(val) : val}
-              {/if}
-            </td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
+
+    <div class="property-grid" class:details-grid={isDetailsTable}>
+      {#each filteredEntries as [key, val]}
+        {@const wide = isWideValue(val, key)}
+        <div class="property-tile" class:is-wide={wide}>
+          <div class="tile-header">
+            <span class="property-key" title={key}>{key}</span>
+            {#if typeof val === 'string' || typeof val === 'number'}
+              <button
+                type="button"
+                class="mini-copy-btn"
+                class:is-copied={copiedKey === key}
+                on:click={() => copyValue(String(val), key)}
+                title="Kopírovat hodnotu"
+                aria-label="Kopírovat {key}"
+              >
+                <Icon name={copiedKey === key ? 'check' : 'copy'} size={11} />
+              </button>
+            {/if}
+          </div>
+
+          <div class="property-value">
+            {#if typeof val === 'string' && resolveFn(val)}
+              <button type="button" class="inline-pivot-btn" on:click={() => dispatch('pivot', val)} title="Zobrazit detail {val}">
+                <span>{val}</span>
+                <span class="pivot-arrow">↗</span>
+              </button>
+            {:else if key === 'Associated CVE' && typeof val === 'string' && val.startsWith('CVE-')}
+              <button type="button" class="inline-pivot-btn" on:click={() => dispatch('pivot', val)} title="Zobrazit detail {val}">
+                <Icon name="alert-circle" size={11} />
+                <span>{val}</span>
+                <span class="pivot-arrow">↗</span>
+              </button>
+            {:else if typeof val === 'boolean'}
+              <span class="bool-badge" class:is-true={val}>{val ? 'Ano' : 'Ne'}</span>
+            {:else if Array.isArray(val)}
+              <div class="array-tags">
+                {#each val as item}
+                  <span class="array-tag">{item}</span>
+                {/each}
+              </div>
+            {:else if typeof val === 'object' && val !== null}
+              <pre class="object-preview">{JSON.stringify(val, null, 2)}</pre>
+            {:else}
+              <span class="text-value">{val}</span>
+            {/if}
+          </div>
+        </div>
+      {/each}
+    </div>
   </div>
 {/if}
 
@@ -65,8 +128,9 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    margin-top: 0.4rem;
+    margin-top: 0.35rem;
   }
+
   .section-heading {
     margin: 0;
     font-size: 0.74rem;
@@ -78,42 +142,108 @@
     align-items: center;
     gap: 0.4rem;
   }
+
   .heading-icon {
     display: flex;
     align-items: center;
     color: var(--color-accent, #2563eb);
   }
-  .attributes-table {
+
+  .property-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
     width: 100%;
-    border-collapse: collapse;
-    font-size: 0.82rem;
+    box-sizing: border-box;
   }
-  .attributes-table th,
-  .attributes-table td {
+
+  .property-tile {
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px solid var(--color-border, #e2e8f0);
+    border-radius: 6px;
     padding: 0.45rem 0.6rem;
-    border-bottom: 1px solid var(--color-border, #f1f5f9);
-    vertical-align: top;
-    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+    transition: border-color 0.15s ease, background 0.15s ease;
+    box-sizing: border-box;
   }
-  .attributes-table th {
+
+  .property-tile:hover {
+    background: rgba(0, 0, 0, 0.035);
+    border-color: rgba(37, 99, 235, 0.3);
+  }
+
+  .property-tile.is-wide {
+    grid-column: span 2;
+  }
+
+  .tile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.3rem;
+  }
+
+  .property-key {
+    font-size: 0.64rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
     color: var(--color-text-muted, #64748b);
-    font-weight: 600;
-    width: 38%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-  .details-table th {
-    width: 42%;
+
+  .mini-copy-btn {
+    opacity: 0;
+    background: transparent;
+    border: none;
+    padding: 0.1rem;
+    margin: 0;
+    color: var(--color-text-muted, #64748b);
+    cursor: pointer;
+    border-radius: 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.15s ease, color 0.15s ease;
   }
-  .attributes-table td {
-    color: var(--color-text, #1e293b);
-    overflow-wrap: break-word;
+
+  .property-tile:hover .mini-copy-btn {
+    opacity: 0.8;
+  }
+
+  .mini-copy-btn:hover {
+    opacity: 1 !important;
+    color: var(--color-primary, #0f172a);
+  }
+
+  .mini-copy-btn.is-copied {
+    opacity: 1 !important;
+    color: #059669 !important;
+  }
+
+  .property-value {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--color-text, #0f172a);
+    line-height: 1.35;
     word-break: break-word;
   }
+
+  .text-value {
+    display: inline-block;
+  }
+
   .inline-pivot-btn {
     background: rgba(37, 99, 235, 0.08);
     border: none;
     color: var(--color-accent, #2563eb);
     border-radius: 4px;
-    padding: 0.15rem 0.45rem;
+    padding: 0.15rem 0.4rem;
     font-family: inherit;
     font-size: 0.76rem;
     font-weight: 600;
@@ -121,34 +251,97 @@
     transition: background 0.15s ease, color 0.15s ease;
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.25rem;
+    max-width: 100%;
   }
+
   .inline-pivot-btn:hover {
     background: rgba(37, 99, 235, 0.16);
     color: var(--color-primary, #0f172a);
   }
 
+  .pivot-arrow {
+    font-size: 0.72rem;
+    line-height: 1;
+  }
+
+  .bool-badge {
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    display: inline-block;
+    background: rgba(220, 38, 38, 0.1);
+    color: #dc2626;
+  }
+
+  .bool-badge.is-true {
+    background: rgba(5, 150, 105, 0.12);
+    color: #059669;
+  }
+
+  .array-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  .array-tag {
+    font-size: 0.7rem;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 0.1rem 0.35rem;
+    border-radius: 3px;
+    color: var(--color-text, #334155);
+  }
+
+  .object-preview {
+    margin: 0;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.7rem;
+    background: rgba(0, 0, 0, 0.04);
+    padding: 0.35rem;
+    border-radius: 4px;
+    overflow-x: auto;
+  }
+
   /* Dark Theme */
-  :global([data-theme="dark"]) .section-heading {
+  :global([data-theme="dark"] .section-heading) {
     color: #94a3b8;
   }
-  :global([data-theme="dark"]) .heading-icon {
+  :global([data-theme="dark"] .heading-icon) {
     color: #60a5fa;
   }
-  :global([data-theme="dark"]) .attributes-table th {
+  :global([data-theme="dark"] .property-tile) {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: #2e323b;
+  }
+  :global([data-theme="dark"] .property-tile:hover) {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(96, 165, 250, 0.35);
+  }
+  :global([data-theme="dark"] .property-key) {
     color: #94a3b8;
-    border-bottom-color: #262930;
   }
-  :global([data-theme="dark"]) .attributes-table td {
-    color: #e2e8f0;
-    border-bottom-color: #262930;
+  :global([data-theme="dark"] .property-value) {
+    color: #f1f5f9;
   }
-  :global([data-theme="dark"]) .inline-pivot-btn {
+  :global([data-theme="dark"] .mini-copy-btn:hover) {
+    color: #ffffff;
+  }
+  :global([data-theme="dark"] .inline-pivot-btn) {
     background: rgba(96, 165, 250, 0.12);
     color: #60a5fa;
   }
-  :global([data-theme="dark"]) .inline-pivot-btn:hover {
-    background: rgba(96, 165, 250, 0.2);
+  :global([data-theme="dark"] .inline-pivot-btn:hover) {
+    background: rgba(96, 165, 250, 0.22);
     color: #ffffff;
+  }
+  :global([data-theme="dark"] .array-tag) {
+    background: rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
+  }
+  :global([data-theme="dark"] .object-preview) {
+    background: rgba(255, 255, 255, 0.06);
+    color: #e2e8f0;
   }
 </style>
