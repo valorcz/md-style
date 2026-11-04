@@ -174,7 +174,7 @@
         {/if}
       </div>
     {/if}
-    <button class="toc-close-btn" on:click={handleClose} title={i18n['ui.close'] || 'Close'}>
+    <button class="ui-icon-btn toc-close-btn" on:click={handleClose} title={i18n['ui.close'] || 'Close'}>
       <Icon name="x" size={13} />
     </button>
   </div>
@@ -377,7 +377,7 @@
   /* --------------------------------------------------------------------------
      SLIDE-OUT DRAWER OVERLAY (When spine docking is not possible or < 1600px with inspector open)
      -------------------------------------------------------------------------- */
-  .sidebar-toc:not(.is-spine) {
+  .sidebar-toc {
     position: fixed;
     top: 40px;
     bottom: 0;
@@ -395,7 +395,7 @@
     z-index: 9998;
   }
 
-  .sidebar-toc:not(.is-spine).is-open {
+  .sidebar-toc.is-open {
     transform: translateX(0);
   }
 
@@ -409,7 +409,7 @@
     z-index: 9997;
   }
 
-  .sidebar-toc:not(.is-spine) .toc-header {
+  .sidebar-toc .toc-header {
     padding: 0.75rem 1rem 0.5rem 1rem;
     border-bottom: 1px solid var(--color-border, rgba(0, 0, 0, 0.06));
     display: flex;
@@ -446,12 +446,12 @@
     background: rgba(255, 255, 255, 0.08);
   }
 
-  .sidebar-toc:not(.is-spine) .toc-depth-filter {
+  .sidebar-toc .toc-depth-filter {
     display: flex;
     gap: 0.35rem;
   }
 
-  .sidebar-toc:not(.is-spine) .depth-pill {
+  .sidebar-toc .depth-pill {
     background: rgba(0, 0, 0, 0.04);
     border: 1px solid var(--color-border, rgba(0, 0, 0, 0.08));
     padding: 0.12rem 0.45rem;
@@ -461,14 +461,14 @@
     color: var(--color-text-muted, #475569);
   }
 
-  .sidebar-toc:not(.is-spine) .depth-pill.is-active {
+  .sidebar-toc .depth-pill.is-active {
     background: rgba(2, 132, 199, 0.1);
     border-color: #0284c7;
     color: #0284c7;
     font-weight: 600;
   }
 
-  .sidebar-toc:not(.is-spine) .toc-tree {
+  .sidebar-toc .toc-tree {
     padding: 0.75rem 0.5rem;
     margin: 0;
     display: flex;
@@ -476,14 +476,14 @@
     gap: 0.15rem;
   }
 
-  .sidebar-toc:not(.is-spine) .toc-link.level-1 { padding-left: 0.4rem; font-weight: 600; }
-  .sidebar-toc:not(.is-spine) .toc-link.level-2 { padding-left: 0.8rem; }
-  .sidebar-toc:not(.is-spine) .toc-link.level-3 { padding-left: 1.5rem; font-size: 0.76rem; }
-  .sidebar-toc:not(.is-spine) .toc-link.level-4 { padding-left: 2.1rem; font-size: 0.72rem; }
+  .sidebar-toc .toc-link.level-1 { padding-left: 0.4rem; font-weight: 600; }
+  .sidebar-toc .toc-link.level-2 { padding-left: 0.8rem; }
+  .sidebar-toc .toc-link.level-3 { padding-left: 1.5rem; font-size: 0.76rem; }
+  .sidebar-toc .toc-link.level-4 { padding-left: 2.1rem; font-size: 0.72rem; }
 
-  .sidebar-toc:not(.is-spine) .toc-link,
-  :global(.sidebar-toc:not(.is-spine) .toc-link),
-  :global(.sidebar-toc:not(.is-spine) a.toc-link) {
+  .sidebar-toc .toc-link,
+  :global(.sidebar-toc .toc-link),
+  :global(.sidebar-toc a.toc-link) {
     display: block;
     color: var(--color-text-muted, #475569);
     text-decoration: none !important;
@@ -497,16 +497,16 @@
     border-left: 2px solid transparent;
   }
 
-  .sidebar-toc:not(.is-spine) .toc-link:hover,
-  :global(.sidebar-toc:not(.is-spine) .toc-link:hover) {
+  .sidebar-toc .toc-link:hover,
+  :global(.sidebar-toc .toc-link:hover) {
     background: rgba(0, 0, 0, 0.04);
     color: var(--color-text, #0f172a);
     text-decoration: none !important;
     border-bottom: none !important;
   }
 
-  .sidebar-toc:not(.is-spine) .toc-link.is-active,
-  :global(.sidebar-toc:not(.is-spine) .toc-link.is-active) {
+  .sidebar-toc .toc-link.is-active,
+  :global(.sidebar-toc .toc-link.is-active) {
     background: rgba(2, 132, 199, 0.08);
     border-left-color: #0284c7;
     color: #0284c7;
@@ -515,22 +515,22 @@
     border-bottom: none !important;
   }
 
-  :global([data-theme="dark"]) .sidebar-toc:not(.is-spine) {
+  :global([data-theme="dark"]) .sidebar-toc {
     background: #1a1b1f;
     border-right-color: #262930;
     color: #f1f5f9;
   }
-  :global([data-theme="dark"]) .sidebar-toc:not(.is-spine) .toc-title-group {
+  :global([data-theme="dark"]) .sidebar-toc .toc-title-group {
     color: #f8fafc;
   }
-  :global([data-theme="dark"]) .sidebar-toc:not(.is-spine) .toc-link {
+  :global([data-theme="dark"]) .sidebar-toc .toc-link {
     color: #94a3b8;
   }
-  :global([data-theme="dark"]) .sidebar-toc:not(.is-spine) .toc-link:hover {
+  :global([data-theme="dark"]) .sidebar-toc .toc-link:hover {
     background: rgba(255, 255, 255, 0.06);
     color: #f8fafc;
   }
-  :global([data-theme="dark"]) .sidebar-toc:not(.is-spine) .toc-link.is-active {
+  :global([data-theme="dark"]) .sidebar-toc .toc-link.is-active {
     background: rgba(56, 189, 248, 0.12);
     border-left-color: #38bdf8;
     color: #38bdf8;

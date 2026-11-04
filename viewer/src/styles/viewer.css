@@ -1,0 +1,91 @@
+/* ==========================================================================
+   VIEWER UI DESIGN SYSTEM: SCOPED RESET & TOKENS
+   Applied exclusively under #md-style-viewer-root to guarantee zero pollution
+   into the main article document or print styling.
+   ========================================================================== */
+
+#md-style-viewer-root,
+#md-style-viewer-root * {
+  box-sizing: border-box;
+}
+
+#md-style-viewer-root {
+  --viewer-font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --viewer-font-mono: ui-monospace, "SF Mono", Monaco, "Cascadia Code", monospace;
+
+  /* Button design tokens */
+  --viewer-btn-hover-bg: rgba(0, 0, 0, 0.05);
+  --viewer-btn-active-bg: rgba(0, 0, 0, 0.09);
+  --viewer-btn-radius: 4px;
+}
+
+[data-theme="dark"] #md-style-viewer-root,
+body.theme-cyber #md-style-viewer-root,
+html[data-theme="dark"] #md-style-viewer-root {
+  --viewer-btn-hover-bg: rgba(255, 255, 255, 0.08);
+  --viewer-btn-active-bg: rgba(255, 255, 255, 0.14);
+}
+
+/* Scoped button reset - eliminates browser user-agent borders & background across all viewer UI */
+#md-style-viewer-root button {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#md-style-viewer-root button:focus-visible {
+  outline: 2px solid var(--color-accent, #0284c7);
+  outline-offset: 2px;
+}
+
+#md-style-viewer-root input,
+#md-style-viewer-root textarea {
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+/* Standardized Icon Button Class (.ui-icon-btn) */
+#md-style-viewer-root .ui-icon-btn {
+  background: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  color: var(--color-text-muted, #64748b);
+  cursor: pointer;
+  padding: 0.25rem 0.4rem;
+  border-radius: var(--viewer-btn-radius, 4px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+#md-style-viewer-root .ui-icon-btn:hover {
+  background: var(--viewer-btn-hover-bg, rgba(0, 0, 0, 0.05));
+  color: var(--color-text, #0f172a);
+}
+
+[data-theme="dark"] #md-style-viewer-root .ui-icon-btn,
+html[data-theme="dark"] #md-style-viewer-root .ui-icon-btn {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] #md-style-viewer-root .ui-icon-btn:hover,
+html[data-theme="dark"] #md-style-viewer-root .ui-icon-btn:hover {
+  color: #f1f5f9;
+  background: var(--viewer-btn-hover-bg, rgba(255, 255, 255, 0.08));
+}

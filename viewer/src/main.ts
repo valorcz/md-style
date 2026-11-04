@@ -1,4 +1,5 @@
 import App from './App.svelte';
+import './styles/viewer.css';
 import { mount, unmount } from 'svelte';
 import * as svelteInternal from 'svelte/internal/client';
 

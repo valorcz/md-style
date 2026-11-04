@@ -120,7 +120,7 @@
           <span class="btn-label">{cat.label}</span>
         </button>
       {/each}
-      <button class="popover-close-btn" on:click={() => dispatch('cancel')} title="Cancel" aria-label="Cancel">
+      <button class="ui-icon-btn popover-close-btn" on:click={() => dispatch('cancel')} title="Cancel" aria-label="Cancel">
         <Icon name="x" size={13} />
       </button>
     </div>
