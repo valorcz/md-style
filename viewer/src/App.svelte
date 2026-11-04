@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, mount } from 'svelte';
+  import { onMount, onDestroy, mount } from 'svelte';
   import InspectorDrawer from './InspectorDrawer.svelte';
   import HudRibbon from './HudRibbon.svelte';
   import SidebarToc from './components/SidebarToc.svelte';
@@ -11,6 +11,7 @@
   import MarginGutter from './annotations/MarginGutter.svelte';
   import { annotationStore } from './annotations/store';
   import { serializeRange } from './annotations/dom-anchor';
+  import { layoutStore } from './layout/layout-store';
 
   export let title: string = '';
   export let enableHud: boolean = true;
@@ -24,9 +25,6 @@
   let knowledgeData: Record<string, any> = {};
   let i18nData: Record<string, string> = {};
   let selectedEntity: any = null;
-  let isDrawerOpen: boolean = false;
-  let isTocOpen: boolean = false;
-  let drawerTab: 'kb' | 'comments' = 'kb';
 
   let hoverCardEntity: any = null;
   let hoverCardPos: { x: number; y: number } | null = null;
@@ -34,9 +32,6 @@
   let hoverCardTimeout: any = null;
   let hoverCardCloseTimeout: any = null;
 
-  $: if (typeof document !== 'undefined') {
-    document.body.classList.toggle('toc-docked', isTocOpen);
-  }
   let hasSourceMarkdown: boolean = false;
   let sourceMarkdownText: string = '';
   let activeLightboxFigure: { svgElement: SVGElement; title: string; id: string } | null = null;
@@ -69,11 +64,7 @@
     isHoverCardOpen = false;
     hoverCardEntity = null;
     selectedEntity = entity;
-    drawerTab = 'kb';
-    const wasOpen = isDrawerOpen;
-    isDrawerOpen = true;
-    document.body.classList.add('inspector-open');
-    if (!wasOpen) handleInspectorStateChange(true);
+    layoutStore.openInspector('kb');
   }
 
   function handleHoverCardMouseEnter() {
@@ -135,48 +126,10 @@
     URL.revokeObjectURL(url);
   }
 
-  let wasTocOpenBeforeInspector: boolean = false;
-
-  function handleInspectorStateChange(opening: boolean) {
-    if (opening) {
-      if (typeof window !== 'undefined' && window.innerWidth < 1600) {
-        if (isTocOpen) {
-          wasTocOpenBeforeInspector = true;
-          isTocOpen = false;
-        }
-      }
-    } else {
-      if (wasTocOpenBeforeInspector) {
-        isTocOpen = true;
-        wasTocOpenBeforeInspector = false;
-      }
-    }
-  }
-
   function handleToggleInspector(tab?: 'kb' | 'comments' | CustomEvent<'kb' | 'comments'>) {
     const targetTab = typeof tab === 'string' ? tab : tab?.detail;
-    if (targetTab) {
-      if (isDrawerOpen && drawerTab === targetTab) {
-        isDrawerOpen = false;
-        document.body.classList.remove('inspector-open');
-        handleInspectorStateChange(false);
-      } else {
-        drawerTab = targetTab;
-        if (targetTab === 'comments') {
-          selectedEntity = null;
-        }
-        if (!isDrawerOpen) {
-          isDrawerOpen = true;
-          document.body.classList.add('inspector-open');
-          handleInspectorStateChange(true);
-        }
-      }
-    } else {
-      isDrawerOpen = !isDrawerOpen;
-      document.body.classList.toggle('inspector-open', isDrawerOpen);
-      handleInspectorStateChange(isDrawerOpen);
-    }
-    if (isDrawerOpen && !selectedEntity && drawerTab === 'kb') {
+    layoutStore.toggleInspector(targetTab);
+    if ($layoutStore.isInspectorOpen && !selectedEntity && $layoutStore.activeDrawerTab === 'kb') {
       selectedEntity = null;
     }
   }
@@ -191,11 +144,7 @@
     hoverCardEntity = null;
 
     selectedEntity = resolveEntity(token, target);
-    drawerTab = 'kb';
-    const wasOpen = isDrawerOpen;
-    isDrawerOpen = true;
-    document.body.classList.add('inspector-open');
-    if (!wasOpen) handleInspectorStateChange(true);
+    layoutStore.openInspector('kb');
   }
 
   function setupTableToolbars() {
@@ -386,6 +335,7 @@
   }
 
   onMount(() => {
+    layoutStore.init();
     loadKnowledgeData();
     loadI18nData();
     checkSourceMarkdown();
@@ -473,7 +423,7 @@
       if (e.key === 't' || e.key === 'T') {
         if (!e.ctrlKey && !e.metaKey && !e.altKey) {
           e.preventDefault();
-          isTocOpen = !isTocOpen;
+          layoutStore.toggleToc();
         }
       }
     };
@@ -524,6 +474,7 @@
     setupFigureToolbars();
 
     return () => {
+      layoutStore.destroy();
       document.removeEventListener('keydown', handleKeydown);
       document.removeEventListener('click', clickHandler);
       document.removeEventListener('mouseover', mouseOverHandler);
@@ -560,21 +511,15 @@
 
 {#if enableHud}
   <SidebarToc
-    isOpen={isTocOpen}
-    isInspectorOpen={isDrawerOpen}
     i18n={i18nData}
-    onClose={() => {
-      isTocOpen = false;
-      wasTocOpenBeforeInspector = false;
-    }}
   />
   <HudRibbon
     {title}
     i18n={i18nData}
     {isPagedMode}
-    isInspectorOpen={isDrawerOpen}
-    {isTocOpen}
-    activeDrawerTab={drawerTab}
+    isInspectorOpen={$layoutStore.isInspectorOpen}
+    isTocOpen={$layoutStore.isTocOpen}
+    activeDrawerTab={$layoutStore.activeDrawerTab}
     entityCount={Object.keys(knowledgeData).length}
     commentCount={$annotationStore.annotations.length}
     componentCount={customComponentCount}
@@ -582,10 +527,7 @@
     {hasSourceMarkdown}
     on:togglePaged={handleTogglePaged}
     on:toggleInspector={handleToggleInspector}
-    on:toggleToc={() => {
-      isTocOpen = !isTocOpen;
-      if (!isTocOpen) wasTocOpenBeforeInspector = false;
-    }}
+    on:toggleToc={() => layoutStore.toggleToc()}
     on:toggleEducativeMode={() => annotationStore.toggleEducativeMode()}
     on:downloadSource={handleDownloadSource}
   />
@@ -614,16 +556,12 @@
 {#if enableInspector}
   <InspectorDrawer
     bind:entity={selectedEntity}
-    bind:activeTab={drawerTab}
-    isOpen={isDrawerOpen}
+    activeTab={$layoutStore.activeDrawerTab}
+    isOpen={$layoutStore.isInspectorOpen}
     i18n={i18nData}
     allEntities={knowledgeData}
     {hasSourceMarkdown}
-    onClose={() => {
-      isDrawerOpen = false;
-      document.body.classList.remove('inspector-open');
-      handleInspectorStateChange(false);
-    }}
+    onClose={() => layoutStore.closeInspector()}
     onSelectEntity={(e) => (selectedEntity = e)}
     onDownloadSource={handleDownloadSource}
   />

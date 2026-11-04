@@ -756,6 +756,9 @@ header#title-block-header:has(.meta-label) p.date::before {
   .document-container {
     transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   }
+  html[data-inspector-open="true"] .report-content,
+  html[data-inspector-open="true"] main,
+  html[data-inspector-open="true"] .document-container,
   body.inspector-open .report-content,
   body.inspector-open main,
   body.inspector-open .document-container {

@@ -1,12 +1,18 @@
 <script lang="ts">
   import { onMount, tick } from 'svelte';
   import Icon from './Icon.svelte';
+  import { layoutStore } from '../layout/layout-store';
 
-  export let isOpen: boolean = false;
-  export let isInspectorOpen: boolean = false;
+  export let isOpen: boolean | undefined = undefined;
+  export let isInspectorOpen: boolean | undefined = undefined;
   export let i18n: Record<string, string> = {};
-  export let onClose: () => void = () => {};
+  export let onClose: (() => void) | undefined = undefined;
   export let defaultDepth: number = 3;
+
+  $: activeIsOpen = isOpen !== undefined ? isOpen : $layoutStore.isTocOpen;
+  $: activeIsInspectorOpen = isInspectorOpen !== undefined ? isInspectorOpen : $layoutStore.isInspectorOpen;
+  $: isDockedSpine = $layoutStore.tocMode === 'spine';
+  $: spineRight = $layoutStore.spineRight;
 
   interface TocItem {
     id: string;
@@ -19,8 +25,6 @@
   let activeId: string = '';
   let selectedDepth: number = defaultDepth; // e.g. 2, 3, or dynamic
   let tocContainer: HTMLElement | null = null;
-  let spineRight: number = 0;
-  let isDockedSpine: boolean = false;
 
   function slugify(text: string): string {
     return text.toLowerCase().replace(/[^\w\s-]/g, '').trim().replace(/[\s_]+/g, '-');
@@ -59,27 +63,12 @@
     }
   }
 
-  function updateDocking() {
-    const docEl = document.querySelector('.report-content') || document.querySelector('main') || document.body;
-    if (!docEl) return;
-    const baseLeft = (docEl as HTMLElement).offsetLeft || docEl.getBoundingClientRect().left;
-    const inspectorActive = isInspectorOpen || (typeof document !== 'undefined' && document.body.classList.contains('inspector-open'));
-
-    // On screens >= 1600px: spine docks even with inspector open (both shift -160px via CSS transform).
-    // On screens 1100-1599px: spine docks only if inspector is closed and left margin is >= 160px.
-    const canDockSpine = window.innerWidth >= 1600 || (window.innerWidth >= 1100 && !inspectorActive && baseLeft >= 160);
-
-    if (canDockSpine) {
-      isDockedSpine = true;
-      spineRight = Math.max(16, window.innerWidth - baseLeft + 40);
+  function handleClose() {
+    if (onClose) {
+      onClose();
     } else {
-      isDockedSpine = false;
-      spineRight = 0;
+      layoutStore.closeToc();
     }
-  }
-
-  $: if (isInspectorOpen !== undefined) {
-    updateDocking();
   }
 
   function updateActiveHeading() {
@@ -117,14 +106,14 @@
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       activeId = id;
       if (!isDockedSpine) {
-        onClose();
+        handleClose();
       }
     }
   }
 
   function handleKeydown(e: KeyboardEvent) {
-    if (e.key === 'Escape' && isOpen) {
-      onClose();
+    if (e.key === 'Escape' && activeIsOpen) {
+      handleClose();
     }
   }
 
@@ -132,36 +121,33 @@
 
   onMount(() => {
     extractHeadings();
-    updateDocking();
     window.addEventListener('scroll', updateActiveHeading, { passive: true });
-    window.addEventListener('resize', updateDocking);
     updateActiveHeading();
 
     return () => {
       window.removeEventListener('scroll', updateActiveHeading);
-      window.removeEventListener('resize', updateDocking);
     };
   });
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
 
-{#if isOpen && !isDockedSpine}
-  <!-- Backdrop for mobile/tablet overlay only -->
+{#if activeIsOpen && !isDockedSpine}
+  <!-- Backdrop for drawer overlay -->
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="sidebar-toc-backdrop" on:click={onClose}></div>
+  <div class="sidebar-toc-backdrop" on:click={handleClose}></div>
 {/if}
 
 <aside
   class="sidebar-toc"
-  class:is-open={isOpen}
+  class:is-open={activeIsOpen}
   class:is-spine={isDockedSpine}
-  class:is-inspector-open={isInspectorOpen}
+  class:is-inspector-open={activeIsInspectorOpen}
   style={isDockedSpine ? `right: ${spineRight}px;` : ''}
   bind:this={tocContainer}
   aria-label={i18n['ui.sidebar_toc'] || 'Table of Contents'}
-  aria-hidden={!isOpen}
+  aria-hidden={!activeIsOpen}
 >
   <div class="toc-header">
     {#if availableLevels.length > 1}
@@ -188,7 +174,7 @@
         {/if}
       </div>
     {/if}
-    <button class="toc-close-btn" on:click={onClose} title={i18n['ui.close'] || 'Close'}>
+    <button class="toc-close-btn" on:click={handleClose} title={i18n['ui.close'] || 'Close'}>
       <Icon name="x" size={13} />
     </button>
   </div>
