@@ -1,6 +1,9 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import Icon from '../components/Icon.svelte';
+  import Badge from '../components/ui/Badge.svelte';
+  import Button from '../components/ui/Button.svelte';
+  import IconButton from '../components/ui/IconButton.svelte';
   import DynamicSchemaCard from '../inspector/families/DynamicSchemaCard.svelte';
 
   export let entity: any;
@@ -47,6 +50,31 @@
     document.body.removeChild(el);
   }
 
+  function scrollToEntityOccurrence() {
+    if (!entity?.id) return;
+    try {
+      const escapedId = typeof CSS !== 'undefined' && CSS.escape ? CSS.escape(entity.id) : entity.id;
+      const selector = `.inspectable[data-token="${escapedId}"], .inspectable[data-value="${escapedId}"]`;
+      let target = document.querySelector(selector) as HTMLElement | null;
+      if (!target) {
+        const allInspectables = document.querySelectorAll('.inspectable');
+        for (const el of allInspectables) {
+          if (el.textContent?.trim() === entity.id || el.textContent?.trim() === entity.title) {
+            target = el as HTMLElement;
+            break;
+          }
+        }
+      }
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        target.classList.add('entity-highlight-pulse');
+        setTimeout(() => {
+          target?.classList.remove('entity-highlight-pulse');
+        }, 2200);
+      }
+    } catch (_) {}
+  }
+
   function getTypeLabel(type: string): string {
     const t = (type || '').toLowerCase();
     if (t === 'statute' || t === 'law') return 'Právní předpis / Zákon';
@@ -57,19 +85,27 @@
     if (t === 'mitre') return 'Taktika / Technika';
     return (type || 'Pojem').toUpperCase();
   }
+
+  function getSeverityColor(sev: string): string {
+    const s = (sev || '').toUpperCase();
+    if (s === 'CRITICAL') return '#dc2626';
+    if (s === 'HIGH') return '#ea580c';
+    if (s === 'MEDIUM') return '#b45309';
+    return 'var(--color-accent, #2563eb)';
+  }
 </script>
 
 <div class="entity-detail-container">
   <!-- Hero Card -->
   <div class="entity-hero-card">
     <div class="hero-top-row">
-      <span class="hero-type-tag">
+      <Badge variant="subtle" color="var(--color-accent, #2563eb)" size="sm">
         {getTypeLabel(entity.type)}
-      </span>
+      </Badge>
       {#if entity.severity && entity.severity !== 'INFO'}
-        <span class="badge badge-{entity.severity.toLowerCase()}">
+        <Badge variant="solid" color={getSeverityColor(entity.severity)} size="sm">
           {entity.severity}
-        </span>
+        </Badge>
       {/if}
     </div>
 
@@ -77,26 +113,37 @@
 
     <div class="token-row">
       <code class="entity-id" title="Identifikátor">{entity.id}</code>
-      <button
-        class="copy-btn"
-        class:is-copied={copiedField === 'id'}
+      <Button
+        variant={copiedField === 'id' ? 'primary' : 'secondary'}
+        size="sm"
+        icon={copiedField === 'id' ? 'check' : 'copy'}
         on:click={() => copyToClipboard(entity.id, 'id')}
-        title="Kopírovat identifikátor"
+        title="Kopírovat identifikátor do schránky"
       >
-        <Icon name={copiedField === 'id' ? 'check' : 'copy'} size={12} />
         <span>{copiedField === 'id' ? 'Zkopírováno' : 'Kopírovat'}</span>
-      </button>
+      </Button>
+
       {#if entity.attributes || entity.metrics}
-        <button
-          class="copy-btn copy-btn-subtle"
-          class:is-copied={copiedField === 'json'}
+        <Button
+          variant="ghost"
+          size="sm"
+          icon={copiedField === 'json' ? 'check' : 'code'}
           on:click={() => copyToClipboard(JSON.stringify(entity, null, 2), 'json')}
-          title="Kopírovat data JSON"
+          title="Kopírovat kompletní data entity ve formátu JSON"
         >
-          <Icon name={copiedField === 'json' ? 'check' : 'code'} size={12} />
           <span>{copiedField === 'json' ? 'JSON zkopírován' : 'JSON'}</span>
-        </button>
+        </Button>
       {/if}
+
+      <Button
+        variant="ghost"
+        size="sm"
+        icon="corner-down-right"
+        on:click={scrollToEntityOccurrence}
+        title="Přejít na výskyt entity v dokumentu"
+      >
+        <span>Najít v textu</span>
+      </Button>
     </div>
   </div>
 
@@ -129,10 +176,10 @@
     background: var(--color-paper, #ffffff);
     border: 1px solid var(--color-border, #e2e8f0);
     border-radius: 8px;
-    padding: 1rem 1.15rem;
+    padding: 1.1rem 1.2rem;
     display: flex;
     flex-direction: column;
-    gap: 0.55rem;
+    gap: 0.65rem;
     box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
   }
 
@@ -141,25 +188,6 @@
     align-items: center;
     justify-content: space-between;
   }
-  .hero-type-tag {
-    font-size: 0.68rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--color-accent, #2563eb);
-  }
-  .badge {
-    font-size: 0.68rem;
-    font-weight: 600;
-    padding: 0.15rem 0.45rem;
-    border-radius: 4px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-  .badge-critical { background: rgba(239, 68, 68, 0.12); color: #dc2626; border: 1px solid rgba(239, 68, 68, 0.3); }
-  .badge-high { background: rgba(249, 115, 22, 0.12); color: #ea580c; border: 1px solid rgba(249, 115, 22, 0.3); }
-  .badge-medium { background: rgba(234, 179, 8, 0.14); color: #b45309; border: 1px solid rgba(234, 179, 8, 0.3); }
-  .badge-info { background: rgba(37, 99, 235, 0.08); color: #2563eb; }
 
   .entity-title {
     font-size: 1.15rem;
@@ -168,13 +196,15 @@
     line-height: 1.35;
     color: var(--color-primary, #0f172a);
   }
+
   .token-row {
     display: flex;
     align-items: center;
-    gap: 0.45rem;
+    gap: 0.5rem;
     flex-wrap: wrap;
-    margin-top: 0.15rem;
+    margin-top: 0.2rem;
   }
+
   .entity-id {
     font-family: var(--font-mono, monospace);
     font-size: 0.78rem;
@@ -183,89 +213,49 @@
     border-radius: 4px;
     color: var(--color-accent, #2563eb);
   }
-  .copy-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    font-size: 0.74rem;
-    font-weight: 600;
-    background: rgba(37, 99, 235, 0.08);
-    border: none;
-    color: var(--color-accent, #2563eb);
-    border-radius: 4px;
-    padding: 0.2rem 0.5rem;
-    cursor: pointer;
-    transition: background 0.15s ease, color 0.15s ease;
-    white-space: nowrap;
-    font-family: inherit;
-  }
-  .copy-btn:hover {
-    background: rgba(37, 99, 235, 0.16);
-    color: var(--color-primary, #0f172a);
-  }
-  .copy-btn.is-copied {
-    background: #059669 !important;
-    color: #ffffff !important;
-  }
-  .copy-btn-subtle {
-    background: transparent;
-    color: var(--color-text-muted, #64748b);
-  }
-  .copy-btn-subtle:hover {
-    background: rgba(0, 0, 0, 0.04);
-    color: var(--color-text, #0f172a);
-  }
 
   .family-card-wrapper {
     display: flex;
     flex-direction: column;
     gap: 1.1rem;
   }
+
   .drawer-footer {
     margin-top: auto;
     padding-top: 0.85rem;
     border-top: 1px solid var(--color-border, rgba(0, 0, 0, 0.06));
   }
+
   .provenance-stamp {
     font-size: 0.72rem;
     color: var(--color-text-muted, #64748b);
   }
 
+  :global(.entity-highlight-pulse) {
+    outline: 2px solid var(--color-accent, #2563eb) !important;
+    outline-offset: 3px !important;
+    background: rgba(37, 99, 235, 0.18) !important;
+    border-radius: 3px !important;
+    transition: outline 0.3s ease, background 0.3s ease !important;
+  }
+
   /* Dark Theme */
-  :global([data-theme="dark"]) .entity-hero-card {
+  :global([data-theme="dark"] .entity-hero-card) {
     background: #23252a;
     border-color: #2e323b;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
   }
-  :global([data-theme="dark"]) .hero-type-tag {
-    color: #60a5fa;
-  }
-  :global([data-theme="dark"]) .entity-title {
+  :global([data-theme="dark"] .entity-title) {
     color: #f1f5f9;
   }
-  :global([data-theme="dark"]) .entity-id {
+  :global([data-theme="dark"] .entity-id) {
     background: rgba(255, 255, 255, 0.06);
     color: #60a5fa;
   }
-  :global([data-theme="dark"]) .copy-btn {
-    background: rgba(96, 165, 250, 0.12);
-    color: #60a5fa;
-  }
-  :global([data-theme="dark"]) .copy-btn:hover {
-    background: rgba(96, 165, 250, 0.2);
-    color: #ffffff;
-  }
-  :global([data-theme="dark"]) .copy-btn-subtle {
-    color: #94a3b8;
-  }
-  :global([data-theme="dark"]) .copy-btn-subtle:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: #f1f5f9;
-  }
-  :global([data-theme="dark"]) .drawer-footer {
+  :global([data-theme="dark"] .drawer-footer) {
     border-top-color: #262930;
   }
-  :global([data-theme="dark"]) .provenance-stamp {
+  :global([data-theme="dark"] .provenance-stamp) {
     color: #94a3b8;
   }
 </style>
