@@ -3,6 +3,7 @@
   import Icon from './Icon.svelte';
 
   export let isOpen: boolean = false;
+  export let isInspectorOpen: boolean = false;
   export let i18n: Record<string, string> = {};
   export let onClose: () => void = () => {};
   export let defaultDepth: number = 3;
@@ -61,16 +62,24 @@
   function updateDocking() {
     const docEl = document.querySelector('.report-content') || document.querySelector('main') || document.body;
     if (!docEl) return;
-    const docRect = docEl.getBoundingClientRect();
+    const baseLeft = (docEl as HTMLElement).offsetLeft || docEl.getBoundingClientRect().left;
+    const inspectorActive = isInspectorOpen || (typeof document !== 'undefined' && document.body.classList.contains('inspector-open'));
 
-    // On screens >= 1100px with sufficient left margin, dock cleanly as a paper spine
-    if (window.innerWidth >= 1100 && docRect.left >= 160) {
+    // On screens >= 1600px: spine docks even with inspector open (both shift -160px via CSS transform).
+    // On screens 1100-1599px: spine docks only if inspector is closed and left margin is >= 160px.
+    const canDockSpine = window.innerWidth >= 1600 || (window.innerWidth >= 1100 && !inspectorActive && baseLeft >= 160);
+
+    if (canDockSpine) {
       isDockedSpine = true;
-      spineRight = Math.max(16, window.innerWidth - docRect.left + 40);
+      spineRight = Math.max(16, window.innerWidth - baseLeft + 40);
     } else {
       isDockedSpine = false;
       spineRight = 0;
     }
+  }
+
+  $: if (isInspectorOpen !== undefined) {
+    updateDocking();
   }
 
   function updateActiveHeading() {
@@ -148,6 +157,7 @@
   class="sidebar-toc"
   class:is-open={isOpen}
   class:is-spine={isDockedSpine}
+  class:is-inspector-open={isInspectorOpen}
   style={isDockedSpine ? `right: ${spineRight}px;` : ''}
   bind:this={tocContainer}
   aria-label={i18n['ui.sidebar_toc'] || 'Table of Contents'}
@@ -246,6 +256,18 @@
       opacity: 1;
       pointer-events: auto;
       transform: translateX(0);
+    }
+
+    /* Synchronous shift with document on >= 1600px screens */
+    @media (min-width: 1600px) {
+      .sidebar-toc.is-spine.is-inspector-open {
+        transform: translateX(-168px);
+      }
+      .sidebar-toc.is-spine.is-inspector-open.is-open {
+        transform: translateX(-160px);
+        opacity: 1;
+        pointer-events: auto;
+      }
     }
 
     .sidebar-toc.is-spine .toc-header {
@@ -367,152 +389,152 @@
   }
 
   /* --------------------------------------------------------------------------
-     MOBILE & TABLET SLIDE-OUT DRAWER (< 1100px)
+     SLIDE-OUT DRAWER OVERLAY (When spine docking is not possible or < 1600px with inspector open)
      -------------------------------------------------------------------------- */
-  @media (max-width: 1099px) {
-    .sidebar-toc {
-      position: fixed;
-      top: 40px;
-      bottom: 0;
-      left: 0;
-      width: 270px;
-      max-width: 85vw;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-right: 1px solid rgba(0, 0, 0, 0.08);
-      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
-      transform: translateX(-100%);
-      text-align: left;
-    }
+  .sidebar-toc:not(.is-spine) {
+    position: fixed;
+    top: 40px;
+    bottom: 0;
+    left: 0;
+    width: 270px;
+    max-width: 85vw;
+    background: var(--color-paper, rgba(255, 255, 255, 0.98));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-right: 1px solid var(--color-border, rgba(0, 0, 0, 0.08));
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
+    transform: translateX(-100%);
+    text-align: left;
+    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 9998;
+  }
 
-    .sidebar-toc.is-open {
-      transform: translateX(0);
-    }
+  .sidebar-toc:not(.is-spine).is-open {
+    transform: translateX(0);
+  }
 
-    .sidebar-toc-backdrop {
-      position: fixed;
-      top: 40px;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.2);
-      z-index: 9997;
-    }
+  .sidebar-toc-backdrop {
+    position: fixed;
+    top: 40px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.2);
+    z-index: 9997;
+  }
 
-    .toc-header {
-      padding: 0.75rem 1rem 0.5rem 1rem;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.5rem;
-    }
+  .sidebar-toc:not(.is-spine) .toc-header {
+    padding: 0.75rem 1rem 0.5rem 1rem;
+    border-bottom: 1px solid var(--color-border, rgba(0, 0, 0, 0.06));
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+  }
 
-    .toc-close-btn {
-      background: transparent;
-      border: none;
-      color: #64748b;
-      cursor: pointer;
-      padding: 0.2rem;
-      opacity: 0.75;
-      transition: opacity 0.15s ease, color 0.15s ease;
-    }
+  .sidebar-toc:not(.is-spine) .toc-close-btn {
+    background: transparent;
+    border: none;
+    color: var(--color-text-muted, #64748b);
+    cursor: pointer;
+    padding: 0.2rem;
+    opacity: 0.75;
+    transition: opacity 0.15s ease, color 0.15s ease;
+  }
 
-    .toc-close-btn:hover {
-      opacity: 1;
-      color: #0f172a;
-    }
+  .sidebar-toc:not(.is-spine) .toc-close-btn:hover {
+    opacity: 1;
+    color: var(--color-text, #0f172a);
+  }
 
-    .toc-depth-filter {
-      display: flex;
-      gap: 0.35rem;
-    }
+  .sidebar-toc:not(.is-spine) .toc-depth-filter {
+    display: flex;
+    gap: 0.35rem;
+  }
 
-    .depth-pill {
-      background: rgba(0, 0, 0, 0.04);
-      border: 1px solid rgba(0, 0, 0, 0.08);
-      padding: 0.12rem 0.45rem;
-      border-radius: 4px;
-      font-size: 0.7rem;
-      cursor: pointer;
-      color: #475569;
-    }
+  .sidebar-toc:not(.is-spine) .depth-pill {
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--color-border, rgba(0, 0, 0, 0.08));
+    padding: 0.12rem 0.45rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    color: var(--color-text-muted, #475569);
+  }
 
-    .depth-pill.is-active {
-      background: rgba(2, 132, 199, 0.1);
-      border-color: #0284c7;
-      color: #0284c7;
-      font-weight: 600;
-    }
+  .sidebar-toc:not(.is-spine) .depth-pill.is-active {
+    background: rgba(2, 132, 199, 0.1);
+    border-color: #0284c7;
+    color: #0284c7;
+    font-weight: 600;
+  }
 
-    .toc-tree {
-      padding: 0.75rem 0.5rem;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 0.15rem;
-    }
+  .sidebar-toc:not(.is-spine) .toc-tree {
+    padding: 0.75rem 0.5rem;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
 
-    .toc-link.level-1 { padding-left: 0.4rem; font-weight: 600; }
-    .toc-link.level-2 { padding-left: 0.8rem; }
-    .toc-link.level-3 { padding-left: 1.5rem; font-size: 0.76rem; }
-    .toc-link.level-4 { padding-left: 2.1rem; font-size: 0.72rem; }
+  .sidebar-toc:not(.is-spine) .toc-link.level-1 { padding-left: 0.4rem; font-weight: 600; }
+  .sidebar-toc:not(.is-spine) .toc-link.level-2 { padding-left: 0.8rem; }
+  .sidebar-toc:not(.is-spine) .toc-link.level-3 { padding-left: 1.5rem; font-size: 0.76rem; }
+  .sidebar-toc:not(.is-spine) .toc-link.level-4 { padding-left: 2.1rem; font-size: 0.72rem; }
 
-    .toc-link,
-    :global(.sidebar-toc .toc-link),
-    :global(.sidebar-toc a.toc-link) {
-      display: block;
-      color: #475569;
-      text-decoration: none !important;
-      border-bottom: none !important;
-      box-shadow: none !important;
-      outline: none;
-      padding: 0.32rem 0.55rem;
-      border-radius: 4px;
-      font-size: 0.8rem;
-      line-height: 1.35;
-      border-left: 2px solid transparent;
-    }
+  .sidebar-toc:not(.is-spine) .toc-link,
+  :global(.sidebar-toc:not(.is-spine) .toc-link),
+  :global(.sidebar-toc:not(.is-spine) a.toc-link) {
+    display: block;
+    color: var(--color-text-muted, #475569);
+    text-decoration: none !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+    outline: none;
+    padding: 0.32rem 0.55rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    line-height: 1.35;
+    border-left: 2px solid transparent;
+  }
 
-    .toc-link:hover,
-    :global(.sidebar-toc .toc-link:hover) {
-      background: rgba(0, 0, 0, 0.04);
-      color: #0f172a;
-      text-decoration: none !important;
-      border-bottom: none !important;
-    }
+  .sidebar-toc:not(.is-spine) .toc-link:hover,
+  :global(.sidebar-toc:not(.is-spine) .toc-link:hover) {
+    background: rgba(0, 0, 0, 0.04);
+    color: var(--color-text, #0f172a);
+    text-decoration: none !important;
+    border-bottom: none !important;
+  }
 
-    .toc-link.is-active,
-    :global(.sidebar-toc .toc-link.is-active) {
-      background: rgba(2, 132, 199, 0.08);
-      border-left-color: #0284c7;
-      color: #0284c7;
-      font-weight: 600;
-      text-decoration: none !important;
-      border-bottom: none !important;
-    }
+  .sidebar-toc:not(.is-spine) .toc-link.is-active,
+  :global(.sidebar-toc:not(.is-spine) .toc-link.is-active) {
+    background: rgba(2, 132, 199, 0.08);
+    border-left-color: #0284c7;
+    color: #0284c7;
+    font-weight: 600;
+    text-decoration: none !important;
+    border-bottom: none !important;
+  }
 
-    :global([data-theme="dark"]) .sidebar-toc {
-      background: rgba(18, 19, 22, 0.95);
-      border-right-color: rgba(255, 255, 255, 0.08);
-      color: #f1f5f9;
-    }
-    :global([data-theme="dark"]) .toc-title-group {
-      color: #f8fafc;
-    }
-    :global([data-theme="dark"]) .toc-link {
-      color: #94a3b8;
-    }
-    :global([data-theme="dark"]) .toc-link:hover {
-      background: rgba(255, 255, 255, 0.06);
-      color: #f8fafc;
-    }
-    :global([data-theme="dark"]) .toc-link.is-active {
-      background: rgba(56, 189, 248, 0.12);
-      border-left-color: #38bdf8;
-      color: #38bdf8;
-    }
+  :global([data-theme="dark"]) .sidebar-toc:not(.is-spine) {
+    background: #1a1b1f;
+    border-right-color: #262930;
+    color: #f1f5f9;
+  }
+  :global([data-theme="dark"]) .sidebar-toc:not(.is-spine) .toc-title-group {
+    color: #f8fafc;
+  }
+  :global([data-theme="dark"]) .sidebar-toc:not(.is-spine) .toc-link {
+    color: #94a3b8;
+  }
+  :global([data-theme="dark"]) .sidebar-toc:not(.is-spine) .toc-link:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #f8fafc;
+  }
+  :global([data-theme="dark"]) .sidebar-toc:not(.is-spine) .toc-link.is-active {
+    background: rgba(56, 189, 248, 0.12);
+    border-left-color: #38bdf8;
+    color: #38bdf8;
   }
 
   .toc-scroll-body {

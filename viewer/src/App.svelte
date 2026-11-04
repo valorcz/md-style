@@ -70,8 +70,10 @@
     hoverCardEntity = null;
     selectedEntity = entity;
     drawerTab = 'kb';
+    const wasOpen = isDrawerOpen;
     isDrawerOpen = true;
     document.body.classList.add('inspector-open');
+    if (!wasOpen) handleInspectorStateChange(true);
   }
 
   function handleHoverCardMouseEnter() {
@@ -133,22 +135,47 @@
     URL.revokeObjectURL(url);
   }
 
+  let wasTocOpenBeforeInspector: boolean = false;
+
+  function handleInspectorStateChange(opening: boolean) {
+    if (opening) {
+      if (typeof window !== 'undefined' && window.innerWidth < 1600) {
+        if (isTocOpen) {
+          wasTocOpenBeforeInspector = true;
+          isTocOpen = false;
+        }
+      }
+    } else {
+      if (wasTocOpenBeforeInspector) {
+        isTocOpen = true;
+        wasTocOpenBeforeInspector = false;
+      }
+    }
+  }
+
   function handleToggleInspector(tab?: 'kb' | 'comments' | CustomEvent<'kb' | 'comments'>) {
     const targetTab = typeof tab === 'string' ? tab : tab?.detail;
     if (targetTab) {
       if (isDrawerOpen && drawerTab === targetTab) {
         isDrawerOpen = false;
+        document.body.classList.remove('inspector-open');
+        handleInspectorStateChange(false);
       } else {
         drawerTab = targetTab;
         if (targetTab === 'comments') {
           selectedEntity = null;
         }
-        isDrawerOpen = true;
+        if (!isDrawerOpen) {
+          isDrawerOpen = true;
+          document.body.classList.add('inspector-open');
+          handleInspectorStateChange(true);
+        }
       }
     } else {
       isDrawerOpen = !isDrawerOpen;
+      document.body.classList.toggle('inspector-open', isDrawerOpen);
+      handleInspectorStateChange(isDrawerOpen);
     }
-    document.body.classList.toggle('inspector-open', isDrawerOpen);
     if (isDrawerOpen && !selectedEntity && drawerTab === 'kb') {
       selectedEntity = null;
     }
@@ -165,8 +192,10 @@
 
     selectedEntity = resolveEntity(token, target);
     drawerTab = 'kb';
+    const wasOpen = isDrawerOpen;
     isDrawerOpen = true;
     document.body.classList.add('inspector-open');
+    if (!wasOpen) handleInspectorStateChange(true);
   }
 
   function setupTableToolbars() {
@@ -532,8 +561,12 @@
 {#if enableHud}
   <SidebarToc
     isOpen={isTocOpen}
+    isInspectorOpen={isDrawerOpen}
     i18n={i18nData}
-    onClose={() => { isTocOpen = false; }}
+    onClose={() => {
+      isTocOpen = false;
+      wasTocOpenBeforeInspector = false;
+    }}
   />
   <HudRibbon
     {title}
@@ -549,7 +582,10 @@
     {hasSourceMarkdown}
     on:togglePaged={handleTogglePaged}
     on:toggleInspector={handleToggleInspector}
-    on:toggleToc={() => { isTocOpen = !isTocOpen; }}
+    on:toggleToc={() => {
+      isTocOpen = !isTocOpen;
+      if (!isTocOpen) wasTocOpenBeforeInspector = false;
+    }}
     on:toggleEducativeMode={() => annotationStore.toggleEducativeMode()}
     on:downloadSource={handleDownloadSource}
   />
@@ -586,6 +622,7 @@
     onClose={() => {
       isDrawerOpen = false;
       document.body.classList.remove('inspector-open');
+      handleInspectorStateChange(false);
     }}
     onSelectEntity={(e) => (selectedEntity = e)}
     onDownloadSource={handleDownloadSource}

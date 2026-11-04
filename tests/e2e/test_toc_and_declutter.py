@@ -147,3 +147,67 @@ def test_sidebar_toc_toggle_and_navigation(
         expect(hover_card.locator(".card-action-btn")).to_be_visible()
 
     console_tracker.assert_no_errors("in test_sidebar_toc_toggle_and_navigation")
+
+
+def test_toc_adaptive_inspector_interaction(
+    page: Page, sample_cyber_html: Path, console_tracker: ConsoleTracker
+) -> None:
+    """Verifies Option 4 adaptive interaction between left spine ToC and right inspector drawer."""
+    page.goto(f"file://{sample_cyber_html.resolve()}")
+    page.wait_for_selector("#viewer-hud-ribbon")
+
+    toc = page.locator("aside.sidebar-toc")
+    drawer = page.locator("aside.drawer-container")
+    toc_btn = page.locator("#viewer-hud-ribbon button.toc-btn")
+    entity_btn = page.locator("#viewer-hud-ribbon button.action-btn:has-text('Entities')")
+
+    # A) Test < 1600px viewport (e.g. 1440x900)
+    page.set_viewport_size({"width": 1440, "height": 900})
+
+    # Open ToC
+    toc_btn.click()
+    expect(toc).to_have_class(re.compile(r"\bis-open\b"))
+
+    # Open inspector -> ToC should auto-stow on < 1600px
+    entity_btn.click()
+    expect(drawer).to_be_visible()
+    expect(toc).not_to_have_class(re.compile(r"\bis-open\b"))
+
+    # Close inspector -> ToC should auto-restore
+    drawer.locator("button.close-btn").click()
+    expect(drawer).to_be_hidden()
+    expect(toc).to_have_class(re.compile(r"\bis-open\b"))
+
+    # Close ToC
+    toc_btn.click()
+    expect(toc).not_to_have_class(re.compile(r"\bis-open\b"))
+
+    # B) Test >= 1600px viewport (e.g. 1920x1080)
+    page.set_viewport_size({"width": 1920, "height": 1080})
+
+    # Open ToC
+    toc_btn.click()
+    expect(toc).to_have_class(re.compile(r"\bis-open\b"))
+
+    # Open inspector -> on >= 1600px, ToC remains open and shifts synchronously alongside document
+    entity_btn.click()
+    expect(drawer).to_be_visible()
+    expect(toc).to_have_class(re.compile(r"\bis-open\b"))
+    expect(page.locator("body")).to_have_class(re.compile(r"\binspector-open\b"))
+
+    # Allow 0.28s CSS transform transition to settle
+    page.wait_for_timeout(350)
+
+    # Check that ToC is outside document and does not overlap (ToC right <= doc left)
+    geom = page.evaluate("""() => {
+        const tocRect = document.querySelector('aside.sidebar-toc').getBoundingClientRect();
+        const docRect = (document.querySelector('.report-content') || document.querySelector('main')).getBoundingClientRect();
+        return {
+            tocRight: tocRect.right,
+            docLeft: docRect.left,
+        };
+    }""")
+    assert geom["tocRight"] <= geom["docLeft"], f"ToC right ({geom['tocRight']}) overlaps document left ({geom['docLeft']})"
+
+    console_tracker.assert_no_errors("in test_toc_adaptive_inspector_interaction")
+
