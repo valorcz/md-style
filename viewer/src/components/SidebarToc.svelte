@@ -15,8 +15,10 @@
 
   let headings: TocItem[] = [];
   let activeId: string = '';
-  let selectedDepth: number = defaultDepth; // 2 = H1-H2, 3 = H1-H3, 4 = All
+  let selectedDepth: number = defaultDepth; // 2 = H1-H2, 3 = H1-H3, 6 = All
   let tocContainer: HTMLElement | null = null;
+  let spineRight: number = 0;
+  let isDockedSpine: boolean = false;
 
   function slugify(text: string): string {
     return text.toLowerCase().replace(/[^\w\s-]/g, '').trim().replace(/[\s_]+/g, '-');
@@ -27,7 +29,6 @@
     let nodes = Array.from(document.querySelectorAll(selector));
 
     if (nodes.length === 0) {
-      // Fallback: query all headings outside hud and drawers
       nodes = Array.from(document.querySelectorAll('h1, h2, h3, h4')).filter(el => {
         return !el.closest('#viewer-hud-ribbon') && !el.closest('.drawer-container') && !el.closest('.sidebar-toc');
       });
@@ -50,6 +51,21 @@
     });
 
     headings = items;
+  }
+
+  function updateDocking() {
+    const docEl = document.querySelector('.report-content') || document.querySelector('main') || document.body;
+    if (!docEl) return;
+    const docRect = docEl.getBoundingClientRect();
+
+    // On screens >= 1100px with sufficient left margin, dock cleanly as a paper spine
+    if (window.innerWidth >= 1100 && docRect.left >= 160) {
+      isDockedSpine = true;
+      spineRight = Math.max(16, window.innerWidth - docRect.left + 24);
+    } else {
+      isDockedSpine = false;
+      spineRight = 0;
+    }
   }
 
   function updateActiveHeading() {
@@ -86,8 +102,7 @@
     if (target) {
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       activeId = id;
-      // On narrow screens (mobile/tablet), collapse on click
-      if (window.innerWidth < 1024) {
+      if (!isDockedSpine) {
         onClose();
       }
     }
@@ -103,19 +118,22 @@
 
   onMount(() => {
     extractHeadings();
+    updateDocking();
     window.addEventListener('scroll', updateActiveHeading, { passive: true });
+    window.addEventListener('resize', updateDocking);
     updateActiveHeading();
 
     return () => {
       window.removeEventListener('scroll', updateActiveHeading);
+      window.removeEventListener('resize', updateDocking);
     };
   });
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
 
-{#if isOpen}
-  <!-- Backdrop for mobile viewports -->
+{#if isOpen && !isDockedSpine}
+  <!-- Backdrop for mobile/tablet overlay only -->
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div class="sidebar-toc-backdrop" on:click={onClose}></div>
@@ -124,6 +142,8 @@
 <aside
   class="sidebar-toc"
   class:is-open={isOpen}
+  class:is-spine={isDockedSpine}
+  style={isDockedSpine ? `right: ${spineRight}px;` : ''}
   bind:this={tocContainer}
   aria-label={i18n['ui.sidebar_toc'] || 'Table of Contents'}
   aria-hidden={!isOpen}
@@ -131,22 +151,21 @@
   <div class="toc-header">
     <div class="toc-title-row">
       <div class="toc-title-group">
-        <Icon name="list" size={16} />
-        <span class="toc-heading">{i18n['ui.sidebar_toc'] || 'Table of Contents'}</span>
+        <Icon name="list" size={14} />
+        <span class="toc-heading">{i18n['ui.sidebar_toc'] || 'Obsah'}</span>
       </div>
       <button class="toc-close-btn" on:click={onClose} title={i18n['ui.close'] || 'Close'}>
-        <Icon name="x" size={15} />
+        <Icon name="x" size={14} />
       </button>
     </div>
 
     <!-- Depth filter switcher -->
     <div class="toc-depth-filter" role="radiogroup" aria-label="Heading Depth Filter">
-      <span class="depth-label">{i18n['ui.depth'] || 'Depth:'}</span>
       <button
         class="depth-pill"
         class:is-active={selectedDepth === 2}
         on:click={() => (selectedDepth = 2)}
-        title="Show H1–H2 headings"
+        title="Pouze H1–H2"
       >
         H2
       </button>
@@ -154,7 +173,7 @@
         class="depth-pill"
         class:is-active={selectedDepth === 3}
         on:click={() => (selectedDepth = 3)}
-        title="Show H1–H3 headings"
+        title="H1–H3"
       >
         H3
       </button>
@@ -162,9 +181,9 @@
         class="depth-pill"
         class:is-active={selectedDepth === 6}
         on:click={() => (selectedDepth = 6)}
-        title="Show all headings"
+        title="Vše"
       >
-        All
+        Vše
       </button>
     </div>
   </div>
@@ -172,7 +191,7 @@
   <div class="toc-scroll-body">
     {#if filteredHeadings.length === 0}
       <div class="toc-empty">
-        <span class="toc-empty-text">No section headings found.</span>
+        <span class="toc-empty-text">Žádné nadpisy nebyly nalezeny.</span>
       </div>
     {:else}
       <nav class="toc-tree">
@@ -197,150 +216,342 @@
 </aside>
 
 <style>
+  /* Base element */
   .sidebar-toc {
-    position: fixed;
-    top: 40px;
-    bottom: 0;
-    right: 0;
-    left: auto;
-    width: 260px;
-    max-width: 85vw;
-    z-index: 9998;
-    background: rgba(18, 19, 22, 0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-left: 1px solid rgba(255, 255, 255, 0.06);
-    border-right: none;
-    box-shadow: none;
     display: flex;
     flex-direction: column;
-    transform: translateX(100%);
-    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 9998;
     font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
-    color: #94a3b8;
+    transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .sidebar-toc.is-open {
-    transform: translateX(0);
-  }
-
-  /* Non-modal transparent dismiss layer for mobile only - NO BLUR */
-  .sidebar-toc-backdrop {
-    position: fixed;
-    top: 40px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.25);
-    z-index: 9997;
-    animation: fadeIn 0.15s ease-out;
-  }
-
-  @media (min-width: 1024px) {
-    /* On desktop, ToC is docked alongside document: NO backdrop at all */
-    .sidebar-toc-backdrop {
-      display: none !important;
+  /* --------------------------------------------------------------------------
+     DESKTOP SPINE MODE (sample.html style):
+     - Placed on the LEFT side of the document (right: ${spineRight}px)
+     - NO special box (transparent background, no borders, no box-shadow)
+     - Text aligned to the RIGHT towards the document paper
+     -------------------------------------------------------------------------- */
+  @media (min-width: 1100px) {
+    .sidebar-toc.is-spine {
+      position: fixed;
+      top: 5rem;
+      bottom: 3rem;
+      width: 200px;
+      max-width: 220px;
+      left: auto;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      text-align: right;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(-8px);
     }
+
+    .sidebar-toc.is-spine.is-open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0);
+    }
+
+    .sidebar-toc.is-spine .toc-header {
+      padding: 0 0.5rem 0.65rem 0;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.35rem;
+    }
+
+    .sidebar-toc.is-spine .toc-title-row {
+      justify-content: flex-end;
+      gap: 0.4rem;
+    }
+
+    .sidebar-toc.is-spine .toc-heading {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #94a3b8;
+    }
+
+    .sidebar-toc.is-spine .toc-depth-filter {
+      justify-content: flex-end;
+      gap: 0.25rem;
+    }
+
+    .sidebar-toc.is-spine .depth-pill {
+      background: transparent;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      color: #94a3b8;
+      font-size: 0.65rem;
+      padding: 0.08rem 0.35rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .sidebar-toc.is-spine .depth-pill:hover {
+      color: #0f172a;
+      border-color: rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar-toc.is-spine .depth-pill.is-active {
+      color: #0284c7;
+      border-color: #0284c7;
+      font-weight: 600;
+    }
+
+    /* Right-aligned spine navigation links */
+    .sidebar-toc.is-spine .toc-list {
+      list-style: none !important;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .sidebar-toc.is-spine .toc-item {
+      list-style: none !important;
+      margin: 0;
+      padding: 0;
+    }
+
+    .sidebar-toc.is-spine .toc-link {
+      display: block;
+      text-align: right;
+      text-decoration: none;
+      font-size: 0.78rem;
+      line-height: 1.42;
+      color: #64748b;
+      padding: 0.25rem 0.6rem 0.25rem 0;
+      border-right: 2px solid transparent;
+      border-left: none !important;
+      background: transparent !important;
+      transition: color 0.15s ease, border-color 0.15s ease;
+      white-space: normal;
+      word-break: break-word;
+    }
+
+    .sidebar-toc.is-spine .toc-link:hover {
+      color: #0f172a;
+    }
+
+    .sidebar-toc.is-spine .toc-link.is-active {
+      color: #0f172a;
+      font-weight: 600;
+      border-right-color: #0284c7;
+    }
+
+    /* Hierarchy indentation pushed to the left because text is right-aligned */
+    .sidebar-toc.is-spine .toc-item.level-1 .toc-link {
+      font-weight: 600;
+      padding-right: 0.6rem;
+    }
+    .sidebar-toc.is-spine .toc-item.level-2 .toc-link {
+      padding-right: 0.6rem;
+    }
+    .sidebar-toc.is-spine .toc-item.level-3 .toc-link {
+      font-size: 0.74rem;
+      opacity: 0.88;
+      padding-right: 1.1rem;
+    }
+    .sidebar-toc.is-spine .toc-item.level-4 .toc-link {
+      font-size: 0.7rem;
+      opacity: 0.78;
+      padding-right: 1.6rem;
+    }
+
+    /* Dark theme spine */
+    :global([data-theme="dark"]) .sidebar-toc.is-spine .toc-heading {
+      color: #64748b;
+    }
+    :global([data-theme="dark"]) .sidebar-toc.is-spine .depth-pill {
+      border-color: rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+    }
+    :global([data-theme="dark"]) .sidebar-toc.is-spine .depth-pill:hover {
+      color: #f1f5f9;
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    :global([data-theme="dark"]) .sidebar-toc.is-spine .depth-pill.is-active {
+      color: #38bdf8;
+      border-color: #38bdf8;
+    }
+    :global([data-theme="dark"]) .sidebar-toc.is-spine .toc-link {
+      color: #94a3b8;
+    }
+    :global([data-theme="dark"]) .sidebar-toc.is-spine .toc-link:hover {
+      color: #f1f5f9;
+    }
+    :global([data-theme="dark"]) .sidebar-toc.is-spine .toc-link.is-active {
+      color: #f8fafc;
+      border-right-color: #38bdf8;
+    }
+  }
+
+  /* --------------------------------------------------------------------------
+     MOBILE & TABLET SLIDE-OUT DRAWER (< 1100px)
+     -------------------------------------------------------------------------- */
+  @media (max-width: 1099px) {
     .sidebar-toc {
-      box-shadow: 2px 0 12px rgba(0, 0, 0, 0.12);
+      position: fixed;
+      top: 40px;
+      bottom: 0;
+      left: 0;
+      width: 270px;
+      max-width: 85vw;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-right: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
+      transform: translateX(-100%);
+      text-align: left;
     }
-  }
 
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
+    .sidebar-toc.is-open {
+      transform: translateX(0);
+    }
 
-  .toc-header {
-    padding: 0.85rem 1rem 0.65rem 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-    flex-shrink: 0;
-  }
+    .sidebar-toc-backdrop {
+      position: fixed;
+      top: 40px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.2);
+      z-index: 9997;
+    }
 
-  .toc-title-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-  }
+    .toc-header {
+      padding: 0.85rem 1rem 0.65rem 1rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    }
 
-  .toc-title-group {
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    color: #38bdf8;
-    color: var(--accent-color, #38bdf8);
-  }
+    .toc-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
 
-  .toc-heading {
-    font-size: 0.82rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #f8fafc;
-  }
+    .toc-title-group {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #0f172a;
+    }
 
-  .toc-close-btn {
-    background: transparent;
-    border: none;
-    color: #94a3b8;
-    cursor: pointer;
-    padding: 0.2rem;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: color 0.15s, background 0.15s;
-  }
+    .toc-close-btn {
+      background: transparent;
+      border: none;
+      color: #64748b;
+      cursor: pointer;
+      padding: 0.2rem;
+    }
 
-  .toc-close-btn:hover {
-    color: #f8fafc;
-    background: rgba(255, 255, 255, 0.1);
-  }
+    .toc-depth-filter {
+      display: flex;
+      gap: 0.35rem;
+    }
 
-  .toc-depth-filter {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    font-size: 0.72rem;
-    color: #94a3b8;
-  }
+    .depth-pill {
+      background: rgba(0, 0, 0, 0.04);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      padding: 0.12rem 0.45rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      color: #475569;
+    }
 
-  .depth-label {
-    margin-right: 0.2rem;
-    font-weight: 500;
-  }
+    .depth-pill.is-active {
+      background: rgba(2, 132, 199, 0.1);
+      border-color: #0284c7;
+      color: #0284c7;
+      font-weight: 600;
+    }
 
-  .depth-pill {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #cbd5e1;
-    padding: 0.12rem 0.45rem;
-    border-radius: 9999px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
+    .toc-list {
+      list-style: none;
+      padding: 0.75rem 0.5rem;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
 
-  .depth-pill:hover {
-    background: rgba(255, 255, 255, 0.12);
-    color: #ffffff;
-  }
+    .toc-item {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
 
-  .depth-pill.is-active {
-    background: rgba(56, 189, 248, 0.2);
-    border-color: #38bdf8;
-    color: #38bdf8;
-    color: var(--accent-color, #38bdf8);
+    .toc-item.level-1 { padding-left: 0.2rem; }
+    .toc-item.level-2 { padding-left: 0.7rem; }
+    .toc-item.level-3 { padding-left: 1.4rem; }
+    .toc-item.level-4 { padding-left: 2.0rem; }
+
+    .toc-link {
+      display: block;
+      color: #475569;
+      text-decoration: none;
+      padding: 0.32rem 0.55rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      line-height: 1.35;
+      border-left: 2px solid transparent;
+    }
+
+    .toc-link:hover {
+      background: rgba(0, 0, 0, 0.04);
+      color: #0f172a;
+    }
+
+    .toc-link.is-active {
+      background: rgba(2, 132, 199, 0.08);
+      border-left-color: #0284c7;
+      color: #0284c7;
+      font-weight: 600;
+    }
+
+    :global([data-theme="dark"]) .sidebar-toc {
+      background: rgba(18, 19, 22, 0.95);
+      border-right-color: rgba(255, 255, 255, 0.08);
+      color: #f1f5f9;
+    }
+    :global([data-theme="dark"]) .toc-title-group {
+      color: #f8fafc;
+    }
+    :global([data-theme="dark"]) .toc-link {
+      color: #94a3b8;
+    }
+    :global([data-theme="dark"]) .toc-link:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: #f8fafc;
+    }
+    :global([data-theme="dark"]) .toc-link.is-active {
+      background: rgba(56, 189, 248, 0.12);
+      border-left-color: #38bdf8;
+      color: #38bdf8;
+    }
   }
 
   .toc-scroll-body {
     flex: 1;
     overflow-y: auto;
-    padding: 0.75rem 0.5rem 1.5rem 0.5rem;
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
+  }
+
+  :global([data-theme="dark"]) .toc-scroll-body {
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
   }
 
   .toc-tree {
@@ -348,137 +559,11 @@
     flex-direction: column;
   }
 
-  .toc-list {
-    list-style: none !important;
-    list-style-type: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-  }
-
-  .toc-item {
-    margin: 0 !important;
-    padding: 0 !important;
-    list-style: none !important;
-    list-style-type: none !important;
-  }
-
-  /* Force disable any theme-injected bullet points or pseudo-elements */
-  :global(.sidebar-toc ul),
-  :global(.sidebar-toc li),
-  .toc-list,
-  .toc-item {
-    list-style: none !important;
-    list-style-type: none !important;
-  }
-
-  :global(.sidebar-toc li::before),
-  :global(.sidebar-toc li::after),
-  :global(.sidebar-toc .toc-item::before),
-  :global(.sidebar-toc .toc-item::after) {
-    content: none !important;
-    display: none !important;
-  }
-
-  :global(.sidebar-toc li::marker),
-  :global(.sidebar-toc .toc-item::marker) {
-    display: none !important;
-    content: "" !important;
-  }
-
-  .toc-item.level-1 { padding-left: 0.4rem; font-weight: 600; }
-  .toc-item.level-2 { padding-left: 0.8rem; font-weight: 500; }
-  .toc-item.level-3 { padding-left: 1.5rem; font-weight: 400; font-size: 0.78rem; }
-  .toc-item.level-4 { padding-left: 2.1rem; font-weight: 400; font-size: 0.74rem; opacity: 0.85; }
-
-  .toc-link {
-    display: block;
-    color: #cbd5e1;
-    text-decoration: none;
-    padding: 0.32rem 0.55rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    line-height: 1.35;
-    transition: background 0.12s ease, color 0.12s ease;
-    border-left: 2px solid transparent;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .toc-link:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: #f8fafc;
-  }
-
-  .toc-link.is-active {
-    background: transparent;
-    border-left-color: #38bdf8;
-    border-left-color: var(--accent-color, #38bdf8);
-    color: #f1f5f9;
-    font-weight: 600;
-  }
-
   .toc-empty {
     padding: 2rem 1rem;
     text-align: center;
-    color: #64748b;
-    font-size: 0.8rem;
-  }
-
-  /* Light Theme overrides */
-  :global([data-theme="light"]) .sidebar-toc,
-  :global(body.light-theme) .sidebar-toc {
-    background: rgba(255, 255, 255, 0.82);
-    border-left: 1px solid rgba(0, 0, 0, 0.05);
-    border-right: none;
-    box-shadow: none;
-    color: #64748b;
-  }
-
-  :global([data-theme="light"]) .toc-heading,
-  :global(body.light-theme) .toc-heading {
-    color: #0f172a;
-  }
-
-  :global([data-theme="light"]) .toc-header,
-  :global(body.light-theme) .toc-header {
-    border-bottom-color: rgba(0, 0, 0, 0.07);
-  }
-
-  :global([data-theme="light"]) .depth-pill,
-  :global(body.light-theme) .depth-pill {
-    background: rgba(0, 0, 0, 0.04);
-    border-color: rgba(0, 0, 0, 0.1);
-    color: #475569;
-  }
-
-  :global([data-theme="light"]) .depth-pill.is-active,
-  :global(body.light-theme) .depth-pill.is-active {
-    background: rgba(2, 132, 199, 0.12);
-    border-color: #0284c7;
-    color: #0284c7;
-  }
-
-  :global([data-theme="light"]) .toc-link,
-  :global(body.light-theme) .toc-link {
-    color: #334155;
-  }
-
-  :global([data-theme="light"]) .toc-link:hover,
-  :global(body.light-theme) .toc-link:hover {
-    background: rgba(0, 0, 0, 0.05);
-    color: #0f172a;
-  }
-
-  :global([data-theme="light"]) .toc-link.is-active,
-  :global(body.light-theme) .toc-link.is-active {
-    background: transparent;
-    border-left-color: #0284c7;
-    color: #0f172a;
-    font-weight: 600;
+    color: #94a3b8;
+    font-size: 0.78rem;
   }
 
   @media print {

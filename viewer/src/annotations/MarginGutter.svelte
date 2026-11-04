@@ -31,33 +31,12 @@
     const spaceRight = window.innerWidth - docRect.right;
     const spaceLeft = docRect.left;
 
-    // 1. Dynamic horizontal docking: NEVER encroach on report text
+    // 1. Dynamic horizontal docking: Always dock to the RIGHT of the document
+    // (while ToC sits as a quiet spine on the LEFT). Never encroach into document text!
     const CARD_WIDTH = 280;
-    const GUTTER_GAP = 20;
+    const GUTTER_GAP = 24;
 
-    if (isTocDocked) {
-      // If ToC is docked on the right, prefer placing annotations on the left if space permits
-      if (spaceLeft >= CARD_WIDTH + GUTTER_GAP) {
-        gutterLeft = docRect.left + window.scrollX - CARD_WIDTH - GUTTER_GAP;
-      } else if (spaceRight >= CARD_WIDTH + 270) {
-        // Ultra-wide display: room for both document, gutter, and ToC
-        gutterLeft = docRect.right + window.scrollX + GUTTER_GAP;
-      } else {
-        // Narrow space: clamp immediately outside text
-        gutterLeft = Math.max(16, docRect.left + window.scrollX - CARD_WIDTH - 8);
-      }
-    } else {
-      // Normal reading mode: dock on right margin
-      if (spaceRight >= CARD_WIDTH + GUTTER_GAP) {
-        gutterLeft = docRect.right + window.scrollX + GUTTER_GAP;
-      } else if (spaceLeft >= CARD_WIDTH + GUTTER_GAP) {
-        // Right side is tight, but left side has ample room
-        gutterLeft = docRect.left + window.scrollX - CARD_WIDTH - GUTTER_GAP;
-      } else {
-        // Minimum safety: strictly outside docRect.right + 12px
-        gutterLeft = docRect.right + window.scrollX + 12;
-      }
-    }
+    gutterLeft = docRect.right + window.scrollX + GUTTER_GAP;
     isPositioned = true;
 
     // 2. Initial vertical positioning pass
