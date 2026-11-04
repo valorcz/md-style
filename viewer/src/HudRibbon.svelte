@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount, createEventDispatcher } from 'svelte';
   import Icon from './components/Icon.svelte';
+  import SegmentedControl from './components/ui/SegmentedControl.svelte';
 
   export let title: string = '';
   export let i18n: Record<string, string> = {};
@@ -172,26 +173,16 @@
       </button>
 
       <!-- Segmented View Mode Toggle: [ Web | Paper ] -->
-      <div class="segmented-control" role="group" aria-label="Display Mode">
-        <button
-          class="segmented-item"
-          class:is-active={!isPagedMode}
-          on:click={() => isPagedMode && togglePaged()}
-          title={i18n['ui.web_view'] || 'Web View'}
-        >
-          <Icon name="layout" size={12} />
-          <span>Web</span>
-        </button>
-        <button
-          class="segmented-item"
-          class:is-active={isPagedMode}
-          on:click={() => !isPagedMode && togglePaged()}
-          title={i18n['ui.paper_view'] || 'Paper View'}
-        >
-          <Icon name="file-text" size={12} />
-          <span>Paper</span>
-        </button>
-      </div>
+      <SegmentedControl
+        class="segmented-control"
+        itemClass="segmented-item"
+        options={[
+          { id: 'web', label: 'Web', icon: 'layout', title: i18n['ui.web_view'] || 'Web View' },
+          { id: 'paper', label: 'Paper', icon: 'file-text', title: i18n['ui.paper_view'] || 'Paper View' }
+        ]}
+        value={isPagedMode ? 'paper' : 'web'}
+        on:change={(e) => { if ((e.detail === 'paper') !== isPagedMode) togglePaged(); }}
+      />
 
       <!-- Theme Switcher (Icon-only) -->
       <button
@@ -427,38 +418,6 @@
     margin-left: 0.1rem;
   }
 
-  /* Segmented View Mode Toggle */
-  .segmented-control {
-    display: inline-flex;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.28);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 5px;
-    padding: 2px;
-    gap: 2px;
-  }
-  .segmented-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    background: transparent;
-    border: none;
-    color: #94a3b8;
-    padding: 0.18rem 0.5rem;
-    border-radius: 3px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.12s ease;
-  }
-  .segmented-item:hover {
-    color: #f8fafc;
-  }
-  .segmented-item.is-active {
-    background: rgba(255, 255, 255, 0.15);
-    color: #ffffff;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
-  }
 
   /* More Actions Popover */
   .more-actions-container {
@@ -593,25 +552,6 @@
   :global(body.light-theme) .badge-count {
     background: rgba(2, 132, 199, 0.15);
     color: #0284c7;
-  }
-  :global([data-theme="light"]) .segmented-control,
-  :global(body.light-theme) .segmented-control {
-    background: rgba(0, 0, 0, 0.06);
-    border-color: rgba(0, 0, 0, 0.1);
-  }
-  :global([data-theme="light"]) .segmented-item,
-  :global(body.light-theme) .segmented-item {
-    color: #64748b;
-  }
-  :global([data-theme="light"]) .segmented-item:hover,
-  :global(body.light-theme) .segmented-item:hover {
-    color: #0f172a;
-  }
-  :global([data-theme="light"]) .segmented-item.is-active,
-  :global(body.light-theme) .segmented-item.is-active {
-    background: #ffffff;
-    color: #0f172a;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
   :global([data-theme="light"]) .more-dropdown-menu,
   :global(body.light-theme) .more-dropdown-menu {

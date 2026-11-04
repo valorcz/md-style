@@ -1,6 +1,9 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import Icon from './components/Icon.svelte';
+  import PillButton from './components/ui/PillButton.svelte';
+  import IconButton from './components/ui/IconButton.svelte';
+  import Badge from './components/ui/Badge.svelte';
 
   export let tableElement: HTMLTableElement;
   export let i18n: Record<string, string> = {};
@@ -101,19 +104,21 @@
   <div class="toolbar-left">
     {#if categoryPills.length > 0}
       <div class="category-pills">
-        <button
-          class="pill-btn {selectedCategory === 'ALL' ? 'active' : ''}"
+        <PillButton
+          class="pill-btn"
+          active={selectedCategory === 'ALL'}
           on:click={() => selectCategory('ALL')}
         >
           {i18n['ui.all_categories'] || 'All'} ({totalRows})
-        </button>
+        </PillButton>
         {#each categoryPills as pill}
-          <button
-            class="pill-btn {selectedCategory === pill.name ? 'active' : ''}"
+          <PillButton
+            class="pill-btn"
+            active={selectedCategory === pill.name}
             on:click={() => selectCategory(pill.name)}
           >
             {pill.name} ({pill.count})
-          </button>
+          </PillButton>
         {/each}
       </div>
     {/if}
@@ -127,14 +132,19 @@
         aria-label="Filter rows"
       />
       {#if query}
-        <button class="clear-btn" on:click={clearQuery} title="Clear filter" aria-label="Clear filter">
-          <Icon name="x" size={12} />
-        </button>
+        <IconButton
+          class="clear-btn"
+          name="x"
+          size={12}
+          title="Clear filter"
+          ariaLabel="Clear filter"
+          on:click={clearQuery}
+        />
       {/if}
     </div>
   </div>
   <div class="toolbar-right">
-    <span class="count-badge">{visibleRows} / {totalRows}</span>
+    <Badge class="count-badge" variant="subtle" size="sm">{visibleRows} / {totalRows}</Badge>
   </div>
 </div>
 
@@ -166,72 +176,9 @@
     align-items: center;
     gap: 0.35rem;
   }
-  .pill-btn {
-    background: rgba(255, 255, 255, 0.4);
-    border: 1px solid var(--color-border, #cbd5e1);
-    color: var(--color-text, #334155);
-    padding: 0.15rem 0.5rem;
-    border-radius: 12px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-  .pill-btn:hover {
-    background: rgba(255, 255, 255, 0.8);
-    border-color: var(--color-accent, #0284c7);
-  }
-  .pill-btn.active {
-    background: var(--color-accent, #0284c7);
-    color: #ffffff;
-    border-color: var(--color-accent, #0284c7);
-  }
-  .search-box {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    position: relative;
-    width: 200px;
-    min-width: 150px;
-  }
-  .search-icon {
-    font-size: 0.75rem;
-    opacity: 0.5;
-  }
-  input {
-    width: 100%;
-    background: rgba(255, 255, 255, 0.6);
-    border: 1px solid var(--color-border, #cbd5e1);
-    border-radius: 4px;
-    padding: 0.2rem 0.5rem;
-    font-size: 0.75rem;
-    color: inherit;
-    outline: none;
-    transition: border-color 0.15s;
-  }
-  input:focus {
-    border-color: var(--color-accent, #0284c7);
-    background: #ffffff;
-  }
-  .clear-btn {
+  :global(.clear-btn) {
     position: absolute;
-    right: 4px;
-    background: transparent;
-    border: none;
-    color: #94a3b8;
-    font-size: 0.7rem;
-    cursor: pointer;
-    padding: 0 4px;
-  }
-  .toolbar-right {
-    display: flex;
-    align-items: center;
-  }
-  .count-badge {
-    font-family: var(--font-mono, monospace);
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: var(--color-text-muted, #64748b);
+    right: 2px;
   }
   @media print {
     .table-toolbar {

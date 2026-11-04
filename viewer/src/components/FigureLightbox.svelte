@@ -2,6 +2,9 @@
   import { onMount, onDestroy, tick } from 'svelte';
   import Icon from './Icon.svelte';
   import IconButton from './ui/IconButton.svelte';
+  import Button from './ui/Button.svelte';
+  import Badge from './ui/Badge.svelte';
+  import ModalBackdrop from './ui/ModalBackdrop.svelte';
   import { getSvgDimensions, calculateFitToScreen } from '../figure/figure-geometry';
 
   export let isOpen: boolean = false;
@@ -161,7 +164,7 @@
       <header class="lightbox-header">
         <div class="lightbox-title-group" title={title}>
           <span class="lightbox-dot"></span>
-          <span class="lightbox-badge">FIGURE</span>
+          <Badge class="lightbox-badge" variant="subtle" size="sm">FIGURE</Badge>
           <span class="lightbox-title">{title || id || "Figure Viewer"}</span>
         </div>
 
@@ -181,10 +184,16 @@
 
           <div class="toolbar-sep"></div>
 
-          <button type="button" class="ctrl-btn action-pill" on:click={downloadSvg} title={i18n.download_svg || "Download SVG"}>
-            <Icon name="download" size={13} />
-            <span class="btn-text">SVG</span>
-          </button>
+          <Button
+            class="ctrl-btn action-pill"
+            variant="secondary"
+            icon="download"
+            size="sm"
+            on:click={downloadSvg}
+            title={i18n.download_svg || "Download SVG"}
+          >
+            SVG
+          </Button>
 
           <IconButton
             class="close-btn"
@@ -312,17 +321,6 @@
     flex-shrink: 0;
   }
 
-  .lightbox-badge {
-    font-size: 0.65rem;
-    font-weight: 700;
-    padding: 0.15rem 0.45rem;
-    border-radius: 4px;
-    letter-spacing: 0.06em;
-    background: rgba(56, 189, 248, 0.15);
-    color: #38bdf8;
-    border: 1px solid rgba(56, 189, 248, 0.3);
-    flex-shrink: 0;
-  }
 
   .lightbox-title {
     font-size: 0.85rem;
@@ -418,25 +416,6 @@
     background: rgba(0, 0, 0, 0.1);
   }
 
-  .action-pill {
-    width: auto;
-    gap: 0.35rem;
-    padding: 0.2rem 0.6rem;
-    font-size: 0.72rem;
-    font-weight: 600;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-  }
-
-  :global([data-theme="light"]) .action-pill,
-  :global(body.light-theme) .action-pill {
-    background: rgba(0, 0, 0, 0.04);
-    border-color: rgba(0, 0, 0, 0.1);
-  }
-
-  .btn-text {
-    font-size: 0.72rem;
-  }
 
 
   .lightbox-canvas {

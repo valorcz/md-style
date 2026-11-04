@@ -3,6 +3,7 @@
   import Icon from './Icon.svelte';
   import IconButton from './ui/IconButton.svelte';
   import PillButton from './ui/PillButton.svelte';
+  import ModalBackdrop from './ui/ModalBackdrop.svelte';
   import { layoutStore } from '../layout/layout-store';
 
   export let isOpen: boolean | undefined = undefined;
@@ -136,9 +137,7 @@
 
 {#if activeIsOpen && !isDockedSpine}
   <!-- Backdrop for drawer overlay -->
-  <!-- svelte-ignore a11y_click_events_have_key_events -->
-  <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="sidebar-toc-backdrop" on:click={handleClose}></div>
+  <ModalBackdrop class="sidebar-toc-backdrop" top="40px" on:click={handleClose} />
 {/if}
 
 <aside
@@ -374,15 +373,6 @@
     transform: translateX(0);
   }
 
-  .sidebar-toc-backdrop {
-    position: fixed;
-    top: 40px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.2);
-    z-index: 9997;
-  }
 
   .sidebar-toc:not(.is-spine) .toc-header {
     padding: 0.75rem 1rem 0.5rem 1rem;

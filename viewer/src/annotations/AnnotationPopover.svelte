@@ -4,6 +4,9 @@
   import { renderAnnotationMarkdown } from './markdown';
   import Icon from '../components/Icon.svelte';
   import IconButton from '../components/ui/IconButton.svelte';
+  import SegmentedControl from '../components/ui/SegmentedControl.svelte';
+  import Button from '../components/ui/Button.svelte';
+  import Badge from '../components/ui/Badge.svelte';
 
   export let position: { x: number; y: number } = { x: 0, y: 0 };
   export let quoteText: string = '';
@@ -137,16 +140,29 @@
               placeholder="Your Name"
               title="Reviewer Name"
             />
-            <span class="composer-category-tag" style="--cat-color: {categories.find(c => c.id === selectedCategory)?.color || '#1a73e8'}">
-              <Icon name={categories.find(c => c.id === selectedCategory)?.icon || 'message-square'} size={12} />
+            <Badge
+              class="composer-category-tag"
+              variant="subtle"
+              color={categories.find(c => c.id === selectedCategory)?.color || '#1a73e8'}
+              icon={categories.find(c => c.id === selectedCategory)?.icon || 'message-square'}
+            >
               {categories.find(c => c.id === selectedCategory)?.label}
-            </span>
+            </Badge>
           </div>
         </div>
-        <div class="composer-mode-bar">
-          <button class="mode-tab-btn" class:active={!showPreview} on:click={() => (showPreview = false)}>Write</button>
-          <button class="mode-tab-btn" class:active={showPreview} on:click={() => (showPreview = true)} disabled={!commentText.trim()}>Preview</button>
-        </div>
+        <SegmentedControl
+          class="composer-mode-bar"
+          itemClass="mode-tab-btn"
+          options={[
+            { id: 'write', label: 'Write' },
+            { id: 'preview', label: 'Preview' }
+          ]}
+          value={showPreview ? 'preview' : 'write'}
+          on:change={(e) => {
+            if (e.detail === 'preview' && !commentText.trim()) return;
+            showPreview = e.detail === 'preview';
+          }}
+        />
       </div>
 
       {#if quoteText}
@@ -185,8 +201,8 @@
           {/each}
         </div>
         <div class="composer-actions">
-          <button class="btn-cancel" on:click={() => (isComposing = false)}>Cancel</button>
-          <button class="btn-save" on:click={handleSave} disabled={!commentText.trim()}>Comment</button>
+          <Button class="btn-cancel" variant="ghost" size="sm" on:click={() => (isComposing = false)}>Cancel</Button>
+          <Button class="btn-save" variant="primary" size="sm" on:click={handleSave} disabled={!commentText.trim()}>Comment</Button>
         </div>
       </div>
     </div>
@@ -314,44 +330,6 @@
     border-bottom-color: #1a73e8;
   }
 
-  .composer-category-tag {
-    font-size: 0.65rem;
-    font-weight: 600;
-    color: var(--cat-color, #1a73e8);
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-  }
-
-  .composer-mode-bar {
-    display: flex;
-    background: rgba(0, 0, 0, 0.05);
-    padding: 2px;
-    border-radius: 5px;
-  }
-
-  .mode-tab-btn {
-    background: transparent;
-    border: none;
-    color: #6b7280;
-    font-size: 0.68rem;
-    font-weight: 600;
-    padding: 0.15rem 0.45rem;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.12s ease;
-  }
-
-  .mode-tab-btn.active {
-    background: #ffffff;
-    color: #1f2937;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-  }
-
-  .mode-tab-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
 
   /* Quoted context callout */
   .composer-quote {
@@ -445,45 +423,6 @@
     margin-left: auto;
   }
 
-  .btn-cancel {
-    background: transparent;
-    border: none;
-    color: #5f6368;
-    padding: 0.3rem 0.6rem;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    cursor: pointer;
-  }
-
-  .btn-cancel:hover {
-    background: rgba(0, 0, 0, 0.05);
-    color: #202124;
-  }
-
-  .btn-save {
-    background: #1a73e8;
-    border: none;
-    color: #ffffff;
-    font-weight: 600;
-    padding: 0.35rem 0.8rem;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    cursor: pointer;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
-    transition: background 0.15s ease, box-shadow 0.15s ease;
-  }
-
-  .btn-save:hover:not(:disabled) {
-    background: #1557b0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  }
-
-  .btn-save:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    background: #8ab4f8;
-  }
 
   /* --------------------------------------------------------------------------
      Dark Mode
@@ -520,16 +459,6 @@
     border-bottom-color: rgba(255, 255, 255, 0.2);
   }
 
-  :global([data-theme="dark"]) .composer-mode-bar,
-  :global(body.dark-theme) .composer-mode-bar {
-    background: rgba(255, 255, 255, 0.06);
-  }
-
-  :global([data-theme="dark"]) .mode-tab-btn.active,
-  :global(body.dark-theme) .mode-tab-btn.active {
-    background: rgba(255, 255, 255, 0.15);
-    color: #ffffff;
-  }
 
   :global([data-theme="dark"]) .composer-quote,
   :global(body.dark-theme) .composer-quote {
@@ -552,24 +481,4 @@
     color: #e2e8f0;
   }
 
-  :global([data-theme="dark"]) .btn-cancel,
-  :global(body.dark-theme) .btn-cancel {
-    color: #94a3b8;
-  }
-
-  :global([data-theme="dark"]) .btn-cancel:hover,
-  :global(body.dark-theme) .btn-cancel:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: #ffffff;
-  }
-
-  :global([data-theme="dark"]) .btn-save,
-  :global(body.dark-theme) .btn-save {
-    background: #0284c7;
-  }
-
-  :global([data-theme="dark"]) .btn-save:hover:not(:disabled),
-  :global(body.dark-theme) .btn-save:hover:not(:disabled) {
-    background: #0369a1;
-  }
 </style>

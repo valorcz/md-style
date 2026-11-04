@@ -2,6 +2,8 @@
   import { createEventDispatcher } from 'svelte';
   import Icon from '../components/Icon.svelte';
   import IconButton from '../components/ui/IconButton.svelte';
+  import SegmentedControl from '../components/ui/SegmentedControl.svelte';
+  import Button from '../components/ui/Button.svelte';
 
   export let activeTab: 'kb' | 'comments' = 'kb';
   export let entity: any = null;
@@ -18,29 +20,26 @@
 
 <header class="drawer-header">
   {#if activeTab === 'kb' && entity}
-    <button class="nav-back-btn" on:click={() => dispatch('back')}>
-      <Icon name="chevron-left" size={13} />
-      <span>{i18n.all_entities || 'All Entities'}</span>
-    </button>
+    <Button
+      class="nav-back-btn"
+      variant="secondary"
+      icon="chevron-left"
+      size="sm"
+      on:click={() => dispatch('back')}
+    >
+      {i18n.all_entities || 'All Entities'}
+    </Button>
   {:else}
-    <div class="header-tab-bar">
-      <button
-        class="header-tab-btn"
-        class:active={activeTab === 'kb'}
-        on:click={() => dispatch('tab', 'kb')}
-      >
-        <Icon name="layers" size={13} />
-        <span>{i18n.entities || 'Entities'} ({entityCount})</span>
-      </button>
-      <button
-        class="header-tab-btn"
-        class:active={activeTab === 'comments'}
-        on:click={() => dispatch('tab', 'comments')}
-      >
-        <Icon name="message-square" size={13} />
-        <span>{i18n.review || 'Review'} ({commentsCount})</span>
-      </button>
-    </div>
+    <SegmentedControl
+      class="header-tab-bar"
+      itemClass="header-tab-btn"
+      options={[
+        { id: 'kb', label: `${i18n.entities || 'Entities'} (${entityCount})`, icon: 'layers' },
+        { id: 'comments', label: `${i18n.review || 'Review'} (${commentsCount})`, icon: 'message-square' }
+      ]}
+      value={activeTab}
+      on:change={(e) => dispatch('tab', e.detail as 'kb' | 'comments')}
+    />
   {/if}
   <IconButton
     class="close-btn"
@@ -64,72 +63,10 @@
     top: 0;
     z-index: 2;
   }
-  .header-tab-bar {
-    display: flex;
-    gap: 0.35rem;
-    align-items: center;
-  }
-  .header-tab-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    background: transparent;
-    border: 1px solid var(--color-border, #e2e8f0);
-    color: var(--color-text-muted, #64748b);
-    padding: 0.25rem 0.55rem;
-    border-radius: 4px;
-    font-size: 0.76rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-  .header-tab-btn:hover {
-    color: var(--color-text, #0f172a);
-    background: rgba(0, 0, 0, 0.04);
-  }
-  .header-tab-btn.active {
-    background: rgba(37, 99, 235, 0.08);
-    border-color: var(--color-accent, #2563eb);
-    color: var(--color-accent, #2563eb);
-  }
-  .nav-back-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    background: transparent;
-    border: 1px solid var(--color-border, #e2e8f0);
-    color: var(--color-text-muted, #475569);
-    font-size: 0.8rem;
-    padding: 0.25rem 0.6rem;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-  .nav-back-btn:hover {
-    background: rgba(0, 0, 0, 0.04);
-    color: var(--color-text, #0f172a);
-  }
-
 
   /* Dark Theme */
   :global([data-theme="dark"]) .drawer-header {
     background: #1a1b1f;
     border-bottom-color: #262930;
   }
-  :global([data-theme="dark"]) .header-tab-btn,
-  :global([data-theme="dark"]) .nav-back-btn {
-    border-color: #262930;
-    color: #94a3b8;
-  }
-  :global([data-theme="dark"]) .header-tab-btn:hover,
-  :global([data-theme="dark"]) .nav-back-btn:hover {
-    color: #f1f5f9;
-    background: rgba(255, 255, 255, 0.06);
-  }
-  :global([data-theme="dark"]) .header-tab-btn.active {
-    background: rgba(96, 165, 250, 0.12);
-    border-color: #60a5fa;
-    color: #60a5fa;
-  }
-  
 </style>
