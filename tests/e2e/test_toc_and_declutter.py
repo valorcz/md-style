@@ -63,11 +63,7 @@ def test_sidebar_toc_toggle_and_navigation(
     page.wait_for_selector("#viewer-hud-ribbon")
 
     toc = page.locator("aside.sidebar-toc")
-    expect(toc).not_to_have_class(re.compile(r"\bis-open\b"))
-
-    # 1. Click ToC button on HUD ribbon
-    toc_btn = page.locator("#viewer-hud-ribbon button.toc-btn")
-    toc_btn.click()
+    # 1. By default on desktop, ToC starts open as docked spine
     expect(toc).to_have_class(re.compile(r"\bis-open\b"))
     expect(page.locator("body")).to_have_class(re.compile(r"\btoc-docked\b"))
 
@@ -125,7 +121,15 @@ def test_sidebar_toc_toggle_and_navigation(
     assert target_id is not None
     first_link.click()
 
-    # 5. Close button
+    # 5. Toggle via HUD button to close and re-open
+    toc_btn = page.locator("#viewer-hud-ribbon button.toc-btn")
+    toc_btn.click()
+    expect(toc).not_to_have_class(re.compile(r"\bis-open\b"))
+
+    toc_btn.click()
+    expect(toc).to_have_class(re.compile(r"\bis-open\b"))
+
+    # Close button on the panel
     close_btn = toc.locator("button.toc-close-btn")
     close_btn.click()
     expect(toc).not_to_have_class(re.compile(r"\bis-open\b"))
@@ -137,9 +141,13 @@ def test_sidebar_toc_toggle_and_navigation(
     page.keyboard.press("Escape")
     expect(toc).not_to_have_class(re.compile(r"\bis-open\b"))
 
-    # 7. Entity hover card test
+    # 7. Entity hover card test and native tooltip suppression
     inspectable = page.locator(".inspectable").first
     if inspectable.count() > 0:
+        # Title attribute must be sanitized in interactive viewer to prevent native tooltip overlap
+        assert not inspectable.get_attribute("title")
+        assert inspectable.get_attribute("aria-label") or inspectable.get_attribute("data-title")
+
         inspectable.hover()
         hover_card = page.locator(".entity-hover-card")
         expect(hover_card).to_be_visible()
@@ -164,8 +172,7 @@ def test_toc_adaptive_inspector_interaction(
     # A) Test < 1600px viewport (e.g. 1440x900)
     page.set_viewport_size({"width": 1440, "height": 900})
 
-    # Open ToC
-    toc_btn.click()
+    # ToC is open by default on desktop
     expect(toc).to_have_class(re.compile(r"\bis-open\b"))
 
     # Open inspector -> ToC should auto-stow on < 1600px

@@ -59,16 +59,39 @@ function syncDomAttributes(state: LayoutStoreState) {
   body.classList.toggle('toc-docked', state.isTocOpen && state.tocMode === 'spine');
 }
 
+function isTocDismissedByUser(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    return sessionStorage.getItem('md-style-toc-dismissed') === 'true';
+  } catch (_) {
+    return false;
+  }
+}
+
+function setTocDismissedByUser(dismissed: boolean) {
+  if (typeof window === 'undefined') return;
+  try {
+    if (dismissed) {
+      sessionStorage.setItem('md-style-toc-dismissed', 'true');
+    } else {
+      sessionStorage.removeItem('md-style-toc-dismissed');
+    }
+  } catch (_) {}
+}
+
 function createLayoutStore() {
   const initialWidth = typeof window !== 'undefined' ? window.innerWidth : 1440;
   const canDock = checkCanDockSpine(false);
+  const shouldOpenDefault = typeof window !== 'undefined'
+    ? (initialWidth >= 1100 && !isTocDismissedByUser())
+    : false;
 
   const { subscribe, set, update } = writable<LayoutStoreState>({
-    isTocOpen: false,
+    isTocOpen: shouldOpenDefault,
     isInspectorOpen: false,
     activeDrawerTab: 'kb',
-    tocMode: 'hidden',
-    layoutState: 'zen',
+    tocMode: shouldOpenDefault ? (canDock ? 'spine' : 'drawer') : 'hidden',
+    layoutState: shouldOpenDefault ? 'reading-with-toc' : 'zen',
     viewportWidth: initialWidth,
     isWideScreen: initialWidth >= 1600,
     canDockSpine: canDock,
@@ -110,8 +133,15 @@ function createLayoutStore() {
   function init() {
     if (typeof window === 'undefined') return;
     window.addEventListener('resize', handleResize, { passive: true });
-    // Synchronize initial DOM attributes
-    syncDomAttributes(get({ subscribe }));
+
+    // Ensure ToC is open on desktop by default if user hasn't explicitly dismissed it
+    const canDock = checkCanDockSpine(false);
+    const dismissed = isTocDismissedByUser();
+    if (canDock && !dismissed) {
+      updateLayout(() => ({ isTocOpen: true }));
+    } else {
+      syncDomAttributes(get({ subscribe }));
+    }
   }
 
   function destroy() {
@@ -122,6 +152,7 @@ function createLayoutStore() {
   function toggleToc() {
     updateLayout((curr) => {
       const willOpen = !curr.isTocOpen;
+      setTocDismissedByUser(!willOpen);
       return {
         isTocOpen: willOpen,
         wasTocOpenBeforeInspector: willOpen ? false : curr.wasTocOpenBeforeInspector
@@ -130,6 +161,7 @@ function createLayoutStore() {
   }
 
   function openToc() {
+    setTocDismissedByUser(false);
     updateLayout((curr) => ({
       isTocOpen: true,
       wasTocOpenBeforeInspector: false
@@ -137,6 +169,7 @@ function createLayoutStore() {
   }
 
   function closeToc() {
+    setTocDismissedByUser(true);
     updateLayout((curr) => ({
       isTocOpen: false,
       wasTocOpenBeforeInspector: false

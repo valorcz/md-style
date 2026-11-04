@@ -56,7 +56,7 @@
       type: target?.getAttribute('data-type') || 'Pojem',
       domain: target?.getAttribute('data-domain') || 'general',
       severity: 'INFO',
-      summary: target?.getAttribute('title') || 'Entita v textu dokumentu.'
+      summary: target?.getAttribute('data-title') || target?.getAttribute('title') || 'Entita v textu dokumentu.'
     };
   }
 
@@ -374,10 +374,36 @@
       }
     };
 
+    const sanitizeInspectableTooltips = () => {
+      const inspectables = document.querySelectorAll('.inspectable[title]');
+      inspectables.forEach((el) => {
+        const rawTitle = el.getAttribute('title');
+        if (rawTitle) {
+          if (!el.getAttribute('aria-label')) {
+            el.setAttribute('aria-label', rawTitle);
+          }
+          el.setAttribute('data-title', rawTitle);
+          el.removeAttribute('title');
+        }
+      });
+    };
+
     const mouseOverHandler = (e: MouseEvent) => {
       if (!enableInspector) return;
       const target = (e.target as HTMLElement)?.closest('.inspectable') as HTMLElement;
       if (target) {
+        // Suppress browser native tooltip that clashes with EntityHoverCard
+        if (target.hasAttribute('title')) {
+          const rawTitle = target.getAttribute('title');
+          if (rawTitle) {
+            if (!target.getAttribute('aria-label')) {
+              target.setAttribute('aria-label', rawTitle);
+            }
+            target.setAttribute('data-title', rawTitle);
+          }
+          target.removeAttribute('title');
+        }
+
         if (hoverCardCloseTimeout) {
           clearTimeout(hoverCardCloseTimeout);
           hoverCardCloseTimeout = null;
@@ -418,6 +444,7 @@
     document.addEventListener('mouseout', mouseOutHandler);
     setupTableToolbars();
     setupFigureToolbars();
+    sanitizeInspectableTooltips();
 
     return () => {
       layoutStore.destroy();
