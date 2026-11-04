@@ -110,3 +110,71 @@ Normal body text.
 """
     res = linter.lint_text(text)
     assert not any(i.code == "H003" for i in res.issues)
+
+
+def test_heading_structure_best_practices_h005_to_h009():
+    linter = ProseLinter()
+
+    # 1. H005: Multiple H1 headings
+    multi_h1 = """# First Main Title
+Introduction paragraph text.
+
+# Second Main Title (Should be H2)
+Another paragraph text.
+"""
+    res_h1 = linter.lint_text(multi_h1, requested_profile="handbook")
+    assert any(i.code == "H005" for i in res_h1.issues)
+
+    # Slides should allow multiple H1s
+    res_slides = linter.lint_text(multi_h1, requested_profile="slides")
+    assert not any(i.code == "H005" for i in res_slides.issues)
+
+    # 2. H006: Skipped heading levels (H1 directly to H3)
+    skipped_level = """# Chapter One
+Intro text.
+
+### Subsection Without H2
+Detail text.
+"""
+    res_skipped = linter.lint_text(skipped_level, requested_profile="handbook")
+    assert any(i.code == "H006" for i in res_skipped.issues)
+
+    # 3. H007: Excessive heading depth (H5)
+    deep_heading = """# Chapter One
+Intro text.
+
+## Section Two
+Section text.
+
+### Subsection Three
+Sub text.
+
+#### Sub-subsection Four
+Sub-sub text.
+
+##### Way Too Deep Five
+Deep text.
+"""
+    res_deep = linter.lint_text(deep_heading, requested_profile="handbook")
+    assert any(i.code == "H007" for i in res_deep.issues)
+
+    # 4. H008: Duplicate heading titles
+    duplicate_headings = """# Document Title
+Intro text.
+
+## Summary Section
+First summary.
+
+## Summary Section
+Duplicate summary title.
+"""
+    res_dup = linter.lint_text(duplicate_headings, requested_profile="handbook")
+    assert any(i.code == "H008" for i in res_dup.issues)
+
+    # 5. H009: First heading entrance level
+    deep_start = """### Starting at H3 directly
+Text content.
+"""
+    res_start = linter.lint_text(deep_start, requested_profile="handbook")
+    assert any(i.code == "H009" for i in res_start.issues)
+

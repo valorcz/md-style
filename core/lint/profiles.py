@@ -91,5 +91,7 @@ BUILTIN_PROFILES: Dict[str, LinterProfile] = {
         max_list_items=5,
         max_heading_chars=45,
         max_heading_words=6,
+        max_h1_count=999,
+        max_heading_depth=4,
     ),
 }

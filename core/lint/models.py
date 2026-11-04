@@ -26,6 +26,8 @@ class LinterProfile:
     max_list_items: int
     max_heading_chars: int
     max_heading_words: int
+    max_h1_count: int = 1
+    max_heading_depth: int = 4
 
 
 @dataclass

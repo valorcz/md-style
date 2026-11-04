@@ -14,8 +14,9 @@
   }
 
   let headings: TocItem[] = [];
+  let availableLevels: number[] = [];
   let activeId: string = '';
-  let selectedDepth: number = defaultDepth; // 2 = H1-H2, 3 = H1-H3, 6 = All
+  let selectedDepth: number = defaultDepth; // e.g. 2, 3, or dynamic
   let tocContainer: HTMLElement | null = null;
   let spineRight: number = 0;
   let isDockedSpine: boolean = false;
@@ -51,6 +52,10 @@
     });
 
     headings = items;
+    availableLevels = Array.from(new Set(items.map(h => h.level))).sort((a, b) => a - b);
+    if (availableLevels.length > 0 && selectedDepth < availableLevels[0]) {
+      selectedDepth = availableLevels[Math.min(1, availableLevels.length - 1)];
+    }
   }
 
   function updateDocking() {
@@ -149,43 +154,33 @@
   aria-hidden={!isOpen}
 >
   <div class="toc-header">
-    <div class="toc-title-row">
-      <div class="toc-title-group">
-        <Icon name="list" size={14} />
-        <span class="toc-heading">{i18n['ui.sidebar_toc'] || 'Obsah'}</span>
+    {#if availableLevels.length > 1}
+      <div class="toc-depth-filter" role="radiogroup" aria-label="Heading Depth Filter">
+        {#each availableLevels as lvl}
+          <button
+            class="depth-pill"
+            class:is-active={selectedDepth === lvl}
+            on:click={() => (selectedDepth = lvl)}
+            title="Zobrazit po úroveň H{lvl}"
+          >
+            h{lvl}
+          </button>
+        {/each}
+        {#if Math.max(...availableLevels) > 3 || selectedDepth >= 6}
+          <button
+            class="depth-pill"
+            class:is-active={selectedDepth >= 6}
+            on:click={() => (selectedDepth = 6)}
+            title="Všechny úrovně"
+          >
+            vše
+          </button>
+        {/if}
       </div>
-      <button class="toc-close-btn" on:click={onClose} title={i18n['ui.close'] || 'Close'}>
-        <Icon name="x" size={14} />
-      </button>
-    </div>
-
-    <!-- Depth filter switcher -->
-    <div class="toc-depth-filter" role="radiogroup" aria-label="Heading Depth Filter">
-      <button
-        class="depth-pill"
-        class:is-active={selectedDepth === 2}
-        on:click={() => (selectedDepth = 2)}
-        title="Pouze H1–H2"
-      >
-        H2
-      </button>
-      <button
-        class="depth-pill"
-        class:is-active={selectedDepth === 3}
-        on:click={() => (selectedDepth = 3)}
-        title="H1–H3"
-      >
-        H3
-      </button>
-      <button
-        class="depth-pill"
-        class:is-active={selectedDepth === 6}
-        on:click={() => (selectedDepth = 6)}
-        title="Vše"
-      >
-        Vše
-      </button>
-    </div>
+    {/if}
+    <button class="toc-close-btn" on:click={onClose} title={i18n['ui.close'] || 'Close'}>
+      <Icon name="x" size={13} />
+    </button>
   </div>
 
   <div class="toc-scroll-body">
@@ -235,6 +230,7 @@
       width: 200px;
       max-width: 220px;
       left: auto;
+      z-index: 10;
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
@@ -253,30 +249,18 @@
     }
 
     .sidebar-toc.is-spine .toc-header {
-      padding: 0 0.5rem 0.65rem 0;
+      padding: 0 0.5rem 0.5rem 0;
       border: none;
       display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 0.35rem;
-    }
-
-    .sidebar-toc.is-spine .toc-title-row {
+      flex-direction: row;
       justify-content: flex-end;
-      gap: 0.4rem;
-    }
-
-    .sidebar-toc.is-spine .toc-heading {
-      font-size: 0.72rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: #94a3b8;
+      align-items: center;
+      gap: 0.35rem;
     }
 
     .sidebar-toc.is-spine .toc-depth-filter {
       justify-content: flex-end;
-      gap: 0.25rem;
+      gap: 0.2rem;
     }
 
     .sidebar-toc.is-spine .depth-pill {
@@ -417,24 +401,12 @@
     }
 
     .toc-header {
-      padding: 0.85rem 1rem 0.65rem 1rem;
+      padding: 0.75rem 1rem 0.5rem 1rem;
       border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-    }
-
-    .toc-title-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.5rem;
-    }
-
-    .toc-title-group {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-weight: 600;
-      font-size: 0.85rem;
-      color: #0f172a;
+      gap: 0.5rem;
     }
 
     .toc-close-btn {
@@ -443,6 +415,13 @@
       color: #64748b;
       cursor: pointer;
       padding: 0.2rem;
+      opacity: 0.75;
+      transition: opacity 0.15s ease, color 0.15s ease;
+    }
+
+    .toc-close-btn:hover {
+      opacity: 1;
+      color: #0f172a;
     }
 
     .toc-depth-filter {
@@ -480,10 +459,15 @@
     .toc-link.level-3 { padding-left: 1.5rem; font-size: 0.76rem; }
     .toc-link.level-4 { padding-left: 2.1rem; font-size: 0.72rem; }
 
-    .toc-link {
+    .toc-link,
+    :global(.sidebar-toc .toc-link),
+    :global(.sidebar-toc a.toc-link) {
       display: block;
       color: #475569;
-      text-decoration: none;
+      text-decoration: none !important;
+      border-bottom: none !important;
+      box-shadow: none !important;
+      outline: none;
       padding: 0.32rem 0.55rem;
       border-radius: 4px;
       font-size: 0.8rem;
@@ -491,16 +475,22 @@
       border-left: 2px solid transparent;
     }
 
-    .toc-link:hover {
+    .toc-link:hover,
+    :global(.sidebar-toc .toc-link:hover) {
       background: rgba(0, 0, 0, 0.04);
       color: #0f172a;
+      text-decoration: none !important;
+      border-bottom: none !important;
     }
 
-    .toc-link.is-active {
+    .toc-link.is-active,
+    :global(.sidebar-toc .toc-link.is-active) {
       background: rgba(2, 132, 199, 0.08);
       border-left-color: #0284c7;
       color: #0284c7;
       font-weight: 600;
+      text-decoration: none !important;
+      border-bottom: none !important;
     }
 
     :global([data-theme="dark"]) .sidebar-toc {

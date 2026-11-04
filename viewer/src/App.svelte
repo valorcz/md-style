@@ -6,6 +6,7 @@
   import TableToolbar from './TableToolbar.svelte';
   import FigureToolbar from './components/FigureToolbar.svelte';
   import FigureLightbox from './components/FigureLightbox.svelte';
+  import EntityHoverCard from './components/EntityHoverCard.svelte';
   import AnnotationPopover from './annotations/AnnotationPopover.svelte';
   import MarginGutter from './annotations/MarginGutter.svelte';
   import { annotationStore } from './annotations/store';
@@ -27,6 +28,12 @@
   let isTocOpen: boolean = false;
   let drawerTab: 'kb' | 'comments' = 'kb';
 
+  let hoverCardEntity: any = null;
+  let hoverCardPos: { x: number; y: number } | null = null;
+  let isHoverCardOpen: boolean = false;
+  let hoverCardTimeout: any = null;
+  let hoverCardCloseTimeout: any = null;
+
   $: if (typeof document !== 'undefined') {
     document.body.classList.toggle('toc-docked', isTocOpen);
   }
@@ -34,6 +41,52 @@
   let sourceMarkdownText: string = '';
   let activeLightboxFigure: { svgElement: SVGElement; title: string; id: string } | null = null;
   let customComponentCount: number = 0;
+
+  function resolveEntity(token: string, target?: HTMLElement): any {
+    if (!token) return null;
+    let entity = knowledgeData[token];
+    if (!entity) {
+      const lowerToken = token.toLowerCase();
+      for (const [k, v] of Object.entries(knowledgeData)) {
+        if (k.toLowerCase() === lowerToken || (v as any).id?.toLowerCase() === lowerToken) {
+          entity = v;
+          break;
+        }
+      }
+    }
+    if (entity) return entity;
+    return {
+      id: token,
+      title: token,
+      type: target?.getAttribute('data-type') || 'Pojem',
+      domain: target?.getAttribute('data-domain') || 'general',
+      severity: 'INFO',
+      summary: target?.getAttribute('title') || 'Entita v textu dokumentu.'
+    };
+  }
+
+  function handleOpenEntityDetails(entity: any) {
+    isHoverCardOpen = false;
+    hoverCardEntity = null;
+    selectedEntity = entity;
+    drawerTab = 'kb';
+    isDrawerOpen = true;
+    document.body.classList.add('inspector-open');
+  }
+
+  function handleHoverCardMouseEnter() {
+    if (hoverCardCloseTimeout) {
+      clearTimeout(hoverCardCloseTimeout);
+      hoverCardCloseTimeout = null;
+    }
+  }
+
+  function handleHoverCardMouseLeave() {
+    hoverCardCloseTimeout = setTimeout(() => {
+      isHoverCardOpen = false;
+      hoverCardEntity = null;
+    }, 150);
+  }
 
   function loadKnowledgeData() {
     const scriptEl = document.getElementById('md-style-kb-data');
@@ -106,30 +159,11 @@
     const token = target.getAttribute('data-token') || target.getAttribute('data-value') || target.textContent?.trim();
     if (!token) return;
 
-    let entity = knowledgeData[token];
-    if (!entity) {
-      const lowerToken = token.toLowerCase();
-      for (const [k, v] of Object.entries(knowledgeData)) {
-        if (k.toLowerCase() === lowerToken || (v as any).id?.toLowerCase() === lowerToken) {
-          entity = v;
-          break;
-        }
-      }
-    }
+    if (hoverCardTimeout) clearTimeout(hoverCardTimeout);
+    isHoverCardOpen = false;
+    hoverCardEntity = null;
 
-    if (entity) {
-      selectedEntity = entity;
-    } else {
-      selectedEntity = {
-        id: token,
-        title: token,
-        type: target.getAttribute('data-type') || 'entity',
-        domain: target.getAttribute('data-domain') || 'general',
-        severity: 'INFO',
-        badge: i18nData.discovered || 'DISCOVERED TOKEN',
-        summary: 'Entity referenced in report text.'
-      };
-    }
+    selectedEntity = resolveEntity(token, target);
     drawerTab = 'kb';
     isDrawerOpen = true;
     document.body.classList.add('inspector-open');
@@ -415,14 +449,56 @@
       }
     };
 
+    const mouseOverHandler = (e: MouseEvent) => {
+      if (!enableInspector) return;
+      const target = (e.target as HTMLElement)?.closest('.inspectable') as HTMLElement;
+      if (target) {
+        if (hoverCardCloseTimeout) {
+          clearTimeout(hoverCardCloseTimeout);
+          hoverCardCloseTimeout = null;
+        }
+        const token = target.getAttribute('data-token') || target.getAttribute('data-value') || target.textContent?.trim();
+        if (!token) return;
+
+        const ent = resolveEntity(token, target);
+        if (ent) {
+          if (hoverCardTimeout) clearTimeout(hoverCardTimeout);
+          hoverCardTimeout = setTimeout(() => {
+            const rect = target.getBoundingClientRect();
+            hoverCardEntity = ent;
+            hoverCardPos = { x: rect.left, y: rect.bottom };
+            isHoverCardOpen = true;
+          }, 150);
+        }
+      }
+    };
+
+    const mouseOutHandler = (e: MouseEvent) => {
+      const target = (e.target as HTMLElement)?.closest('.inspectable') as HTMLElement;
+      if (target) {
+        if (hoverCardTimeout) {
+          clearTimeout(hoverCardTimeout);
+          hoverCardTimeout = null;
+        }
+        hoverCardCloseTimeout = setTimeout(() => {
+          isHoverCardOpen = false;
+          hoverCardEntity = null;
+        }, 200);
+      }
+    };
+
     document.addEventListener('keydown', handleKeydown);
     document.addEventListener('click', clickHandler);
+    document.addEventListener('mouseover', mouseOverHandler);
+    document.addEventListener('mouseout', mouseOutHandler);
     setupTableToolbars();
     setupFigureToolbars();
 
     return () => {
       document.removeEventListener('keydown', handleKeydown);
       document.removeEventListener('click', clickHandler);
+      document.removeEventListener('mouseover', mouseOverHandler);
+      document.removeEventListener('mouseout', mouseOutHandler);
       document.removeEventListener('selectionchange', handleSelectionChange);
     };
   });
@@ -513,6 +589,15 @@
     }}
     onSelectEntity={(e) => (selectedEntity = e)}
     onDownloadSource={handleDownloadSource}
+  />
+  <EntityHoverCard
+    entity={hoverCardEntity}
+    position={hoverCardPos}
+    isOpen={isHoverCardOpen}
+    onOpenDetails={handleOpenEntityDetails}
+    onClose={() => { isHoverCardOpen = false; hoverCardEntity = null; }}
+    on:mouseenter={handleHoverCardMouseEnter}
+    on:mouseleave={handleHoverCardMouseLeave}
   />
 {/if}
 

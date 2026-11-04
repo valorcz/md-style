@@ -93,10 +93,12 @@ figure:is(.doc-figure, .figure-container).large :is(.svg-inlined-wrapper, img, .
    5. Wide Breakout Mode (.wide / .breakout)
    Expands beyond prose column for high-detail inspection
    -------------------------------------------------------------------------- */
-figure:is(.doc-figure, .figure-container, .mermaid-diagram, .d2-diagram, .svg-figure):is(.wide, .breakout) {
+figure:is(.doc-figure, .figure-container, .mermaid-diagram, .d2-diagram, .svg-figure):is(.wide, .breakout),
+.doc-component-mount:is(.wide, .breakout) {
   width: min(100vw - 3rem, 68rem) !important;
   max-width: min(100vw - 3rem, 68rem) !important;
   position: relative !important;
+  z-index: 20 !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
   background: var(--color-paper, #ffffff);

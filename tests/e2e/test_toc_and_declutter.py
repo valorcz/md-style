@@ -94,19 +94,30 @@ def test_sidebar_toc_toggle_and_navigation(
 
     # 2. Check headings in ToC list (clean semantic tree, no ul/li bullet markers)
     assert toc.locator("ul, li").count() == 0
+    # No redundant "Obsah" header title
+    assert toc.locator(".toc-heading").count() == 0
+
     toc_links = toc.locator(".toc-link")
     assert toc_links.count() > 0
+
+    # Verify no text-decoration underline on ToC links
+    first_link_decor = page.evaluate("() => window.getComputedStyle(document.querySelector('.sidebar-toc .toc-link')).textDecorationLine")
+    assert first_link_decor == "none"
 
     # Spine styling check: text should be right-aligned toward the document
     if "is-spine" in (toc.get_attribute("class") or ""):
         first_align = page.evaluate("() => window.getComputedStyle(document.querySelector('.sidebar-toc .toc-link')).textAlign")
         assert first_align == "right"
+        # Spine z-index should be 10 (so wide figures with z-index 20 float over it)
+        spine_z = page.evaluate("() => window.getComputedStyle(document.querySelector('.sidebar-toc.is-spine')).zIndex")
+        assert spine_z == "10"
 
-    # 3. Depth filter buttons
-    h2_btn = toc.locator("button.depth-pill:has-text('H2')")
-    expect(h2_btn).to_be_visible()
-    h2_btn.click()
-    expect(h2_btn).to_have_class(re.compile(r"\bis-active\b"))
+    # 3. Dynamic depth filter buttons (e.g. h1, h2, h3)
+    pills = toc.locator("button.depth-pill")
+    if pills.count() > 0:
+        first_pill = pills.first
+        first_pill.click()
+        expect(first_pill).to_have_class(re.compile(r"\bis-active\b"))
 
     # 4. Click first heading link to scroll
     first_link = toc.locator(".toc-link").first
@@ -125,5 +136,14 @@ def test_sidebar_toc_toggle_and_navigation(
 
     page.keyboard.press("Escape")
     expect(toc).not_to_have_class(re.compile(r"\bis-open\b"))
+
+    # 7. Entity hover card test
+    inspectable = page.locator(".inspectable").first
+    if inspectable.count() > 0:
+        inspectable.hover()
+        hover_card = page.locator(".entity-hover-card")
+        expect(hover_card).to_be_visible()
+        expect(hover_card.locator(".card-title")).to_be_visible()
+        expect(hover_card.locator(".card-action-btn")).to_be_visible()
 
     console_tracker.assert_no_errors("in test_sidebar_toc_toggle_and_navigation")

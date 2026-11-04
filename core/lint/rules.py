@@ -75,13 +75,18 @@ def check_headings_and_structure(
     profile: LinterProfile,
     config: LintConfig,
 ):
-    """H001-H004 and R003: Heading hygiene and list structure."""
+    """H001-H009 and R003: Heading hygiene, hierarchy, and list structure."""
     in_code = False
     in_frontmatter = False
     frontmatter_count = 0
 
     current_list_count = 0
     list_start_line = 0
+
+    h1_count = 0
+    prev_heading_level: Optional[int] = None
+    first_heading = True
+    seen_headings: dict = {}
 
     for i, line in enumerate(lines):
         line_str = line.strip()
@@ -194,6 +199,103 @@ def check_headings_and_structure(
                             )
                         )
                     break
+
+            # H005: Multiple H1 headings (Single H1 principle)
+            if h_level == 1:
+                h1_count += 1
+                if "H005" not in config.disabled_rules and h1_count > profile.max_h1_count:
+                    result.issues.append(
+                        Issue(
+                            code="H005",
+                            category="Structure",
+                            message=(
+                                f"Multiple H1 headings in document ({h1_count} > limit {profile.max_h1_count}). "
+                                f"Use H2 for major sections to maintain single-root outline and accessibility."
+                            ),
+                            line=i + 1,
+                            snippet=h_text,
+                            severity="WARN",
+                            penalty=3.0,
+                        )
+                    )
+
+            # H006: Skipped heading levels (e.g. H1 directly to H3)
+            if prev_heading_level is not None and "H006" not in config.disabled_rules:
+                if h_level > prev_heading_level + 1:
+                    result.issues.append(
+                        Issue(
+                            code="H006",
+                            category="Structure",
+                            message=(
+                                f"Heading level skipped from H{prev_heading_level} directly to H{h_level} "
+                                f"(expected H{prev_heading_level + 1}). Maintain sequential hierarchy."
+                            ),
+                            line=i + 1,
+                            snippet=h_text,
+                            severity="WARN",
+                            penalty=2.5,
+                        )
+                    )
+
+            # H007: Excessive heading depth (e.g. H5 or H6)
+            if "H007" not in config.disabled_rules and h_level > profile.max_heading_depth:
+                result.issues.append(
+                    Issue(
+                        code="H007",
+                        category="Structure",
+                        message=(
+                            f"Excessive heading depth (H{h_level} > max H{profile.max_heading_depth}). "
+                            f"Overly deep nesting reduces readability; consider using bold paragraph intros."
+                        ),
+                        line=i + 1,
+                        snippet=h_text,
+                        severity="WARN",
+                        penalty=2.0,
+                    )
+                )
+
+            # H008: Duplicate heading titles
+            norm_title = re.sub(r"[^\w\s-]", "", h_text.lower()).strip()
+            if "H008" not in config.disabled_rules and norm_title:
+                if norm_title in seen_headings:
+                    orig_line = seen_headings[norm_title]
+                    result.issues.append(
+                        Issue(
+                            code="H008",
+                            category="Structure",
+                            message=(
+                                f"Duplicate heading title '{h_text}' (previously defined on line {orig_line}). "
+                                f"Duplicate headings cause anchor collisions and confuse Table of Contents."
+                            ),
+                            line=i + 1,
+                            snippet=h_text,
+                            severity="WARN",
+                            penalty=2.0,
+                        )
+                    )
+                else:
+                    seen_headings[norm_title] = i + 1
+
+            # H009: First heading entrance level
+            if first_heading:
+                first_heading = False
+                if "H009" not in config.disabled_rules and h_level > 2:
+                    result.issues.append(
+                        Issue(
+                            code="H009",
+                            category="Structure",
+                            message=(
+                                f"Document starts with deeply nested heading H{h_level}. "
+                                f"The first heading should be H1 (or H2 if title is defined in frontmatter)."
+                            ),
+                            line=i + 1,
+                            snippet=h_text,
+                            severity="WARN",
+                            penalty=2.0,
+                        )
+                    )
+
+            prev_heading_level = h_level
 
 
 def check_line_rules(
