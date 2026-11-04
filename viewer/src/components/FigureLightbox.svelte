@@ -185,7 +185,7 @@
             <span class="btn-text">SVG</span>
           </button>
 
-          <button type="button" class="ui-icon-btn ctrl-btn close-btn" on:click={onClose} title="Close (Esc)" aria-label="Close">
+          <button type="button" class="ctrl-btn close-btn" on:click={onClose} title="Close (Esc)" aria-label="Close">
             <Icon name="x" size={15} />
           </button>
         </div>

@@ -41,7 +41,7 @@
       </button>
     </div>
   {/if}
-  <button class="ui-icon-btn close-btn" on:click={() => dispatch('close')} aria-label={i18n.close || 'Close'}>
+  <button class="close-btn" on:click={() => dispatch('close')} aria-label={i18n.close || 'Close'}>
     <Icon name="x" size={14} />
   </button>
 </header>
