@@ -2,6 +2,7 @@
   import { onMount, createEventDispatcher } from 'svelte';
   import Icon from './components/Icon.svelte';
   import SegmentedControl from './components/ui/SegmentedControl.svelte';
+  import { DropdownMenu } from 'bits-ui';
 
   export let title: string = '';
   export let i18n: Record<string, string> = {};
@@ -77,15 +78,6 @@
     dispatch('downloadSource');
   }
 
-  function handleWindowClick(e: MouseEvent) {
-    if (isMoreMenuOpen) {
-      const target = e.target as HTMLElement;
-      if (!target.closest('.more-actions-container')) {
-        isMoreMenuOpen = false;
-      }
-    }
-  }
-
   onMount(() => {
     // Initial theme detection
     const currentTheme = document.documentElement.getAttribute('data-theme') || document.documentElement.dataset.theme;
@@ -99,11 +91,9 @@
     }
 
     window.addEventListener('scroll', updateScrollState, { passive: true });
-    window.addEventListener('click', handleWindowClick);
     updateScrollState();
     return () => {
       window.removeEventListener('scroll', updateScrollState);
-      window.removeEventListener('click', handleWindowClick);
     };
   });
 </script>
@@ -193,57 +183,55 @@
         <Icon name={isDarkMode ? 'moon' : 'sun'} size={14} />
       </button>
 
-      <!-- More Actions ("···" Popover Menu) -->
+      <!-- More Actions ("···" Popover Menu via bits-ui) -->
       <div class="more-actions-container">
-        <button
-          class="action-btn icon-only-btn more-btn"
-          class:active={isMoreMenuOpen}
-          on:click|stopPropagation={() => (isMoreMenuOpen = !isMoreMenuOpen)}
-          title={i18n['ui.more_actions'] || 'More actions'}
-          aria-expanded={isMoreMenuOpen}
-        >
-          <Icon name="more-horizontal" size={16} />
-        </button>
+        <DropdownMenu.Root bind:open={isMoreMenuOpen}>
+          <DropdownMenu.Trigger
+            class="action-btn icon-only-btn more-btn {isMoreMenuOpen ? 'active' : ''}"
+            title={i18n['ui.more_actions'] || 'More actions'}
+            aria-expanded={isMoreMenuOpen}
+          >
+            <Icon name="more-horizontal" size={16} />
+          </DropdownMenu.Trigger>
 
-        {#if isMoreMenuOpen}
-          <!-- svelte-ignore a11y_click_events_have_key_events -->
-          <!-- svelte-ignore a11y_no_static_element_interactions -->
-          <div class="more-dropdown-menu" on:click|stopPropagation>
-            <button class="dropdown-item" on:click={handleEducativeToggle}>
-              <Icon name="academic" size={14} />
-              <div class="dropdown-item-text">
-                <span class="dropdown-label">{educativeMode ? (i18n['ui.educative_mode'] || 'Educative Mode') : (i18n['ui.reader_mode'] || 'Reader Mode')}</span>
-                <span class="dropdown-hint">{educativeMode ? 'Annotations visible' : 'Clean reader focus'}</span>
-              </div>
-            </button>
-
-            <button class="dropdown-item" on:click={handlePrint}>
-              <Icon name="printer" size={14} />
-              <div class="dropdown-item-text">
-                <span class="dropdown-label">{i18n['ui.print'] || 'Print / Save as PDF'}</span>
-                <span class="dropdown-hint">Native browser print</span>
-              </div>
-            </button>
-
-            {#if hasSourceMarkdown}
-              <button class="dropdown-item" on:click={handleDownloadSource}>
-                <Icon name="download" size={14} />
+          <DropdownMenu.Portal to="#viewer-hud-ribbon">
+            <DropdownMenu.Content class="more-dropdown-menu" sideOffset={8} align="end" preventScroll={false}>
+              <DropdownMenu.Item class="dropdown-item" onSelect={handleEducativeToggle}>
+                <Icon name="academic" size={14} />
                 <div class="dropdown-item-text">
-                  <span class="dropdown-label">{i18n['ui.source_markdown'] || 'Download Markdown (.md)'}</span>
-                  <span class="dropdown-hint">Extract embedded original source</span>
+                  <span class="dropdown-label">{educativeMode ? (i18n['ui.educative_mode'] || 'Educative Mode') : (i18n['ui.reader_mode'] || 'Reader Mode')}</span>
+                  <span class="dropdown-hint">{educativeMode ? 'Annotations visible' : 'Clean reader focus'}</span>
                 </div>
-              </button>
-            {/if}
+              </DropdownMenu.Item>
 
-            {#if componentCount > 0}
-              <div class="dropdown-divider"></div>
-              <div class="dropdown-info-item">
-                <Icon name="zap" size={13} />
-                <span>Interactive components ({componentCount})</span>
-              </div>
-            {/if}
-          </div>
-        {/if}
+              <DropdownMenu.Item class="dropdown-item" onSelect={handlePrint}>
+                <Icon name="printer" size={14} />
+                <div class="dropdown-item-text">
+                  <span class="dropdown-label">{i18n['ui.print'] || 'Print / Save as PDF'}</span>
+                  <span class="dropdown-hint">Native browser print</span>
+                </div>
+              </DropdownMenu.Item>
+
+              {#if hasSourceMarkdown}
+                <DropdownMenu.Item class="dropdown-item" onSelect={handleDownloadSource}>
+                  <Icon name="download" size={14} />
+                  <div class="dropdown-item-text">
+                    <span class="dropdown-label">{i18n['ui.source_markdown'] || 'Download Markdown (.md)'}</span>
+                    <span class="dropdown-hint">Extract embedded original source</span>
+                  </div>
+                </DropdownMenu.Item>
+              {/if}
+
+              {#if componentCount > 0}
+                <div class="dropdown-divider"></div>
+                <div class="dropdown-info-item">
+                  <Icon name="zap" size={13} />
+                  <span>Interactive components ({componentCount})</span>
+                </div>
+              {/if}
+            </DropdownMenu.Content>
+          </DropdownMenu.Portal>
+        </DropdownMenu.Root>
       </div>
     </div>
   </div>
@@ -424,10 +412,7 @@
     position: relative;
     display: inline-flex;
   }
-  .more-dropdown-menu {
-    position: absolute;
-    top: calc(100% + 8px);
-    right: 0;
+  :global(.more-dropdown-menu) {
     width: 250px;
     background: rgba(15, 23, 42, 0.96);
     backdrop-filter: blur(16px);
@@ -441,6 +426,7 @@
     gap: 0.2rem;
     z-index: 10001;
     animation: menuFadeIn 0.15s ease-out;
+    outline: none;
   }
 
   @keyframes menuFadeIn {
@@ -454,7 +440,7 @@
     }
   }
 
-  .dropdown-item {
+  :global(.dropdown-item) {
     display: flex;
     align-items: center;
     gap: 0.65rem;
@@ -468,8 +454,11 @@
     transition: background 0.12s, color 0.12s;
     width: 100%;
     box-sizing: border-box;
+    user-select: none;
+    outline: none;
   }
-  .dropdown-item:hover {
+  :global(.dropdown-item:hover),
+  :global(.dropdown-item[data-highlighted]) {
     background: rgba(255, 255, 255, 0.08);
     color: #f8fafc;
   }
@@ -553,27 +542,29 @@
     background: rgba(2, 132, 199, 0.15);
     color: #0284c7;
   }
-  :global([data-theme="light"]) .more-dropdown-menu,
-  :global(body.light-theme) .more-dropdown-menu {
+  :global([data-theme="light"] .more-dropdown-menu),
+  :global(body.light-theme .more-dropdown-menu) {
     background: rgba(255, 255, 255, 0.98);
     border-color: rgba(0, 0, 0, 0.1);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
   }
-  :global([data-theme="light"]) .dropdown-item,
-  :global(body.light-theme) .dropdown-item {
+  :global([data-theme="light"] .dropdown-item),
+  :global(body.light-theme .dropdown-item) {
     color: #334155;
   }
-  :global([data-theme="light"]) .dropdown-item:hover,
-  :global(body.light-theme) .dropdown-item:hover {
+  :global([data-theme="light"] .dropdown-item:hover),
+  :global(body.light-theme .dropdown-item:hover),
+  :global([data-theme="light"] .dropdown-item[data-highlighted]),
+  :global(body.light-theme .dropdown-item[data-highlighted]) {
     background: rgba(0, 0, 0, 0.05);
     color: #0f172a;
   }
-  :global([data-theme="light"]) .dropdown-hint,
-  :global(body.light-theme) .dropdown-hint {
+  :global([data-theme="light"] .dropdown-hint),
+  :global(body.light-theme .dropdown-hint) {
     color: #94a3b8;
   }
-  :global([data-theme="light"]) .dropdown-divider,
-  :global(body.light-theme) .dropdown-divider {
+  :global([data-theme="light"] .dropdown-divider),
+  :global(body.light-theme .dropdown-divider) {
     background: rgba(0, 0, 0, 0.08);
   }
 
