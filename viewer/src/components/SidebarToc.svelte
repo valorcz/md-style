@@ -418,19 +418,32 @@
     gap: 0.5rem;
   }
 
-  .sidebar-toc:not(.is-spine) .toc-close-btn {
+  .toc-close-btn {
     background: transparent;
     border: none;
+    outline: none;
+    box-shadow: none;
     color: var(--color-text-muted, #64748b);
     cursor: pointer;
-    padding: 0.2rem;
-    opacity: 0.75;
-    transition: opacity 0.15s ease, color 0.15s ease;
+    padding: 0.25rem 0.4rem;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
   }
 
-  .sidebar-toc:not(.is-spine) .toc-close-btn:hover {
-    opacity: 1;
+  .toc-close-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
     color: var(--color-text, #0f172a);
+  }
+
+  :global([data-theme="dark"]) .toc-close-btn {
+    color: #94a3b8;
+  }
+  :global([data-theme="dark"]) .toc-close-btn:hover {
+    color: #f1f5f9;
+    background: rgba(255, 255, 255, 0.08);
   }
 
   .sidebar-toc:not(.is-spine) .toc-depth-filter {
