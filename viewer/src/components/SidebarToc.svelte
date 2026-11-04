@@ -61,7 +61,7 @@
     // On screens >= 1100px with sufficient left margin, dock cleanly as a paper spine
     if (window.innerWidth >= 1100 && docRect.left >= 160) {
       isDockedSpine = true;
-      spineRight = Math.max(16, window.innerWidth - docRect.left + 24);
+      spineRight = Math.max(16, window.innerWidth - docRect.left + 40);
     } else {
       isDockedSpine = false;
       spineRight = 0;
@@ -195,21 +195,17 @@
       </div>
     {:else}
       <nav class="toc-tree">
-        <ul class="toc-list">
-          {#each filteredHeadings as item (item.id)}
-            <li class="toc-item level-{item.level}">
-              <a
-                href="#{item.id}"
-                class="toc-link"
-                class:is-active={activeId === item.id}
-                data-id={item.id}
-                on:click={(e) => scrollToSection(item.id, e)}
-              >
-                <span class="toc-item-text">{item.title}</span>
-              </a>
-            </li>
-          {/each}
-        </ul>
+        {#each filteredHeadings as item (item.id)}
+          <a
+            href="#{item.id}"
+            class="toc-link level-{item.level}"
+            class:is-active={activeId === item.id}
+            data-id={item.id}
+            on:click={(e) => scrollToSection(item.id, e)}
+          >
+            <span class="toc-item-text">{item.title}</span>
+          </a>
+        {/each}
       </nav>
     {/if}
   </div>
@@ -305,19 +301,12 @@
     }
 
     /* Right-aligned spine navigation links */
-    .sidebar-toc.is-spine .toc-list {
-      list-style: none !important;
-      padding: 0;
-      margin: 0;
+    .sidebar-toc.is-spine .toc-tree {
       display: flex;
       flex-direction: column;
-      gap: 0.2rem;
-    }
-
-    .sidebar-toc.is-spine .toc-item {
-      list-style: none !important;
-      margin: 0;
+      gap: 0.25rem;
       padding: 0;
+      margin: 0;
     }
 
     .sidebar-toc.is-spine .toc-link {
@@ -347,19 +336,19 @@
     }
 
     /* Hierarchy indentation pushed to the left because text is right-aligned */
-    .sidebar-toc.is-spine .toc-item.level-1 .toc-link {
+    .sidebar-toc.is-spine .toc-link.level-1 {
       font-weight: 600;
       padding-right: 0.6rem;
     }
-    .sidebar-toc.is-spine .toc-item.level-2 .toc-link {
+    .sidebar-toc.is-spine .toc-link.level-2 {
       padding-right: 0.6rem;
     }
-    .sidebar-toc.is-spine .toc-item.level-3 .toc-link {
+    .sidebar-toc.is-spine .toc-link.level-3 {
       font-size: 0.74rem;
       opacity: 0.88;
       padding-right: 1.1rem;
     }
-    .sidebar-toc.is-spine .toc-item.level-4 .toc-link {
+    .sidebar-toc.is-spine .toc-link.level-4 {
       font-size: 0.7rem;
       opacity: 0.78;
       padding-right: 1.6rem;
@@ -478,8 +467,7 @@
       font-weight: 600;
     }
 
-    .toc-list {
-      list-style: none;
+    .toc-tree {
       padding: 0.75rem 0.5rem;
       margin: 0;
       display: flex;
@@ -487,16 +475,10 @@
       gap: 0.15rem;
     }
 
-    .toc-item {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-
-    .toc-item.level-1 { padding-left: 0.2rem; }
-    .toc-item.level-2 { padding-left: 0.7rem; }
-    .toc-item.level-3 { padding-left: 1.4rem; }
-    .toc-item.level-4 { padding-left: 2.0rem; }
+    .toc-link.level-1 { padding-left: 0.4rem; font-weight: 600; }
+    .toc-link.level-2 { padding-left: 0.8rem; }
+    .toc-link.level-3 { padding-left: 1.5rem; font-size: 0.76rem; }
+    .toc-link.level-4 { padding-left: 2.1rem; font-size: 0.72rem; }
 
     .toc-link {
       display: block;

@@ -79,9 +79,28 @@ def test_sidebar_toc_toggle_and_navigation(
     doc_heading = page.locator("main h1, .report-content h1").first
     expect(doc_heading).to_be_visible()
 
-    # 2. Check headings in ToC list
+    # Unified canvas test: in web view, body has no drop shadow or artificial paper border
+    body_styles = page.evaluate("""() => {
+        const bodyStyle = window.getComputedStyle(document.body);
+        const htmlStyle = window.getComputedStyle(document.documentElement);
+        return {
+            bodyBoxShadow: bodyStyle.boxShadow,
+            bodyBg: bodyStyle.backgroundColor,
+            htmlBg: htmlStyle.backgroundColor,
+        };
+    }""")
+    assert body_styles["bodyBoxShadow"] == "none"
+    assert body_styles["bodyBg"] == body_styles["htmlBg"]
+
+    # 2. Check headings in ToC list (clean semantic tree, no ul/li bullet markers)
+    assert toc.locator("ul, li").count() == 0
     toc_links = toc.locator(".toc-link")
     assert toc_links.count() > 0
+
+    # Spine styling check: text should be right-aligned toward the document
+    if "is-spine" in (toc.get_attribute("class") or ""):
+        first_align = page.evaluate("() => window.getComputedStyle(document.querySelector('.sidebar-toc .toc-link')).textAlign")
+        assert first_align == "right"
 
     # 3. Depth filter buttons
     h2_btn = toc.locator("button.depth-pill:has-text('H2')")

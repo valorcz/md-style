@@ -62,6 +62,13 @@
   --comp-free: #059669;
 }
 
+html[data-theme="dark"] {
+  --color-paper: #0f172a;
+  --color-bg: #090d16;
+  --color-text: #f1f5f9;
+  --color-border: #1e293b;
+}
+
 [data-theme="dark"], body.dark-theme, body.theme-forensic-cyber {
   --pele-bg: transparent;
   --pele-fg: #f1f5f9;
@@ -90,27 +97,46 @@
 /* --------------------------------------------------------------------------
    2. Resets & Document Container
    -------------------------------------------------------------------------- */
-html {
+/* Unified seamless canvas for web reading view (Dropbox Paper / Notion style) */
+html:not(.paged-view):not(.sheet-view) {
   font-size: 100%;
   box-sizing: border-box;
-  background-color: var(--color-bg);
+  background-color: var(--color-paper, #ffffff) !important;
   -webkit-text-size-adjust: 100%;
   text-rendering: optimizeLegibility;
+}
+
+/* For paged or sheet previews, use subtle background canvas */
+html:has(body.paged-view),
+html:has(body.sheet-view) {
+  background-color: var(--color-bg, #f8fafc) !important;
 }
 
 *, *::before, *::after {
   box-sizing: inherit;
 }
 
-body {
+body:not(.paged-view):not(.sheet-view) {
   font-family: var(--font-body);
   font-size: 15px;
   line-height: var(--line-height-body);
   color: var(--color-text);
-  background-color: var(--color-paper);
+  background-color: var(--color-paper, #ffffff) !important;
   max-width: var(--doc-max-width);
   margin: 2.5rem auto;
   padding: 3rem 3.5rem;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Screen Preview Mode (paged / sheet simulation overrides) */
+body.paged-view,
+body.sheet-view {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: var(--line-height-body);
+  color: var(--color-text);
+  background-color: var(--color-paper, #ffffff);
   border: 1px solid var(--color-border);
   border-radius: 8px;
   box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05),
