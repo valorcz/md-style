@@ -6,7 +6,7 @@
 [![RO-Crate 1.1 Compliant](https://img.shields.io/badge/RO--Crate-v1.1-success.svg)](https://www.researchobject.org/ro-crate/)
 [![Viewer: Svelte 5](https://img.shields.io/badge/viewer-Svelte_5-orange.svg)](viewer/)
 
-> A **pure-Python, publication-grade document generation and knowledge packaging toolkit**. Compiles Markdown into **self-contained interactive HTML reports**, **pixel-perfect W3C print PDFs**, and **compliant RO-Crate 1.1 digital evidence packages** with zero Pandoc dependency.
+> A **pure-Python, publication-grade document generation and knowledge packaging toolkit**. Compiles Markdown into **self-contained interactive HTML reports**, **pixel-perfect W3C print PDFs**, and **compliant RO-Crate 1.1 digital evidence packages** with built-in prose & typography linting and zero Pandoc dependency.
 
 ---
 
@@ -15,7 +15,7 @@
 | Interactive Cyber DFIR Report | Slide-Over Threat Intelligence Drawer |
 | :---: | :---: |
 | ![Forensic Cyber Report](docs/images/preview-forensic-cyber.png) | ![Slide-over Knowledge Drawer](docs/images/preview-inspector-drawer.png) |
-| *Cyber threat investigation HUD with dark/light theme, indicator pills, and reading progress.* | *Click any entity pill to reveal tactical guidance, benign causes, and MITRE/CVE context.* |
+| *Cyber threat investigation HUD with default left ToC spine, dark/light theme, indicator pills, and reading progress.* | *Click any entity pill to reveal collapsible accordions, adaptive property tiles, one-click copy, and MITRE/CVE context.* |
 
 | Pan & Zoom Vector Figure Lightbox | Collaborative Margin Review Comments |
 | :---: | :---: |
@@ -33,6 +33,8 @@
 
 - 🐍 **Zero Pandoc Dependency (Pure Python v3)**:
   - Document parsing, transformation, and AST compilation run entirely on Python (`markdown-it-py` with custom pure-Python plugins in `core/parser/`). No external binary document processors required.
+- ✍️ **Automated Prose & Syntax Quality Linter**:
+  - Built-in static analysis engine (`md-style lint`) audits readability, sentence complexity, formatting density, passive voice, typographic hygiene (non-breaking spaces, quotes), and structural heading rhythm with letter-grade scoring (A+ through F).
 - 🛡️ **100% Offline Air-Gap Safe**:
   - All indicator resolvers (`core/kb/resolvers/`) operate securely in air-gapped environments using local Single Source of Truth catalogs (`data/statutes.json`, `data/cve.json`, etc.).
   - **OPSEC Confidentiality Safeguards**: RFC 1918 private subnets (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`, `127.0.0.0/8`) strictly suppress external reputation lookups.
@@ -42,8 +44,9 @@
   - Bundled HTML reports contain the raw Markdown source and Knowledge Pack metadata inside embedded script blocks. You can preview, de-bundle, or inspect them directly with `md-style preview` or `md-style inspect`.
 - 🗃️ **RO-Crate 1.1 Research Object Packaging**:
   - Export self-contained `.crate.zip` archives with full JSON-LD schema metadata and cryptographic SHA-256 evidence digests for legal custody and reproducible forensic audits.
-- 🖨️ **Pixel-Perfect W3C Paged Media & PDF**:
-  - Native `@media print` rules, running headers/footers, and page numbers via headless Chromium or Bun CDP bridge (`--pdf`).
+- 🖨️ **Lightweight Modern Viewer & Pixel-Perfect PDF**:
+  - Streamlined pure-CSS Paper view and headless Chromium CDP bridge for fast, deterministic PDF printing without legacy DOM slicing.
+  - Headless accessible UI primitives via `bits-ui` and our custom Atomic UI Kit: collapsible entity accordions, adaptive property tiles grid with inline one-click copy, default left ToC spine, and smart hover cards.
 
 ---
 
@@ -96,6 +99,19 @@ uv run md-style preview investigation.html
 # Inspect all discovered intelligence indicators in the terminal:
 uv run md-style inspect investigation.html
 uv run md-style inspect investigation.html CVE-2024-3094
+```
+
+### 6. Prose Quality & Typographic Linting
+
+```bash
+# Run standalone prose, typography, and structural audit:
+uv run md-style lint examples/sample-forensic-cyber.md
+
+# Audit with a specific profile and verbose recommendations:
+uv run md-style lint document.md --profile handbook --verbose
+
+# Fail CI/CD build if score < 80 or if critical issues are found:
+uv run md-style lint document.md --strict
 ```
 
 ---
@@ -208,10 +224,40 @@ md-style [OPTIONS] <input.md> [output.html]
 | `--theme-inspect [name]`| Deep-dive cascade inspection of a theme | - |
 | `--theme-lint [target]` | Static audit and linting of themes and stylesheets | - |
 | `--theme-new <name>` | Scaffold a new starter theme | - |
+| `--lint`, `--lint-details` | Print detailed prose, typography, and readability audit findings | Brief summary |
+| `--no-lint` | Disable automatic prose and syntax linter during compilation | Linting enabled |
+| `--strict-lint` | Fail compilation (exit code > 0) if linter score < 80 or on critical issues | Disabled |
 | `--toc` / `--no-toc` | Toggle automatic Table of Contents | Enabled (`--toc`) |
 | `-l, --lang <code>` | Document language code (`en`, `cs`, `sk`, `de`) | Frontmatter or `en` |
 | `--no-viewer` | Compile pure static HTML without interactive Svelte HUD | Interactive HUD |
 | `-v, --verbose` | Enable verbose diagnostic logging | Disabled |
+
+### Standalone Prose Linter
+
+```text
+md-style lint <document.md> [OPTIONS]
+```
+
+| Option | Description | Default |
+|---|---|---|
+| `-p, --profile <profile>` | Lint profile (`article`, `handbook`, `notes`, `slides`) | Auto-inferred |
+| `-v, --verbose` | Display informative suggestions, readability metrics, and text snippets | Compact report |
+| `--strict` | Exit code 1 if composite quality score is below 80 or on FAIL severity | Non-strict |
+| `-l, --lang <code>` | Language code for typographic rule overrides (`en`, `cs`, `sk`) | Detected |
+
+---
+
+## 💻 Interactive Svelte 5 Viewer & Atomic UI Kit
+
+The compiled self-contained HTML report embeds a modern, zero-dependency **Svelte 5 viewer** built on top of accessible **`bits-ui`** primitives and a unified **Atomic UI Kit**:
+
+- **Default Left ToC Spine:** Automatically docks to the left margin on desktop screens (>= 1 100 px), keeping headings and reading progress constantly accessible without obscuring document content. On mobile devices, seamlessly adapts to a sliding drawer.
+- **Structured Entity Inspector:** Organizes complex intelligence and legal entities into collapsible accordion sections (**Overview**, **Attributes & Parameters**, **Related Entities & Pivots**, and **Verified References**).
+- **Adaptive Property Tiles:** Replaces rigid tables with a responsive 2-column property grid that saves 50% vertical space on short metadata while expanding automatically for long prose. Features inline one-click clipboard copying.
+- **Smart Hover Cards:** Instant entity previews with pointing notch/arrow aligned to hover targets, free from browser-native tooltip occlusion, with full screen-reader a11y support (`aria-label`).
+- **Interactive Diagram Lightbox:** Vector-crisp pan, zoom, and theme-synchronized lightbox for complex Mermaid and D2 architecture diagrams.
+- **Collaborative Margin Comments:** Google Docs-style inline text highlighting, threaded review comments, and JSON export/import.
+- **Pure-CSS Paper Mode:** Instant toggling between continuous fluid Web view and paginated Paper view without legacy DOM-slicing libraries, delivering ultra-lean bundles (~1.1 MB including all UI primitives).
 
 ---
 
@@ -224,7 +270,7 @@ flowchart LR
     STAGE1["Stage 1\nIngestion &\nDiagrams"]
     STAGE2["Stage 2\nKnowledge Pack\nSync (core/kb/)"]
     STAGE3["Stage 3\nTheme Cascade\n(theme.yaml)"]
-    STAGE4["Stage 4\nMarkdown AST\n(markdown-it-py)"]
+    STAGE4["Stage 4\nMarkdown AST\n& Prose Linter"]
     STAGE5["Stage 5\nBundling, Crate\n& PDF Export"]
 
     STAGE1 --> STAGE2 --> STAGE3 --> STAGE4 --> STAGE5
@@ -232,9 +278,9 @@ flowchart LR
 
 1. **Stage 1 (Ingestion & Diagrams)**: Normalizes nested containers, parses frontmatter, renders Mermaid/D2 diagrams to vector SVGs, and assigns unified figure numbers.
 2. **Stage 2 (Knowledge Pack Sync)**: Discovers indicators in prose/code, resolves context against SSOT catalogs, and computes SHA-256 integrity digests.
-3. **Stage 3 (Theme Resolution)**: Resolves declarative inheritance (`theme.yaml`), merges CSS tokens, and extracts Paged.js page geometry.
-4. **Stage 4 (Markdown AST)**: Compiles Markdown tokens via `markdown-it-py`, wrapping indicators in interactive pills, callout alerts, and responsive data tables.
-5. **Stage 5 (Bundling & Export)**: Inlines base64 WOFF2 fonts and stylesheets, injects the Svelte 5 interactive viewer bundle, creates RO-Crate archives, or generates PDFs.
+3. **Stage 3 (Theme Resolution)**: Resolves declarative inheritance (`theme.yaml`), merges CSS tokens, and configures W3C print page geometry.
+4. **Stage 4 (Markdown AST & Prose Linter)**: Compiles Markdown tokens via `markdown-it-py`, wrapping indicators in interactive pills, callout alerts, and responsive data tables, while auditing prose quality against the active profile.
+5. **Stage 5 (Bundling & Export)**: Inlines base64 WOFF2 fonts and stylesheets, injects the modern Svelte 5 interactive viewer bundle, creates RO-Crate archives, or generates PDFs via Chromium CDP.
 
 ---
 
