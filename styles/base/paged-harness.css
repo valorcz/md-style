@@ -37,9 +37,9 @@ body.paged-view.theme-forensic-cyber #md-style-paged-root {
   background-color: #0b0f19 !important;
 }
 
-/* Hide continuous web view elements when paged view is active */
-body.paged-view .report-container,
-body.paged-view main:not(#md-style-paged-root) {
+/* Hide continuous web view elements only when legacy paged.js pages are explicitly rendered */
+body.paged-view:has(#md-style-paged-root .pagedjs_pages) .report-container,
+body.paged-view:has(#md-style-paged-root .pagedjs_pages) main:not(#md-style-paged-root) {
   display: none !important;
 }
 

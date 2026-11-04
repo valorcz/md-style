@@ -273,65 +273,11 @@
     }
   }
 
-  import { Previewer } from 'pagedjs';
-  import { registerUnifiedHandlers, getEmbeddedPrintTemplates } from './paged/paged-handlers';
-
   let isPagedMode: boolean = false;
-  let isPaginating: boolean = false;
-  let hasRenderedPaged: boolean = false;
 
-  async function handleTogglePaged() {
+  function handleTogglePaged() {
     isPagedMode = !isPagedMode;
-
-    if (isPagedMode) {
-      document.body.classList.add('paged-view');
-
-      if (!hasRenderedPaged) {
-        isPaginating = true;
-        registerUnifiedHandlers();
-
-        let root = document.getElementById('md-style-paged-root');
-        if (!root) {
-          root = document.createElement('div');
-          root.id = 'md-style-paged-root';
-          document.body.appendChild(root);
-        }
-
-        const contentEl =
-          document.querySelector('.report-container') ||
-          document.querySelector('main:not(#md-style-paged-root)') ||
-          document.querySelector('.report-content');
-
-        if (contentEl) {
-          const clone = contentEl.cloneNode(true) as HTMLElement;
-
-          try {
-            const templates = getEmbeddedPrintTemplates();
-            const previewer = new Previewer();
-
-            const inlinePageStyles: Record<string, string> = {};
-            if (templates) {
-              const top = templates.marginTop ? `${templates.marginTop}in` : '22mm';
-              const right = templates.marginRight ? `${templates.marginRight}in` : '18mm';
-              const bottom = templates.marginBottom ? `${templates.marginBottom}in` : '22mm';
-              const left = templates.marginLeft ? `${templates.marginLeft}in` : '18mm';
-              inlinePageStyles['md-style-page-geom'] = `@page { size: A4; margin: ${top} ${right} ${bottom} ${left}; }`;
-            }
-
-            await previewer.preview(clone, [inlinePageStyles], root);
-            hasRenderedPaged = true;
-          } catch (err) {
-            console.error('[Paged] Pagination failed:', err);
-          } finally {
-            isPaginating = false;
-          }
-        } else {
-          isPaginating = false;
-        }
-      }
-    } else {
-      document.body.classList.remove('paged-view');
-    }
+    document.body.classList.toggle('paged-view', isPagedMode);
   }
 
   onMount(() => {
@@ -502,12 +448,6 @@
   }
 </script>
 
-{#if isPaginating}
-  <div class="paged-loading-overlay">
-    <div class="paged-loading-spinner"></div>
-    <span>{i18nData['paginating'] || 'Paginating A4 sheets...'}</span>
-  </div>
-{/if}
 
 {#if enableHud}
   <SidebarToc
