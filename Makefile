@@ -1,4 +1,4 @@
-.PHONY: help install install-viewer build-viewer build test test-e2e samples samples-pdf clean all
+.PHONY: help install install-viewer build-viewer build test test-e2e audit audit-python audit-viewer update-deps update-python update-viewer samples samples-pdf clean all
 
 help:
 	@echo "md-style v3 Build System"
@@ -8,6 +8,8 @@ help:
 	@echo "  make build           - Build viewer assets and Python environment"
 	@echo "  make test            - Run pytest suite"
 	@echo "  make test-e2e        - Run Playwright E2E headless browser test suite"
+	@echo "  make audit           - Security vulnerability audit for Python (pip-audit) and viewer (npm audit)"
+	@echo "  make update-deps     - Upgrade dependencies and lockfiles for both Python (uv) and viewer (npm)"
 	@echo "  make samples         - Compile all example reports to output/ (HTML)"
 	@echo "  make samples-pdf     - Compile sample reports to output/ (PDF via Chromium)"
 	@echo "  make clean           - Clean output, cache, and transient build artifacts"
@@ -29,6 +31,29 @@ test:
 
 test-e2e:
 	uv run pytest tests/e2e/ -v
+
+audit-python:
+	@echo "==> Auditing Python dependencies (pip-audit via uvx)..."
+	uvx pip-audit
+
+audit-viewer:
+	@echo "==> Auditing Viewer npm dependencies..."
+	cd viewer && npm audit
+
+audit: audit-python audit-viewer
+
+update-python:
+	@echo "==> Upgrading Python dependencies and updating uv.lock..."
+	uv lock --upgrade
+	uv sync
+
+update-viewer:
+	@echo "==> Upgrading Viewer npm packages and rebuilding bundle..."
+	cd viewer && npm update
+	cd viewer && npm run build
+
+update-deps: update-python update-viewer
+	@echo "==> All Python and TypeScript/Viewer dependencies updated successfully."
 
 
 samples:
