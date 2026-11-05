@@ -60,6 +60,9 @@ flowchart LR
 
 ```text
 md-style/
+├── Dockerfile                    # Multi-stage Podman/Docker build (Node 22, Python 3.12, Chromium)
+├── docker-entrypoint.sh          # Container CLI argument router & signal handler
+├── .dockerignore                 # Container build context exclusions
 ├── core/                         # Core Python pipeline
 │   ├── assets/                   # Bundled viewer.bundle.js and viewer.bundle.css
 │   ├── bundler.py                # Single-file HTML inliner and font processor
@@ -165,6 +168,26 @@ uv run md-style theme new custom/corporate --extends base
 ```bash
 # List all registered artifact extractors and indicator providers:
 uv run md-style --list-artifacts
+```
+
+### Containerized Execution (Podman & Docker)
+```bash
+# Build production multi-stage image (includes Headless Chromium for PDF export):
+make podman-build
+# (or: podman build -t md-style:latest .)
+
+# Build lightweight slim image without Chromium (HTML, Markdown, RO-Crate only):
+make podman-build-slim
+# (or: podman build --target slim -t md-style:slim .)
+
+# Run compile inside container (rootless Podman with keep-id):
+podman run --rm -it --userns=keep-id -v "$(pwd)":/workspace:Z md-style:latest report.md -s forensic/cyber -o output.html
+
+# Run PDF compilation inside container:
+podman run --rm -it --userns=keep-id -v "$(pwd)":/workspace:Z md-style:latest report.md -s forensic/cyber -p -o output.pdf
+
+# Run automated container tests:
+make podman-test
 ```
 
 ---

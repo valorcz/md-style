@@ -1,4 +1,4 @@
-.PHONY: help install install-viewer build-viewer build test test-e2e audit audit-python audit-viewer update-deps update-python update-viewer samples samples-pdf clean all
+.PHONY: help install install-viewer build-viewer build test test-e2e audit audit-python audit-viewer update-deps update-python update-viewer samples samples-pdf clean all podman-build podman-build-slim podman-test docker-build docker-test
 
 help:
 	@echo "md-style v3 Build System"
@@ -16,6 +16,11 @@ help:
 	@echo "  make update-viewer   - Upgrade TypeScript/viewer packages via npm and rebuild bundle"
 	@echo "  make samples         - Compile all example reports to output/ (HTML)"
 	@echo "  make samples-pdf     - Compile sample reports to output/ (PDF via Chromium)"
+	@echo "  make podman-build    - Build full container image with Podman (Chromium + Node + Python)"
+	@echo "  make podman-build-slim - Build lightweight slim container image (HTML/RO-Crate only)"
+	@echo "  make podman-test     - Verify HTML and PDF compilation inside the Podman container"
+	@echo "  make docker-build    - Build full container image with Docker"
+	@echo "  make docker-test     - Verify HTML and PDF compilation inside Docker container"
 	@echo "  make clean           - Clean output, cache, and transient build artifacts"
 	@echo "  make all             - Full end-to-end setup, build, test, and render"
 
@@ -78,3 +83,24 @@ samples-pdf: samples
 clean:
 	rm -rf output/ .pytest_cache/ viewer/dist/
 	find . -type d -name "__pycache__" -exec rm -rf {} +
+
+podman-build:
+	podman build -t md-style:latest .
+
+podman-build-slim:
+	podman build --target slim -t md-style:slim .
+
+podman-test:
+	@mkdir -p output
+	podman run --rm --userns=keep-id -v $$(pwd):/workspace:Z md-style:latest examples/sample-forensic-cyber.md -s forensic/cyber -o output/docker-test.html
+	podman run --rm --userns=keep-id -v $$(pwd):/workspace:Z md-style:latest examples/sample-forensic-cyber.md -s forensic/cyber -p -o output/docker-test.pdf
+	@echo "==> Podman container tests completed successfully."
+
+docker-build:
+	docker build -t md-style:latest .
+
+docker-test:
+	@mkdir -p output
+	docker run --rm -v $$(pwd):/workspace md-style:latest examples/sample-forensic-cyber.md -s forensic/cyber -o output/docker-test.html
+	docker run --rm -v $$(pwd):/workspace md-style:latest examples/sample-forensic-cyber.md -s forensic/cyber -p -o output/docker-test.pdf
+	@echo "==> Docker container tests completed successfully."

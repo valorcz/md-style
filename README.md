@@ -65,6 +65,37 @@ cd md-style
 uv run md-style --help
 ```
 
+### 🐳 Running with Podman / Docker (Zero Host Dependencies)
+
+You can run `md-style` with 100% of its features (including Headless Chromium PDF export and build-time Mermaid diagrams) directly without installing Python, Node, or Chromium:
+
+```bash
+# Pull and run pre-built image directly from GitHub Container Registry:
+podman pull ghcr.io/valorcz/md-style:latest
+
+# Or build locally:
+make podman-build    # or: podman build -t md-style:latest .
+
+# Set up a convenient shell alias:
+alias md-style='podman run --rm -it --userns=keep-id -v "$(pwd)":/workspace:Z ghcr.io/valorcz/md-style:latest'
+
+# Compile HTML:
+md-style report.md -s forensic/cyber -o output.html
+
+# Compile PDF:
+md-style report.md -s forensic/cyber -p -o output.pdf
+
+# Package RO-Crate:
+md-style report.md -s forensic/cyber --crate -o output/case.crate.zip
+
+# Inspect Knowledge Pack entities:
+md-style inspect output.html
+```
+
+> [!TIP]
+> For lightweight CI/CD pipelines that only generate HTML or RO-Crates without Headless Chromium, use the slim image (`ghcr.io/valorcz/md-style:slim` / `make podman-build-slim`).
+> ```
+
 ### 1. Compile an Interactive Cyber DFIR Report
 
 ```bash

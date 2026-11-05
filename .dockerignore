@@ -1,0 +1,26 @@
+# Version control
+.git
+.gitignore
+.github
+
+# Python bytecode & environments
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.venv
+.pytest_cache
+.coverage
+htmlcov
+
+# Node & Viewer
+node_modules
+viewer/node_modules
+viewer/dist
+
+# Build artifacts & outputs
+output/
+dist/
+build/
+*.egg-info/
+.DS_Store

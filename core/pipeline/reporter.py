@@ -4,7 +4,7 @@ Presentation reporter for terminal diagnostics, summary cards, and KB tables.
 """
 
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 from rich.table import Table
 from rich.panel import Panel

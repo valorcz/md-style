@@ -1,0 +1,126 @@
+name: Build and Publish Container Images
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-test-publish:
+    name: Build, Test & Publish Container Images
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry (GHCR)
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check Docker Hub Credentials
+        id: dockerhub-auth
+        run: |
+          if [ -n "${{ secrets.DOCKERHUB_USERNAME }}" ] && [ -n "${{ secrets.DOCKERHUB_TOKEN }}" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Log in to Docker Hub (Optional)
+        if: github.event_name != 'pull_request' && steps.dockerhub-auth.outputs.enabled == 'true'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Full Image
+        id: meta-full
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ghcr.io/${{ github.repository }}
+            ${{ steps.dockerhub-auth.outputs.enabled == 'true' && format('{0}/md-style', secrets.DOCKERHUB_USERNAME) || '' }}
+          tags: |
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=ref,event=pr
+
+      - name: Extract metadata (tags, labels) for Slim Image
+        id: meta-slim
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ghcr.io/${{ github.repository }}
+            ${{ steps.dockerhub-auth.outputs.enabled == 'true' && format('{0}/md-style', secrets.DOCKERHUB_USERNAME) || '' }}
+          flavor: |
+            suffix=-slim,onlatest=false
+          tags: |
+            type=raw,value=slim,enable=${{ github.ref == 'refs/heads/main' }}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=ref,event=pr
+
+      - name: Build Full image locally for automated verification
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: full
+          load: true
+          tags: md-style:test-full
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Verify Full Image Functionality (HTML + PDF via Chromium CDP + Pele)
+        run: |
+          mkdir -p output
+          docker run --rm -v "${{ github.workspace }}":/workspace md-style:test-full examples/sample-forensic-cyber.md -s forensic/cyber -o output/ci-test.html
+          docker run --rm -v "${{ github.workspace }}":/workspace md-style:test-full examples/sample-forensic-cyber.md -s forensic/cyber -p -o output/ci-test.pdf
+          docker run --rm -v "${{ github.workspace }}":/workspace md-style:test-full inspect output/ci-test.html
+
+          # Ensure files were generated and non-empty
+          test -s output/ci-test.html
+          test -s output/ci-test.pdf
+
+          # Confirm build-time Pele SVG execution
+          grep 'data-engine="pele"' output/ci-test.html
+
+      - name: Publish Full Image
+        if: github.event_name != 'pull_request'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: full
+          push: true
+          tags: ${{ steps.meta-full.outputs.tags }}
+          labels: ${{ steps.meta-full.outputs.labels }}
+          cache-from: type=gha
+
+      - name: Publish Slim Image
+        if: github.event_name != 'pull_request'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: slim
+          push: true
+          tags: ${{ steps.meta-slim.outputs.tags }}
+          labels: ${{ steps.meta-slim.outputs.labels }}
+          cache-from: type=gha
