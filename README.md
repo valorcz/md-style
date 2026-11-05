@@ -1,7 +1,7 @@
 # Markdown Report Styler (`md-style` v3.0)
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Architecture: Pure Python](https://img.shields.io/badge/architecture-pure--python-brightgreen.svg)](docs/architecture.md)
 [![RO-Crate 1.1 Compliant](https://img.shields.io/badge/RO--Crate-v1.1-success.svg)](https://www.researchobject.org/ro-crate/)
 [![Viewer: Svelte 5](https://img.shields.io/badge/viewer-Svelte_5-orange.svg)](viewer/)
@@ -54,7 +54,7 @@
 
 ### Installation
 
-`md-style` requires **Python 3.10+**. We recommend using [`uv`](https://github.com/astral-sh/uv) for fast, isolated execution:
+`md-style` requires **Python 3.11+**. We recommend using [`uv`](https://github.com/astral-sh/uv) for fast, isolated execution:
 
 ```bash
 # Clone the repository
