@@ -132,11 +132,10 @@ def get_threat_intel_api_key(service: str) -> str:
 
 def ensure_directories():
     """Ensures static, user cache, and user config directories exist."""
-    STATIC_DIR.mkdir(parents=True, exist_ok=True)
-    ICONS_DIR.mkdir(parents=True, exist_ok=True)
-    CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    FONTS_CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    INTEL_CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+    for d in (STATIC_DIR, ICONS_DIR, CACHE_DIR, FONTS_CACHE_DIR, INTEL_CACHE_DIR, CONFIG_DIR):
+        try:
+            d.mkdir(parents=True, exist_ok=True)
+        except OSError:
+            pass
 
 ensure_directories()

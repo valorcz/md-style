@@ -65,14 +65,15 @@ ENV PATH="/opt/venv/bin:$PATH"
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     HOME=/home/mdstyle \
-    XDG_CACHE_HOME=/home/mdstyle/.cache
+    XDG_CACHE_HOME=/home/mdstyle/.cache \
+    XDG_CONFIG_HOME=/home/mdstyle/.config
 
 # Create non-root mdstyle user and establish permissive cache for rootless Podman
 RUN groupadd -g 1000 mdstyle && \
     useradd -u 1000 -g mdstyle -m -d /home/mdstyle -s /bin/bash mdstyle && \
-    mkdir -p /workspace /home/mdstyle/.cache /app && \
+    mkdir -p /workspace /home/mdstyle/.cache /home/mdstyle/.config /app /tmp && \
     chown -R mdstyle:mdstyle /home/mdstyle /workspace /app && \
-    chmod -R 777 /home/mdstyle/.cache
+    chmod -R 777 /home/mdstyle /tmp
 
 WORKDIR /app
 
@@ -102,7 +103,6 @@ ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 # ==============================================================================
 FROM runtime-base AS slim
 
-USER mdstyle
 CMD ["--help"]
 
 
@@ -124,5 +124,4 @@ RUN apt-get update && \
 
 ENV CHROME_BIN=/usr/bin/chromium
 
-USER mdstyle
 CMD ["--help"]
